@@ -167,6 +167,8 @@ Room generation must not automatically create ceilings at the current design sta
 
 Room dimensions are entered in feet, snap to 5-foot increments, and describe usable interior Length × Width. Height means wall height. See `docs/SPATIAL_CONTRACT.md`.
 
+Camera stays at a fixed tabletop-style elevation near 30° above the board plane for MVP, with horizontal orbit, pan, zoom, and an obvious Reset/Home control. Do not allow free vertical tilt or first-person/free-fly camera in MVP. See `docs/CAMERA_CONTRACT.md`.
+
 ## Locked Construction
 
 Locking is a universal editing control.
