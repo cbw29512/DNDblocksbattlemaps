@@ -222,75 +222,85 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 The readable Room Builder, face-aware block placement, 8-block height cap, and stronger placement shadow were green.
 
-Browser testing exposed the next room-building usability gap: clicking **Build Room** immediately created a centered room, which made rapid multi-room layouts awkward.
-
-The user requested a placeable corner so multiple rooms can be positioned quickly.
+The remaining room-building usability problem was that **Build Room** immediately created a centered room, making rapid multi-room layouts awkward.
 
 ### Changes Made
 
-- Converted Build Room from immediate centered generation into a **room-stamp mode**.
-- The DM still enters Length × Width × Height first.
-- Clicking Build Room now arms the room stamp.
-- The selected room gets a 3D preview:
+- Converted **Build Room** into a reusable **room stamp**.
+- DM enters Length × Width × Height, then clicks Build Room.
+- A 3D room preview follows the grid with:
   - gold footprint
-  - gold outside-corner marker
+  - gold outside-wall corner marker
   - wireframe showing full room extent and wall height
-- The grid square under the corner marker is the room's **outside wall corner**.
-- Red preview means the room would leave the board or exceed the height cap.
+- The clicked grid square is the room's **outside wall corner**.
+- Gold preview means the room fits.
+- Red preview means the room would leave the board or exceed the vertical cap.
 - Clicking a valid corner stamps the room there.
-- After placement, the same room stamp remains armed so another identical room can be placed immediately.
-- Selecting Stone/Wall/Door/etc. exits room-stamp mode.
-- Added equivalent corner/perimeter feedback to the fallback renderer.
-- Added anchored room-domain primitives:
-  - room outer size
-  - fit validation
-  - wall positions from a clicked corner
-- Existing identical wall blocks at the same X/Z/elevation are reused rather than duplicated.
-- Each stamped room remains one Undo/Redo edit.
-- Added tests for:
-  - exact clicked-corner anchoring
-  - board-edge rejection
-  - vertical-limit rejection
-  - shared-wall overlap between adjacent room stamps
+- The room stamp stays active after placement so the same-size room can be stamped repeatedly.
+- Selecting a normal block exits room-stamp mode.
+- Equivalent corner/perimeter feedback exists in the fallback renderer.
+- Added room-domain primitives for:
+  - outer room size
+  - fit-at-corner validation
+  - perimeter wall positions from a clicked corner
+- Exact duplicate wall positions are skipped/reused instead of doubled.
+- Each stamped room remains one Undo/Redo action.
+- Updated the Room Builder helper text to explain the corner workflow.
 - Updated interaction, spatial, visual, and live-state contracts.
 - Netlify remains untouched.
+
+### Verification
+
+Checkpoint commit:
+
+- `8fb8b3682e0c0827a6860e492462fa2d0ba597cd`
+
+Connected verification:
+
+- **Deploy GitHub Pages Test run #6:** SUCCESS
+- **GitHub pages build and deployment run #17:** SUCCESS
+- TypeScript typecheck: passed
+- unit tests: passed
+- static build: passed
+- Pages deployment: passed
+
+The temporary push trigger used for verification is now restored to manual-only.
 
 ### Decisions Made
 
 **The clicked grid square is the room's outside wall corner.**
 
-Reason: it is literal, visible, and easy to explain: “move the room outline, stick this corner where you want it, click.”
+Reason: the interaction is literal and easy to explain: “move the room outline, stick this corner where you want it, click.”
 
-**Room stamp stays active after placement.**
+**The room stamp stays armed after placement.**
 
-Reason: the user specifically wants to create multiple rooms quickly. Selecting a normal block is the simple exit action.
+Reason: this makes repeated room creation fast. Choosing a normal block is the simple exit action.
 
-**Invalid room footprints are shown, not guessed around.**
+**Invalid placement is shown rather than silently adjusted.**
 
-Reason: predictable placement is more important than automatic repositioning. Gold means it fits; red means move the corner.
+Reason: predictable placement is more important than automatic repositioning. Gold means valid; red means move the corner.
 
 ### Cost Impact
 
 None.
 
-No new dependency or hosted service.
+No new dependency or hosted service was introduced.
 
 ### Result
 
-The reusable room-stamp implementation and browser snapshot are ready for strict verification.
+Corner-anchored rapid room stamping is verified and live on the GitHub Pages test surface.
 
 ### Exact Next Step
 
-1. Push this checkpoint with a temporary verification trigger.
-2. Require TypeScript, tests, static build, and Pages deployment to pass.
-3. Fix any real gate failure without suppressing strict checks.
-4. Restore Pages workflow to manual-only after green.
-5. Browser-test:
-   - Build Room
-   - move gold room preview
+1. Hard-refresh the test site.
+2. Test:
+   - choose room dimensions
+   - click Build Room
+   - move the gold room preview
    - click a corner
    - stamp several rooms quickly
-   - snap a second room onto an existing wall
-   - Undo one stamped room
-   - select a normal block and confirm room mode exits
-6. Then continue into construction/prop/character/monster catalog work.
+   - snap another room onto an existing wall
+   - Undo one room
+   - select Stone/Wall/Door and confirm room mode exits
+3. Record any remaining room-placement usability issues.
+4. Then proceed into the real construction/prop/character/monster catalog.
