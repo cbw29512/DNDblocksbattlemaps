@@ -103,18 +103,29 @@ Hosted-service cost:
 - Free plan intended for prototype/early MVP within current quotas
 - pricing must be rechecked before production launch
 
-### Cloudflare Pages
+### Netlify
 
 Status: selected deployment target; not yet configured.
 
 Purpose:
 
 - static frontend hosting/CDN
+- Git-based production deploys and previews
 
-Current pricing note:
+Current pricing note (2026-10-07):
 
-- static asset requests currently free/unlimited under Pages pricing
-- provider terms/pricing must be rechecked before production launch
+- Free plan: $0/month
+- 300 credits/month hard limit
+- production deploy: currently 15 credits
+- bandwidth: currently 20 credits/GB
+- web requests: currently 2 credits per 10,000 requests
+- Free plan has no overage charge; projects pause when the credit limit is reached
+
+Cost-control rule:
+
+- avoid unnecessary production deploys
+- recheck pricing/credit rules before public launch
+- keep the frontend portable so another static host remains an exit path
 
 ### Original / CC0 Assets
 
