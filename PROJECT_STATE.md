@@ -65,6 +65,12 @@ The DM is the authority. The board must work without automated RPG rules.
 30. **DM-authoritative placement.** BUILD mode allows intentional overlap/stacking; occupancy may warn but does not reject DM placement.
 31. **Universal trigger/effect system.** Traps, hazards, switches, ambushes, and surprises are composed from reusable triggers/effects rather than named engines.
 32. **Universal transform/replace.** An object may change identity/category/capabilities in place when triggered, such as chest → mimic.
+33. **Select once, place many.** A palette item remains active until changed/cleared; repeated clicks place repeated copies.
+34. **Surface-based stacking.** Floor places on floor, top face places one 5-foot level above, side face places adjacent at the clicked block's base level; explicit elevation in feet is available as an escape hatch.
+35. **Floating placement allowed.** DM may deliberately place unsupported elevated objects; no physics validator blocks creation.
+36. **Pick-up/put-down movement.** Unlocked existing objects are moved by selecting/picking up and dropping, not transform gizmos.
+37. **Overlap chooser only when needed.** Ambiguous overlapping selections use a minimal What's Here? chooser rather than a permanent object inspector.
+38. **Undo/Redo is Stage 1 safety infrastructure.** Fast placement/removal should remain confirmation-free because board edits are reversible.
 
 ## Cost Guardrail
 
@@ -135,6 +141,7 @@ A work session is not complete until the handoff state is pushed.
 - `docs/SPATIAL_CONTRACT.md` — authoritative 5-foot room dimensions, floor/wall/door placement, occupancy, and room-lock behavior.
 - `docs/CAMERA_CONTRACT.md` — authoritative tabletop camera elevation, orbit, pan, zoom, and recovery behavior.
 - `docs/TRAPS_AND_EFFECTS.md` — authoritative trigger/effect, hazard, permissive-overlap, and transforming-object contract.
+- `docs/PLACEMENT_CONTRACT.md` — authoritative select/place, stacking, elevation, overlap-selection, move, and undo interaction.
 
 Planned next documentation:
 
@@ -160,15 +167,13 @@ See `docs/COMPETITOR_RESEARCH.md`.
 
 These are deliberately unresolved and must not be guessed during implementation.
 
-1. Exact manual vertical placement/elevation interaction outside generated room walls.
-2. Tiny creature placement.
-3. MVP identity/authentication model.
-4. Persistence and undo/redo strategy.
-5. Whether a selected block remains active for repeated placement or clears after one placement.
-6. How right-click removal behaves when multiple overlapping objects occupy the exact same visible location.
-7. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
-8. Technology stack final selection and hosting/persistence providers.
-9. Exact asset/art production approach.
+1. Tiny creature placement.
+2. MVP identity/authentication/join model.
+3. Persistence granularity and recovery strategy behind Undo/Redo.
+4. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
+5. Technology stack final selection and hosting/persistence providers.
+6. Exact asset/art production approach.
+7. Player-side interaction contract beyond basic movement.
 
 ## Latest Work Record
 
@@ -178,116 +183,106 @@ These are deliberately unresolved and must not be guessed during implementation.
 
 ### Starting State
 
-The project was in Stage 0 with no application code.
+The project remained in Stage 0 with no application code.
 
-The camera contract had been resolved. The next design topic was manual placement behavior.
-
-The user clarified that the DM should be able to place **whatever block wherever they want**, including creatures inside pits, creatures on traps, and other overlapping combinations. The user also asked for broader D&D trap thinking rather than treating pit/spring traps as the complete design space.
-
-During the discussion, the user provided a further example: a chest-looking block that transforms into a mimic creature when the player's character touches/interacts with it.
-
-### Research
-
-Reviewed current official/free D&D trap examples and trap structure.
-
-2024 Free Rules/SRD trap patterns include:
-
-- collapsing roof
-- falling net
-- fire-casting statue
-- hidden pit
-- poisoned darts
-- poisoned needle
-- rolling stone
-- spiked pit
-
-The 2024 rules describe traps through reusable concepts including **Trigger**, **Duration**, effects, and optional detection/disarm procedures.
-
-Reviewed 2014 Basic Rules/SRD trap guidance, which includes mechanical and magical traps such as pits, arrows/darts, falling blocks, flooded rooms, blades, and spell traps.
-
-Reviewed the 2014 Basic Rules Mimic as an example of an object-form creature: it can appear as an ordinary object and adheres to creatures that touch it. The project is not copying the monster mechanics into the map engine; the reference validates the need for generic object→creature transformation/reveal behavior.
+DM-authoritative overlap, broad trigger/effect hazards, and transform/replace behavior were documented. The next unresolved design area was the ordinary manual placement experience.
 
 ### Changes Made
 
-- Read the live project state, SOUL, interaction spec, spatial contract, data schema, and block catalog before changes.
-- Researched D&D trap patterns using current official/free D&D sources.
-- Created `docs/TRAPS_AND_EFFECTS.md`.
-- Updated `SOUL.md` with DM-authoritative placement and universal trigger/effect/transform principles.
-- Updated `docs/SPATIAL_CONTRACT.md` so occupancy describes PLAY behavior but never blocks DM BUILD placement.
-- Updated `docs/DATA_SCHEMA.md` with generic InteractionRule and transform/replace concepts.
-- Expanded `docs/BLOCK_CATALOG.md` with broad trap/hazard families and transforming surprise objects.
-- Updated `docs/INTERACTION_SPEC.md` with permissive overlap and chest→mimic-style transform interaction.
-- Updated `docs/ROADMAP.md` with permissive placement, generic trigger/effect behavior, and transform/replace support.
-- Linked the new traps/effects contract from README.
+- Read the live project state, SOUL, interaction spec, spatial contract, traps/effects contract, and data schema before work.
+- Created `docs/PLACEMENT_CONTRACT.md`.
+- Updated `SOUL.md` with persistent selection, natural surface stacking, explicit elevation fallback, pick-up/put-down movement, overlap selection, and Undo/Redo requirements.
+- Updated `docs/INTERACTION_SPEC.md` to resolve repeated placement, manual elevation, moving existing objects, overlap selection, and Undo/Redo.
+- Updated `docs/DATA_SCHEMA.md` with transient EditorState and renderer-independent EditHistory concepts.
+- Updated `docs/ROADMAP.md` so these behaviors are part of the first single-user builder prototype.
+- Linked the placement contract from README.
+- A GitHub read briefly disconnected during reconciliation; the read was retried in smaller batches and repository work continued without changing the design.
 
 ### Decisions Made
 
-**Decision:** The DM may place any object anywhere in BUILD mode, including intentional overlap.
+**Decision:** Selecting a palette object persists until the DM chooses another object or clears placement mode.
 
-**Reason:** The board must enable creativity rather than enforce physics or assumptions about what belongs in a cell.
+**Reason:** Physical terrain building often requires placing several copies of the same thing, and returning to the sidebar after every block is unnecessary friction.
 
-**Decision:** Occupancy and movement-blocking properties describe PLAY behavior only.
+**Decision:** Placement uses a ghost preview.
 
-**Reason:** A wall may block ordinary player movement, but that must not prevent the DM from placing a monster in that location if desired.
+**Reason:** The DM should see exactly where and at what elevation the next object will appear before clicking.
 
-**Decision:** The editor may warn about overlap but may not reject the placement.
+**Decision:** Natural stacking follows the hovered surface.
 
-**Reason:** The DM is authoritative.
+**Reason:** Ground/floor, top-face, and side-face placement are visually understandable and avoid requiring users to think in X/Y/Z coordinates.
 
-**Decision:** Traps and hazards are composed from reusable triggers and effects.
+**Decision:** A visible elevation control in 5-foot units also exists.
 
-**Reason:** D&D examples vary widely—pressure plates, trip wires, pits, nets, darts, falling objects, magical effects, moving hazards—but share reusable structural concepts.
+**Reason:** It provides a simple escape hatch for exact heights or locations without a convenient visible support surface.
 
-**Decision:** Transform/replace is a universal effect.
+**Decision:** Unsupported/floating placement is allowed.
 
-**Reason:** A chest becoming a mimic is the same underlying behavior class as statue→gargoyle, armor→animated armor, bones→skeleton, sarcophagus→undead, or scenery→hazard.
+**Reason:** The DM may need flying creatures, suspended objects, magical platforms, falling hazards, or other intentionally unsupported elements. The app is not a physics engine.
 
-**Decision:** A transform should be able to preserve map placement while changing appearance, category, capabilities, footprint, and interaction behavior.
+**Decision:** Moving an unlocked object uses pick-up → ghost → put-down.
 
-**Reason:** The surprise should happen in place rather than requiring a special-case engine.
+**Reason:** This matches the physical-block metaphor and avoids transform gizmos.
+
+**Decision:** Ambiguous overlap gets a small `What's Here?` chooser only when needed.
+
+**Reason:** Normal clicks should remain direct; complexity should appear only when the map actually contains ambiguous overlapping objects.
+
+**Decision:** Right-click ordinary removal remains confirmation-free.
+
+**Reason:** Repeated confirmation dialogs would undermine the product's speed.
+
+**Decision:** Undo/Redo is required in Stage 1.
+
+**Reason:** Fast confirmation-free editing is only safe when mistakes are immediately reversible.
+
+**Decision:** New environment/construction objects can still be placed in a locked room and inherit that room's locked state after placement.
+
+**Reason:** Room lock protects existing layout from accidental movement; it must not prevent the DM from adding a later prop, hazard, or surprise.
 
 ### Cost Impact
 
 None.
 
-This session added documentation and research only. No dependency, service, asset, hosting cost, or application code was added.
+This work changed documentation/product contracts only. No dependency, hosted service, asset, or application code was added.
 
 ### Result
 
-The placement/hazard architecture is now substantially broader:
+The manual editor now has a complete simple mental model:
 
-> BUILD mode permits any DM placement. PLAY behavior comes from reusable object properties and trigger/effect rules.
+> Pick a thing → see its ghost → click to place → keep clicking for more → Select/Done when finished.
 
 And:
 
-> A chest can be placed as an ordinary-looking object, then on touch/interact transform in place into a mimic creature block.
+> Click an unlocked thing in Select mode → pick it up → click where it belongs → Escape to cancel.
 
-The same primitives cover a much wider set of D&D-style hazards, ambushes, and environmental surprises.
+Vertical building does not require a separate editor:
+
+> floor = place here; top = stack above; side = place beside; height control = exact override.
 
 No application code has been written.
 
 ### Open Questions / Blockers
 
-1. Exact manual vertical placement/elevation interaction.
-2. Tiny creature placement.
-3. MVP authentication/join identity model.
-4. Persistence and undo/redo strategy.
-5. Repeated-placement behavior after selecting a block.
-6. Right-click removal behavior when several overlapping objects share the same visible location.
-7. Shared-wall editing if needed.
-8. Three.js vs Babylon.js final choice.
-9. Exact art/asset production approach.
+1. Tiny creature placement.
+2. MVP authentication/join model.
+3. Persistence/recovery implementation behind Undo/Redo.
+4. Shared-wall editing if simple duplicate prevention proves insufficient.
+5. Three.js vs Babylon.js final choice.
+6. Exact art/asset production approach.
+7. Player-side interaction beyond basic movement.
 
 ### Exact Next Step
 
 Stay in design mode.
 
-Resolve **manual placement and object-selection behavior** next:
+Resolve the **player/join and creature-control contract** next, including:
 
-- how clicking the top/side of a block chooses elevation
-- whether the selected palette block remains active for repeated placement
-- placement ghost/preview appearance
-- how overlapping objects are selected/removed without making the UI complicated
-- how an unlocked existing block is picked up and moved
+- whether players need accounts or can join by code/name
+- how a DM assigns a character piece
+- what a player can click/interact with
+- what happens when a player's movement is locked
+- how DM override works
+- how Tiny creature representation should behave on a 5-foot grid
 
 Do not write application code yet.
