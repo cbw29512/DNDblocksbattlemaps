@@ -57,7 +57,30 @@ After terrain selection:
 - the selected terrain determines the base visual theme
 - the map remains simple and readable
 
-The exact camera model is still unresolved.
+The camera model is now defined in `CAMERA_CONTRACT.md`: default elevation near 30° above the board plane, horizontal orbit around the focus point, pan, zoom, and Reset/Home. Vertical tilt/free-fly is not part of MVP.
+
+## Camera Controls
+
+Camera behavior must remain child-readable:
+
+- fixed tabletop elevation near 30°
+- rotate/orbit left and right around the focus point
+- pan across the board
+- zoom in/out
+- Reset/Home to recover the view
+
+Visible controls should exist so mouse gestures are conveniences rather than required knowledge.
+
+Candidate shortcuts:
+
+- mouse wheel = zoom
+- right-drag = orbit
+- right-click without a meaningful drag = remove in DM BUILD mode
+- middle-drag = pan when available
+
+Right-click remove and right-drag orbit must use a drag threshold so orbiting cannot accidentally delete an object.
+
+See `CAMERA_CONTRACT.md`.
 
 ## Primary DM Controls
 
