@@ -40,6 +40,7 @@ The current priority is defining the product, interaction model, state model, pe
 - [Technology Stack Candidates](docs/TECH_STACK_CANDIDATES.md) — web-first, open-source-first, low-cost architecture options
 - [Spatial Contract](docs/SPATIAL_CONTRACT.md) — authoritative room dimensions, wall/door placement, occupancy, and room-lock rules
 - [Camera Contract](docs/CAMERA_CONTRACT.md) — fixed tabletop angle, orbit, pan, zoom, and view-recovery rules
+- [Traps & Effects](docs/TRAPS_AND_EFFECTS.md) — universal trigger/effect, hazard, overlap, and transforming-object contract
 
 ## Development rule
 
