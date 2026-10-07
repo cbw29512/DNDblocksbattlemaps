@@ -8,30 +8,37 @@
 
 ## Selected MVP Dependencies / Services
 
-### TypeScript
+### TypeScript 7.0.2
 
-Status: selected, not yet installed.
+Status: pinned for Stage 1; first connected install will occur in the manual GitHub Pages test workflow or a normal network-connected dev environment.
+
+Source:
+
+- https://github.com/microsoft/TypeScript
+- npm package: typescript@7.0.2
+
+License:
+
+- Apache-2.0
 
 Purpose:
 
 - application language/type checking
-
-License/source to record at installation time:
-
-- exact installed package/version
-- upstream package license
+- compile-time state/schema protection
 
 Notes:
 
-No runtime service cost.
+- development/compiler dependency only
+- no runtime service cost
 
-### Vite
+### Vite 8.3.3
 
-Status: selected, not yet installed.
+Status: pinned for Stage 1; first connected install will occur in the manual GitHub Pages test workflow or a normal network-connected dev environment.
 
 Repository:
 
 - https://github.com/vitejs/vite
+- npm package: vite@8.3.3
 
 License:
 
@@ -51,13 +58,14 @@ Attribution/notice:
 
 - retain required license notices
 
-### Three.js
+### Three.js 0.186.1
 
-Status: selected, not yet installed.
+Status: pinned direct runtime dependency for Stage 1.
 
 Repository:
 
 - https://github.com/mrdoob/three.js
+- npm package: three@0.186.1
 
 License:
 
@@ -79,9 +87,38 @@ Attribution/notice:
 
 - retain required license notices
 
+### Node.js 22.16.0
+
+Status: GitHub Pages test workflow runtime.
+
+Purpose:
+
+- install/build/typecheck/test the static prototype in GitHub Actions
+
+Notes:
+
+- application runtime remains the browser
+- Vite 8 requires Node 20.19+ or 22.12+, so 22.16.0 satisfies the requirement
+
+### GitHub Pages — Test Surface Only
+
+Status: temporary/manual prototype test surface, not production hosting.
+
+Purpose:
+
+- browser-interaction testing of locally checked Stage 1 milestones before Netlify release
+
+Rules:
+
+- manual GitHub Actions workflow only
+- normal pushes do not publish Pages
+- no commercial/SaaS production reliance
+- no Supabase/private user data required for this Stage 1 test
+- Netlify remains the selected production host
+
 ### Supabase JavaScript Client
 
-Status: selected architecture; exact package/version not yet installed.
+Status: selected architecture; not used or installed in the first Stage 1 vertical slice.
 
 Ecosystem:
 
@@ -240,3 +277,15 @@ Before adding any new dependency or asset:
 11. replacement/exit path
 
 No third-party dependency or asset is considered approved until this register is updated.
+
+## Stage 1 First-Slice License Record
+
+Direct package versions pinned in `package.json`:
+
+- three 0.186.1 — MIT — runtime
+- vite 8.3.3 — MIT — development/build
+- typescript 7.0.2 — Apache-2.0 — development/compiler
+
+`THIRD_PARTY_NOTICES.md` retains the Three.js MIT notice and direct dependency license references.
+
+The current execution sandbox could not reach npm, so no local package installation was performed. A package lock and transitive-license inventory should be generated/retained from the first normal network-connected install before a production Netlify milestone.

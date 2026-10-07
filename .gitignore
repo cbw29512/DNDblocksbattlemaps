@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.local-build/
+.test-build/
+*.log
+.DS_Store

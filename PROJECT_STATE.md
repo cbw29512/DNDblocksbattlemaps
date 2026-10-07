@@ -8,10 +8,10 @@
 
 ## Current Status
 
-**Phase:** Stage 0 — Product/Architecture Contract — substantially complete; pre-implementation gate  
-**Application code:** None. Do not begin coding until the user explicitly directs Stage 1 implementation.  
+**Phase:** Stage 1 — Single-User Builder Prototype — first website-to-builder vertical slice implemented; browser test pending  
+**Application code:** Yes. Stage 1 began after explicit user authorization on 2026-10-07.  
 **Repository:** `cbw29512/DNDblocksbattlemaps`  
-**Primary goal:** Keep the documented contracts internally consistent and preserve a clean handoff boundary before Stage 1. The MVP technology stack is selected; package versions/licenses are recorded immediately before installation.
+**Primary goal:** Browser-verify the first website-to-builder slice on the manual GitHub Pages test surface before adding the next Stage 1 feature. Netlify remains production and is not used for routine testing.
 
 ## Current Product Definition
 
@@ -91,6 +91,8 @@ The DM is the authority. The board must work without automated RPG rules.
 56. **Terrain quick-start is a conversion path.** Castle/Inn/Field/Sea/Volcano-style cards can open a temporary builder immediately; durable sign-in is required when saving/sharing a persistent game.
 57. **One Vite product surface.** Marketing site and app remain in the same repo/project unless a real requirement later justifies separation.
 58. **Local-first release discipline.** Normal development/testing is local; GitHub pushes are coherent checkpoints; Netlify production deploys are deliberate milestone releases.
+59. **GitHub Pages is test-only.** It may host temporary static prototype builds for browser testing, but Netlify remains the production/commercial host.
+60. **Pages deploys are manual-only.** Normal GitHub pushes do not automatically publish the test site.
 
 ## Cost Guardrail
 
@@ -209,121 +211,115 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-Stage 0 was substantially complete with no application code.
+Stage 0 was substantially complete with zero application code.
 
-Netlify had been selected as the frontend host. The user clarified two additional product/release requirements:
+The user explicitly directed the project to build and test the first prototype and asked whether GitHub Pages could be used for testing while Netlify remains production.
 
-- the user already has a paid/Plus Netlify plan, but unnecessary deploys should still be avoided
-- all normal testing should be local and Netlify should receive only locally tested milestone releases
-- the project needs a polished public website that looks excellent, is extremely easy to use, and is designed to attract people who will actually use the product
+### Research / Dependency Gate
 
-### Research
+Current package versions/licenses were rechecked before writing package configuration:
 
-Reviewed current VTT public positioning and onboarding patterns.
+- Three.js 0.186.1 — MIT
+- Vite 8.3.3 — MIT
+- TypeScript 7.0.2 — Apache-2.0
+- GitHub Actions test runtime: Node 22.16.0
 
-- Owlbear Rodeo explicitly emphasizes browser use, intuitive battle-map experience, and a player flow where players can open the GM link and join.
-- Roll20's current homepage puts a strong start/account CTA above the fold and explicitly markets no-download browser play, but also illustrates the feature-density direction this project intends to avoid.
-- Foundry VTT emphasizes a powerful, feature-rich platform and self-hosted control, reinforcing the opportunity for DND Blocks Battle Maps to differentiate through simplicity and immediate use.
-- TaleSpire quickly explains the core digital-tabletop promise and lets the product visual carry much of the message.
+Vite 8's documented Node requirement is satisfied by the workflow runtime.
+
+GitHub Pages is accepted only as a temporary static project test surface. It is not the production/commercial SaaS host.
 
 ### Changes Made
 
-- Created `docs/WEBSITE_EXPERIENCE.md`.
-- Defined the public website as part of the product rather than a separate marketing brochure.
-- Defined the homepage primary actions as **Build a Map** and **Join a Game**.
-- Defined immediate terrain quick-start cards such as Castle, Inn, Field, Sea, and Volcano.
-- Defined a recommended low-friction guest/temporary builder path, with durable DM sign-in required for Save/Share/persistent games.
-- Defined initial routes: `/`, `/build`, `/join`, `/game/:code`, `/maps`, and `/login`.
-- Defined the marketing site and application as one Vite project/repository for simplicity and deployment efficiency.
-- Defined the homepage structure, visual direction, accessibility, performance, mobile, SEO/shareability, and trust requirements.
-- Updated `SOUL.md` so the public website and local-first Netlify deployment policy are permanent project rules.
-- Updated ADR-001 and the Dependency Register to stop assuming a Netlify Free plan; the user reports a paid/Plus plan and exact account-specific limits will be read from the Netlify dashboard when deployment begins.
-- Updated `docs/ROADMAP.md` and `docs/PRE_IMPLEMENTATION_CHECKLIST.md` so the public website/quick-start experience is part of Stage 1.
-- Updated README with the website contract.
+- Began Stage 1 after explicit user authorization.
+- Added a single Vite/TypeScript product surface for the public website and builder.
+- Implemented a polished homepage with Build a Map / Join a Game actions and Castle/Inn/Field/Sea/Volcano quick-start cards.
+- Added a transparent Stage 2 placeholder Join screen rather than pretending multiplayer is complete.
+- Added renderer-independent BoardState, WorldObject, command, Undo/Redo, catalog, and local-storage modules.
+- Added a 20×20 five-foot builder grid.
+- Added Three.js rendering with the locked ~30° tabletop elevation, horizontal orbit, zoom, reset controls, grid picking, placement ghost, repeated placement, right-click remove, and terrain-specific ground color.
+- Added explicit elevation control in 5-foot increments.
+- Preserved intentional overlap in canonical board state.
+- Added a DOM/CSS interactive fallback renderer for environments where Three.js cannot initialize.
+- Added browser-local prototype autosave by terrain.
+- Added four Node domain tests covering overlap, targeted removal, inverse commands, and Undo/Redo.
+- Split the Three.js implementation so every TypeScript source module remains under the project's ~150-line review threshold.
+- Added exact package pins, direct license notices, and the updated Dependency Register.
+- Added a **manual-only** GitHub Pages Actions workflow. Normal pushes do not deploy Pages.
+- No Netlify production deploy was performed.
+- No Supabase/backend code was added.
+
+### Local Verification
+
+Available local verification completed:
+
+- domain tests: **4/4 PASS**
+- full local TypeScript source compile: **PASS**
+- module-size audit: **PASS** after splitting renderer helpers
+
+Environment limitation:
+
+The execution sandbox blocks browser navigation to localhost by administrator policy. Playwright/Chromium itself is available, but it cannot open the local HTTP test URL. Therefore a real click-through/screenshot test could not be truthfully completed inside this sandbox.
+
+The first GitHub Pages deployment is the browser-interaction gate for this slice.
 
 ### Decisions Made
 
-**Decision:** The public website is part of the actual product experience.
+**Decision:** GitHub Pages may be used for temporary prototype/browser testing only.
 
-**Reason:** The goal is not merely to host an editor; people must arrive, understand it, trust it, and immediately know how to start building or join a game.
+**Reason:** It provides a convenient static test URL, while GitHub's Pages policy is not appropriate as the production commercial/SaaS host. Netlify remains production.
 
-**Decision:** Above-the-fold primary actions are **Build a Map** and **Join a Game**.
+**Decision:** GitHub Pages deployment is manual-only.
 
-**Reason:** These are the two user intents that matter most and should not be hidden behind feature pages or navigation.
+**Reason:** A source push should not automatically create a hosted test release. We still want deliberate test checkpoints and minimal hosting/build churn.
 
-**Decision:** The homepage uses an immediate terrain quick-start.
+**Decision:** The first Stage 1 slice stops before rooms, traps, multiplayer, Supabase, and full persistence.
 
-**Reason:** Asking "What terrain do you want?" converts the product explanation directly into the first useful action.
+**Reason:** The homepage -> terrain -> grid -> camera -> ghost -> place/remove loop should be visually and interactively validated before layering more systems on top.
 
-**Decision:** A visitor should be able to try the builder with minimal friction before durable sign-in; Save/Share/persistent game ownership requires the durable DM identity.
+**Decision:** Keep a renderer-independent canonical state layer from the first line of code.
 
-**Reason:** This preserves the authenticated persistence model while reducing acquisition friction.
-
-**Decision:** Website and application remain one Vite project/repository.
-
-**Reason:** One deployment, one visual system, shared assets, less drift, and fewer moving parts align with the cheap/simple architecture.
-
-**Decision:** Normal development/testing happens locally.
-
-**Reason:** Local testing is faster, cheaper, and prevents production hosting from becoming the test environment.
-
-**Decision:** Netlify production deploys are milestone releases only.
-
-**Reason:** Even with the user's paid/Plus plan, unnecessary deploys create noise and consumption without improving the product.
-
-**Decision:** GitHub pushes remain meaningful source checkpoints and do not automatically imply a Netlify production release.
-
-**Reason:** Source continuity and public releases serve different purposes.
+**Reason:** This preserves the locked architecture boundary and keeps state/test behavior independent from Three.js.
 
 ### Cost Impact
 
-No new cost incurred.
+No new paid infrastructure was added.
 
-The user reports an existing paid/Plus Netlify plan.
-
-Because Netlify has changed public plan names/pricing and older accounts can retain legacy plans, exact account-specific limits/costs are intentionally **not guessed**. They should be read from the user's Netlify dashboard when the project is configured.
-
-The local-first/milestone-deploy policy reduces unnecessary hosting/build usage regardless of plan.
+- Netlify was not deployed.
+- Supabase was not used.
+- GitHub Pages test workflow uses the repository's GitHub Actions/Pages facilities and is manual-only.
+- Exact direct dependency versions are pinned; no local npm install occurred because this sandbox cannot reach npm.
 
 ### Result
 
-The Stage 1 product boundary now includes both:
+Stage 1 now has a coherent first working source checkpoint:
 
-> **a polished public front door that gets people into the product quickly**
+> **homepage -> choose terrain -> real builder -> five-foot grid -> fixed-angle camera -> ghost -> place/remove blocks -> Undo/Redo -> local browser save**
 
-and
+The source/state layer is locally compiled and tested.
 
-> **the single-user 3D block builder itself.**
+Real browser interaction remains pending on the GitHub Pages test deployment because localhost browser navigation is blocked in this execution environment.
 
-The intended homepage flow is:
+### Open Stage 1 Work
 
-> Understand product -> Build a Map / Join a Game -> choose terrain -> see/use the actual board.
+After the first browser review:
 
-No application code has been written.
-
-No npm/application dependencies have been installed.
-
-### Remaining Implementation-Time Decisions
-
-These are not product-design blockers:
-
-1. exact package versions and transitive license notices
-2. exact Supabase auth/session implementation details
-3. exact original/CC0 placeholder asset production pipeline
-4. final brand/logo/color/type choices during visual implementation
-5. numeric bounded Undo/Redo retention after testing
-6. exact Netlify project/site configuration and account-specific limits when deployment begins
-7. performance tuning based on real browser/device tests
+1. fix any homepage/builder visual or interaction issues found in the live test
+2. natural top/side surface stacking
+3. touch remove path
+4. pick-up/put-down move
+5. overlap chooser
+6. room generator/shared walls/door replacement
+7. construction lock/unlock
+8. creature footprints/Tiny visual behavior
+9. hidden/DM-only visual behavior
+10. move from localStorage prototype persistence toward the documented Stage 1 persistence plan when appropriate
 
 ### Exact Next Step
 
-The project remains at the explicit coding gate.
-
-When the user explicitly directs Stage 1 implementation:
-
-1. reread the live contracts, ADR, implementation rules, website experience, and Stage 1 checklist
-2. recheck exact dependency versions/licenses and update the dependency register
-3. build/test locally only
-4. start with the smallest website-to-builder vertical slice: public hero/terrain quick-start -> real 5-foot grid -> fixed-angle camera -> placement ghost -> place one block
-5. do not deploy to Netlify until that slice is locally tested and worth reviewing live
-6. update/push the live handoff before stopping
+1. Verify this coherent source checkpoint on GitHub.
+2. In the repository, set **Settings -> Pages -> Source: GitHub Actions** once if it is not already configured.
+3. Manually run **Actions -> Deploy GitHub Pages Test -> Run workflow**.
+4. Inspect the workflow; if it fails, fix the build/test failure before user testing.
+5. Open the generated Pages URL and test homepage -> terrain -> place/overlap/remove -> Undo/Redo -> refresh persistence.
+6. Gather visual/interaction feedback before implementing the next Stage 1 slice.
+7. Keep Netlify untouched until a milestone is locally/browser-tested and worthy of production review.

@@ -23,9 +23,9 @@ The goal is to make encounter setup feel like placing physical magnetic terrain 
 
 ## Status
 
-**Planning / architecture only. No application code yet.**
+**Stage 1 prototype underway. The first website-to-builder vertical slice is implemented; browser interaction testing is pending on the manual GitHub Pages test surface.**
 
-The core product, interaction, state, permission, persistence, visual, and MVP architecture contracts are now documented. No application code has been written yet; implementation begins only after the pre-implementation audit/checklist is satisfied and the user directs the project to code.
+The product contracts remain authoritative. Stage 1 began only after the user explicitly authorized implementation. Netlify remains the production host; GitHub Pages is test-only.
 
 ## Project contracts
 
@@ -62,3 +62,46 @@ Every meaningful work session must start by reading the live project state and e
 The DM is the game engine.
 
 The first release focuses on building, visibility, locking, player ownership, real-time movement, persistence, and simple interaction—not automated RPG rules.
+
+
+## Local Stage 1 prototype
+
+The first slice currently includes:
+
+- polished public homepage
+- Build a Map / Join a Game entry points
+- Castle / Inn / Field / Sea / Volcano quick-start
+- 20×20 five-foot grid
+- fixed-angle Three.js camera with orbit/zoom/reset controls
+- block palette and persistent selection
+- placement ghost and click-to-place
+- intentional overlap
+- right-click remove
+- elevation control
+- place/remove Undo/Redo
+- browser-local prototype autosave
+
+Normal network-connected development commands:
+
+```bash
+npm install
+npm run check
+npm run dev
+```
+
+The current execution sandbox cannot access npm or navigate a browser to localhost, so source compilation and domain tests were run locally there, while the manual GitHub Pages test is used for real browser interaction verification.
+
+## GitHub Pages test
+
+GitHub Pages is a temporary static **test surface only**. Netlify remains production.
+
+The workflow `.github/workflows/pages-test.yml` runs only when manually dispatched; normal pushes do not publish the test site.
+
+One-time repository setup before the first test:
+
+1. GitHub repository **Settings → Pages**
+2. Set **Source** to **GitHub Actions**
+3. Open **Actions → Deploy GitHub Pages Test**
+4. Choose **Run workflow**
+
+Do not connect production user data or treat Pages as the commercial host.

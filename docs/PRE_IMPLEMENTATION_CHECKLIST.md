@@ -1,6 +1,6 @@
 # Pre-Implementation Checklist
 
-> Status: Stage 0 closure gate.
+> Status: Stage 1 underway. The explicit coding gate was satisfied by the user's 2026-10-07 instruction to build and test the prototype.
 >
 > No application code should begin until this checklist is reviewed against the repository and the user explicitly directs implementation to begin.
 
@@ -80,10 +80,10 @@ Required authoritative documents:
 
 Before the first package installation:
 
-- [ ] record exact package versions
-- [ ] recheck licenses
-- [ ] update `DEPENDENCY_REGISTER.md`
-- [ ] generate/retain third-party license notices where required
+- [x] record exact package versions
+- [x] recheck direct dependency licenses
+- [x] update `DEPENDENCY_REGISTER.md`
+- [x] retain direct third-party license notices; generate transitive inventory after first connected install
 
 These remain unchecked until actual packages are selected/installed.
 
@@ -93,25 +93,25 @@ The first implementation stage should prove the core editor without multiplayer 
 
 Required:
 
-- [ ] polished public hero explains product simply
-- [ ] Build a Map and Join a Game are obvious above the fold
-- [ ] terrain quick-start cards open the builder
+- [x] polished public hero explains product simply
+- [x] Build a Map and Join a Game are obvious above the fold
+- [x] terrain quick-start cards open the builder
 - [ ] real product visual/showcase
-- [ ] homepage works on mobile
-- [ ] basic SEO/Open Graph/favicon metadata
+- [x] homepage works on mobile
+- [x] basic SEO/Open Graph/favicon metadata
 - [ ] local tests pass before any Netlify production deploy
-- [ ] terrain/theme selection
-- [ ] visible 5-foot grid
-- [ ] default ~30° camera
-- [ ] orbit/pan/zoom/reset
-- [ ] sidebar block palette
-- [ ] select once/place many
-- [ ] placement ghost
-- [ ] right-click/remove behavior on desktop
+- [x] terrain/theme selection
+- [x] visible 5-foot grid
+- [x] default ~30° camera
+- [x] orbit/pan/zoom/reset
+- [x] sidebar block palette
+- [x] select once/place many
+- [x] placement ghost
+- [x] right-click/remove behavior on desktop
 - [ ] visible remove path for touch
-- [ ] permissive overlap
+- [x] permissive overlap
 - [ ] ground/top/side surface placement
-- [ ] explicit elevation control in 5-foot increments
+- [x] explicit elevation control in 5-foot increments
 - [ ] floating placement
 - [ ] pick-up/put-down move
 - [ ] ambiguous overlap chooser
@@ -122,10 +122,10 @@ Required:
 - [ ] construction lock/unlock
 - [ ] creature footprints including Tiny visual behavior
 - [ ] hidden/DM-only visual state
-- [ ] Undo/Redo
-- [ ] autosave/reload recovery
+- [x] Undo/Redo
+- [x] autosave/reload recovery
 - [ ] original/approved-license placeholder assets only
-- [ ] unit tests for state/placement/room/undo primitives
+- [x] unit tests for implemented state/placement/undo primitives (room primitives not implemented yet)
 - [ ] no combat/rules engine
 
 ## Stage 1 Architecture Tests
@@ -174,3 +174,32 @@ The project is ready to begin Stage 1 only when:
 4. the user explicitly says to begin coding
 
 Until then, remain in design/audit mode.
+
+
+### First-Slice Verification Note — 2026-10-07
+
+Completed locally in the available execution environment:
+
+- TypeScript compile: PASS using available local compiler against the source/shims
+- domain state/command tests: 4/4 PASS
+- every TypeScript source module reviewed back under the ~150-line guideline
+- source supports an interactive DOM fallback if Three.js cannot initialize
+
+Environment limitation:
+
+- sandbox browser navigation to localhost is blocked by administrator policy, so a real browser click-through could not be completed inside the sandbox
+- the manually triggered GitHub Pages test deployment is therefore the first external browser-interaction gate
+- Netlify remains untouched until a locally/source-tested milestone is ready for production review
+
+Still open for Stage 1:
+
+- full browser visual/interaction verification
+- natural top/side surface placement
+- touch remove path
+- pick-up/put-down move
+- overlap chooser
+- room generation/shared walls/door replacement
+- construction locking
+- creature footprint/Tiny visuals
+- hidden object visual
+- full Stage 1 persistence layer beyond localStorage prototype
