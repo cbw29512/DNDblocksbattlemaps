@@ -25,9 +25,15 @@ Goal: prove the placement experience.
 
 Required concepts:
 
+- kid-simple first-use flow
+- hero-page terrain/theme choice
 - 5-foot grid
 - block palette
 - click-to-place
+- right-click remove for DM build mode
+- room generator: length × width × height
+- no automatic ceilings
+- room/region bulk lock
 - snapping
 - delete
 - lock/unlock
