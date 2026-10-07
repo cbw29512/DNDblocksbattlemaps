@@ -44,6 +44,42 @@ Authentication details are intentionally undecided.
 - created_at
 - updated_at
 
+## EditorState
+
+Editor state is transient UI/session state rather than part of a block's identity.
+
+Candidate fields:
+
+- active_tool: place | select | move
+- selected_catalog_object_id
+- active_elevation_feet
+- placement_mode: natural_surface | explicit_elevation
+- moving_object_id
+- move_origin
+- hovered_cell
+- hovered_surface
+- overlap_candidates
+
+Palette selection persists until explicitly changed or cleared.
+
+## EditHistory
+
+Undo/redo should record reversible editor commands.
+
+Candidate command types:
+
+- place_object
+- remove_object
+- move_object
+- change_visibility
+- change_lock
+- change_state
+- generate_room
+- transform_replace
+- bulk_change
+
+Exact persistence granularity remains open, but implementation must not couple undo to renderer internals.
+
 ## WorldObject
 
 All placed things derive from this conceptual record.
@@ -317,9 +353,8 @@ A template generates ordinary WorldObjects. Generated blocks do not use a separa
 
 These must be resolved before implementation where relevant:
 
-1. How should vertical placement/elevation be represented visually and selected by the DM outside generated room walls?
-2. What is the simplest useful player interaction model beyond movement?
-3. How should Tiny creature positioning work?
-4. What identity/authentication level is required for MVP?
-5. What persistence granularity is needed for undo/redo and recovery?
-6. How should shared walls between adjacent generated rooms be edited if the simple no-duplicate rule proves insufficient?
+1. What is the simplest useful player interaction model beyond movement?
+2. How should Tiny creature positioning work?
+3. What identity/authentication level is required for MVP?
+4. What persistence granularity is needed for undo/redo and recovery?
+5. How should shared walls between adjacent generated rooms be edited if the simple no-duplicate rule proves insufficient?
