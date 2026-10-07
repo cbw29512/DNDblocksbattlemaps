@@ -120,6 +120,7 @@ A work session is not complete until the handoff state is pushed.
 - `docs/COMPETITOR_RESEARCH.md` — live competitor/pain-point research and product differentiation.
 - `docs/INTERACTION_SPEC.md` — kid-simple DM/player building and play interaction contract.
 - `docs/BLOCK_CATALOG.md` — initial terrain, room-object, creature, and universal behavior catalog.
+- `docs/OPEN_SOURCE_REUSE.md` — Minecraft inspiration boundary, license gate, and open-source engine/library candidates.
 
 Planned next documentation:
 
@@ -164,112 +165,77 @@ These are deliberately unresolved and must not be guessed during implementation.
 
 ### Starting State
 
-The project was in Stage 0 with no application code.
+The project was still in Stage 0 with no application code.
 
-The competitor scan had been completed, but the exact first-use UI and room-building interaction had not yet been documented.
-
-The user then defined the intended experience more concretely:
-
-- UI simple enough for a child
-- hero page explains the product
-- large terrain choices such as Castle, Inn, Field, Sea, and Volcano
-- terrain selection immediately opens a gridded map
-- sidebar room builder using Length × Width × Height
-- no ceilings
-- add room blocks such as table, torch, pit, trap, monster, and door
-- hidden/invisible objects controlled by the DM
-- trap can stop a player from moving until the DM releases them
-- DM can lock a room so its current contents do not move accidentally
-- left click to select/place, right click to remove
-- the earlier word "date" was clarified as a typo; a calendar/date block is only a possible future idea and is not MVP
+The kid-simple interaction contract and initial block catalog were documented. The user clarified that prior block examples were examples rather than an exhaustive catalog and asked whether Minecraft block options could be used as inspiration and whether Minecraft or other open-source code could accelerate development.
 
 ### Changes Made
 
-- Read the live project state, SOUL, data schema, and roadmap before making changes.
-- Created `docs/INTERACTION_SPEC.md`.
-- Created `docs/BLOCK_CATALOG.md`.
-- Updated `SOUL.md` with the kid-simple UI requirement, mouse interaction contract, no-ceiling rule, and reusable movement-lock behavior.
-- Updated `docs/DATA_SCHEMA.md` with terrain theme, room-region association, room bulk-lock state, and reusable movement-lock concepts.
-- Updated `docs/ROADMAP.md` so the first builder prototype includes the hero terrain choice, room generator, no ceilings, right-click remove, and room bulk lock.
-- Clarified that "date" was a typo and removed it from the active block requirements.
-- Recorded calendar/date display as a deferred idea only.
-- Updated README links so a new AI or human can find the interaction and block-catalog documents quickly.
+- Read the live project state, SOUL, interaction spec, block catalog, and competitor research before making changes.
+- Reviewed Minecraft's current EULA and Usage Guidelines.
+- Reviewed Minecraft/Microsoft creative inventory/category documentation for organizational ideas.
+- Researched permissively licensed browser 3D and voxel-related projects.
+- Created `docs/OPEN_SOURCE_REUSE.md`.
+- Added an external-code/asset license gate to `SOUL.md`.
+- Expanded `docs/BLOCK_CATALOG.md` with broader kid-readable catalog families inspired by the usability lesson of Minecraft's grouped inventory, without copying Minecraft assets or inventory.
+- Linked the new research document from README.
 
 ### Decisions Made
 
-**Decision:** The UI must be simple enough for a child to understand without reading a manual.
+**Decision:** Minecraft is a design/catalog reference only.
 
-**Reason:** Simplicity is the primary product differentiator.
+**Reason:** Mojang/Microsoft's current terms reserve their game software/content and specifically treat Minecraft block textures/look-and-feel as their property.
 
-**Decision:** The first hero-page action is choosing a terrain/theme from large obvious buttons.
+**Decision:** Do not copy Minecraft code, textures, sounds, models, game files, UI art, or proprietary block artwork.
 
-**Reason:** The DM should reach a usable grid immediately instead of configuring a project.
+**Reason:** The project should remain legally clean, original, and commercially flexible.
 
-**Decision:** Rooms are created from Length × Width × Height inputs and generate ordinary blocks.
+**Decision:** Generic block concepts may be inspired by ordinary world/fantasy objects and organized into a few simple families.
 
-**Reason:** This gives DMs fast room construction without introducing a second map engine.
+**Reason:** The useful lesson from Minecraft is discoverability through grouping, not the proprietary assets themselves.
 
-**Decision:** Rooms do not automatically receive ceilings.
+**Decision:** Prefer a permissively licensed browser rendering library over forking an entire voxel game.
 
-**Reason:** The DM and players must be able to look into and use the room easily.
+**Reason:** DND Blocks Battle Maps does not need survival, crafting, mining, procedural infinite worlds, biomes, game AI, or first-person game architecture.
 
-**Decision:** The base DM mouse contract is left-click select/place and right-click remove.
+**Decision:** Three.js is the first candidate to evaluate later; Babylon.js is the strongest batteries-included alternative.
 
-**Reason:** It is easy to learn and remember.
+**Reason:** Both are browser-focused and permissively licensed; Three.js is smaller/more architectural-control oriented, while Babylon.js offers more built-in engine behavior.
 
-**Decision:** Room locking is a bulk editing concept.
+**Decision:** Luanti and Terasology are reference sources rather than preferred foundations.
 
-**Reason:** Once a room is arranged, the DM should be able to protect its current pieces from accidental movement and later unlock them for editing.
-
-**Decision:** Trap-imposed immobility is a reusable movement-lock effect controlled by the DM.
-
-**Reason:** The same board behavior can later support pits, webs, cages, restraints, and other sources without unique engines.
-
-**Decision:** "date" was a typo.
-
-**Reason:** User clarification. A calendar/date block is only a future idea and is not part of the MVP catalog.
+**Reason:** They are much larger game engines and would likely introduce unnecessary complexity and architectural drift for this small browser VTT.
 
 ### Cost Impact
 
-None. This work is documentation and product design only.
+None.
 
-No paid service, dependency, hosting, database, API, storage, licensed asset, or application code was added.
+All research and candidate technologies identified here are open source. No dependency has been adopted and no paid service has been added.
 
 ### Result
 
-The project now has a concrete first-use UI contract and an initial block-catalog contract.
+The project now has a documented legal/reuse boundary and a shortlist of open-source technologies that could reduce development cost without turning the product into a Minecraft clone.
 
-The current intended first-use flow is:
+Current reuse posture:
 
-> Hero page → choose terrain → grid appears → create room → add blocks → hide/reveal as needed → lock room → invite players → play.
+> Learn from Minecraft's block organization and simplicity, create original assets/behavior, and reuse only verified open-source code where it genuinely saves work.
 
 No application code has been written.
 
 ### Open Questions / Blockers
 
-1. Exact camera/view model.
-2. Whether Length/Width/Height inputs use feet, grid cells, block levels, or a mix.
-3. Whether room dimensions represent interior usable area or total exterior footprint.
-4. Exact scope of room lock when creatures/player pieces are present.
-5. Whether a selected block stays active for repeated placement or clears after one placement.
-6. Door placement relationship to walls/cells.
-7. Tiny creature placement.
-8. MVP login/authentication approach.
-9. Persistence and undo/redo design.
-10. Technology stack and hosting/persistence provider.
+1. Room spatial contract remains unresolved.
+2. Exact camera/view model remains unresolved.
+3. Final rendering technology remains unselected.
+4. Before any external code is imported, the exact library/repository/version and license obligations must be recorded.
+5. Exact asset/art production approach is still open.
 
 ### Exact Next Step
 
 Stay in design mode.
 
-Resolve the **room spatial contract** next:
+Continue the room spatial contract and block-library design.
 
-- what Length means
-- what Width means
-- what Height means
-- whether dimensions are entered in feet or squares
-- whether dimensions describe interior playable space or outside dimensions
-- how a door replaces/occupies a wall position
-- what exactly the room lock includes
+When the architecture stage begins, compare **Three.js vs Babylon.js** against the exact MVP requirements before selecting either one.
 
-Do not write application code yet.
+Do not import Minecraft assets or code. Do not adopt an open-source voxel engine wholesale without a documented necessity review.
