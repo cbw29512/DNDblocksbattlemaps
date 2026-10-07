@@ -142,11 +142,17 @@ Universal behavior describes what it can do.
 
 Initial building interaction:
 
-**Left-click a block/tool in the sidebar → left-click the map to place → right-click a placed block to remove.**
+**Left-click a block/tool in the sidebar → a placement ghost appears → left-click the map to place → keep clicking to place more copies → choose another tool/Select/Done/Escape to stop.**
 
-The exact repeated-placement behavior after one placement remains to be decided.
+Palette selection persists until deliberately changed or cleared.
 
 Blocks snap to the grid.
+
+Natural manual stacking uses the hovered surface: floor places on the floor level, top face places one 5-foot level above, and side face places adjacent at the clicked block's base elevation. A visible elevation control in feet provides an exact-height escape hatch. Unsupported/floating placement remains allowed because the DM is authoritative.
+
+Unlocked movable objects use a pick-up/put-down model rather than transform gizmos. Ambiguous overlapping objects use a tiny contextual "What's Here?" chooser only when needed.
+
+Undo/Redo is required safety infrastructure for fast confirmation-free editing. See `docs/PLACEMENT_CONTRACT.md`.
 
 Future convenience tools may include:
 
