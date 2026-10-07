@@ -244,24 +244,58 @@ The user emphasized that the **look is the honey**: visual quality and cohesion 
 - open-source visual candidates researched and recorded
 - strict TypeScript/tests/build/Pages gate green
 
-### Changes Prepared
+### Changes Made
 
 - Expanded the catalog schema for categories, generic shapes, dimensions, optional art, and tags.
-- Added Build: Stone, Stone Wall, Wood, Wood Wall, Door, Pillar.
-- Added Props: Table, Chair, Bed, Chest, Barrel, Crate, Torch.
-- Added Characters: Fighter, Cleric, Rogue, Wizard.
-- Added Monsters: Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit.
+- Added **Build**: Stone, Stone Wall, Wood, Wood Wall, Door, Pillar.
+- Added **Props**: Table, Chair, Bed, Chest, Barrel, Crate, Torch.
+- Added **Characters**: Fighter, Cleric, Rogue, Wizard.
+- Added **Monsters**: Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit.
 - Preserved the legacy generic Orc for old saved prototype maps.
 - Added four catalog tabs instead of one long inventory.
 - Added local character/monster thumbnail art and generic textured board pieces.
-- Copied starter art from pinned Iron Pit commit `24810df2a379b01a5dd63fa312dfd58426572efb`.
+- Copied starter combatant art from pinned Iron Pit commit `24810df2a379b01a5dd63fa312dfd58426572efb`.
+- Added generic cylinder rendering for pillar/barrel-style objects while preserving the same universal catalog/renderer architecture.
+- Added local art support to the fallback renderer.
 - Vetted CC0 visual sources for selective later use:
   - KayKit Dungeon Remastered
   - Kenney Modular Dungeon Kit
   - Kenney model catalog via Tiny Game Engine assets
 - Recorded **visual cohesion as a release gate**.
-- Recorded that external assets are raw material and must be normalized to the DND Blocks look.
+- Recorded that open-source assets are raw material and must be normalized to the DND Blocks visual language.
+- Added catalog/provenance regression tests.
 - Netlify remains untouched.
+
+### Verification
+
+Checkpoint commit:
+
+- `351d107045c46f66c4b91fc5a729ab4e14754bcf`
+
+Connected verification:
+
+- **Deploy GitHub Pages Test run #10:** SUCCESS
+- **GitHub pages build and deployment run #24:** SUCCESS
+- TypeScript typecheck: passed
+- unit tests: passed
+- static build: passed
+- Pages deployment: passed
+
+The temporary push trigger is restored to manual-only in this cleanup commit.
+
+### Decisions Made
+
+**The visual system is part of the product contract.**
+
+The target feel is a premium physical dungeon-building toy set viewed on a tabletop. A mechanically correct feature does not pass a milestone if it makes the board look mismatched or cheap.
+
+**Open-source assets are a parts shelf, not the identity.**
+
+KayKit/Kenney CC0 assets are vetted candidates. They should only be imported selectively after camera/style testing, then normalized for scale/materials/lighting.
+
+**The full future catalog will stay grouped.**
+
+Build / Props / Characters / Monsters are the first top-level tabs. Hundreds of future monsters will not become one giant sidebar wall.
 
 ### Cost Impact
 
@@ -271,13 +305,14 @@ No new package, API, hosted service, or production deploy.
 
 ### Result
 
-Starter catalog and visual-quality checkpoint is prepared for strict verification.
+The starter catalog is verified and live on the GitHub Pages test surface.
 
 ### Exact Next Step
 
-1. Push this checkpoint with temporary Pages verification.
-2. Require TypeScript, unit tests, static build, and Pages deployment to pass.
-3. Fix any failure without weakening checks.
-4. Restore Pages workflow to manual-only.
-5. Browser-test all four tabs, character/monster readability, and overall visual cohesion.
-6. Use that visual test to choose the first selective CC0 construction/prop geometry imports.
+1. Hard-refresh the test site.
+2. Test all four catalog tabs.
+3. Place several Build and Prop pieces.
+4. Place Fighter/Cleric/Rogue/Wizard and several monsters and judge readability at normal zoom/orbit.
+5. Record any visual mismatches.
+6. Then selectively upgrade construction/prop geometry using the vetted CC0 parts shelf where it materially improves the cohesive tabletop-toy look.
+7. After the visual baseline is accepted, expand the monster catalog/search and creature footprint sizes from the same schema.
