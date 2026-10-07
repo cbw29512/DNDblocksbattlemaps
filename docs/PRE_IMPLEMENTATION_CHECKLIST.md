@@ -20,6 +20,7 @@ Required authoritative documents:
 - [x] `docs/PLAYER_JOIN_CONTRACT.md`
 - [x] `docs/PERSISTENCE_UNDO_CONTRACT.md`
 - [x] `docs/VISUAL_LANGUAGE.md`
+- [x] `docs/WEBSITE_EXPERIENCE.md`
 - [x] `docs/OPEN_SOURCE_REUSE.md`
 - [x] `docs/TECH_STACK_CANDIDATES.md`
 - [x] `docs/ADR_001_MVP_WEB_STACK.md`
@@ -58,6 +59,8 @@ Required authoritative documents:
 - [x] revision + action-ID realtime recovery
 - [x] hidden information must not leak to player UI/data
 - [x] visual feedback does not rely on color alone
+- [x] public website is part of the product, not a separate brochure
+- [x] local-first testing; Netlify production deploys are deliberate milestones
 
 ## Accepted MVP Architecture
 
@@ -90,7 +93,13 @@ The first implementation stage should prove the core editor without multiplayer 
 
 Required:
 
-- [ ] hero page explains product simply
+- [ ] polished public hero explains product simply
+- [ ] Build a Map and Join a Game are obvious above the fold
+- [ ] terrain quick-start cards open the builder
+- [ ] real product visual/showcase
+- [ ] homepage works on mobile
+- [ ] basic SEO/Open Graph/favicon metadata
+- [ ] local tests pass before any Netlify production deploy
 - [ ] terrain/theme selection
 - [ ] visible 5-foot grid
 - [ ] default ~30° camera
