@@ -108,8 +108,8 @@ A work session is not complete until the handoff state is pushed.
 ## Current Repository Documents
 
 - `PROJECT_STATE.md` — live resume/handoff state; read first.
-- `SOUL.md` — permanent product philosophy and anti-drift rules.
-- `README.md` — public project overview.
+- `SOUL.md` — permanent product philosophy, cheap-first rule, and anti-drift rules.
+- `README.md` — public project overview and resume entry point.
 - `docs/DATA_SCHEMA.md` — conceptual state model.
 - `docs/ROADMAP.md` — staged product plan.
 
@@ -155,11 +155,14 @@ The user clarified that continuity is a hard requirement: another AI must be abl
 
 ### Changes Made
 
-- Added this root-level live project-state document.
-- Defined a mandatory read-before-work and update-before-stop protocol.
-- Formalized the cheap-first infrastructure rule.
+- Added root-level `PROJECT_STATE.md` as the canonical live project handoff.
+- Added a mandatory read-before-work and update-before-stop protocol.
+- Added the cheap-first infrastructure rule to the live state and `SOUL.md`.
+- Updated `SOUL.md` so documentation/push continuity is a permanent project contract.
+- Updated `README.md` so a new AI or human is directed to `PROJECT_STATE.md` first.
 - Defined the information every handoff must contain.
 - Identified the next two planning documents: interaction specification and initial block catalog.
+- Re-read the live handoff from GitHub after the initial push to verify the repository copy exists and is readable.
 
 ### Decisions Made
 
@@ -171,7 +174,7 @@ The user clarified that continuity is a hard requirement: another AI must be abl
 
 **Reason:** Documentation is part of implementation, not an afterthought.
 
-**Decision:** GitHub remains the authoritative continuity source.
+**Decision:** GitHub is the authoritative continuity source.
 
 **Reason:** Chat sessions can end, crash, or lose context; repository state persists and is independently readable.
 
@@ -185,9 +188,12 @@ None. This change is documentation-only and introduces no new service, dependenc
 
 ### Result
 
-The project now has a single canonical file designed specifically for crash recovery, AI handoff, and cross-session continuity.
+The repository now has an explicit crash-recovery and AI-handoff system:
 
-No application code has been written.
+- README points to the live state.
+- SOUL requires the live-state workflow.
+- PROJECT_STATE records the current project state, decisions, open questions, and exact next step.
+- No application code has been written.
 
 ### Open Questions / Blockers
 
