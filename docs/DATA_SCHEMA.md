@@ -85,7 +85,9 @@ Candidate values:
 - solid
 - overlay
 
-Solid objects occupy physical board space. Overlay objects may share a playable cell with a creature/entity.
+These values describe PLAY behavior only. They do not restrict DM BUILD placement.
+
+Multiple WorldObjects may share the same X/Y/Z coordinates when the DM intentionally overlaps them.
 
 Examples:
 
@@ -105,7 +107,7 @@ Examples:
 - open door: false
 - trap trigger: false
 
-This is not a D&D movement-rules engine.
+This is not a D&D movement-rules engine and never acts as a BUILD-mode placement prohibition.
 
 ### state
 
@@ -166,6 +168,82 @@ Initial candidates:
 These are candidates, not an implementation commitment. Each must be validated against actual MVP interactions before code is written.
 
 The requested first trap behavior should use generic trigger/effect data: an entity entering a cell may receive a movement lock that only the DM can clear. This behavior should remain reusable by other sources.
+
+## InteractionRule
+
+Triggers/effects should be data-driven and reusable.
+
+Candidate fields:
+
+- id
+- source_object_id
+- trigger_type
+- target_scope
+- active
+- one_shot
+- duration_mode
+- detect_data
+- disarm_data
+- effects
+- metadata
+
+Candidate trigger types:
+
+- manual
+- enter_cell
+- start_turn_in_cell
+- leave_cell
+- cross_boundary
+- interact
+- touch
+- open
+- close
+- timer
+- object_state_changed
+- linked_trigger
+
+Candidate effect types:
+
+- reveal
+- hide
+- transform_replace
+- spawn_reveal
+- remove
+- move
+- forced_move
+- change_elevation
+- fall_drop
+- movement_lock
+- movement_unlock
+- apply_status
+- remove_status
+- damage_marker
+- healing_marker
+- change_terrain
+- difficult_terrain
+- change_movement_blocking
+- open_close_toggle
+- alarm_notify_dm
+- activate_deactivate
+- repeat_rearm
+
+A named trap or surprise should be represented by data combining these primitives.
+
+### Transform / Replace
+
+Transforming objects may switch catalog identity while retaining placement context.
+
+Candidate transform data:
+
+- target_catalog_object_id
+- preserve_position
+- preserve_visibility_context
+- reversible
+- transformed
+
+A transform may change appearance, category, capabilities, footprint, and interaction behavior.
+
+Example: chest-looking object → mimic creature in the same grid location.
 
 ## RoomRegion
 
