@@ -316,6 +316,23 @@ Before implementing any feature:
 12. Update and push `PROJECT_STATE.md` before ending the work session.
 13. If implementation and this document disagree, stop and reconcile them before continuing.
 
+## External Reuse Gate
+
+Minecraft may be used as a design/catalog reference only. Do not copy Minecraft code, textures, sounds, models, UI art, game files, or proprietary block artwork/look into this project.
+
+Before importing any external open-source code or asset:
+
+1. identify the exact source/repository
+2. read and record its license
+3. confirm commercial reuse is allowed
+4. record attribution/notice obligations
+5. record the exact files/components reused
+6. confirm reuse is simpler than a small original implementation
+
+Prefer permissive browser-focused dependencies over adopting a full voxel game engine when the project only needs a small subset of behavior.
+
+See `docs/OPEN_SOURCE_REUSE.md`.
+
 ## Current Guiding Image
 
 > A digital box of magnetic dungeon blocks that a DM can dump onto a virtual table and immediately start building with.
