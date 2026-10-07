@@ -2,7 +2,8 @@ import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
 import { DEFAULT_PALETTE, PALETTE, TERRAIN_THEMES } from '../domain/catalog.js';
 import { createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js';
 import { commit, createHistory, redo, undo } from '../domain/history.js';
-import { roomSummary, roomWallPositionsFromCorner } from '../domain/room.js';
+import { roomSummary } from '../domain/room.js';
+import { roomWallPositions } from '../domain/roomPlacement.js';
 import { MAX_BASE_ELEVATION } from '../domain/spatial.js';
 import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js';
 import { createRenderer } from '../render/createRenderer.js';
@@ -33,7 +34,7 @@ export async function renderBuilder(root, terrainId, handlers) {
         <div class="sidebar-heading"><span class="eyebrow">Blocks</span><strong>Pick one. Keep clicking.</strong></div>
         <div class="palette-list">${palette}</div>
         <div class="elevation-control"><span>Elevation</span><div><button id="elev-down" type="button">−</button><b id="elev-value">Ground</b><button id="elev-up" type="button">+</button></div></div>
-        <div class="prototype-tip"><b>Controls</b><span>Build Room → click a corner</span><span>Top face: build up</span><span>Side face: build out</span><span>Right click: remove</span><span>Right drag: orbit</span><span>Wheel: zoom</span></div>
+        <div class="prototype-tip"><b>Controls</b><span>Build Room → click a corner</span><span>Gold room outline: valid</span><span>Top face: build up</span><span>Side face: build out</span><span>Right click: remove</span><span>Wheel: zoom</span></div>
       </aside>
       <section class="board-stage">
         <div class="board-canvas" id="board-canvas" aria-label="Interactive battle map"></div>
@@ -60,7 +61,7 @@ export async function renderBuilder(root, terrainId, handlers) {
             root.querySelectorAll('.palette-item').forEach((item) => item.classList.remove('active'));
             buildRoomButton.classList.add('is-armed');
             buildRoomButton.textContent = 'Click Map to Place';
-            status.textContent = `${roomSummary(room)} room ready. Move the gold outline, then click the corner square. Click again to stamp another room.`;
+            status.textContent = `${roomSummary(room)} room ready. Move the gold outline anywhere it fits, then click. Keep clicking to make more rooms.`;
         }
         else {
             buildRoomButton.classList.remove('is-armed');
@@ -69,21 +70,17 @@ export async function renderBuilder(root, terrainId, handlers) {
     };
     renderer = await createRenderer(canvas, {
         onPlace(position) { run(placeCommand(createWorldObject(makeId(), selected, position))); },
-        onRoomAnchor(corner) {
+        onRoomPlacement(placement) {
             if (!armedRoom)
                 return;
-            const positions = roomWallPositionsFromCorner(armedRoom, corner);
-            const walls = positions
-                .filter((p) => !state.objects.some((o) => o.catalogId === 'wall'
-                && o.x === p.x
-                && o.z === p.z
-                && o.elevation === p.elevation))
+            const walls = roomWallPositions(armedRoom, placement)
+                .filter((p) => !state.objects.some((o) => o.catalogId === 'wall' && o.x === p.x && o.z === p.z && o.elevation === p.elevation))
                 .map((p) => createWorldObject(makeId(), 'wall', p));
             if (walls.length)
                 run(placeManyCommand(walls));
             status.textContent = walls.length
-                ? `Built ${roomSummary(armedRoom)} room. Click another corner to stamp another, or choose a block to stop.`
-                : 'Those room walls already exist here. Click another corner or choose a block to stop.';
+                ? `Built ${roomSummary(armedRoom)} room. Move the gold outline and click again for another room.`
+                : 'Those walls already exist. Move the gold outline and click another corner.';
         },
         onRemove(id) { const object = findObject(state, id); if (object)
             run(removeCommand(object)); },
@@ -113,17 +110,18 @@ export async function renderBuilder(root, terrainId, handlers) {
     document.getElementById('undo')?.addEventListener('click', () => { const next = undo(state, history); state = next.state; history = next.history; refresh(); });
     document.getElementById('redo')?.addEventListener('click', () => { const next = redo(state, history); state = next.state; history = next.history; refresh(); });
     document.getElementById('clear')?.addEventListener('click', () => {
-        if (confirm('Clear this prototype map?')) {
-            clearBoard(theme.id);
-            state = { terrain: theme.id, objects: [], revision: state.revision + 1 };
-            history = createHistory();
-            refresh();
-        }
+        if (!confirm('Clear this prototype map?'))
+            return;
+        clearBoard(theme.id);
+        state = { terrain: theme.id, objects: [], revision: state.revision + 1 };
+        history = createHistory();
+        refresh();
     });
     const updateElevation = (delta) => {
         elevation = Math.min(MAX_BASE_ELEVATION, Math.max(0, elevation + delta));
         renderer?.setElevation(elevation);
-        document.getElementById('elev-value').textContent = elevation === 0 ? 'Ground' : `+${elevation * 5} ft`;
+        document.getElementById('elev-value').textContent =
+            elevation === 0 ? 'Ground' : `+${elevation * 5} ft`;
     };
     document.getElementById('elev-down')?.addEventListener('click', () => updateElevation(-1));
     document.getElementById('elev-up')?.addEventListener('click', () => updateElevation(1));

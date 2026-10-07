@@ -110,13 +110,13 @@ Required:
 - [x] right-click/remove behavior on desktop
 - [ ] visible remove path for touch
 - [x] permissive overlap
-- [x] empty-grid placement + click-any-block-to-stack (side-face adjacent placement deliberately deferred)
+- [x] empty-grid placement + top-face stacking + side-face adjacent placement
 - [x] explicit elevation control in 5-foot increments
-- [ ] floating placement
+- [x] floating placement via explicit elevation control
 - [ ] pick-up/put-down move
 - [ ] ambiguous overlap chooser
-- [ ] room generator in feet
-- [ ] walls/floor/no ceiling
+- [x] room generator in feet with reusable corner stamping
+- [x] perimeter walls + terrain/base floor + no automatic ceiling
 - [ ] shared wall reuse
 - [ ] door replacement
 - [ ] construction lock/unlock
@@ -125,18 +125,18 @@ Required:
 - [x] Undo/Redo
 - [x] autosave/reload recovery
 - [ ] original/approved-license placeholder assets only
-- [x] unit tests for implemented state/placement/undo primitives (room primitives not implemented yet)
+- [x] unit tests for state/placement/room/undo primitives
 - [ ] no combat/rules engine
 
 ## Stage 1 Architecture Tests
 
 Before calling Stage 1 complete:
 
-- [ ] renderer can be rebuilt from authoritative state
-- [ ] no core world state exists only inside Three.js objects
-- [ ] placing overlapping objects preserves all records
-- [ ] room generation is reversible as one Undo
-- [ ] shared walls are not duplicated
+- [x] renderer can be rebuilt from authoritative state
+- [x] no core world state exists only inside Three.js objects
+- [x] placing overlapping objects preserves all records
+- [x] room generation is reversible as one Undo
+- [x] identical generated wall positions are not duplicated
 - [ ] door replacement preserves shared room membership
 - [ ] hidden object is visually distinct for DM
 - [ ] Tiny pieces auto-offset without changing the global grid
@@ -194,11 +194,10 @@ Environment limitation:
 Still open for Stage 1:
 
 - full browser visual/interaction verification
-- natural top/side surface placement
 - touch remove path
 - pick-up/put-down move
 - overlap chooser
-- room generation/shared walls/door replacement
+- room-region membership/shared-wall membership + door replacement
 - construction locking
 - creature footprint/Tiny visuals
 - hidden object visual

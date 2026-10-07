@@ -36,7 +36,7 @@ The DM is the authority. The board must work without automated RPG rules.
 1. **Simple first.** Ease and speed are the main competitive advantage.
 2. **Kid-simple UI.** A child should be able to understand the basic build/play flow without reading a manual.
 3. **Cheap first.** Initial hosting, persistence, assets, services, and infrastructure should use reliable free or near-free options whenever practical.
-4. **No code yet.** Product, interaction, state, cost, and architecture decisions come first.
+4. **Stage 1 code is active.** Product contracts remain authoritative; implementation must follow them and update the live handoff.
 5. **Documentation is part of the work.** A task is not complete until this live state has been updated and pushed.
 6. **Resume-first workflow.** Before making changes, read this file and the governing docs.
 7. **One square = 5 feet.**
@@ -99,9 +99,10 @@ The DM is the authority. The board must work without automated RPG rules.
 64. **Placement shadow is authoritative feedback.** The landing footprint/shadow must sit on the exact destination surface/cell so stacking and side placement remain obvious.
 65. **Zoom remains simple but farther.** Keep fixed camera elevation; allow more zoom-out so the 8th block can remain inspectable.
 66. **Room Builder labels are plain-language and readable.** Use full Length/Width/Height labels, vertically stacked fields, high contrast, and a large Build Room action; do not compress core dimensions into tiny L/W/H controls.
-67. **Build Room arms a reusable room stamp.** The DM chooses dimensions, clicks Build Room, then clicks a grid square that becomes the room's outside wall corner. The stamp remains active for rapid multiple-room placement until a normal block is selected.
+67. **Build Room arms a reusable room stamp.** The DM chooses dimensions, clicks Build Room, then clicks a grid square that becomes the room's outside wall corner. The stamp can grow in any of four grid directions, auto-flips to stay on the map, and remains active for rapid multiple-room placement until a normal block is selected.
 68. **Room preview is explicit.** Gold outline/corner means the room fits; red means it would leave the board or exceed the vertical cap. One stamped room is one Undo/Redo action.
 69. **Exact shared structural positions are reused.** Generated rooms do not create duplicate wall blocks at the same X/Z/elevation.
+70. **Room stamps choose direction automatically.** From the clicked outside-wall corner, test all four grid directions, reject out-of-bounds directions, and prefer a valid direction with less existing construction overlap. The preview must show the exact chosen direction before click.
 
 ## Cost Guardrail
 
@@ -220,87 +221,57 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The readable Room Builder, face-aware block placement, 8-block height cap, and stronger placement shadow were green.
+The first reusable room-stamp checkpoint was green, but browser/use-case review exposed a real limitation: the stamp always grew in one fixed +X/+Z direction from the clicked corner.
 
-The remaining room-building usability problem was that **Build Room** immediately created a centered room, making rapid multi-room layouts awkward.
+That meant the room could move away from center, but it still could not truly be stamped conveniently **anywhere on the map**, especially near right/bottom edges or around existing rooms.
 
 ### Changes Made
 
-- Converted **Build Room** into a reusable **room stamp**.
-- DM enters Length × Width × Height, then clicks Build Room.
-- A 3D room preview follows the grid with:
-  - gold footprint
-  - gold outside-wall corner marker
-  - wireframe showing full room extent and wall height
-- The clicked grid square is the room's **outside wall corner**.
-- Gold preview means the room fits.
-- Red preview means the room would leave the board or exceed the vertical cap.
-- Clicking a valid corner stamps the room there.
-- The room stamp stays active after placement so the same-size room can be stamped repeatedly.
-- Selecting a normal block exits room-stamp mode.
-- Equivalent corner/perimeter feedback exists in the fallback renderer.
-- Added room-domain primitives for:
-  - outer room size
-  - fit-at-corner validation
-  - perimeter wall positions from a clicked corner
-- Exact duplicate wall positions are skipped/reused instead of doubled.
-- Each stamped room remains one Undo/Redo action.
-- Updated the Room Builder helper text to explain the corner workflow.
-- Updated interaction, spatial, visual, and live-state contracts.
+- Split room dimension logic from room-placement/orientation logic.
+- Added a universal RoomPlacement model:
+  - clicked outside-wall corner
+  - X direction: +1 or -1
+  - Z direction: +1 or -1
+- Every room corner can now evaluate all four directional layouts.
+- Invalid directions that leave the board or exceed the 40-ft cap are rejected.
+- Near map edges, the room automatically flips inward.
+- When multiple directions fit, the stamp scores existing construction inside the footprint and prefers the clearer direction.
+- 3D room preview now moves its footprint/wireframe to match the selected direction exactly.
+- Fallback room preview uses the same placement decision.
+- The room actually generated by the builder uses the same RoomPlacement object shown by the preview.
+- Room stamp remains armed after placement for rapid repeated rooms.
+- Existing identical wall positions remain duplicate-suppressed.
+- Added tests for:
+  - all four corner directions
+  - automatic edge flipping
+  - choosing a valid alternative direction
+  - avoiding a heavily occupied footprint
+  - vertical-cap rejection
+  - one-step Undo
+- Corrected stale documentation/checklist entries that still claimed Stage 1 code, room generation, or side placement were not implemented.
 - Netlify remains untouched.
 
-### Verification
+### Decision
 
-Checkpoint commit:
+**Create Room must mean “instant room anywhere it fits,” not “room offset from center.”**
 
-- `8fb8b3682e0c0827a6860e492462fa2d0ba597cd`
-
-Connected verification:
-
-- **Deploy GitHub Pages Test run #6:** SUCCESS
-- **GitHub pages build and deployment run #17:** SUCCESS
-- TypeScript typecheck: passed
-- unit tests: passed
-- static build: passed
-- Pages deployment: passed
-
-The temporary push trigger used for verification is now restored to manual-only.
-
-### Decisions Made
-
-**The clicked grid square is the room's outside wall corner.**
-
-Reason: the interaction is literal and easy to explain: “move the room outline, stick this corner where you want it, click.”
-
-**The room stamp stays armed after placement.**
-
-Reason: this makes repeated room creation fast. Choosing a normal block is the simple exit action.
-
-**Invalid placement is shown rather than silently adjusted.**
-
-Reason: predictable placement is more important than automatic repositioning. Gold means valid; red means move the corner.
+The user picks the dimensions and a corner. The software handles which direction the room grows, and the preview makes that choice visible before placement.
 
 ### Cost Impact
 
 None.
 
-No new dependency or hosted service was introduced.
+No new dependency, hosting, or service.
 
 ### Result
 
-Corner-anchored rapid room stamping is verified and live on the GitHub Pages test surface.
+The smart four-direction room stamp is prepared for strict verification.
 
 ### Exact Next Step
 
-1. Hard-refresh the test site.
-2. Test:
-   - choose room dimensions
-   - click Build Room
-   - move the gold room preview
-   - click a corner
-   - stamp several rooms quickly
-   - snap another room onto an existing wall
-   - Undo one room
-   - select Stone/Wall/Door and confirm room mode exits
-3. Record any remaining room-placement usability issues.
-4. Then proceed into the real construction/prop/character/monster catalog.
+1. Push this checkpoint with temporary push-triggered verification.
+2. Require TypeScript, unit tests, Vite build, and Pages deployment to pass.
+3. Fix any real failure without weakening checks.
+4. Restore Pages workflow to manual-only.
+5. Browser-test corners near all four map edges and stamp several rooms around existing rooms.
+6. Then continue the real construction/prop/character/monster catalog.

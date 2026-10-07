@@ -1,9 +1,10 @@
-import type { NormalizedRoom, RoomCorner } from '../domain/room.js';
+import type { NormalizedRoom } from '../domain/room.js';
+import type { RoomPlacement } from '../domain/roomPlacement.js';
 import type { BoardState, CatalogId, GridPosition, TerrainTheme } from '../domain/types.js';
 
 export interface BoardHandlers {
   onPlace: (position: GridPosition) => void;
-  onRoomAnchor: (corner: RoomCorner) => void;
+  onRoomPlacement: (placement: RoomPlacement) => void;
   onRemove: (objectId: string) => void;
   onStatus: (message: string) => void;
 }

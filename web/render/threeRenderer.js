@@ -1,4 +1,4 @@
-import { roomFitsAtCorner } from '../domain/room.js';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js';
 import { BOARD_CELLS } from '../domain/spatial.js';
 import { placementFromSurface } from '../domain/surfacePlacement.js';
 import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js';
@@ -43,53 +43,46 @@ export async function createThreeRenderer(container, handlers) {
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
     let selected = null;
+    let activeRoom = null;
     let elevation = 0;
     let preview = null;
-    let roomPlacement = null;
     let roomPreview = null;
+    let currentObjects = [];
     function setPointer(event) {
         const rect = renderer.domElement.getBoundingClientRect();
         pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(pointer, camera);
     }
+    function floorPosition(event) {
+        setPointer(event);
+        const hit = raycaster.intersectObject(placementPlane, false)[0];
+        if (!hit)
+            return null;
+        const x = Math.floor(hit.point.x);
+        const z = Math.floor(hit.point.z);
+        return Math.abs(x) < BOARD_CELLS / 2 && Math.abs(z) < BOARD_CELLS / 2 ? { x, z, elevation } : null;
+    }
     function highestAt(x, z) {
-        let highest = 0;
-        for (const mesh of objectGroup.children) {
-            const data = mesh.userData;
-            if (Number(data.gridX) === x && Number(data.gridZ) === z) {
-                highest = Math.max(highest, Number(data.elevation));
-            }
-        }
-        return highest;
+        return currentObjects.reduce((highest, object) => object.x === x && object.z === z
+            ? Math.max(highest, object.elevation) : highest, 0);
     }
     function blockPlacementFor(event) {
         setPointer(event);
         const hit = raycaster.intersectObjects(objectGroup.children, false)[0];
-        if (hit?.face) {
-            const data = hit.object.userData;
-            const normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
-            return placementFromSurface({ x: Number(data.gridX), z: Number(data.gridZ), elevation: Number(data.elevation) }, highestAt(Number(data.gridX), Number(data.gridZ)), { x: normal.x, y: normal.y, z: normal.z }, elevation);
-        }
-        const floorHit = raycaster.intersectObject(placementPlane, false)[0];
-        if (!floorHit)
-            return null;
-        const x = Math.floor(floorHit.point.x);
-        const z = Math.floor(floorHit.point.z);
-        return Math.abs(x) < BOARD_CELLS / 2 && Math.abs(z) < BOARD_CELLS / 2 ? { x, z, elevation } : null;
+        if (!hit?.face)
+            return floorPosition(event);
+        const data = hit.object.userData;
+        const normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
+        return placementFromSurface({ x: Number(data.gridX), z: Number(data.gridZ), elevation: Number(data.elevation) }, highestAt(Number(data.gridX), Number(data.gridZ)), { x: normal.x, y: normal.y, z: normal.z }, elevation);
     }
-    function roomCornerFor(event) {
-        setPointer(event);
-        const floorHit = raycaster.intersectObject(placementPlane, false)[0];
-        if (!floorHit)
+    function roomPlacementFor(event) {
+        if (!activeRoom)
             return null;
-        return {
-            x: Math.floor(floorHit.point.x),
-            z: Math.floor(floorHit.point.z),
-            elevation
-        };
+        const corner = floorPosition(event);
+        return corner ? chooseRoomPlacement(activeRoom, corner, currentObjects) : null;
     }
-    function rebuildPreview() {
+    function rebuildBlockPreview() {
         if (preview) {
             scene.remove(preview);
             disposePlacementPreview(preview);
@@ -103,35 +96,33 @@ export async function createThreeRenderer(container, handlers) {
             scene.remove(roomPreview);
             disposeRoomPlacementPreview(roomPreview);
         }
-        roomPreview = roomPlacement ? createRoomPlacementPreview(THREE, roomPlacement) : null;
+        roomPreview = activeRoom ? createRoomPlacementPreview(THREE, activeRoom) : null;
         if (roomPreview)
             scene.add(roomPreview);
     }
     renderer.domElement.addEventListener('pointermove', (event) => {
-        if (roomPlacement && roomPreview) {
-            const corner = roomCornerFor(event);
-            if (corner)
-                showRoomPlacementPreview(roomPreview, corner, roomFitsAtCorner(roomPlacement, corner));
-            else
+        if (activeRoom && roomPreview) {
+            const corner = floorPosition(event);
+            if (!corner) {
                 hideRoomPlacementPreview(roomPreview);
+                return;
+            }
+            const placement = chooseRoomPlacement(activeRoom, corner, currentObjects);
+            showRoomPlacementPreview(roomPreview, placement ?? previewRoomPlacement(corner), Boolean(placement));
             return;
         }
         if (!preview || !selected)
             return;
         const position = blockPlacementFor(event);
-        if (position)
-            showPlacementPreview(preview, position);
-        else
-            hidePlacementPreview(preview);
+        position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
     });
     renderer.domElement.addEventListener('click', (event) => {
-        if (roomPlacement) {
-            const corner = roomCornerFor(event);
-            if (!corner || !roomFitsAtCorner(roomPlacement, corner)) {
-                handlers.onStatus('That room does not fit from this corner. Move the room outline until it turns gold.');
-                return;
-            }
-            handlers.onRoomAnchor(corner);
+        if (activeRoom) {
+            const placement = roomPlacementFor(event);
+            if (placement)
+                handlers.onRoomPlacement(placement);
+            else
+                handlers.onStatus('That corner cannot fit this room. Move the outline until it turns gold.');
             return;
         }
         if (!selected)
@@ -156,14 +147,18 @@ export async function createThreeRenderer(container, handlers) {
     resize.observe(container);
     setDefaultCamera(camera, controls);
     renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
-    handlers.onStatus('Top face builds up · side face builds out · Build Room lets you stamp rooms by corner.');
+    handlers.onStatus('Build Room auto-flips its corner direction to fit anywhere it can.');
     return {
         mode: 'three',
         setTheme(theme) { groundMaterial.color.setHex(theme.groundColor); },
-        setSelectedCatalog(next) { selected = next; rebuildPreview(); },
-        setRoomPlacement(next) { roomPlacement = next; rebuildRoomPreview(); },
+        setSelectedCatalog(next) { selected = next; rebuildBlockPreview(); },
+        setRoomPlacement(next) { activeRoom = next; rebuildRoomPreview(); },
         setElevation(next) { elevation = next; placementPlane.position.y = next; },
-        render(state) { objectGroup.clear(); state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item))); },
+        render(state) {
+            currentObjects = state.objects;
+            objectGroup.clear();
+            state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
+        },
         rotate(delta) { rotateCamera(THREE, camera, controls, delta); },
         zoom(multiplier) { zoomCamera(camera, controls, multiplier); },
         resetCamera() { setDefaultCamera(camera, controls); },

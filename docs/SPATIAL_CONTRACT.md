@@ -1,6 +1,6 @@
 # Spatial Contract
 
-> Status: Stage 0 product contract.
+> Status: Stage 1 authoritative spatial contract.
 >
 > This document defines the physical/grid meaning of rooms and blocks before implementation. It exists so room generation, placement, doors, locking, and later multiplayer all use the same spatial rules.
 
@@ -98,7 +98,16 @@ Interaction:
 
 The room preview shows the complete footprint before placement.
 
-The current Stage 1 stamp grows in one consistent world-grid direction from the chosen corner. Rotation/orientation controls are deferred until playtesting proves they are necessary.
+The same clicked outside-wall corner may grow in any of the four grid directions.
+
+The builder automatically evaluates the four directions before placement:
+
+- discard directions that would leave the board or exceed the height cap
+- prefer a valid direction that uses clearer/unoccupied map space
+- near map edges, automatically flip the room inward
+- show the exact chosen direction in the room preview before the DM clicks
+
+No separate rotation dialog is required for this Stage 1 workflow.
 
 A room stamp must fit completely inside the current board and below the vertical build cap.
 
@@ -326,8 +335,8 @@ When generating a room:
 1. DM selects room type/theme if applicable.
 2. DM enters Length × Width × Height in feet.
 3. Values snap to 5-foot increments.
-4. A placement preview should eventually show the footprint.
-5. DM selects the location.
+4. The room footprint/height preview follows the pointer.
+5. DM selects an outside-wall corner; the preview auto-selects a valid direction from that corner.
 6. Room generates ordinary floor/wall blocks.
 7. No ceiling is generated.
 8. DM adds furniture, hazards, doors, creatures, etc.

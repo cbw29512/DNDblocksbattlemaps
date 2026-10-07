@@ -1,6 +1,10 @@
 import { PALETTE } from '../domain/catalog.js';
 import { stackElevationAt } from '../domain/placement.js';
-import { roomFitsAtCorner, roomOuterSize, type NormalizedRoom } from '../domain/room.js';
+import { roomOuterSize, type NormalizedRoom } from '../domain/room.js';
+import {
+  chooseRoomPlacement, previewRoomPlacement,
+  type RoomPlacement
+} from '../domain/roomPlacement.js';
 import { MAX_BUILD_HEIGHT_FEET } from '../domain/spatial.js';
 import type { CatalogId, TerrainTheme } from '../domain/types.js';
 import type { BoardHandlers, BoardRenderer } from './types.js';
@@ -17,35 +21,38 @@ export function createFallbackRenderer(
   container.replaceChildren(board);
 
   let selected: CatalogId | null = null;
-  let roomPlacement: NormalizedRoom | null = null;
+  let room: NormalizedRoom | null = null;
   let elevation = 0;
   let theme: TerrainTheme | null = null;
   let currentObjects: Parameters<BoardRenderer['render']>[0]['objects'] = [];
 
-  function clearRoomClasses(): void {
+  function cellAt(x: number, z: number): HTMLElement | null {
+    return board.querySelector(`[data-x="${x}"][data-z="${z}"]`);
+  }
+
+  function clearRoomPreview(): void {
     board.querySelectorAll('.fallback-cell').forEach((cell) => {
       cell.classList.remove('room-preview', 'room-corner', 'room-invalid');
     });
   }
 
-  function paintRoomPreview(x: number, z: number): void {
-    clearRoomClasses();
-    if (!roomPlacement) return;
-
-    const corner = { x, z, elevation };
-    const valid = roomFitsAtCorner(roomPlacement, corner);
-    const anchor = board.querySelector<HTMLElement>(`[data-x="${x}"][data-z="${z}"]`);
+  function paintRoomPreview(placement: RoomPlacement, valid: boolean): void {
+    clearRoomPreview();
+    const anchor = cellAt(placement.corner.x, placement.corner.z);
     anchor?.classList.add(valid ? 'room-corner' : 'room-invalid');
-    if (!valid) return;
+    if (!valid || !room) return;
 
-    const outer = roomOuterSize(roomPlacement);
+    const outer = roomOuterSize(room);
+    const { corner, orientation } = placement;
     for (let dx = 0; dx < outer.lengthCells; dx += 1) {
-      board.querySelector<HTMLElement>(`[data-x="${x + dx}"][data-z="${z}"]`)?.classList.add('room-preview');
-      board.querySelector<HTMLElement>(`[data-x="${x + dx}"][data-z="${z + outer.widthCells - 1}"]`)?.classList.add('room-preview');
+      const x = corner.x + orientation.x * dx;
+      cellAt(x, corner.z)?.classList.add('room-preview');
+      cellAt(x, corner.z + orientation.z * (outer.widthCells - 1))?.classList.add('room-preview');
     }
     for (let dz = 1; dz < outer.widthCells - 1; dz += 1) {
-      board.querySelector<HTMLElement>(`[data-x="${x}"][data-z="${z + dz}"]`)?.classList.add('room-preview');
-      board.querySelector<HTMLElement>(`[data-x="${x + outer.lengthCells - 1}"][data-z="${z + dz}"]`)?.classList.add('room-preview');
+      const z = corner.z + orientation.z * dz;
+      cellAt(corner.x, z)?.classList.add('room-preview');
+      cellAt(corner.x + orientation.x * (outer.lengthCells - 1), z)?.classList.add('room-preview');
     }
     anchor?.classList.add('room-corner');
   }
@@ -61,7 +68,6 @@ export function createFallbackRenderer(
         cell.type = 'button';
         cell.dataset.x = String(x);
         cell.dataset.z = String(z);
-        cell.title = `${x * 5} ft, ${z * 5} ft`;
 
         const occupants = currentObjects
           .filter((item) => item.x === x && item.z === z)
@@ -75,17 +81,17 @@ export function createFallbackRenderer(
         }
 
         cell.addEventListener('pointerenter', () => {
-          if (roomPlacement) paintRoomPreview(x, z);
+          if (!room) return;
+          const corner = { x, z, elevation };
+          const placement = chooseRoomPlacement(room, corner, currentObjects);
+          paintRoomPreview(placement ?? previewRoomPlacement(corner), Boolean(placement));
         });
 
         cell.addEventListener('click', () => {
-          if (roomPlacement) {
-            const corner = { x, z, elevation };
-            if (!roomFitsAtCorner(roomPlacement, corner)) {
-              handlers.onStatus('That room does not fit from this corner.');
-              return;
-            }
-            handlers.onRoomAnchor(corner);
+          if (room) {
+            const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects);
+            if (placement) handlers.onRoomPlacement(placement);
+            else handlers.onStatus('That corner cannot fit this room.');
             return;
           }
 
@@ -107,13 +113,13 @@ export function createFallbackRenderer(
     }
   }
 
-  handlers.onStatus('2D fallback ready · room stamp highlights the perimeter before placement.');
+  handlers.onStatus('Room stamp automatically flips direction to fit near map edges.');
 
   return {
     mode: 'fallback',
     setTheme(next) { theme = next; draw(); },
     setSelectedCatalog(next) { selected = next; },
-    setRoomPlacement(next) { roomPlacement = next; draw(); },
+    setRoomPlacement(next) { room = next; draw(); },
     setElevation(next) { elevation = next; },
     render(state) { currentObjects = state.objects; draw(); },
     rotate() {},

@@ -1,6 +1,6 @@
 # Interaction Specification
 
-> Status: Stage 0 product contract. No application code should be written from this document until the remaining open decisions are resolved.
+> Status: Stage 1 authoritative interaction contract. Implemented behavior must stay consistent with this document.
 >
 > Primary usability requirement: **the UI must be simple enough that a child can understand the basic workflow without reading a manual.**
 
@@ -192,9 +192,12 @@ Room placement flow:
 2. click **Build Room**
 3. a gold room footprint/height preview follows the grid
 4. the highlighted square is the room's **outside wall corner**
-5. click a valid corner to stamp the room
-6. the same room stamp stays active so the DM can click another corner and rapidly create another room
-7. choosing any normal block exits room-stamp mode
+5. the stamp may grow from that corner in any of the four grid directions
+6. near an edge, the preview automatically flips inward to a valid direction
+7. near existing construction, the preview prefers a valid direction with less overlap
+8. click the gold preview to stamp the room
+9. the same room stamp stays active so the DM can immediately place another room
+10. choosing any normal block exits room-stamp mode
 
 If the room would leave the board or exceed the vertical build limit, the preview turns invalid/red and the click does not create the room.
 
