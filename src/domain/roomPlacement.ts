@@ -126,5 +126,6 @@ export function chooseRoomPlacement(
 }
 
 export function previewRoomPlacement(corner: RoomCorner): RoomPlacement {
-  return { corner, orientation: directionOrder(corner)[0] };
+  const first = directionOrder(corner)[0];
+  return { corner, orientation: first ?? { x: 1, z: 1 } };
 }
