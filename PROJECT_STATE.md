@@ -115,6 +115,7 @@ The DM is the authority. The board must work without automated RPG rules.
 80. **Board bounds are authoritative persisted state.** Renderer ground/grid geometry derives from state and does not own map size.
 81. **Print Map bridges digital and physical play.** Print a derived top-down map at 1 physical inch per 5-ft square, tiled as 8×10-square Letter pages, using built-content bounds plus one-square padding.
 82. **Browser bundle parity is a release gate.** Because the current Pages test can serve checked-in `web/` files, `web/` must be regenerated from `src/` before a browser-test checkpoint is considered complete. Source-green alone is insufficient.
+83. **Pages browser modules are revision-stamped.** The checked-in browser module graph and CSS entry URLs carry a unique build revision so GitHub Pages/CDN/browser caches cannot keep serving an older module graph after a successful deployment.
 
 ## Cost Guardrail
 
@@ -233,62 +234,49 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The user asked whether the expandable-board/Print Map work had actually been pushed because the live screenshot still showed the old builder UI.
+The user still did not see the expected 30×30/Print Map changes after the source and `web/` bundle had been synchronized.
 
-Inspection confirmed:
-
-- `src/app/builder.ts` contained Print Map, dynamic board size, and growth logic.
-- `web/app/builder.js` was still the older 20×20/no-Print-Map browser bundle.
-- The source commits and CI were green, but the checked-in browser bundle used by the Pages test surface had not been regenerated and committed.
+Repository inspection showed the synchronized bundle was correct and Pages had deployed it, so the remaining risk was stale browser/CDN module caching on unchanged `web/*.js` URLs.
 
 ### Changes Made
 
-- Added `.github/workflows/sync-web.yml` as a browser-bundle safeguard.
-- The first sync run failed because this repo intentionally has no `package-lock.json`; corrected the workflow from `npm ci` to the repository's existing successful `npm install --no-audit --no-fund` pattern.
-- Sync run #2:
-  - installed dependencies
-  - ran TypeScript + unit tests
-  - regenerated `web/` from `src/`
-  - committed the compiled browser bundle
-  - rebuilt/deployed Pages
-- Generated browser bundle commit:
-  - `94bb2ab2ab10a87da8d0f1b7de68c977e09dc3c5`
-- Verified current `web/app/builder.js` now contains:
-  - Print Map
-  - dynamic board growth
-  - live board-size display
-- Pages build/deployment #31 on the generated-bundle commit: **SUCCESS**.
-- Added a permanent browser-bundle parity rule to implementation guidance and project state.
+- Reworked `.github/workflows/sync-web.yml` into a cache-proof browser-bundle sync.
+- The workflow now installs dependencies, runs `npm run check`, regenerates `web/`, stamps every relative JavaScript import with one revision query, stamps root CSS and `web/main.js`, then commits the synchronized browser surface.
+- Cache-busted generated bundle commit:
+  - `a3ef5530c79983501b19b3d1407760482ed5f3de`
+- Verified current root references:
+  - `./web/main.js?v=1791d49a97ad`
+  - `./src/styles/builder.css?v=1791d49a97ad`
+- Verified current `web/main.js` imports:
+  - `./app/builder.js?v=1791d49a97ad`
+- Verified compiled Builder contains Print Map, dynamic board growth, and live board-size logic.
+- GitHub Pages build/deployment #34 on the exact cache-busted commit: **SUCCESS**.
 
 ### Decision
 
-**A green source build is not enough while the Pages test surface can serve checked-in `web/` output.**
+**Browser-visible Pages checkpoints must be cache-proof, not merely source-correct.**
 
-Before reporting a browser-visible feature as live, verify:
+For the current branch-root Pages test surface:
 
-1. `src/` is correct
-2. `web/` is regenerated from `src/`
-3. the committed browser bundle contains the feature
-4. Pages succeeds on that exact bundle commit
-5. then perform browser verification
-
-The new Sync Browser Bundle workflow is manual-safe after its bootstrap trigger and does not run on normal source pushes unless explicitly invoked/changed.
+1. synchronize `web/` from `src/`
+2. revision-stamp the browser module graph
+3. deploy the exact stamped commit
+4. then perform browser verification
 
 ### Cost Impact
 
 None.
 
+No new dependency, service, or production deploy.
+
 ### Result
 
-The browser bundle is now actually synchronized and Pages has successfully deployed the synchronized commit.
+The Pages test surface has successfully deployed the exact cache-busted bundle containing the 30×30 board, automatic board growth, Print Map, and current cube-only catalog rendering.
 
 ### Exact Next Step
 
-1. Hard-refresh the Pages test site.
-2. Confirm the top bar now shows:
-   - live board dimensions such as **30 × 30 squares**
-   - **Print Map**
-3. Confirm Fighter/Cleric/Rogue/Wizard and monster art load.
-4. Confirm all board objects are cubes.
-5. Test edge growth and Print Map.
-6. If browser behavior matches, continue with multi-cube Large/Huge/Gargantuan creature footprints and Build/Prop face art.
+1. Reload the Pages test site once.
+2. Confirm **30 × 30 squares** and **Print Map** appear in the top bar.
+3. Confirm player/monster face art and cube-only pieces.
+4. Test edge growth and Print Map.
+5. Once visually confirmed, continue with multi-cube Large/Huge/Gargantuan creature footprints and Build/Prop face art.
