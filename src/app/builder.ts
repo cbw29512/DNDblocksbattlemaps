@@ -48,7 +48,7 @@ export async function renderBuilder(
         <div class="sidebar-heading"><span class="eyebrow">Blocks</span><strong>Pick one. Keep clicking.</strong></div>
         <div class="palette-list">${palette}</div>
         <div class="elevation-control"><span>Elevation</span><div><button id="elev-down" type="button">−</button><b id="elev-value">Ground</b><button id="elev-up" type="button">+</button></div></div>
-        <div class="prototype-tip"><b>Controls</b><span>Build Room → click a corner</span><span>Gold room outline: valid</span><span>Top face: build up</span><span>Side face: build out</span><span>Right click: remove</span><span>Wheel: zoom</span></div>
+        <div class="prototype-tip"><b>Controls</b><span>Build Room → click a corner</span><span>Cancel Room / Esc → stop room tool</span><span>Gold room outline: valid</span><span>Top face: build up</span><span>Side face: build out</span><span>Right click: remove</span><span>Wheel: zoom</span></div>
       </aside>
       <section class="board-stage">
         <div class="board-canvas" id="board-canvas" aria-label="Interactive battle map"></div>
@@ -74,12 +74,28 @@ export async function renderBuilder(
       renderer?.setSelectedCatalog(null);
       root.querySelectorAll('.palette-item').forEach((item) => item.classList.remove('active'));
       buildRoomButton.classList.add('is-armed');
-      buildRoomButton.textContent = 'Click Map to Place';
-      status.textContent = `${roomSummary(room)} room ready. Move the gold outline anywhere it fits, then click. Keep clicking to make more rooms.`;
+      buildRoomButton.setAttribute('aria-pressed', 'true');
+      buildRoomButton.textContent = 'Cancel Room';
+      status.textContent = `${roomSummary(room)} room ready. Move the gold outline anywhere it fits, then click. Keep clicking to make more rooms. Cancel Room or Esc stops.`;
     } else {
       buildRoomButton.classList.remove('is-armed');
+      buildRoomButton.setAttribute('aria-pressed', 'false');
       buildRoomButton.textContent = 'Build Room';
     }
+  };
+
+  const restoreSelectedBlock = (): void => {
+    renderer?.setSelectedCatalog(selected);
+    root.querySelectorAll<HTMLButtonElement>('.palette-item').forEach((item) => {
+      item.classList.toggle('active', item.dataset.catalog === selected);
+    });
+  };
+
+  const cancelRoomMode = (): void => {
+    if (!armedRoom) return;
+    setRoomMode(null);
+    restoreSelectedBlock();
+    status.textContent = `Room placement canceled. ${PALETTE[selected].name} selected.`;
   };
 
   renderer = await createRenderer(canvas, {
@@ -108,13 +124,17 @@ export async function renderBuilder(
   renderer.render(state);
 
   buildRoomButton.addEventListener('click', () => {
+    if (armedRoom) {
+      cancelRoomMode();
+      return;
+    }
     const room = readRoomPanel();
     if (!room) { status.textContent = roomPanelError(); return; }
     setRoomMode(room);
   });
 
   root.querySelectorAll<HTMLButtonElement>('[data-catalog]').forEach((button) => button.addEventListener('click', () => {
-    setRoomMode(null);
+    if (armedRoom) setRoomMode(null);
     selected = button.dataset.catalog as CatalogId;
     root.querySelectorAll('.palette-item').forEach((item) => item.classList.toggle('active', item === button));
     renderer?.setSelectedCatalog(selected);
@@ -146,5 +166,15 @@ export async function renderBuilder(
   document.getElementById('zoom-in')?.addEventListener('click', () => renderer?.zoom(0.82));
   document.getElementById('zoom-out')?.addEventListener('click', () => renderer?.zoom(1.2));
 
-  return () => renderer?.dispose();
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== 'Escape' || !armedRoom) return;
+    event.preventDefault();
+    cancelRoomMode();
+  };
+  document.addEventListener('keydown', onKeyDown);
+
+  return () => {
+    document.removeEventListener('keydown', onKeyDown);
+    renderer?.dispose();
+  };
 }

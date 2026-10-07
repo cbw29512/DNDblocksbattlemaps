@@ -197,7 +197,9 @@ Room placement flow:
 7. near existing construction, the preview prefers a valid direction with less overlap
 8. click the gold preview to stamp the room
 9. the same room stamp stays active so the DM can immediately place another room
-10. choosing any normal block exits room-stamp mode
+10. while active, the Build Room button becomes **Cancel Room**
+11. **Cancel Room** or **Escape** exits room-stamp mode and restores the previously selected block
+12. choosing any normal block also exits room-stamp mode
 
 If the room would leave the board or exceed the vertical build limit, the preview turns invalid/red and the click does not create the room.
 
