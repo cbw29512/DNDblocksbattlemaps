@@ -158,58 +158,44 @@ The door remains anchored in the same grid position.
 
 Opening the door changes its interactive/passability state; it does not physically swing into another grid cell.
 
-## Solid vs Non-Solid Placement
+## DM-Authoritative Overlap
 
-Not every visible block/object should prevent another entity from occupying the same playable square.
+Manual BUILD placement may put multiple WorldObjects in the same X/Y cell and, when useful, at the same elevation.
 
-The world model therefore needs a generic occupancy concept.
+The board must support combinations such as:
 
-Candidate values:
+- creature + pit
+- creature + hidden trap
+- rug + pressure plate
+- table + trigger
+- chest + hidden creature identity
+- multiple triggers in one cell
 
-- **solid** — occupies/blockades physical space
-- **non_solid / overlay** — can share a playable cell with a creature/entity
+Even objects normally considered solid may be deliberately overlapped by the DM.
 
-Examples:
+The editor may show a non-blocking overlap indicator, but it must not reject the placement.
 
-Likely solid:
+Generated tools such as room builders should still avoid accidental duplicate identical structural blocks unless the DM explicitly creates them.
 
-- wall
-- closed door
-- table
-- chest
-- large rock
+## Occupancy and Movement Behavior
 
-Likely non-solid/overlay:
+Occupancy/movement properties describe PLAY behavior; they do **not** restrict BUILD placement.
 
-- hidden trap trigger
-- pit marker/trigger representation
-- secret trigger
-- effect marker
+Candidate descriptive properties:
 
-This is universal behavior, not object-specific code.
-
-A hidden trap must be able to share a playable cell with the player who steps onto it.
-
-## Movement Blocking
-
-Movement blocking should be a generic property separate from appearance.
-
-Candidate behavior:
-
+- `occupancy_mode = solid | overlay`
 - `blocks_movement = true | false`
 
 Examples:
 
-- wall: true
-- closed door: true
-- open door: false
-- trap trigger: false
+- wall: solid / blocks movement
+- closed door: solid / blocks movement
+- open door: solid appearance but does not block movement
+- hidden trap trigger: overlay / does not block movement
 
-This does **not** mean the project is implementing full D&D movement rules.
+These properties let the board provide useful play interaction while preserving full DM placement authority.
 
-It only prevents obvious spatial contradictions such as walking through a closed wall/door when the board interaction requires physical blocking.
-
-The DM remains authoritative and may override board state.
+The DM can override movement/blocking behavior.
 
 ## Lock Room
 
