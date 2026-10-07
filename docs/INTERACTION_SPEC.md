@@ -98,6 +98,33 @@ Open question:
 
 Do not add drag handles, rotation widgets, nested object inspectors, or complex context menus unless a real requirement later demands them.
 
+## Permissive Placement
+
+DM BUILD placement is permissive.
+
+- clicking a destination places the selected object even when another object already occupies that cell
+- stacking and overlap are allowed
+- game pieces may be placed inside/over hazards
+- hidden triggers may share cells with visible objects
+- the UI may indicate overlap, but must not reject it as "invalid"
+
+Placement preview should therefore communicate **where the object will go**, not enforce a physics validator.
+
+PLAY movement/blocking behavior is separate and may still use object properties such as `blocks_movement`.
+
+## Transforming Object Interaction
+
+Objects may change identity when triggered.
+
+Example:
+
+- player touches/interacts with a chest-looking block
+- the chest transforms/replaces itself with a mimic creature block
+- the creature remains at the same map position
+- its category/capabilities change from prop-like object to creature/game piece
+
+This must use the generic transform/replace effect described in `TRAPS_AND_EFFECTS.md`.
+
 ## Room Builder
 
 The main sidebar should provide a room builder.
