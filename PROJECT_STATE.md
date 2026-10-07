@@ -112,12 +112,29 @@ A work session is not complete until the handoff state is pushed.
 - `README.md` — public project overview and resume entry point.
 - `docs/DATA_SCHEMA.md` — conceptual state model.
 - `docs/ROADMAP.md` — staged product plan.
+- `docs/COMPETITOR_RESEARCH.md` — live competitor/pain-point research and product differentiation.
 
 Planned next documentation:
 
 - `docs/INTERACTION_SPEC.md` — exact DM/player building and play interactions.
 - `docs/BLOCK_CATALOG.md` — first block library and object defaults.
 - Architecture/cost decision record after product interactions are stable.
+
+## Current Competitive Position
+
+Specific voxel/3D VTT research has now been completed and documented.
+
+Key findings:
+
+- **Terrablox** is the closest direct competitor: a 3D voxel VTT with block building, tokens, fog, dice, and multiplayer.
+- **VOXEL Tabletop** is the closest browser-oriented voxel product found.
+- TaleSpire, The RPG Engine, and RPG Stories validate demand for 3D building but also demonstrate the prep-time, UI-complexity, installation, and feature-bloat risks this project is intended to avoid.
+- The project thesis is therefore **not** "voxel VTTs do not exist."
+- The working differentiation is: **browser-first, deliberately simple semantic blocks, fixed tabletop-friendly defaults, minimal setup, DM authority, and encounter creation measured in minutes rather than detailed world-building.**
+
+The closest product to watch is Terrablox. The closest browser product to watch is VOXEL Tabletop.
+
+See `docs/COMPETITOR_RESEARCH.md`.
 
 ## Open Design Questions
 
@@ -142,78 +159,72 @@ These are deliberately unresolved and must not be guessed during implementation.
 
 ### Starting State
 
-The repository already contained:
+The project was still in Stage 0 with no application code. The live handoff system was already in place and required reading `PROJECT_STATE.md`, `SOUL.md`, and repository state before work.
 
-- `SOUL.md`
-- `README.md`
-- `docs/DATA_SCHEMA.md`
-- `docs/ROADMAP.md`
-
-The project was intentionally documentation-only with no application code.
-
-The user clarified that continuity is a hard requirement: another AI must be able to open the repository after a crash or new session and immediately determine what has happened, what was decided, and what to do next.
+A broad VTT scan had been done previously, but there had not yet been a specific competitive scan for the exact Minecraft/voxel/block-building VTT idea.
 
 ### Changes Made
 
-- Added root-level `PROJECT_STATE.md` as the canonical live project handoff.
-- Added a mandatory read-before-work and update-before-stop protocol.
-- Added the cheap-first infrastructure rule to the live state and `SOUL.md`.
-- Updated `SOUL.md` so documentation/push continuity is a permanent project contract.
-- Updated `README.md` so a new AI or human is directed to `PROJECT_STATE.md` first.
-- Defined the information every handoff must contain.
-- Identified the next two planning documents: interaction specification and initial block catalog.
-- Re-read the live handoff from GitHub after the initial push to verify the repository copy exists and is readable.
+- Read the live project state and SOUL before repository changes.
+- Researched current voxel/3D VTT competitors and recent community pain points.
+- Identified Terrablox as the closest direct voxel competitor.
+- Identified VOXEL Tabletop as the closest browser-oriented voxel product found.
+- Compared TaleSpire, The RPG Engine, and RPG Stories for overlapping building/VTT behavior.
+- Created `docs/COMPETITOR_RESEARCH.md` with sources, differences, pain points, and the resulting product position.
+- Updated this live handoff with the competitive findings.
 
 ### Decisions Made
 
-**Decision:** `PROJECT_STATE.md` is the canonical live resume document.
+**Decision:** Do not base the product thesis on being the first voxel/block VTT.
 
-**Reason:** It gives a new AI or human one obvious entry point and prevents dependence on chat history or memory.
+**Reason:** Direct competitors already exist.
 
-**Decision:** The live state must be checked at the beginning of every work session and updated/pushed at the end of every meaningful work session.
+**Decision:** Compete primarily on simplicity, browser access, setup speed, obvious semantic blocks, low friction for players, and DM authority.
 
-**Reason:** Documentation is part of implementation, not an afterthought.
+**Reason:** Existing 3D VTTs repeatedly add visual richness and large feature surfaces, while user discussions repeatedly cite DM prep time, UI learning, hardware, and setup friction as problems.
 
-**Decision:** GitHub is the authoritative continuity source.
+**Decision:** Terrablox and VOXEL Tabletop should be revisited periodically during product design.
 
-**Reason:** Chat sessions can end, crash, or lose context; repository state persists and is independently readable.
-
-**Decision:** Initial development must optimize for the lowest practical cost.
-
-**Reason:** The MVP should validate the product before creating recurring infrastructure expenses.
+**Reason:** Both are close enough to this concept that their changes can reveal useful ideas, pain points, and differentiation risks.
 
 ### Cost Impact
 
-None. This change is documentation-only and introduces no new service, dependency, hosting, database, API, storage, or license cost.
+None. This session was research and documentation only. No paid service, dependency, hosting, database, API, storage, or licensed asset was added.
 
 ### Result
 
-The repository now has an explicit crash-recovery and AI-handoff system:
+The project has a documented competitive landscape.
 
-- README points to the live state.
-- SOUL requires the live-state workflow.
-- PROJECT_STATE records the current project state, decisions, open questions, and exact next step.
-- No application code has been written.
+The concept is validated as an existing category rather than a completely novel category.
+
+The current differentiation is:
+
+> A deliberately simple, browser-first digital box of magnetic-style battle-map blocks where a DM can build a playable encounter in minutes without learning a full 3D world-building application.
+
+No application code has been written.
 
 ### Open Questions / Blockers
 
-No blocker prevents continued product design.
+No blocker prevents continued design.
 
-The product interaction contract still needs to be documented before any technology stack is selected.
+The most important unresolved issue remains the exact interaction contract: how a completely new DM selects, places, locks, hides, stacks, moves, and plays with blocks with almost no instruction.
 
 ### Exact Next Step
 
-Create and agree on `docs/INTERACTION_SPEC.md` describing the simplest possible DM and player experience:
+Create and agree on `docs/INTERACTION_SPEC.md`, using the competitor research as a guardrail.
+
+The interaction specification must prioritize:
 
 - BUILD vs PLAY
-- selecting and placing blocks
+- one-click/select-and-place behavior
+- minimal toolbar/palette complexity
 - locking/unlocking
-- moving pieces
 - hiding/revealing
-- deleting
+- moving assigned pieces
 - vertical placement
 - basic door interaction
-- undo/redo expectations
+- undo/redo
 - player permissions
+- a first-use experience that does not require reading a manual
 
 Do not write application code while doing this.
