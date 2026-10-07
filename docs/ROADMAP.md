@@ -39,7 +39,10 @@ Required concepts:
 - snapping
 - delete
 - lock/unlock
+- fixed ~30° tabletop camera elevation
+- horizontal orbit
 - pan/zoom
+- Reset/Home camera recovery
 - basic vertical placement
 - creature footprints
 - save/load locally or through the eventual persistence layer
