@@ -211,69 +211,42 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The first manual Pages run had tested an old commit and failed on a TypeScript unused-parameter error.
+The custom Vite Pages workflow succeeded, but the live site still showed the loading fallback.
 
-The code fix was already present on current `main`, but the fixed commit had not been exercised by GitHub Actions.
+The deployed artifacts were inspected directly.
 
-The user explicitly asked the assistant to fix and push the deployment.
+### Root Cause
+
+Two different Pages artifacts exist for the same source commit:
+
+1. **Custom workflow artifact** — correct Vite `dist` output with bundled JS/CSS.
+2. **GitHub built-in dynamic `pages build and deployment` artifact** — raw repository/Jekyll output containing `src/*.ts` and the uncompiled source `index.html`.
+
+The built-in dynamic deployment finishes after the custom deployment and overwrites the working artifact.
+
+Therefore the browser is not failing to execute the Vite bundle; the wrong artifact is being published last.
 
 ### Changes Made
 
-- Temporarily added a push-to-`main` trigger to the Pages test workflow so the assistant could drive the repair end-to-end.
-- Pushed repair commit `a5435b663eac675ccef7e6cb5e4381cbaa46b74d`.
-- Watched the new **Deploy GitHub Pages Test** run directly.
-- Verified run #2 / ID 37682225331 used the correct repair commit.
-- Verified the workflow completed with **conclusion: success**.
-- Restored the Pages workflow to **manual-only** after the successful deployment.
-- Netlify remains untouched.
-
-### Verification
-
-Successful test workflow:
-
-- name: `Deploy GitHub Pages Test`
-- run number: 2
-- run ID: 37682225331
-- head commit: `a5435b663eac675ccef7e6cb5e4381cbaa46b74d`
-- result: **SUCCESS**
-
-The successful workflow passed:
-
-1. checkout
-2. Node setup
-3. exact dependency installation
-4. TypeScript typecheck
-5. unit tests
-6. Vite static build
-7. Pages configuration
-8. artifact upload
-9. Pages deployment
+- Added a browser-runnable root strategy so even GitHub's legacy/raw branch deployment can serve working JavaScript.
+- Root `index.html` now uses relative CSS paths and `./web/main.js` rather than `/src/main.ts`.
+- Added `tsconfig.web.json` to emit browser-native ES modules from authoritative TypeScript source.
+- Added `npm run compile:web` and made the Vite build compile those modules first.
+- Added a temporary GitHub Actions workflow that compiles and commits the generated `web/` test bundle.
+- This follow-up handoff push exists specifically to trigger that newly added sync workflow after GitHub registered it.
 
 ### Decision
 
-**Restore Pages deployment to manual-only after the repair run.**
+**Make the raw/root Pages artifact runnable instead of depending on GitHub's competing Pages deployment modes.**
 
 Reason:
 
-The temporary push trigger was only used to remove the manual-run blocker. Normal GitHub pushes should not continuously publish the test surface.
-
-### Cost Impact
-
-None.
-
-No Netlify deploy or Supabase use occurred.
-
-### Result
-
-The first real Stage 1 GitHub Pages build/deploy pipeline is now green.
-
-The test site should now serve the compiled Vite application rather than raw repository source.
+This is the most robust test-only fix. Netlify remains the production host and the source TypeScript remains authoritative.
 
 ### Exact Next Step
 
-1. Open/reload `https://cbw29512.github.io/DNDblocksbattlemaps/`.
-2. Verify the polished homepage appears.
-3. Click a terrain card and verify the builder opens.
-4. Test place -> overlap -> right-click remove -> Undo -> Redo -> refresh.
-5. Record any visual/interaction issues before adding the next Stage 1 features.
-6. Keep Netlify untouched until the prototype is worth a production milestone.
+1. Let the new `Sync Browser Test Bundle` workflow run from this follow-up push.
+2. Verify it compiles and commits `web/`.
+3. Verify the subsequent built-in Pages deployment contains `web/main.js`.
+4. Reload the GitHub Pages test URL and confirm the homepage appears.
+5. Remove or disable the temporary sync workflow once the test surface is stable.
