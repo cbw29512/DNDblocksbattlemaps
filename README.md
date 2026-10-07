@@ -45,6 +45,7 @@ The core product, interaction, state, permission, persistence, visual, and MVP a
 - [Player Join Contract](docs/PLAYER_JOIN_CONTRACT.md) — player entry, identity, assignment, movement, interaction, override, and Tiny creature rules
 - [Persistence & Recovery](docs/PERSISTENCE_UNDO_CONTRACT.md) — autosave, Undo/Redo, revisions, deduplication, crash recovery, and reconnect rules
 - [Visual Language](docs/VISUAL_LANGUAGE.md) — original block style, placement/hidden/ownership/lock/Tiny visual feedback
+- [Website Experience](docs/WEBSITE_EXPERIENCE.md) — public landing, quick-start, conversion, mobile, SEO, and Netlify release contract
 - [MVP Stack ADR](docs/ADR_001_MVP_WEB_STACK.md) — accepted TypeScript/Vite/Three.js/Supabase/Netlify architecture
 - [Dependency Register](docs/DEPENDENCY_REGISTER.md) — required dependency/license/provenance ledger before third-party imports
 - [Implementation Rules](docs/IMPLEMENTATION_RULES.md) — mandatory state-first, testable, anti-drift coding rules
