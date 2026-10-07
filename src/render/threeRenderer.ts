@@ -116,7 +116,7 @@ export async function createThreeRenderer(
     camera.updateProjectionMatrix();
   });
   resize.observe(container);
-  setDefaultCamera(THREE, camera, controls);
+  setDefaultCamera(camera, controls);
   renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
   handlers.onStatus('3D board ready — left click places, right drag orbits, wheel zooms.');
 
@@ -128,7 +128,7 @@ export async function createThreeRenderer(
     render(state) { objectGroup.clear(); state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item))); },
     rotate(delta) { rotateCamera(THREE, camera, controls, delta); },
     zoom(multiplier) { zoomCamera(camera, controls, multiplier); },
-    resetCamera() { setDefaultCamera(THREE, camera, controls); },
+    resetCamera() { setDefaultCamera(camera, controls); },
     dispose() { resize.disconnect(); renderer.setAnimationLoop(null); renderer.dispose(); container.replaceChildren(); }
   };
 }

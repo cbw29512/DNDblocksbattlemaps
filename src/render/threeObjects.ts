@@ -24,7 +24,7 @@ export function meshFor(THREE: any, object: WorldObject): any {
   return mesh;
 }
 
-export function setDefaultCamera(THREE: any, camera: any, controls: any): void {
+export function setDefaultCamera(camera: any, controls: any): void {
   const horizontal = Math.cos(Math.PI / 6) * CAMERA_DISTANCE;
   camera.position.set(horizontal / Math.sqrt(2), CAMERA_DISTANCE / 2, horizontal / Math.sqrt(2));
   controls.target.set(0, 0, 0);

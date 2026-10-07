@@ -211,51 +211,54 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The first Stage 1 prototype source was on `main`, and the user attempted to open the GitHub Pages test URL.
+GitHub Pages had been correctly switched to **GitHub Actions**, and the user manually ran **Deploy GitHub Pages Test** for the first time.
 
-The page displayed the raw-source diagnostic fallback rather than the built application.
+The workflow failed during the TypeScript/typecheck stage.
 
-### Diagnosis
+### Failure
 
-GitHub Actions was checked directly.
+GitHub Actions annotation:
 
-Observed:
+`src/render/threeObjects.ts#L27`
 
-- GitHub has run the built-in dynamic workflow named **pages build and deployment**
-- that workflow is publishing from the `main` branch/root
-- the custom manual workflow **Deploy GitHub Pages Test** has **0 workflow-dispatch runs**
+> 'THREE' is declared but its value is never read.
 
-Conclusion:
+This was a strict TypeScript/noUnusedParameters failure in `setDefaultCamera`.
 
-> GitHub Pages is still configured as **Deploy from a branch**, not **GitHub Actions**.
+The workflow reached application typechecking, so the Pages source configuration itself is now correct.
 
-That is why the repository's raw `index.html` is being served instead of the Vite-built `dist` artifact.
+The Node 20 deprecation message shown by GitHub is a warning about current GitHub-maintained actions and is not the failing condition.
 
 ### Changes Made
 
-- No application code changes were required.
-- Confirmed the diagnostic fallback is behaving correctly.
-- Confirmed Netlify remains untouched.
+- Removed the unused `THREE` parameter from `setDefaultCamera`.
+- Updated both renderer call sites to use `setDefaultCamera(camera, controls)`.
+- Did not weaken TypeScript strictness or `noUnusedParameters`.
+- Did not change product behavior.
+- Did not touch Netlify.
+
+### Decision
+
+**Keep the strict typecheck gate and fix the code rather than suppressing the warning.**
+
+Reason:
+
+The deployment workflow is doing its job: code that violates the project's compile discipline should not become the browser test build.
+
+### Cost Impact
+
+None.
+
+No paid service or production deployment was used.
 
 ### Result
 
-The Stage 1 source checkpoint is unchanged.
-
-The next blocker is account/repository configuration, not code.
+The specific GitHub Actions typecheck failure from test run #1 is fixed in source.
 
 ### Exact Next Step
 
-In GitHub:
-
-1. Open repository **Settings**
-2. Open **Pages**
-3. Under **Build and deployment**, change **Source** from **Deploy from a branch** to **GitHub Actions**
-4. Save if GitHub presents a Save button
-5. Open **Actions**
-6. Select **Deploy GitHub Pages Test**
-7. Click **Run workflow**
-8. Run on `main`
-9. Wait for it to complete successfully
-10. Reload `https://cbw29512.github.io/DNDblocksbattlemaps/`
-
-Do not make feature changes until the actual built Vite site is visible and reviewed.
+1. Push this fix to `main`.
+2. In **Actions -> Deploy GitHub Pages Test**, rerun the workflow on `main`.
+3. If it fails again, inspect the new first failing step rather than bypassing the gate.
+4. Once green, reload `https://cbw29512.github.io/DNDblocksbattlemaps/`.
+5. Browser-test homepage -> terrain -> place/overlap/remove -> Undo/Redo -> refresh persistence.
