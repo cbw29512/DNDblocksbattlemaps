@@ -94,7 +94,7 @@ The player workflow should be smaller:
 - Large creatures: 2×2.
 - Huge creatures: 3×3.
 - Gargantuan creatures: 4×4.
-- Tiny creature handling is intentionally deferred until its interaction model is designed.
+- Tiny creatures share a 5-foot square; up to four are auto-offset visually by default rather than introducing a permanent 2.5-foot subgrid.
 
 A multi-square creature is one entity with a footprint, not several independent creature blocks.
 
@@ -269,6 +269,20 @@ Possible templates:
 - Throne Room
 
 After generation, every block can be edited normally.
+
+## Player Join and Ownership
+
+MVP player flow is deliberately low-friction:
+
+- DM has a durable signed-in identity because the DM owns/saves games.
+- Player uses **Join as Player** with a game link/code and display name.
+- A permanent standalone player account is not required for MVP.
+- DM assigns one or more game pieces to a joined player, optimized around one primary character.
+- Players move only assigned pieces and interact only with permitted objects.
+- Movement locks stop player movement but never remove DM override.
+- DM can always move, reassign, reveal, unlock, or correct state.
+
+See `docs/PLAYER_JOIN_CONTRACT.md`.
 
 ## Multiplayer Authority
 
