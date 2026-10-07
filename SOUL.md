@@ -398,7 +398,7 @@ The accepted MVP architecture is:
 - Three.js
 - native HTML/CSS UI first
 - Supabase hosted service for Postgres/Auth/Realtime in MVP
-- Cloudflare Pages for static frontend hosting
+- Netlify for static frontend hosting
 - no custom application server initially
 - no React/Vue/Svelte unless real UI complexity justifies one
 - no CRDT layer unless real concurrent-edit testing proves necessary
