@@ -65,6 +65,37 @@ Before adopting a paid service, hosted dependency, API, database, asset source, 
 
 Do not pay for infrastructure merely for convenience when a dependable free or near-free option satisfies the current requirement.
 
+## Public Website Is Part of the Product
+
+The public website is not a separate brochure. It is the front door to the product.
+
+It must:
+
+- look polished and trustworthy
+- explain the product immediately
+- make **Build a Map** and **Join a Game** obvious
+- show the actual block-map product prominently
+- let a visitor reach a usable map with minimal friction
+- keep marketing and application in one coherent experience
+
+A visitor should not have to understand VTT terminology before starting.
+
+See `docs/WEBSITE_EXPERIENCE.md`.
+
+## Deployment Discipline
+
+Development and testing are local-first.
+
+- run normal development locally
+- run automated tests locally
+- visually inspect locally
+- GitHub pushes are coherent checkpoints
+- Netlify production deploys are deliberate milestones, not every experiment
+- verify the live Netlify site after a production release
+- preserve rollback to a known-good release
+
+The user has an existing paid/Plus Netlify plan, but plan capacity is not an excuse for wasteful deploys.
+
 ## Product Experience
 
 The basic DM workflow is:
