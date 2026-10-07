@@ -165,17 +165,19 @@ All convenience tools must produce the same ordinary world objects as manual pla
 
 Room generation must not automatically create ceilings at the current design stage. Rooms must remain open from above until roof/ceiling behavior is deliberately revisited.
 
+Room dimensions are entered in feet, snap to 5-foot increments, and describe usable interior Length × Width. Height means wall height. See `docs/SPATIAL_CONTRACT.md`.
+
 ## Locked Construction
 
 Locking is a universal editing control.
 
-Typical terrain, walls, furniture, and decorations become locked after placement.
+Typical terrain, walls, furniture, traps, lights, and decorations can be protected by a room construction lock.
 
-Locked means they cannot accidentally move during ordinary play.
+Locked means their **position/removal is protected** from accidental editing during ordinary play. Allowed object state changes may still occur.
 
 The DM can unlock them at any time.
 
-Creatures and player pieces normally remain movable.
+Player, monster, and NPC pieces remain movable; they are game pieces rather than room construction.
 
 ## Hidden Objects
 
