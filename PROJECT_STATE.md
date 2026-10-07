@@ -87,6 +87,10 @@ The DM is the authority. The board must work without automated RPG rules.
 52. **Implementation rules are mandatory.** Coding must be state-first, universal-behavior-first, testable, error-aware, and documentation-complete.
 53. **Dependency/license register is mandatory.** No third-party code or asset enters the repo before source/version/license/purpose/provenance are recorded.
 54. **Explicit coding gate.** Stage 1 application code does not begin until the pre-implementation checklist is satisfied and the user explicitly directs implementation.
+55. **Public website is part of the product.** The homepage must look polished, explain the product immediately, and make Build a Map / Join a Game obvious.
+56. **Terrain quick-start is a conversion path.** Castle/Inn/Field/Sea/Volcano-style cards can open a temporary builder immediately; durable sign-in is required when saving/sharing a persistent game.
+57. **One Vite product surface.** Marketing site and app remain in the same repo/project unless a real requirement later justifies separation.
+58. **Local-first release discipline.** Normal development/testing is local; GitHub pushes are coherent checkpoints; Netlify production deploys are deliberate milestone releases.
 
 ## Cost Guardrail
 
@@ -161,6 +165,7 @@ A work session is not complete until the handoff state is pushed.
 - `docs/PLAYER_JOIN_CONTRACT.md` — authoritative player join, session identity, assignment, control, interaction, DM override, and Tiny creature behavior.
 - `docs/PERSISTENCE_UNDO_CONTRACT.md` — authoritative current-state persistence, autosave, Undo/Redo, revision, dedupe, crash, and reconnect behavior.
 - `docs/VISUAL_LANGUAGE.md` — authoritative original block style and visual feedback for placement, hidden state, ownership, locks, overlaps, and Tiny pieces.
+- `docs/WEBSITE_EXPERIENCE.md` — authoritative public landing, quick-start, conversion, mobile, SEO, and Netlify release contract.
 - `docs/ADR_001_MVP_WEB_STACK.md` — accepted MVP architecture decision and fallback/revisit triggers.
 - `docs/DEPENDENCY_REGISTER.md` — required dependency/license/provenance ledger.
 - `docs/IMPLEMENTATION_RULES.md` — mandatory coding architecture, testing, error/logging, dependency, and no-drift rules.
@@ -204,84 +209,121 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-Stage 0 was substantially complete, with no application code and no installed application dependencies.
+Stage 0 was substantially complete with no application code.
 
-The accepted MVP stack previously named Cloudflare Pages as the static frontend host.
+Netlify had been selected as the frontend host. The user clarified two additional product/release requirements:
 
-The user explicitly changed the hosting decision to **Netlify**.
+- the user already has a paid/Plus Netlify plan, but unnecessary deploys should still be avoided
+- all normal testing should be local and Netlify should receive only locally tested milestone releases
+- the project needs a polished public website that looks excellent, is extremely easy to use, and is designed to attract people who will actually use the product
+
+### Research
+
+Reviewed current VTT public positioning and onboarding patterns.
+
+- Owlbear Rodeo explicitly emphasizes browser use, intuitive battle-map experience, and a player flow where players can open the GM link and join.
+- Roll20's current homepage puts a strong start/account CTA above the fold and explicitly markets no-download browser play, but also illustrates the feature-density direction this project intends to avoid.
+- Foundry VTT emphasizes a powerful, feature-rich platform and self-hosted control, reinforcing the opportunity for DND Blocks Battle Maps to differentiate through simplicity and immediate use.
+- TaleSpire quickly explains the core digital-tabletop promise and lets the product visual carry much of the message.
 
 ### Changes Made
 
-- Read the current live project state and authoritative architecture documents before changing the decision.
-- Rechecked Netlify's current official Free-plan pricing/credit model.
-- Amended `docs/ADR_001_MVP_WEB_STACK.md` so Netlify is the accepted static frontend host.
-- Updated `SOUL.md` so the permanent selected architecture names Netlify.
-- Updated `docs/TECH_STACK_CANDIDATES.md` with the Netlify decision and current Free-plan credit model.
-- Updated `docs/DEPENDENCY_REGISTER.md` to register Netlify as the selected deployment target.
-- Updated `docs/PRE_IMPLEMENTATION_CHECKLIST.md` so the accepted architecture checklist names Netlify.
-- Updated README's architecture summary from Cloudflare to Netlify.
-- Updated this live handoff.
+- Created `docs/WEBSITE_EXPERIENCE.md`.
+- Defined the public website as part of the product rather than a separate marketing brochure.
+- Defined the homepage primary actions as **Build a Map** and **Join a Game**.
+- Defined immediate terrain quick-start cards such as Castle, Inn, Field, Sea, and Volcano.
+- Defined a recommended low-friction guest/temporary builder path, with durable DM sign-in required for Save/Share/persistent games.
+- Defined initial routes: `/`, `/build`, `/join`, `/game/:code`, `/maps`, and `/login`.
+- Defined the marketing site and application as one Vite project/repository for simplicity and deployment efficiency.
+- Defined the homepage structure, visual direction, accessibility, performance, mobile, SEO/shareability, and trust requirements.
+- Updated `SOUL.md` so the public website and local-first Netlify deployment policy are permanent project rules.
+- Updated ADR-001 and the Dependency Register to stop assuming a Netlify Free plan; the user reports a paid/Plus plan and exact account-specific limits will be read from the Netlify dashboard when deployment begins.
+- Updated `docs/ROADMAP.md` and `docs/PRE_IMPLEMENTATION_CHECKLIST.md` so the public website/quick-start experience is part of Stage 1.
+- Updated README with the website contract.
 
 ### Decisions Made
 
-**Decision:** Netlify replaces Cloudflare Pages as the selected MVP/frontend production host.
+**Decision:** The public website is part of the actual product experience.
 
-**Reason:** Direct user decision. The rest of the architecture remains unchanged.
+**Reason:** The goal is not merely to host an editor; people must arrive, understand it, trust it, and immediately know how to start building or join a game.
 
-**Decision:** Keep Netlify deployment intentionally low-frequency during early development.
+**Decision:** Above-the-fold primary actions are **Build a Map** and **Join a Game**.
 
-**Reason:** Netlify's current Free plan uses a monthly credit budget. Production deploys, bandwidth, and web requests consume credits, so unnecessary production publishes would conflict with the cheap-first rule.
+**Reason:** These are the two user intents that matter most and should not be hidden behind feature pages or navigation.
 
-**Decision:** Local development and non-production testing should be preferred while building Stage 1; production deploys should be deliberate milestones.
+**Decision:** The homepage uses an immediate terrain quick-start.
 
-**Reason:** This preserves the user's Netlify preference while minimizing hosting-credit consumption.
+**Reason:** Asking "What terrain do you want?" converts the product explanation directly into the first useful action.
+
+**Decision:** A visitor should be able to try the builder with minimal friction before durable sign-in; Save/Share/persistent game ownership requires the durable DM identity.
+
+**Reason:** This preserves the authenticated persistence model while reducing acquisition friction.
+
+**Decision:** Website and application remain one Vite project/repository.
+
+**Reason:** One deployment, one visual system, shared assets, less drift, and fewer moving parts align with the cheap/simple architecture.
+
+**Decision:** Normal development/testing happens locally.
+
+**Reason:** Local testing is faster, cheaper, and prevents production hosting from becoming the test environment.
+
+**Decision:** Netlify production deploys are milestone releases only.
+
+**Reason:** Even with the user's paid/Plus plan, unnecessary deploys create noise and consumption without improving the product.
+
+**Decision:** GitHub pushes remain meaningful source checkpoints and do not automatically imply a Netlify production release.
+
+**Reason:** Source continuity and public releases serve different purposes.
 
 ### Cost Impact
 
-No cost incurred.
+No new cost incurred.
 
-Current Netlify Free-plan snapshot checked on 2026-10-07:
+The user reports an existing paid/Plus Netlify plan.
 
-- $0/month
-- 300 credits/month hard limit
-- production deploys currently consume 15 credits each
-- bandwidth currently consumes 20 credits/GB
-- web requests currently consume 2 credits per 10,000 requests
-- Free has no auto-recharge/overage charge; projects pause when the credit limit is reached
+Because Netlify has changed public plan names/pricing and older accounts can retain legacy plans, exact account-specific limits/costs are intentionally **not guessed**. They should be read from the user's Netlify dashboard when the project is configured.
 
-This means the MVP can still begin at approximately **$0/month**, but production deploy frequency and traffic should be watched.
+The local-first/milestone-deploy policy reduces unnecessary hosting/build usage regardless of plan.
 
 ### Result
 
-The accepted Stage 1 stack is now:
+The Stage 1 product boundary now includes both:
 
-> **TypeScript + Vite + Three.js + native HTML/CSS + Supabase + Netlify**
+> **a polished public front door that gets people into the product quickly**
 
-Cloudflare Pages is no longer the selected frontend host.
+and
+
+> **the single-user 3D block builder itself.**
+
+The intended homepage flow is:
+
+> Understand product -> Build a Map / Join a Game -> choose terrain -> see/use the actual board.
 
 No application code has been written.
 
-No npm/application dependency has been installed.
+No npm/application dependencies have been installed.
 
 ### Remaining Implementation-Time Decisions
 
-These are not blockers to beginning Stage 1 once the user explicitly directs it:
+These are not product-design blockers:
 
-1. exact dependency versions and transitive license notices
-2. exact Supabase auth/session implementation details within the locked contract
-3. original/CC0 placeholder asset production pipeline
-4. numeric bounded Undo/Redo retention after testing
-5. performance tuning based on real browser/device tests
-6. exact Netlify project/site configuration when deployment begins
+1. exact package versions and transitive license notices
+2. exact Supabase auth/session implementation details
+3. exact original/CC0 placeholder asset production pipeline
+4. final brand/logo/color/type choices during visual implementation
+5. numeric bounded Undo/Redo retention after testing
+6. exact Netlify project/site configuration and account-specific limits when deployment begins
+7. performance tuning based on real browser/device tests
 
 ### Exact Next Step
 
-**Do not write application code unless the user explicitly directs Stage 1 implementation.**
+The project remains at the explicit coding gate.
 
-When that direction arrives:
+When the user explicitly directs Stage 1 implementation:
 
-1. reread `PROJECT_STATE.md`, `SOUL.md`, the Stage 1 contracts, ADR-001, implementation rules, and pre-implementation checklist
-2. recheck exact package versions/licenses and update `DEPENDENCY_REGISTER.md`
-3. implement only the first Stage 1 vertical slice from authoritative state outward
-4. develop/test locally first and avoid unnecessary Netlify production deploys
-5. update/push the live handoff before stopping
+1. reread the live contracts, ADR, implementation rules, website experience, and Stage 1 checklist
+2. recheck exact dependency versions/licenses and update the dependency register
+3. build/test locally only
+4. start with the smallest website-to-builder vertical slice: public hero/terrain quick-start -> real 5-foot grid -> fixed-angle camera -> placement ghost -> place one block
+5. do not deploy to Netlify until that slice is locally tested and worth reviewing live
+6. update/push the live handoff before stopping
