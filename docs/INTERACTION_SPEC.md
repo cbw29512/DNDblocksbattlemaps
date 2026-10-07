@@ -1,0 +1,290 @@
+# Interaction Specification
+
+> Status: Stage 0 product contract. No application code should be written from this document until the remaining open decisions are resolved.
+>
+> Primary usability requirement: **the UI must be simple enough that a child can understand the basic workflow without reading a manual.**
+
+## First-Use Goal
+
+A first-time DM should be able to:
+
+1. understand what the site does from the hero page
+2. choose a terrain with one obvious button
+3. immediately see a gridded map
+4. create a room by entering dimensions
+5. add obvious blocks such as a table, torch, door, pit, trap, or monster
+6. hide something from players
+7. lock the room so accidental movement stops
+8. invite players and begin using the map
+
+The interface should teach through obvious controls rather than instructions.
+
+## Hero Page
+
+The hero page should explain the product in one short, plain-language statement.
+
+Conceptually:
+
+> Build a D&D battle map from simple blocks, invite your players, and play in the browser.
+
+The primary question is:
+
+> **What terrain do you want?**
+
+Large, obvious terrain buttons should be presented.
+
+Initial examples:
+
+- Castle
+- Inn
+- Field
+- Sea
+- Volcano
+
+Additional terrain themes can be added later, but the first screen must remain visually simple.
+
+Selecting a terrain should take the DM directly to a usable map.
+
+Do not require the DM to configure a project, campaign, scene hierarchy, asset pack, lighting profile, or ruleset before seeing the board.
+
+## Map Appearance
+
+After terrain selection:
+
+- the map appears immediately
+- the map has visible grid squares
+- 1 grid square represents 5 feet
+- the selected terrain determines the base visual theme
+- the map remains simple and readable
+
+The exact camera model is still unresolved.
+
+## Primary DM Controls
+
+The core mouse interaction is:
+
+- **Left click in the sidebar:** select a block/tool
+- **Left click on the map:** place the selected block/tool result
+- **Right click a placed block:** remove it
+
+This is the preferred interaction contract because it is easy to explain and easy to remember.
+
+Open question:
+
+- whether the selected block remains active for repeated placement after one placement, or automatically clears after each placement
+
+Do not add drag handles, rotation widgets, nested object inspectors, or complex context menus unless a real requirement later demands them.
+
+## Room Builder
+
+The main sidebar should provide a room builder.
+
+The DM enters:
+
+- Length
+- Width
+- Height
+
+Then chooses the room/build action.
+
+The room is generated from ordinary blocks.
+
+### Room generation rules
+
+- rooms generate floors
+- rooms generate walls
+- rooms **do not generate ceilings**
+- ceilings are explicitly deferred because the board must remain visible and easy to use
+- generated blocks remain ordinary editable blocks
+- the generated room can later be modified by the DM
+- the room is associated with a room/region identity so it can be locked or unlocked as a group
+
+### Unresolved dimension contracts
+
+Before implementation, explicitly decide:
+
+1. whether Length and Width are entered in feet or grid squares
+2. whether requested room dimensions describe interior playable area or total exterior wall-to-wall footprint
+3. whether Height is entered in feet, block levels, or another simple unit
+
+Do not guess these in rendering code.
+
+## No Ceiling Rule
+
+At the current design stage:
+
+> **Never automatically place a ceiling on a room.**
+
+The player/DM must be able to look into the room.
+
+Ceiling/roof behavior can be researched later if needed, but it is not part of the current room model.
+
+## Room Block Palette
+
+Once a room exists, the sidebar should present blocks that make sense to add to that room.
+
+Examples already requested:
+
+- Table
+- Torch
+- Pit
+- Trap
+- Monsters
+- Door
+
+Other sensible room objects can be added later.
+
+The palette should favor obvious names and recognizable icons/images.
+
+Do not expose implementation terminology to the DM.
+
+## Room Lock
+
+The DM can lock the room.
+
+The intent is:
+
+> Once the DM is satisfied with the room, the current placed blocks stop moving accidentally.
+
+Unlocking the room allows the DM to reposition or remove those blocks again.
+
+The room-lock operation should be a simple bulk control, not a complicated permissions system.
+
+### Open lock-scope question
+
+The user stated that when the room is locked, "all current blocks can't move until the DM unlocks the room."
+
+Before implementation, confirm whether this includes:
+
+- structural blocks only
+- furniture/props
+- traps
+- monsters/NPCs
+- player pieces
+
+Do not silently narrow or broaden the user's stated behavior.
+
+## Hidden Blocks
+
+The DM can mark appropriate objects invisible to players.
+
+The DM must continue to see hidden objects in DM view.
+
+The player should see nothing in that location until the object is revealed or triggered, depending on its behavior.
+
+Possible hidden objects include:
+
+- traps
+- monsters
+- secret doors
+- treasure
+- pits
+- encounter surprises
+
+This remains a simple manual visibility system first.
+
+Do not require dynamic lighting or line-of-sight calculations for MVP.
+
+## Trap Interaction
+
+The first requested interactive trap behavior is deliberately simple.
+
+A trap can be hidden from players.
+
+When a player piece enters a trap's grid location:
+
+1. the trap can trigger
+2. the affected player piece becomes unable to move
+3. the DM decides when to release/unlock that movement restriction
+
+This must be implemented later as reusable board behavior, not as a one-off TrapEngine.
+
+Conceptually:
+
+**on entity enters cell -> apply movement lock -> DM may clear movement lock**
+
+This same universal behavior may later be reusable by webs, pits, cages, magical restraints, or other board objects.
+
+The trap's name/art/data describes the source.
+
+The board behavior remains generic.
+
+## Player Interaction
+
+The player interface should be even simpler than the DM interface.
+
+A player should primarily:
+
+- join the game
+- see the map and visible objects
+- identify their piece
+- move their assigned piece
+- interact only with objects the DM permits
+
+Players should not see build controls.
+
+Players should not accidentally move room construction.
+
+## Simplicity Rules
+
+The interface should follow these constraints:
+
+- favor large obvious buttons
+- favor icons plus plain labels
+- keep the number of visible choices small
+- avoid nested menus where possible
+- avoid settings screens before play
+- avoid object rotation unless later proven necessary
+- avoid precise freeform positioning; snap to grid
+- avoid requiring a tutorial for basic map creation
+- avoid exposing technical terms
+- one action should have one obvious control
+
+If a child cannot identify the basic next action by looking at the screen, simplify it.
+
+## First-Use Usability Test
+
+A future prototype should pass this test without coaching:
+
+1. Open the site.
+2. Understand that it builds battle maps.
+3. Choose Castle.
+4. See a gridded map.
+5. Create a room.
+6. Add a table.
+7. Add a torch.
+8. Add a door.
+9. Add a hidden trap.
+10. Add a monster.
+11. Lock the room.
+12. Invite a player.
+13. Move a player piece.
+14. Trigger the trap.
+15. DM releases the trapped player.
+
+If this flow requires reading documentation, the UI is too complicated.
+
+## Explicitly Deferred
+
+Do not add these while solving the first-use experience:
+
+- ceilings
+- complex roof systems
+- free-angle object rotation
+- dynamic lighting
+- advanced line of sight
+- character sheets
+- combat automation
+- spell automation
+- physics
+- complex trap rules
+- detailed object property panels
+- multi-level nested menus
+
+## Unresolved Input
+
+The user included the word "date" in the example room-object list.
+
+Its intended meaning is unclear.
+
+Do not reinterpret it as another object type without explicit clarification.
