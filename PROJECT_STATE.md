@@ -55,6 +55,8 @@ The DM is the authority. The board must work without automated RPG rules.
 20. **Primary DM build controls:** left-click sidebar item to select, left-click map to place, right-click placed block to remove.
 21. **Room builder:** DM enters Length × Width × Height; the room is generated from ordinary blocks and can be bulk locked/unlocked.
 22. **Trap movement lock is universal behavior.** A trigger can apply a movement lock to a player piece until the DM clears it.
+23. **Web-first/open-source-first stack.** Prefer browser-native, permissively licensed, free/near-free technology and reuse mature components instead of building commodity infrastructure.
+24. **No custom server by default.** The MVP should avoid a dedicated backend if browser + hosted open-source services can safely satisfy persistence/auth/realtime requirements.
 
 ## Cost Guardrail
 
@@ -121,6 +123,7 @@ A work session is not complete until the handoff state is pushed.
 - `docs/INTERACTION_SPEC.md` — kid-simple DM/player building and play interaction contract.
 - `docs/BLOCK_CATALOG.md` — initial terrain, room-object, creature, and universal behavior catalog.
 - `docs/OPEN_SOURCE_REUSE.md` — Minecraft inspiration boundary, license gate, and open-source engine/library candidates.
+- `docs/TECH_STACK_CANDIDATES.md` — web-first, open-source-first, low-cost technology candidates and current free-tier research.
 
 Planned next documentation:
 
@@ -165,60 +168,63 @@ These are deliberately unresolved and must not be guessed during implementation.
 
 ### Starting State
 
-The project was still in Stage 0 with no application code.
+The project remained in Stage 0 with no application code.
 
-The kid-simple interaction contract and initial block catalog were documented. The user clarified that prior block examples were examples rather than an exhaustive catalog and asked whether Minecraft block options could be used as inspiration and whether Minecraft or other open-source code could accelerate development.
+Minecraft/open-source reuse boundaries were already documented. The user then explicitly required that the eventual technology stack be web-friendly and that the project reuse open-source/free solutions wherever practical to simplify development and keep costs low.
 
 ### Changes Made
 
-- Read the live project state, SOUL, interaction spec, block catalog, and competitor research before making changes.
-- Reviewed Minecraft's current EULA and Usage Guidelines.
-- Reviewed Minecraft/Microsoft creative inventory/category documentation for organizational ideas.
-- Researched permissively licensed browser 3D and voxel-related projects.
-- Created `docs/OPEN_SOURCE_REUSE.md`.
-- Added an external-code/asset license gate to `SOUL.md`.
-- Expanded `docs/BLOCK_CATALOG.md` with broader kid-readable catalog families inspired by the usability lesson of Minecraft's grouped inventory, without copying Minecraft assets or inventory.
-- Linked the new research document from README.
+- Read the live project state, SOUL, open-source reuse policy, and roadmap before making changes.
+- Researched current web-friendly open-source/free candidates and current hosted free-tier limits.
+- Created `docs/TECH_STACK_CANDIDATES.md`.
+- Added the permanent web-first/reuse-first architecture rule to `SOUL.md`.
+- Updated the open-source reuse policy to prefer the smallest browser architecture.
+- Linked the technology-candidate document from README.
+- Documented a current $0/month MVP candidate architecture without adopting any dependency.
 
 ### Decisions Made
 
-**Decision:** Minecraft is a design/catalog reference only.
+**Decision:** The technology stack must be web-first.
 
-**Reason:** Mojang/Microsoft's current terms reserve their game software/content and specifically treat Minecraft block textures/look-and-feel as their property.
+**Reason:** DM and players should open a browser and use the product without installing a game client.
 
-**Decision:** Do not copy Minecraft code, textures, sounds, models, game files, UI art, or proprietary block artwork.
+**Decision:** Reuse mature open-source/free components whenever they reduce code and complexity.
 
-**Reason:** The project should remain legally clean, original, and commercially flexible.
+**Reason:** Custom code should be reserved for the product-specific battle-map experience, not commodity infrastructure.
 
-**Decision:** Generic block concepts may be inspired by ordinary world/fantasy objects and organized into a few simple families.
+**Decision:** Do not assume a custom FastAPI/Node backend is required for MVP.
 
-**Reason:** The useful lesson from Minecraft is discoverability through grouping, not the proprietary assets themselves.
+**Reason:** A static browser app plus a hosted open-source backend/realtime service may provide persistence, auth, and multiplayer at lower cost and with fewer failure surfaces.
 
-**Decision:** Prefer a permissively licensed browser rendering library over forking an entire voxel game.
+**Decision:** Current leading candidate shape is TypeScript + Vite + Three.js, with Babylon.js as the rendering alternative, Supabase Free as the leading persistence/auth/realtime candidate, and Cloudflare Pages as the leading static host.
 
-**Reason:** DND Blocks Battle Maps does not need survival, crafting, mining, procedural infinite worlds, biomes, game AI, or first-person game architecture.
+**Reason:** These are browser-focused, broadly open-source/permissively licensed, and can plausibly support an early prototype at $0/month within current free-tier limits.
 
-**Decision:** Three.js is the first candidate to evaluate later; Babylon.js is the strongest batteries-included alternative.
+**Decision:** GitHub Pages is not the planned production host.
 
-**Reason:** Both are browser-focused and permissively licensed; Three.js is smaller/more architectural-control oriented, while Babylon.js offers more built-in engine behavior.
+**Reason:** GitHub's current Pages documentation says it is not intended/allowed as free hosting for an online business or SaaS product.
 
-**Decision:** Luanti and Terasology are reference sources rather than preferred foundations.
+**Decision:** Do not add Yjs/CRDT, Docker, a UI framework, or a custom backend until a concrete requirement proves they simplify the product.
 
-**Reason:** They are much larger game engines and would likely introduce unnecessary complexity and architectural drift for this small browser VTT.
+**Reason:** Each would otherwise add architecture before the need exists.
 
 ### Cost Impact
 
-None.
+No cost incurred and no dependency adopted.
 
-All research and candidate technologies identified here are open source. No dependency has been adopted and no paid service has been added.
+Current researched free-tier candidate:
+
+- Cloudflare Pages static assets: free/unlimited under current Pages pricing
+- Supabase Free: $0 with current quotas including 500 MB database, 5 GB egress, 1 GB file storage, 50,000 MAU, and 2 million Realtime messages/month
+- Vite/Three.js/TypeScript: open-source toolchain
+
+Potential early infrastructure cost remains **$0/month** if usage stays within current free tiers.
 
 ### Result
 
-The project now has a documented legal/reuse boundary and a shortlist of open-source technologies that could reduce development cost without turning the product into a Minecraft clone.
+The project now has a documented web-first technology strategy and concrete low-cost candidates.
 
-Current reuse posture:
-
-> Learn from Minecraft's block organization and simplicity, create original assets/behavior, and reuse only verified open-source code where it genuinely saves work.
+No technology is final yet.
 
 No application code has been written.
 
@@ -226,16 +232,16 @@ No application code has been written.
 
 1. Room spatial contract remains unresolved.
 2. Exact camera/view model remains unresolved.
-3. Final rendering technology remains unselected.
-4. Before any external code is imported, the exact library/repository/version and license obligations must be recorded.
-5. Exact asset/art production approach is still open.
+3. Three.js vs Babylon.js remains to be compared against the finished interaction requirements.
+4. Supabase vs another persistence/realtime approach remains to be validated after the data/permission model is finalized.
+5. Exact asset/art production approach remains open.
 
 ### Exact Next Step
 
 Stay in design mode.
 
-Continue the room spatial contract and block-library design.
+Resolve the room spatial contract and remaining interaction rules first.
 
-When the architecture stage begins, compare **Three.js vs Babylon.js** against the exact MVP requirements before selecting either one.
+After those requirements are stable, perform a small written architecture decision comparing the minimum viable stack, with **reuse, browser compatibility, license safety, $0 starting cost, and low code volume** as explicit scoring criteria.
 
-Do not import Minecraft assets or code. Do not adopt an open-source voxel engine wholesale without a documented necessity review.
+Do not write application code yet.
