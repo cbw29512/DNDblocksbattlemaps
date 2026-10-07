@@ -211,43 +211,29 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-GitHub Pages was correctly configured to use GitHub Actions. The first manual Pages test run failed on an unused TypeScript parameter. That code failure was fixed on `main` in commit `f4e9142d3492e939bbf665d4503cf94705bb25a1`.
+The Stage 1 code fix for the first Pages typecheck failure was already present on current `main`.
 
-The user then clicked **Re-run jobs** from the old failed run screen.
+The remaining blocker was operational: the Pages test workflow was manual-only, and the user requested that the assistant fix and push the deployment rather than requiring another manual workflow launch.
 
-### Diagnosis
+### Changes Made
 
-GitHub Actions state was checked directly.
+- Temporarily enabled the Pages test workflow on pushes to `main` in addition to manual dispatch.
+- Kept all existing typecheck, unit-test, build, artifact-upload, and Pages deployment gates intact.
+- Did not weaken TypeScript strictness.
+- Did not touch Netlify.
 
-Current `main`:
+### Decision
 
-- `f4e9142d3492e939bbf665d4503cf94705bb25a1`
+**Use a one-time push-triggered repair run, then restore the workflow to manual-only after a successful Pages deployment.**
 
-Existing workflow-dispatch run:
+Reason:
 
-- run #1 / ID 37680818327
-- head commit: `90223e48b953d9fcef24fea222c8a6bad9a365c2`
-- conclusion: failure
-
-Therefore the re-run tested the **old commit again**, not the fixed current `main`.
-
-### Result
-
-No new code defect has been established by the re-run.
-
-The fixed commit has not yet been tested by GitHub Actions.
+This lets the assistant drive the repair end-to-end now while preserving the project's long-term rule that ordinary pushes should not continuously publish the GitHub Pages test site.
 
 ### Exact Next Step
 
-Do **not** use **Re-run jobs** on run #1.
-
-Instead:
-
-1. Click the workflow name **Deploy GitHub Pages Test** near the upper-left/back area, or go to repository **Actions** and select that workflow from the left sidebar.
-2. On the workflow page, click **Run workflow**.
-3. Select branch **main**.
-4. Start the run.
-5. Confirm the new run is using the current `main` and is **not** old commit `90223e4`.
-6. Wait for that new run to finish.
-7. If green, reload the Pages test URL.
-8. If red, inspect the new run's first failing step.
+1. Push this temporary workflow change to `main`.
+2. Watch the automatically triggered GitHub Actions Pages run.
+3. Fix any remaining build/deploy failures without bypassing the gates.
+4. Once a run succeeds, restore the workflow to manual-only.
+5. Verify the GitHub Pages site loads the built Vite application.
