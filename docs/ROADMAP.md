@@ -51,6 +51,7 @@ Required concepts:
 - unsupported/floating placement allowed
 - pick-up/put-down move interaction
 - overlap chooser when object selection is ambiguous
+- undo/redo safety for core edits
 - creature footprints
 - save/load locally or through the eventual persistence layer
 
@@ -61,9 +62,13 @@ No multiplayer rules automation.
 Goal: DM and players can share one live board.
 
 - create game
-- join link/code
+- durable DM identity
+- Join as Player via link/code + display name
+- player reconnect/session recovery
 - DM authority
 - assigned player pieces
+- obvious player-owned-piece indicator
+- Tiny creature auto-offset within shared 5-foot square
 - real-time movement
 - player movement freeze
 - persistent map state
@@ -91,7 +96,6 @@ Keep behavior universal and data-driven.
 - copy/paste
 - multi-select
 - saved block groups
-- undo/redo
 
 ## Stage 5 — Prefabricated Rooms
 
