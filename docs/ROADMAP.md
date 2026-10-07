@@ -4,7 +4,7 @@ This roadmap is intentionally product-first. Do not begin implementation until t
 
 ## Stage 0 — Product Contract
 
-Current stage.
+Current stage, substantially complete. Final activity is pre-implementation consistency/audit rather than new feature design.
 
 Goals:
 
@@ -15,7 +15,9 @@ Goals:
 - define DM/player permissions
 - resolve open spatial rules
 - choose visual interaction model
-- choose technology stack only after requirements are stable
+- visual feedback contract for placement/hidden/ownership/locks/Tiny
+- dependency/license register
+- technology stack selected in ADR-001 after requirements stabilized
 
 No application code.
 
