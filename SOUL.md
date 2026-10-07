@@ -295,6 +295,24 @@ See `docs/PLAYER_JOIN_CONTRACT.md`.
 - Board changes synchronize in real time.
 - Maps persist across reloads.
 
+## Persistence and Recovery
+
+Current authoritative board state must be stored separately from bounded recent edit history.
+
+- opening a map loads current state directly
+- every committed board edit autosaves
+- there is no required manual Save button for ordinary work
+- Undo commits an inverse/compensating edit rather than deleting history
+- Redo reapplies an undone edit when still safe
+- every edit has a unique action ID
+- each game/map has a monotonically increasing revision
+- reconnect deduplicates actions and refreshes current state if a revision gap is detected
+- realtime movement sends logical grid moves, not animation frames
+- important state such as hidden/revealed objects, transforms, ownership, and movement locks must survive crashes/reconnects
+- do not build CRDT/offline-first complexity unless testing proves it necessary
+
+See `docs/PERSISTENCE_UNDO_CONTRACT.md`.
+
 ## MVP Definition of Done
 
 The MVP is complete when:
