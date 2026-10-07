@@ -11,15 +11,58 @@ It should feel like using a box of magnetic dungeon terrain on a physical table,
 ## Prime Directives
 
 1. **Simple first.** The fastest path from an idea to a playable encounter wins.
-2. **The DM is the game engine.** Rules automation is optional and must never be required to use the board.
-3. **Everything is data-driven.** Terrain, furniture, doors, traps, players, monsters, and decorations share universal object behavior wherever possible.
-4. **One square represents 5 feet.** The visual grid follows standard tabletop battle-map scale.
-5. **No unnecessary rotation.** Blocks should identify themselves clearly from all useful viewing sides.
-6. **Placed construction can be locked.** Once locked, a block does not move until the DM unlocks it.
-7. **The DM controls visibility.** Objects such as traps, secret doors, creatures, treasure, and encounter elements can be hidden from players and revealed later.
-8. **Players control only what they are assigned.** The DM retains authority over every object.
-9. **Templates create normal blocks.** Prefab rooms/buildings/encounters are recipes that place ordinary blocks; generated blocks never become a separate engine.
-10. **Never add complexity just because another VTT has it.**
+2. **Cheap first.** Prefer reliable free or near-free infrastructure until the product proves it needs more.
+3. **The DM is the game engine.** Rules automation is optional and must never be required to use the board.
+4. **Everything is data-driven.** Terrain, furniture, doors, traps, players, monsters, and decorations share universal object behavior wherever possible.
+5. **One square represents 5 feet.** The visual grid follows standard tabletop battle-map scale.
+6. **No unnecessary rotation.** Blocks should identify themselves clearly from all useful viewing sides.
+7. **Placed construction can be locked.** Once locked, a block does not move until the DM unlocks it.
+8. **The DM controls visibility.** Objects such as traps, secret doors, creatures, treasure, and encounter elements can be hidden from players and revealed later.
+9. **Players control only what they are assigned.** The DM retains authority over every object.
+10. **Templates create normal blocks.** Prefab rooms/buildings/encounters are recipes that place ordinary blocks; generated blocks never become a separate engine.
+11. **Never add complexity just because another VTT has it.**
+12. **Documentation is part of implementation.** Work is not complete until the live project state is updated and pushed to GitHub.
+
+## Mandatory Resume/Handoff Contract
+
+`PROJECT_STATE.md` is the canonical live resume document.
+
+Every work session must begin by reading:
+
+1. `PROJECT_STATE.md`
+2. `SOUL.md`
+3. the current relevant schema/specification/roadmap documents
+4. the actual repository state
+
+Do not rely on chat memory when the repository documents can answer the question.
+
+Every meaningful work session must end by updating and pushing `PROJECT_STATE.md` with:
+
+- Starting State
+- Changes Made
+- Decisions Made
+- Cost Impact
+- Result
+- Open Questions / Blockers
+- Exact Next Step
+
+This rule exists so another AI or human can resume after a crash, context loss, or new chat without reconstructing the project from conversation history.
+
+If code changes but the live handoff document was not updated and pushed, the work session is incomplete.
+
+## Cost Discipline
+
+The project should be built as cheaply as practical during early development.
+
+Before adopting a paid service, hosted dependency, API, database, asset source, or infrastructure component, document:
+
+- what requirement it solves
+- free or lower-cost alternatives considered
+- expected current cost
+- the usage threshold at which cost materially changes
+- migration or replacement risk
+
+Do not pay for infrastructure merely for convenience when a dependable free or near-free option satisfies the current requirement.
 
 ## Product Experience
 
@@ -252,16 +295,19 @@ Automation assists the DM; it does not replace the DM.
 
 Before implementing any feature:
 
-1. Read this file.
-2. Read the current data schema.
-3. Read the current architecture documentation.
-4. Identify the real behavior being requested.
-5. Search for an existing universal mechanic that already represents it.
-6. Reuse existing mechanics whenever behavior is equivalent.
-7. Add a new primitive only when necessary.
-8. Keep source-specific appearance/data separate from universal behavior.
-9. Update documentation when a product-level decision changes.
-10. If implementation and this document disagree, stop and reconcile them before continuing.
+1. Read `PROJECT_STATE.md`.
+2. Read this file.
+3. Read the current data schema.
+4. Read the current architecture and interaction documentation.
+5. Check the actual repository state.
+6. Identify the real behavior being requested.
+7. Search for an existing universal mechanic that already represents it.
+8. Reuse existing mechanics whenever behavior is equivalent.
+9. Add a new primitive only when necessary.
+10. Keep source-specific appearance/data separate from universal behavior.
+11. Update documentation when a product-level decision changes.
+12. Update and push `PROJECT_STATE.md` before ending the work session.
+13. If implementation and this document disagree, stop and reconcile them before continuing.
 
 ## Current Guiding Image
 
