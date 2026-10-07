@@ -2,7 +2,7 @@
 
 > Research snapshot: 2026-10-07
 >
-> Status: candidate architecture only. No application code has been written and no dependency has been adopted.
+> Status: architecture research retained for history. The MVP stack has now been selected in `ADR_001_MVP_WEB_STACK.md`. No application code has been written and no dependency has been installed yet.
 >
 > Goal: use as much reliable open-source/free infrastructure as practical while keeping the browser experience simple and the architecture small.
 
@@ -17,7 +17,25 @@
 7. **No framework loyalty.** Select only what materially simplifies this product.
 8. **License gate applies.** Every adopted dependency must be recorded in the reuse/license documentation.
 
-## Current Best-Fit MVP Shape
+## Selected MVP Shape
+
+The candidate comparison is complete. The accepted MVP architecture is recorded in `ADR_001_MVP_WEB_STACK.md`.
+
+Selected stack:
+
+- TypeScript
+- Vite
+- Three.js
+- native HTML/CSS UI first
+- Supabase hosted Free plan for MVP
+- Cloudflare Pages
+
+Fallbacks:
+
+- Babylon.js if Three.js proves materially more complex
+- PocketBase if self-hosting/backend economics later favor it
+
+## Original Candidate Shape
 
 The current leading architecture is:
 
@@ -389,12 +407,10 @@ The first obvious upgrade pressure would likely be backend usage/availability ra
 
 Supabase Free currently pauses inactive projects after one week; that is acceptable for early development/testing but should be revisited before a public production launch.
 
-## Not Yet Selected
+## Selection Result
 
-None of these dependencies/services are final.
+The written architecture decision has been completed.
 
-Before code starts, we still need to finish the product/spatial contracts and then make a written architecture decision comparing the smallest realistic alternatives.
+See `ADR_001_MVP_WEB_STACK.md` for the accepted stack, rejected alternatives, revisit triggers, and architecture boundary.
 
-The goal is not to invent technology.
-
-The goal is to assemble a small amount of proven technology into a product whose simplicity comes from **our interaction design and data model**.
+The goal remains to assemble a small amount of proven technology into a product whose simplicity comes from **our interaction design and data model**.
