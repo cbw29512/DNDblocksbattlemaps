@@ -458,3 +458,21 @@ The earlier word "date" in the room-object list was a typo and is **not** a requ
 A calendar/date-display block was mentioned afterward as a possible future decorative or utility block, but no product decision has been made to include it.
 
 It is not part of the MVP catalog.
+
+
+## Print Map
+
+The DM can click **Print Map** from the builder top bar.
+
+Print behavior:
+
+1. generate a clean top-down battle map from authoritative board state
+2. print only the used map footprint plus one square of padding
+3. one 5-ft grid cell prints as **one physical inch**
+4. Letter paper uses 8 × 10 grid squares per page
+5. larger maps tile across multiple pages
+6. pages include small alignment/corner marks
+7. browser print should use Actual Size / 100% for exact miniature scale
+8. the 3D editor UI is never printed
+
+The printable map is a derived view; it is not stored as canonical state.

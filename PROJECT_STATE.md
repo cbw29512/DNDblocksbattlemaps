@@ -110,6 +110,10 @@ The DM is the authority. The board must work without automated RPG rules.
 75. **Open-source art is a parts shelf, not our identity.** KayKit/Kenney CC0 resources are vetted candidates, but only selectively imported after camera/style testing and provenance recording.
 76. **Starter combatant art is bundled locally.** Initial hero/monster art is copied from pinned Iron Pit commit `24810df2a379b01a5dd63fa312dfd58426572efb`; no runtime hot-link.
 77. **Perfect 5-ft cubes are the hard geometry invariant.** Props, doors, characters, monsters, and construction pieces differ by face art/state, not arbitrary mesh shape. Player/Small/Medium=1 cube; Large=2×2; Huge=3×3; Gargantuan=4×4, all as one logical entity.
+78. **Board starts 30×30 and grows by side.** Building on an outer edge expands only that side by 10 squares; existing coordinates never move.
+79. **Board hard cap is 100×100.** Width and depth independently stop at 100 squares as a Stage 1 safety limit.
+80. **Board bounds are authoritative persisted state.** Renderer ground/grid geometry derives from state and does not own map size.
+81. **Print Map bridges digital and physical play.** Print a derived top-down map at 1 physical inch per 5-ft square, tiled as 8×10-square Letter pages, using built-content bounds plus one-square padding.
 
 ## Cost Guardrail
 
@@ -228,51 +232,78 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The starter catalog was green, but browser testing exposed broken character/monster thumbnails and the user clarified the core product identity: **everything on the board is built from perfect 5-ft cubes.**
+The cube-only identity correction was pushed and passed strict TypeScript/tests/build plus GitHub Pages.
 
-The previous catalog pass had drifted into standees, cylinders, thin doors, and fractional prop geometry.
+The user then approved two connected builder upgrades:
 
-### Changes Made
+- the map should grow instead of being a fixed small board
+- a completed digital map should print for physical tabletop play
 
-- Replaced the catalog shape union with cube-only geometry.
-- Rebuilt every starter catalog entry through one universal cube factory.
-- Door, Pillar, Table, Chair, Bed, Chest, Barrel, Crate, Torch, Characters, and Monsters are all 1×1×1 cubes in this starter pass.
-- Removed cylinder/standee/fractional geometry from the Three.js renderer.
-- Character/monster identity art is printed on all four vertical cube faces.
-- Added a browser-base-aware asset URL resolver for GitHub Pages and Netlify-compatible relative deployment paths.
-- Catalog thumbnails, Three.js textures, and fallback images all use the same URL resolver.
-- Placement preview is exactly one cube / one grid square.
-- Added a regression that rejects any starter catalog item that is not a 1×1×1 cube.
-- Updated SOUL, visual language, catalog contract, and live handoff.
-- Netlify remains untouched.
+### Changes Prepared
+
+**Dynamic board**
+
+- Default board state is now 30×30 squares.
+- Board bounds are stored in authoritative BoardState and local persistence.
+- Old Stage 1 local saves without bounds migrate to the new 30×30 default.
+- Building on an outer edge expands only that side by 10 squares.
+- Existing coordinates do not recenter or move.
+- Width/depth stop at 100 squares.
+- Room stamping can expand the board using the same growth primitive.
+- Side-face placement may request a cell beyond the current edge; board growth decides whether it is accepted.
+- Three.js ground, grid, placement plane, camera max distance, and Home framing derive from current bounds.
+- Fallback renderer also derives its grid from current bounds.
+- Clear Map resets to a fresh 30×30 board.
+- Top bar displays live map dimensions.
+
+**Print Map**
+
+- Added a Print Map action.
+- Print output is a separate top-down derived view, not the 3D canvas.
+- One printed grid cell is exactly 1 inch = 5 ft.
+- Letter pages contain 8×10 grid squares.
+- Large layouts tile across pages automatically.
+- Print area uses placed-content bounds plus one square of padding to avoid wasting paper.
+- Pages include corner alignment marks and page labels.
+- Art-backed pieces use their face art; non-art pieces use catalog color + label.
+- Builder UI is hidden during print.
 
 ### Decisions Made
 
-**Geometry never explains what an object is. Face art explains what it is.**
+**Map size should disappear as a setup question.**
 
-A barrel is a cube with barrel art. A door is a cube with door art. A Fighter is a cube with Fighter art.
+The DM starts building on a 30×30 workspace. If more space is needed, the board expands in the direction of construction.
 
-Creature scale remains:
+**Growth is persistent workspace, not Undo history.**
 
-- player / Small / Medium = 1 cube
-- Large = 2×2
-- Huge = 3×3
-- Gargantuan = 4×4
+Undoing/removing the object that triggered growth does not shrink the board underneath the DM.
 
-Multi-cube creatures remain one logical entity.
+**Print is physical-table scale.**
+
+Use Actual Size / 100% in the browser print dialog for exact one-inch squares.
 
 ### Cost Impact
 
 None.
 
+No new package, API, hosted service, or Netlify deployment.
+
 ### Result
 
-Cube-only identity correction and deployed-art URL fix are prepared for strict verification.
+Dynamic board + physical Print Map implementation is prepared for strict verification.
 
 ### Exact Next Step
 
-1. Push this cube-only checkpoint with temporary Pages verification.
-2. Require TypeScript, tests, build, and Pages deployment to pass.
-3. Restore Pages workflow to manual-only.
-4. Browser-check player/monster images and cube geometry.
-5. Then implement the accepted board system: default 30×30, grow by 10-square chunks, hard cap 100×100, plus printable top-down 1-inch grid pages.
+1. Push the dynamic-board/print checkpoint.
+2. Require TypeScript, tests, static build, and Pages deployment to pass.
+3. Fix any real gate failure without weakening checks.
+4. Restore the Pages test workflow to manual-only.
+5. Browser-test:
+   - initial 30×30 size
+   - growth east/west/north/south
+   - repeated growth
+   - room placement near an edge
+   - Home framing after growth
+   - Print Map page preview
+   - 1-inch square scale at Actual Size / 100%
+6. Then continue catalog face-art quality and multi-cube creature footprints.

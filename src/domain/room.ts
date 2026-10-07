@@ -1,5 +1,5 @@
 import {
-  BOARD_CELLS, GRID_FEET, ROOM_MAX_HEIGHT_FEET,
+  GRID_FEET, ROOM_MAX_HEIGHT_FEET,
   ROOM_MAX_LENGTH_FEET, ROOM_MAX_WIDTH_FEET, ROOM_MIN_FEET
 } from './spatial.js';
 import type { GridPosition } from './types.js';
@@ -33,13 +33,14 @@ export function normalizeRoomDimensions(input: RoomDimensions): NormalizedRoom |
   if (widthFeet < ROOM_MIN_FEET || widthFeet > ROOM_MAX_WIDTH_FEET) return null;
   if (heightFeet < ROOM_MIN_FEET || heightFeet > ROOM_MAX_HEIGHT_FEET) return null;
 
-  const lengthCells = lengthFeet / GRID_FEET;
-  const widthCells = widthFeet / GRID_FEET;
-  const heightLevels = heightFeet / GRID_FEET;
-
-  if (lengthCells + 2 > BOARD_CELLS || widthCells + 2 > BOARD_CELLS) return null;
-
-  return { lengthFeet, widthFeet, heightFeet, lengthCells, widthCells, heightLevels };
+  return {
+    lengthFeet,
+    widthFeet,
+    heightFeet,
+    lengthCells: lengthFeet / GRID_FEET,
+    widthCells: widthFeet / GRID_FEET,
+    heightLevels: heightFeet / GRID_FEET
+  };
 }
 
 export function roomOuterSize(room: NormalizedRoom): { lengthCells: number; widthCells: number } {

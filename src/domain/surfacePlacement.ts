@@ -1,5 +1,4 @@
 import { elevationAbove } from './placement.js';
-import { isBoardCell } from './spatial.js';
 import type { GridPosition } from './types.js';
 
 export interface SurfaceNormal {
@@ -25,9 +24,8 @@ export function placementFromSurface(
 
   const dx = absX >= absZ ? Math.sign(normal.x) : 0;
   const dz = absZ > absX ? Math.sign(normal.z) : 0;
-  const x = clicked.x + dx;
-  const z = clicked.z + dz;
-  if (!isBoardCell(x, z)) return null;
 
-  return { x, z, elevation: clicked.elevation };
+  // Side placement may intentionally step past the current board edge.
+  // The authoritative board-growth layer decides whether the board can expand.
+  return { x: clicked.x + dx, z: clicked.z + dz, elevation: clicked.elevation };
 }

@@ -24,6 +24,13 @@ export interface GridPosition {
   elevation: number;
 }
 
+export interface BoardBounds {
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+}
+
 export interface WorldObject extends GridPosition {
   id: string;
   catalogId: CatalogId;
@@ -32,6 +39,7 @@ export interface WorldObject extends GridPosition {
 
 export interface BoardState {
   terrain: TerrainId;
+  bounds: BoardBounds;
   objects: WorldObject[];
   revision: number;
 }

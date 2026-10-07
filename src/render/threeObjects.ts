@@ -75,7 +75,10 @@ export function rotateCamera(THREE: any, camera: any, controls: any, delta: numb
 
 export function zoomCamera(camera: any, controls: any, multiplier: number): void {
   const offset = camera.position.clone().sub(controls.target).multiplyScalar(multiplier);
-  if (offset.length() >= MIN_CAMERA_DISTANCE && offset.length() <= MAX_CAMERA_DISTANCE) {
+  const maxDistance = Number.isFinite(controls.maxDistance)
+    ? controls.maxDistance
+    : MAX_CAMERA_DISTANCE;
+  if (offset.length() >= MIN_CAMERA_DISTANCE && offset.length() <= maxDistance) {
     camera.position.copy(controls.target).add(offset);
   }
   controls.update();

@@ -1,7 +1,8 @@
+import { createDefaultBoardBounds } from './boardBounds.js';
 import type { BoardState, CatalogId, EditCommand, GridPosition, WorldObject } from './types.js';
 
 export function createBoardState(terrain: BoardState['terrain']): BoardState {
-  return { terrain, objects: [], revision: 0 };
+  return { terrain, bounds: createDefaultBoardBounds(), objects: [], revision: 0 };
 }
 
 export function createWorldObject(

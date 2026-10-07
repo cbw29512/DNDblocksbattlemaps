@@ -1,3 +1,4 @@
+import { normalizeBoardBounds } from './boardBounds.js';
 import { createBoardState } from './commands.js';
 import type { BoardState, TerrainId } from './types.js';
 
@@ -7,16 +8,25 @@ function key(terrain: TerrainId): string {
   return `${STORAGE_PREFIX}${terrain}`;
 }
 
+function normalizeBoardState(parsed: Partial<BoardState>, terrain: TerrainId): BoardState {
+  return {
+    terrain,
+    bounds: normalizeBoardBounds(parsed.bounds),
+    objects: Array.isArray(parsed.objects) ? parsed.objects : [],
+    revision: Number.isInteger(parsed.revision) ? Number(parsed.revision) : 0
+  };
+}
+
 export function loadBoard(terrain: TerrainId): BoardState {
   try {
     const raw = localStorage.getItem(key(terrain));
     if (!raw) return createBoardState(terrain);
 
-    const parsed = JSON.parse(raw) as BoardState;
+    const parsed = JSON.parse(raw) as Partial<BoardState>;
     if (parsed.terrain !== terrain || !Array.isArray(parsed.objects)) {
       return createBoardState(terrain);
     }
-    return parsed;
+    return normalizeBoardState(parsed, terrain);
   } catch (error) {
     console.warn('[state] Could not restore local prototype board.', error);
     return createBoardState(terrain);
@@ -32,5 +42,9 @@ export function saveBoard(state: BoardState): void {
 }
 
 export function clearBoard(terrain: TerrainId): void {
-  localStorage.removeItem(key(terrain));
+  try {
+    localStorage.removeItem(key(terrain));
+  } catch (error) {
+    console.warn('[state] Could not clear local prototype board.', error);
+  }
 }

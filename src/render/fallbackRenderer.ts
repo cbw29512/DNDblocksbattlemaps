@@ -1,17 +1,15 @@
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
 import { PALETTE } from '../domain/catalog.js';
 import { stackElevationAt } from '../domain/placement.js';
 import { roomOuterSize, type NormalizedRoom } from '../domain/room.js';
 import {
-  chooseRoomPlacement, previewRoomPlacement,
-  type RoomPlacement
+  chooseRoomPlacement, previewRoomPlacement, type RoomPlacement
 } from '../domain/roomPlacement.js';
-import { MAX_BUILD_HEIGHT_FEET } from '../domain/spatial.js';
-import type { CatalogId, TerrainTheme } from '../domain/types.js';
+import {
+  DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth
+} from '../domain/spatial.js';
+import type { BoardBounds, CatalogId, TerrainTheme } from '../domain/types.js';
 import type { BoardHandlers, BoardRenderer } from './types.js';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
-
-const GRID_SIZE = 20;
-const ORIGIN = GRID_SIZE / 2;
 
 export function createFallbackRenderer(
   container: HTMLElement,
@@ -25,6 +23,7 @@ export function createFallbackRenderer(
   let room: NormalizedRoom | null = null;
   let elevation = 0;
   let theme: TerrainTheme | null = null;
+  let currentBounds: BoardBounds = { ...DEFAULT_BOARD_BOUNDS };
   let currentObjects: Parameters<BoardRenderer['render']>[0]['objects'] = [];
 
   function cellAt(x: number, z: number): HTMLElement | null {
@@ -45,25 +44,30 @@ export function createFallbackRenderer(
 
     const outer = roomOuterSize(room);
     const { corner, orientation } = placement;
+
     for (let dx = 0; dx < outer.lengthCells; dx += 1) {
       const x = corner.x + orientation.x * dx;
       cellAt(x, corner.z)?.classList.add('room-preview');
       cellAt(x, corner.z + orientation.z * (outer.widthCells - 1))?.classList.add('room-preview');
     }
+
     for (let dz = 1; dz < outer.widthCells - 1; dz += 1) {
       const z = corner.z + orientation.z * dz;
       cellAt(corner.x, z)?.classList.add('room-preview');
       cellAt(corner.x + orientation.x * (outer.lengthCells - 1), z)?.classList.add('room-preview');
     }
+
     anchor?.classList.add('room-corner');
   }
 
   function draw(): void {
     board.innerHTML = '';
     board.style.setProperty('--fallback-ground', theme?.accentCss ?? '#879072');
+    board.style.gridTemplateColumns = `repeat(${boardWidth(currentBounds)}, 1fr)`;
+    board.style.gridTemplateRows = `repeat(${boardDepth(currentBounds)}, 1fr)`;
 
-    for (let z = -ORIGIN; z < ORIGIN; z += 1) {
-      for (let x = -ORIGIN; x < ORIGIN; x += 1) {
+    for (let z = currentBounds.minZ; z < currentBounds.maxZ; z += 1) {
+      for (let x = currentBounds.minX; x < currentBounds.maxX; x += 1) {
         const cell = document.createElement('button');
         cell.className = 'fallback-cell';
         cell.type = 'button';
@@ -87,15 +91,15 @@ export function createFallbackRenderer(
         cell.addEventListener('pointerenter', () => {
           if (!room) return;
           const corner = { x, z, elevation };
-          const placement = chooseRoomPlacement(room, corner, currentObjects);
+          const placement = chooseRoomPlacement(room, corner, currentObjects, currentBounds);
           paintRoomPreview(placement ?? previewRoomPlacement(corner), Boolean(placement));
         });
 
         cell.addEventListener('click', () => {
           if (room) {
-            const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects);
+            const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects, currentBounds);
             if (placement) handlers.onRoomPlacement(placement);
-            else handlers.onStatus('That corner cannot fit this room.');
+            else handlers.onStatus('That room would exceed the map limit.');
             return;
           }
 
@@ -112,23 +116,40 @@ export function createFallbackRenderer(
           event.preventDefault();
           if (top) handlers.onRemove(top.id);
         });
+
         board.append(cell);
       }
     }
   }
 
-  handlers.onStatus('Room stamp automatically flips direction to fit near map edges.');
+  handlers.onStatus('Build toward an edge and the map grows automatically.');
 
   return {
     mode: 'fallback',
-    setTheme(next) { theme = next; draw(); },
-    setSelectedCatalog(next) { selected = next; },
-    setRoomPlacement(next) { room = next; draw(); },
-    setElevation(next) { elevation = next; },
-    render(state) { currentObjects = state.objects; draw(); },
+    setTheme(next) {
+      theme = next;
+      draw();
+    },
+    setSelectedCatalog(next) {
+      selected = next;
+    },
+    setRoomPlacement(next) {
+      room = next;
+      draw();
+    },
+    setElevation(next) {
+      elevation = next;
+    },
+    render(state) {
+      currentBounds = { ...state.bounds };
+      currentObjects = state.objects;
+      draw();
+    },
     rotate() {},
     zoom() {},
     resetCamera() {},
-    dispose() { board.remove(); }
+    dispose() {
+      board.remove();
+    }
   };
 }

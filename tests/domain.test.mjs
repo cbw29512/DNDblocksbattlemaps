@@ -7,13 +7,24 @@ import {
 import {
   CATALOG_CATEGORIES, DEFAULT_PALETTE, PALETTE, catalogIdsForCategory
 } from '../.test-build/src/domain/catalog.js';
+import {
+  createDefaultBoardBounds, growBoardBounds
+} from '../.test-build/src/domain/boardBounds.js';
+import {
+  PRINT_PAGE_COLUMNS, PRINT_PAGE_ROWS,
+  printAreaForState, printTilesForArea, topObjectAt
+} from '../.test-build/src/domain/printLayout.js';
 import { commit, createHistory, redo, undo } from '../.test-build/src/domain/history.js';
 import { elevationAbove, stackElevationAt } from '../.test-build/src/domain/placement.js';
 import { normalizeRoomDimensions } from '../.test-build/src/domain/room.js';
 import {
   chooseRoomPlacement, roomFitsAtCorner, roomWallPositions
 } from '../.test-build/src/domain/roomPlacement.js';
-import { MAX_BASE_ELEVATION, MAX_BUILD_HEIGHT_FEET } from '../.test-build/src/domain/spatial.js';
+import {
+  BOARD_MAX_CELLS, DEFAULT_BOARD_CELLS,
+  MAX_BASE_ELEVATION, MAX_BUILD_HEIGHT_FEET,
+  boardDepth, boardWidth
+} from '../.test-build/src/domain/spatial.js';
 import { placementFromSurface } from '../.test-build/src/domain/surfacePlacement.js';
 
 test('placing preserves intentional overlap', () => {
@@ -100,8 +111,11 @@ test('surface placement uses top face for up and side faces for out', () => {
   assert.deepEqual(placementFromSurface(clicked, 4, { x: 0, y: 0, z: -1 }, 0), { x: 2, z: 2, elevation: 4 });
 });
 
-test('side-face placement cannot leave the current board', () => {
-  assert.equal(placementFromSurface({ x: 9, z: 0, elevation: 0 }, 0, { x: 1, y: 0, z: 0 }, 0), null);
+test('side-face placement may request the next cell so the board can grow', () => {
+  assert.deepEqual(
+    placementFromSurface({ x: 14, z: 0, elevation: 0 }, 0, { x: 1, y: 0, z: 0 }, 0),
+    { x: 15, z: 0, elevation: 0 }
+  );
 });
 
 test('room stamp can grow in all four directions from a clicked corner', () => {
@@ -177,4 +191,57 @@ test('every starter catalog object obeys the perfect-cube invariant', () => {
     assert.equal(item.height, 1, `${id} height must be one grid cell`);
     assert.equal(item.footprintCells ?? 1, 1, `${id} starter footprint must be one cell`);
   }
+});
+
+
+test('new boards start at 30x30 squares', () => {
+  const state = createBoardState('castle');
+  assert.equal(DEFAULT_BOARD_CELLS, 30);
+  assert.equal(boardWidth(state.bounds), 30);
+  assert.equal(boardDepth(state.bounds), 30);
+});
+
+test('building on an edge grows only that board side by a 10-square chunk', () => {
+  const start = createDefaultBoardBounds();
+  const grown = growBoardBounds(start, [{ x: 14, z: 0 }]);
+  assert.ok(grown);
+  assert.equal(grown.minX, -15);
+  assert.equal(grown.maxX, 25);
+  assert.equal(boardWidth(grown), 40);
+  assert.equal(boardDepth(grown), 30);
+});
+
+test('board growth stops at the 100x100 safety cap', () => {
+  const maxWidth = { minX: -15, maxX: 85, minZ: -15, maxZ: 15 };
+  assert.equal(boardWidth(maxWidth), BOARD_MAX_CELLS);
+  assert.equal(growBoardBounds(maxWidth, [{ x: 84, z: 0 }]), null);
+});
+
+test('print pages are physical 8x10-square tiles', () => {
+  assert.equal(PRINT_PAGE_COLUMNS, 8);
+  assert.equal(PRINT_PAGE_ROWS, 10);
+  const tiles = printTilesForArea({ minX: 0, maxX: 17, minZ: 0, maxZ: 21 });
+  assert.equal(tiles.length, 9);
+  assert.deepEqual(tiles[0], {
+    minX: 0, maxX: 8, minZ: 0, maxZ: 10, pageColumn: 0, pageRow: 0
+  });
+});
+
+test('print area follows built content with one-square padding', () => {
+  const state = createBoardState('field');
+  state.objects = [
+    createWorldObject('one', 'wall', { x: -2, z: 3, elevation: 0 }, 1),
+    createWorldObject('two', 'hero-fighter', { x: 4, z: 7, elevation: 0 }, 2)
+  ];
+  assert.deepEqual(printAreaForState(state), {
+    minX: -3, maxX: 6, minZ: 2, maxZ: 9
+  });
+});
+
+test('print map uses the top object in an occupied square', () => {
+  const objects = [
+    createWorldObject('ground', 'chest', { x: 1, z: 1, elevation: 0 }, 1),
+    createWorldObject('top', 'hero-fighter', { x: 1, z: 1, elevation: 1 }, 2)
+  ];
+  assert.equal(topObjectAt(objects, 1, 1)?.id, 'top');
 });

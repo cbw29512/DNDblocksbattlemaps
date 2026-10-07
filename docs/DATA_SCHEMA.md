@@ -48,12 +48,26 @@ Exact authentication provider remains a technology decision.
 - game_id
 - name
 - terrain_theme
-- width_cells
-- height_cells
-- max_z
+- min_x
+- max_x_exclusive
+- min_z
+- max_z_exclusive
+- width_cells (derived)
+- height_cells (derived)
+- max_vertical_level
 - grid_scale_feet: 5
 - created_at
 - updated_at
+
+### Dynamic board bounds
+
+Stage 1 starts at **30 × 30 cells**.
+
+When building reaches an outer edge, that side may expand by **10 cells**. Width and depth are independently bounded at **100 cells maximum**.
+
+Board bounds are authoritative persisted map state. Renderer geometry derives from these bounds and does not own them.
+
+Expansion is not automatically undone when an object is later removed; the extra workspace remains available.
 
 ## EditorState
 

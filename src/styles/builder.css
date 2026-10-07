@@ -46,3 +46,88 @@
   .catalog-tabs { position:static;grid-template-columns:repeat(4,max-content);background:transparent;padding:0; }
   .palette-list[hidden] { display:none; }
 }
+
+
+/* Printable physical battle map. One CSS inch equals one 5-ft square. */
+.print-map-root { display:none; }
+@page { size: letter portrait; margin:.25in; }
+
+@media print {
+  html, body { margin:0 !important; padding:0 !important; background:#fff !important; }
+  body { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  #app { display:none !important; }
+  .print-map-root { display:block !important; }
+
+  .print-sheet {
+    position:relative;
+    width:8in;
+    height:10in;
+    margin:0;
+    break-after:page;
+    page-break-after:always;
+    overflow:hidden;
+    background:#fff;
+  }
+  .print-sheet:last-child { break-after:auto; page-break-after:auto; }
+
+  .print-grid {
+    display:grid;
+    grid-template-columns:repeat(8,1in);
+    grid-template-rows:repeat(10,1in);
+    width:8in;
+    height:10in;
+  }
+
+  .print-cell {
+    position:relative;
+    width:1in;
+    height:1in;
+    box-sizing:border-box;
+    overflow:hidden;
+    border-right:.012in solid #4c4c4c;
+    border-bottom:.012in solid #4c4c4c;
+    background:var(--print-cell-color,#fff);
+    display:grid;
+    place-items:center;
+  }
+  .print-cell:nth-child(-n+8) { border-top:.012in solid #4c4c4c; }
+  .print-cell:nth-child(8n+1) { border-left:.012in solid #4c4c4c; }
+  .print-cell-blank { background:#fff; }
+  .print-cell-object span {
+    padding:.05in;
+    font:700 8pt/1.05 system-ui,sans-serif;
+    text-align:center;
+    color:#111;
+    background:rgba(255,255,255,.72);
+    border-radius:.05in;
+  }
+  .print-cell-object img {
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    background:var(--print-cell-color);
+  }
+
+  .print-page-label {
+    position:absolute;
+    right:.08in;
+    bottom:.04in;
+    z-index:5;
+    padding:.02in .05in;
+    background:rgba(255,255,255,.82);
+    color:#222;
+    font:600 6pt/1 system-ui,sans-serif;
+  }
+
+  .print-mark {
+    position:absolute;
+    z-index:6;
+    width:.12in;
+    height:.12in;
+    pointer-events:none;
+  }
+  .print-mark-tl { top:0;left:0;border-top:.02in solid #000;border-left:.02in solid #000; }
+  .print-mark-tr { top:0;right:0;border-top:.02in solid #000;border-right:.02in solid #000; }
+  .print-mark-bl { bottom:0;left:0;border-bottom:.02in solid #000;border-left:.02in solid #000; }
+  .print-mark-br { bottom:0;right:0;border-bottom:.02in solid #000;border-right:.02in solid #000; }
+}

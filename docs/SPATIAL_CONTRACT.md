@@ -20,6 +20,27 @@ Therefore the base logical voxel is:
 
 The UI should speak in D&D-friendly feet first, not internal X/Y/Z coordinates.
 
+## Dynamic Board Growth
+
+The Stage 1 board starts at **30 × 30 squares**.
+
+The DM does not choose a board size before building.
+
+When placement reaches an outer edge:
+
+- expand only the side being built toward
+- add 10 squares at a time
+- preserve all existing world coordinates
+- do not recenter or move existing rooms
+- persist the new board bounds
+- stop at 100 squares wide or 100 squares deep
+
+Room stamping may trigger the same growth when its footprint reaches beyond the current board.
+
+Removing/undoing the object that caused growth does not automatically shrink the board.
+
+The 100×100 cap is an initial browser/performance safety limit.
+
 ## Room Dimension Inputs
 
 The DM enters:
@@ -58,7 +79,7 @@ Current Stage 1 limits:
 - manual/build height: **40 ft maximum (8 block levels)**
 - all values resolve to 5-ft levels
 
-The 90-ft interior Length/Width maximum leaves one 5-ft perimeter wall cell on each side of the current 20×20 board.
+The Room Builder intentionally remains capped at a 90-ft interior Length/Width even though the overall board can grow larger.
 
 A 40-ft wall is 8 block levels high.
 
@@ -109,7 +130,7 @@ The builder automatically evaluates the four directions before placement:
 
 No separate rotation dialog is required for this Stage 1 workflow.
 
-A room stamp must fit completely inside the current board and below the vertical build cap.
+A room stamp must fit below the vertical build cap and within the board's 100×100 maximum. If its chosen footprint reaches beyond the current board, the board expands in 10-square chunks to contain it.
 
 After placement, the same stamp remains armed so multiple rooms of the same dimensions can be created rapidly.
 
