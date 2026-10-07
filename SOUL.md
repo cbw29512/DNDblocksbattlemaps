@@ -316,6 +316,24 @@ Before implementing any feature:
 12. Update and push `PROJECT_STATE.md` before ending the work session.
 13. If implementation and this document disagree, stop and reconcile them before continuing.
 
+## Web-First Reuse Rule
+
+The implementation stack must be web-friendly.
+
+Prefer:
+
+- browser-native technologies
+- permissively licensed open-source libraries
+- hosted free tiers with open-source/self-host escape paths
+- static frontend deployment when possible
+- direct browser-to-service architectures when they safely eliminate unnecessary custom servers
+
+Do not build a custom backend, container stack, realtime engine, auth system, renderer, or asset pipeline if a mature open-source/free solution satisfies the actual requirement with less code and less cost.
+
+The project should reuse commodity technology and reserve custom code for the product-specific value: the kid-simple block battle-map experience, data model, permissions, and DM/player interaction.
+
+See `docs/TECH_STACK_CANDIDATES.md`.
+
 ## External Reuse Gate
 
 Minecraft may be used as a design/catalog reference only. Do not copy Minecraft code, textures, sounds, models, UI art, game files, or proprietary block artwork/look into this project.
