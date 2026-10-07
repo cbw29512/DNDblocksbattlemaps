@@ -169,6 +169,39 @@ Room dimensions are entered in feet, snap to 5-foot increments, and describe usa
 
 Camera stays at a fixed tabletop-style elevation near 30° above the board plane for MVP, with horizontal orbit, pan, zoom, and an obvious Reset/Home control. Do not allow free vertical tilt or first-person/free-fly camera in MVP. See `docs/CAMERA_CONTRACT.md`.
 
+## DM Placement Authority
+
+The DM may place any block, object, creature, hazard, or trigger in any grid location or supported elevation.
+
+BUILD mode must not reject placement merely because the destination is occupied or the combination is unusual.
+
+Examples that must be possible include:
+
+- monster in an open pit
+- creature standing on a hidden trap
+- pressure plate beneath a rug
+- trap beneath a table
+- creature in fire/lava/hazard space
+- several triggers sharing a cell
+- treasure inside a trapped chest
+- monster in a doorway
+
+The interface may warn about overlap, but the DM remains authoritative.
+
+Placement rules and PLAY movement/blocking rules are separate concepts.
+
+## Universal Trigger / Effect Rule
+
+Traps, hazards, surprise objects, and transforming objects should be assembled from reusable behavior:
+
+**Trigger → Target → Effect(s) → Duration/End → optional Detect/Disarm**
+
+Do not build a separate engine for each named trap.
+
+A universal transform/replace effect must support object-to-creature or object-to-object surprises such as chest → mimic, statue → gargoyle, armor → animated armor, or bones → skeleton.
+
+See `docs/TRAPS_AND_EFFECTS.md`.
+
 ## Locked Construction
 
 Locking is a universal editing control.
