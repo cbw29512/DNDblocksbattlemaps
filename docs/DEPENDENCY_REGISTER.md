@@ -105,27 +105,27 @@ Hosted-service cost:
 
 ### Netlify
 
-Status: selected deployment target; not yet configured.
+Status: selected deployment target; not yet configured for this project.
 
 Purpose:
 
-- static frontend hosting/CDN
-- Git-based production deploys and previews
+- public static frontend hosting/CDN
+- Git-based milestone deploys
+- deploy previews/rollback when useful
 
-Current pricing note (2026-10-07):
+Account note:
 
-- Free plan: $0/month
-- 300 credits/month hard limit
-- production deploy: currently 15 credits
-- bandwidth: currently 20 credits/GB
-- web requests: currently 2 credits per 10,000 requests
-- Free plan has no overage charge; projects pause when the credit limit is reached
+- user reports an existing paid/Plus Netlify plan
+- Netlify has changed public plan names/pricing over time and legacy accounts may retain older plans
+- exact limits/costs for this account must be checked in the user's Netlify dashboard when deployment begins
 
-Cost-control rule:
+Deployment rule:
 
+- normal development/testing is local
 - avoid unnecessary production deploys
-- recheck pricing/credit rules before public launch
-- keep the frontend portable so another static host remains an exit path
+- push coherent source checkpoints to GitHub
+- publish to Netlify when a milestone is locally tested and worth reviewing live
+- verify live release and preserve rollback path
 
 ### Original / CC0 Assets
 
