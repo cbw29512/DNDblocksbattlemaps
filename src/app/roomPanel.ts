@@ -5,17 +5,44 @@ import { normalizeRoomDimensions, type NormalizedRoom } from '../domain/room.js'
 
 export function roomPanelHtml(): string {
   return `
-    <section class="room-builder">
+    <section class="room-builder" aria-labelledby="room-builder-title">
       <div class="room-builder-title">
         <span class="eyebrow">Room Builder</span>
-        <strong>Length × Width × Height</strong>
+        <strong id="room-builder-title">Length × Width × Height</strong>
+        <span class="room-builder-intro">Enter the inside size of the room.</span>
       </div>
+
       <div class="room-inputs">
-        <label>L<input id="room-length" type="number" min="5" max="${ROOM_MAX_LENGTH_FEET}" step="5" value="30"><small>ft</small></label>
-        <label>W<input id="room-width" type="number" min="5" max="${ROOM_MAX_WIDTH_FEET}" step="5" value="20"><small>ft</small></label>
-        <label>H<input id="room-height" type="number" min="5" max="${ROOM_MAX_HEIGHT_FEET}" step="5" value="10"><small>ft</small></label>
+        <label class="room-field" for="room-length">
+          <span>Length</span>
+          <span class="room-number">
+            <input id="room-length" type="number" min="5" max="${ROOM_MAX_LENGTH_FEET}" step="5" value="30">
+            <b>ft</b>
+          </span>
+        </label>
+
+        <label class="room-field" for="room-width">
+          <span>Width</span>
+          <span class="room-number">
+            <input id="room-width" type="number" min="5" max="${ROOM_MAX_WIDTH_FEET}" step="5" value="20">
+            <b>ft</b>
+          </span>
+        </label>
+
+        <label class="room-field" for="room-height">
+          <span>Height</span>
+          <span class="room-number">
+            <input id="room-height" type="number" min="5" max="${ROOM_MAX_HEIGHT_FEET}" step="5" value="10">
+            <b>ft</b>
+          </span>
+        </label>
       </div>
-      <small class="room-builder-help">Max ${ROOM_MAX_LENGTH_FEET} × ${ROOM_MAX_WIDTH_FEET} × ${ROOM_MAX_HEIGHT_FEET} ft · no ceiling</small>
+
+      <div class="room-builder-help">
+        <b>5-foot steps</b>
+        <span>Max ${ROOM_MAX_LENGTH_FEET} × ${ROOM_MAX_WIDTH_FEET} × ${ROOM_MAX_HEIGHT_FEET} ft · walls only · no ceiling</span>
+      </div>
+
       <button id="build-room" class="button room-build-button" type="button">Build Room</button>
     </section>
   `;

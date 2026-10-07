@@ -98,6 +98,7 @@ The DM is the authority. The board must work without automated RPG rules.
 63. **Vertical build cap is 8 blocks / 40 ft.** Taller stacks leave the useful tabletop view; room height and manual elevation share this cap.
 64. **Placement shadow is authoritative feedback.** The landing footprint/shadow must sit on the exact destination surface/cell so stacking and side placement remain obvious.
 65. **Zoom remains simple but farther.** Keep fixed camera elevation; allow more zoom-out so the 8th block can remain inspectable.
+66. **Room Builder labels are plain-language and readable.** Use full Length/Width/Height labels, vertically stacked fields, high contrast, and a large Build Room action; do not compress core dimensions into tiny L/W/H controls.
 
 ## Cost Guardrail
 
@@ -216,49 +217,29 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The room/stacking checkpoint was green, and browser testing showed two follow-up usability issues:
+The face-aware placement / 8-block-height checkpoint passed both GitHub verification and Pages deployment.
 
-1. tall stacks needed more obvious landing feedback and additional zoom-out
-2. the user needs to build sideways from elevated blocks, not only upward
-
-The user also observed that an eighth block is already near the useful vertical view limit.
+Browser testing then showed the Room Builder itself was hard to read: Length/Width/Height were compressed into tiny L/W/H controls and the limit/help text was too small and low-contrast.
 
 ### Changes Made
 
-- Reduced the global vertical build cap from 50 ft / 10 levels to **40 ft / 8 levels**.
-- Room Height now shares the same 40-ft maximum.
-- Added a universal face-aware surface-placement primitive.
-- Top face → one level above the highest object in that column.
-- Side face → adjacent grid cell in the clicked face direction at the clicked block's elevation.
-- Side placement is blocked only when it would leave the current board.
-- Empty grid continues to use the current explicit elevation.
-- Strengthened the landing preview:
-  - brighter edge outline
-  - larger amber landing footprint
-  - larger/darker contact shadow
-- Extended camera zoom-out range while preserving the locked tabletop elevation.
-- Added unit coverage for:
-  - 8-block/40-ft cap
-  - room rejection above 40 ft
-  - top-face placement
-  - ±X/±Z side placement
-  - board-edge rejection
-- Updated placement, spatial, camera, and live-state contracts.
+- Widened the desktop builder sidebar from 250 px to 280 px.
+- Replaced L / W / H abbreviations with full **Length / Width / Height** labels.
+- Stacked room dimension controls vertically.
+- Increased numeric input size and contrast.
+- Made the feet unit visually explicit beside every value.
+- Added a plain-language instruction: **Enter the inside size of the room.**
+- Moved limits into a higher-contrast helper panel.
+- Increased the **Build Room** button height/type weight.
+- Preserved the existing room behavior and 90 × 90 × 40 ft limits.
+- Updated the visual-language contract.
 - Netlify remains untouched.
 
-### Decisions Made
+### Decision
 
-**8 blocks / 40 ft is the Stage 1 vertical limit.**
+**Primary build controls favor readability over density.**
 
-Reason: higher stacks leave the useful tabletop view and are disproportionate to the current board.
-
-**Face-aware placement is the canonical manual block interaction.**
-
-Reason: top = up and side = out matches the physical magnetic-block metaphor while still requiring only one click.
-
-**The landing footprint/shadow is a primary placement cue.**
-
-Reason: perspective makes exact placement harder as elevation rises; the target surface/cell must be obvious before click.
+Reason: the product goal is kid-simple. Room dimensions are a core action and should not be compressed merely to save sidebar space.
 
 ### Cost Impact
 
@@ -266,18 +247,12 @@ None.
 
 ### Result
 
-Source and browser-snapshot implementation are prepared for the face-aware/40-ft checkpoint.
+The Room Builder readability redesign is ready for verification on top of the already-green face-aware placement checkpoint.
 
 ### Exact Next Step
 
-1. Push this checkpoint with a temporary verification trigger.
-2. Require strict TypeScript, unit tests, Vite build, and Pages deployment to pass.
-3. Restore Pages test workflow to manual-only.
-4. Browser-test:
-   - top-face stacking
-   - all four side-face directions
-   - 8th-level placement
-   - 9th-level rejection
-   - zoom-out at full height
-   - landing shadow clarity
-5. Then proceed to the real block/character/monster catalog.
+1. Push the readability checkpoint.
+2. Require TypeScript, unit tests, build, and Pages deployment to stay green.
+3. Restore the Pages workflow to manual-only after verification.
+4. Hard-refresh and visually verify Room Builder readability.
+5. Continue catalog work after any final builder usability corrections.

@@ -51,6 +51,21 @@ Do not make terrain textures so detailed that the grid becomes difficult to read
 
 Grid lines must remain visible enough for play.
 
+## Builder Form Readability
+
+Primary builder controls must use plain-language labels and readable type.
+
+For the Room Builder:
+
+- write **Length**, **Width**, and **Height** rather than relying on L/W/H abbreviations
+- stack the fields vertically in the desktop sidebar rather than squeezing three numeric controls into one row
+- show feet clearly beside each value
+- use high-contrast input text and labels
+- keep helper/limit text readable but visually secondary
+- primary actions such as **Build Room** use a full-width, easy-to-hit button
+
+A user should not have to squint or infer what an abbreviation means.
+
 ## Placement Ghost
 
 The placement ghost shows:
