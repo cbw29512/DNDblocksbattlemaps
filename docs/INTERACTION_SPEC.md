@@ -335,6 +335,25 @@ The trap's name/art/data describes the source.
 
 The board behavior remains generic.
 
+## Player Join Flow
+
+MVP flow:
+
+1. Player opens a join link or enters a short game code.
+2. Player enters a display name.
+3. Player joins as the explicit Player role.
+4. DM assigns a character/game piece.
+5. Player immediately sees which piece is theirs.
+
+A permanent player account is not required for MVP, but the browser should remember the active session when practical so refresh/reconnect restores identity and control.
+
+## Player Ownership
+
+- players may control only assigned entities
+- DM may assign/reassign at any time
+- the player's controlled piece should have an obvious visual cue
+- one primary character per player is the default UI path, while data may allow multiple assigned entities
+
 ## Player Interaction
 
 The player interface should be even simpler than the DM interface.
@@ -350,6 +369,12 @@ A player should primarily:
 Players should not see build controls.
 
 Players should not accidentally move room construction.
+
+Player interaction may invoke universal triggers/effects such as open/close, touch/use, switch/lever, chest interaction, enter-cell trap triggers, or transform/replace surprises.
+
+If a player's entity has a movement-lock effect, the piece cannot be moved by that player and should show a simple visible cue such as a lock icon or `Stuck`. The DM can always clear or override it.
+
+See `PLAYER_JOIN_CONTRACT.md`.
 
 ## Simplicity Rules
 
