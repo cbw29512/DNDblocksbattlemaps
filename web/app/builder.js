@@ -1,15 +1,15 @@
-import { catalogPanelHtml, setCatalogCategory } from './catalogPanel.js';
-import { printBoardMap } from './printMap.js';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js';
-import { PALETTE, TERRAIN_THEMES } from '../domain/catalog.js';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js';
-import { commit, createHistory, redo, undo } from '../domain/history.js';
-import { roomSummary } from '../domain/room.js';
-import { roomWallPositions } from '../domain/roomPlacement.js';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js';
-import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js';
-import { createRenderer } from '../render/createRenderer.js';
+import { catalogPanelHtml, setCatalogCategory } from './catalogPanel.js?v=1791d49a97ad';
+import { printBoardMap } from './printMap.js?v=1791d49a97ad';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=1791d49a97ad';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=1791d49a97ad';
+import { PALETTE, TERRAIN_THEMES } from '../domain/catalog.js?v=1791d49a97ad';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=1791d49a97ad';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=1791d49a97ad';
+import { roomSummary } from '../domain/room.js?v=1791d49a97ad';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=1791d49a97ad';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=1791d49a97ad';
+import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=1791d49a97ad';
+import { createRenderer } from '../render/createRenderer.js?v=1791d49a97ad';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }

@@ -1,5 +1,5 @@
-import { CATALOG_CATEGORIES, PALETTE, catalogIdsForCategory } from '../domain/catalog.js';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
+import { CATALOG_CATEGORIES, PALETTE, catalogIdsForCategory } from '../domain/catalog.js?v=1791d49a97ad';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=1791d49a97ad';
 function visual(item) {
     return item.art
         ? `<img class="palette-art" src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`

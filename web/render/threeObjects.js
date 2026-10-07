@@ -1,5 +1,5 @@
-import { PALETTE } from '../domain/catalog.js';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
+import { PALETTE } from '../domain/catalog.js?v=1791d49a97ad';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=1791d49a97ad';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;
