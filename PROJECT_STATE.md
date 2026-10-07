@@ -217,9 +217,9 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The face-aware placement / 8-block-height checkpoint passed both GitHub verification and Pages deployment.
+The face-aware placement / 8-block-height checkpoint was green and live.
 
-Browser testing then showed the Room Builder itself was hard to read: Length/Width/Height were compressed into tiny L/W/H controls and the limit/help text was too small and low-contrast.
+Browser testing then showed the Room Builder was difficult to read because the L/W/H controls were cramped and the supporting text was too small and low-contrast.
 
 ### Changes Made
 
@@ -227,13 +227,30 @@ Browser testing then showed the Room Builder itself was hard to read: Length/Wid
 - Replaced L / W / H abbreviations with full **Length / Width / Height** labels.
 - Stacked room dimension controls vertically.
 - Increased numeric input size and contrast.
-- Made the feet unit visually explicit beside every value.
-- Added a plain-language instruction: **Enter the inside size of the room.**
-- Moved limits into a higher-contrast helper panel.
-- Increased the **Build Room** button height/type weight.
-- Preserved the existing room behavior and 90 × 90 × 40 ft limits.
+- Made the feet unit explicit beside every value.
+- Added plain-language guidance: **Enter the inside size of the room.**
+- Moved the max-size/no-ceiling note into a clearer helper panel.
+- Increased the **Build Room** button size/weight.
+- Preserved all existing room behavior and the current **90 × 90 × 40 ft** safety limits.
 - Updated the visual-language contract.
 - Netlify remains untouched.
+
+### Verification
+
+Checkpoint commit:
+
+- `7f6e542550017a4d315d5982112e5f1cfef59657`
+
+Connected verification:
+
+- **Deploy GitHub Pages Test run #5:** SUCCESS
+- **GitHub pages build and deployment run #15:** SUCCESS
+- TypeScript typecheck: passed
+- unit tests: passed
+- static build: passed
+- Pages deployment: passed
+
+The temporary push trigger used for verification is now restored to manual-only.
 
 ### Decision
 
@@ -247,12 +264,15 @@ None.
 
 ### Result
 
-The Room Builder readability redesign is ready for verification on top of the already-green face-aware placement checkpoint.
+The Room Builder readability redesign is verified and live on the GitHub Pages test surface.
 
 ### Exact Next Step
 
-1. Push the readability checkpoint.
-2. Require TypeScript, unit tests, build, and Pages deployment to stay green.
-3. Restore the Pages workflow to manual-only after verification.
-4. Hard-refresh and visually verify Room Builder readability.
-5. Continue catalog work after any final builder usability corrections.
+1. Hard-refresh the test site.
+2. Confirm Length / Width / Height are easy to read and edit.
+3. Continue testing face-aware placement, landing shadow, zoom-out, and 8-block height cap.
+4. Then proceed to the real catalog lane:
+   - construction blocks
+   - furniture/props
+   - player/character pieces
+   - monster pieces using Iron Pit silhouettes.
