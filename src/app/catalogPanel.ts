@@ -1,9 +1,10 @@
 import { CATALOG_CATEGORIES, PALETTE, catalogIdsForCategory } from '../domain/catalog.js';
 import type { CatalogCategory, CatalogId, PaletteItem } from '../domain/types.js';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
 
 function visual(item: PaletteItem): string {
   return item.art
-    ? `<img class="palette-art" src="${item.art.src}" alt="" loading="lazy" decoding="async">`
+    ? `<img class="palette-art" src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`
     : `<i class="palette-swatch" style="--item-color:#${item.color.toString(16).padStart(6,'0')}"></i>`;
 }
 function button(item: PaletteItem, selected: CatalogId): string {

@@ -19,6 +19,21 @@ The visual direction is:
 
 Clarity matters more than realism.
 
+## Perfect-Cube Invariant
+
+Every board piece is composed from exact 5-foot cubes.
+
+The picture/material tells the user what the cube represents. Geometry does not.
+
+Examples:
+
+- barrel picture on cube faces = Barrel
+- door picture on cube faces = Door
+- Fighter picture on cube faces = Fighter
+- Goblin picture on cube faces = Goblin
+
+Small/Medium/player pieces use one cube. Large/Huge/Gargantuan creatures use 2×2 / 3×3 / 4×4 cube footprints while remaining one logical entity.
+
 ## Visual Cohesion Is a Release Gate
 
 The visual presentation is part of the product value, not optional polish.

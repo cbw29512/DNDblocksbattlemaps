@@ -8,6 +8,23 @@ DND Blocks Battle Maps is a browser-based virtual tabletop built around one idea
 
 It should feel like using a box of magnetic dungeon terrain on a physical table, not configuring a complicated VTT.
 
+## Cube-Only World
+
+The board is built from perfect 5-foot cubes.
+
+- every player character is one 5-ft cube
+- Small/Medium creatures use one cube
+- Large creatures use a 2×2 cube footprint
+- Huge creatures use a 3×3 cube footprint
+- Gargantuan creatures use a 4×4 cube footprint
+- multi-cube creatures remain one logical entity
+- props, doors, traps, furniture, monsters, and characters are identified by face artwork/state, not custom 3D mesh shape
+- a barrel is a cube with barrel art on its faces
+- a door is a cube with door art on its faces
+- no cylinders, standees, thin doors, rectangular furniture meshes, or arbitrary board models
+
+This cube language is the core product identity.
+
 ## Prime Directives
 
 1. **Simple first.** The fastest path from an idea to a playable encounter wins.

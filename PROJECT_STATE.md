@@ -93,7 +93,7 @@ The DM is the authority. The board must work without automated RPG rules.
 58. **Local-first release discipline.** Normal development/testing is local; GitHub pushes are coherent checkpoints; Netlify production deploys are deliberate milestone releases.
 59. **GitHub Pages is test-only.** It may host temporary static prototype builds for browser testing, but Netlify remains the production/commercial host.
 60. **Pages deploys are manual-only.** Normal GitHub pushes do not automatically publish the test site.
-61. **Iron Pit monster silhouettes are the default monster face art.** Reuse the Chris-approved assets at `D20-ironpit/frontend/assets/portraits/monsters/{id}.webp` on monster blocks/standees, keyed by catalog/art ID rather than monster-specific rendering code.
+61. **Iron Pit monster silhouettes are the default monster face art.** Reuse the Chris-approved assets at `D20-ironpit/frontend/assets/portraits/monsters/{id}.webp` on monster cube faces, keyed by catalog/art ID rather than monster-specific rendering code.
 62. **Preserve silhouette identity discipline.** Do not substitute related creature art when Iron Pit already distinguishes variants, sizes, ages, or renamed edition creatures.
 63. **Vertical build cap is 8 blocks / 40 ft.** Taller stacks leave the useful tabletop view; room height and manual elevation share this cap.
 64. **Placement shadow is authoritative feedback.** The landing footprint/shadow must sit on the exact destination surface/cell so stacking and side placement remain obvious.
@@ -105,10 +105,11 @@ The DM is the authority. The board must work without automated RPG rules.
 70. **Room stamps choose direction automatically.** From the clicked outside-wall corner, test all four grid directions, reject out-of-bounds directions, and prefer a valid direction with less existing construction overlap. The preview must show the exact chosen direction before click.
 71. **Room stamp has an explicit cancel path.** While active, Build Room becomes Cancel Room; clicking it or pressing Escape exits room mode, removes the room preview, and restores the previously selected block.
 72. **Catalog UI uses four kid-readable groups.** Build / Props / Characters / Monsters are tabs; do not expose the future full library as one giant inventory.
-73. **Catalog rendering stays generic.** Items are data: category, dimensions, generic shape, color, optional art. Do not create item-specific renderers.
+73. **Catalog rendering stays generic and cube-only.** Items are data: category, cube footprint, color, optional face art. Every board object renders from exact 5-ft cubes; do not create item-specific meshes or renderers.
 74. **Visual cohesion is a release gate.** The board should read as one premium physical dungeon-toy set; mechanically correct but visually mismatched work does not pass a milestone.
 75. **Open-source art is a parts shelf, not our identity.** KayKit/Kenney CC0 resources are vetted candidates, but only selectively imported after camera/style testing and provenance recording.
 76. **Starter combatant art is bundled locally.** Initial hero/monster art is copied from pinned Iron Pit commit `24810df2a379b01a5dd63fa312dfd58426572efb`; no runtime hot-link.
+77. **Perfect 5-ft cubes are the hard geometry invariant.** Props, doors, characters, monsters, and construction pieces differ by face art/state, not arbitrary mesh shape. Player/Small/Medium=1 cube; Large=2×2; Huge=3×3; Gargantuan=4×4, all as one logical entity.
 
 ## Cost Guardrail
 
@@ -227,92 +228,51 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The basic builder workflow was accepted as solid enough to move into the real catalog.
+The starter catalog was green, but browser testing exposed broken character/monster thumbnails and the user clarified the core product identity: **everything on the board is built from perfect 5-ft cubes.**
 
-The user emphasized that the **look is the honey**: visual quality and cohesion are a primary reason people will want to use the product, and open-source assets should be used when they simplify the project without weakening the visual identity.
-
-### Definition of Done — Starter Catalog
-
-- one data-driven catalog schema
-- four kid-readable tabs: Build / Props / Characters / Monsters
-- useful room construction and furniture pieces
-- recognizable character pieces
-- recognizable monster pieces
-- generic rendering only
-- local Iron Pit face art rather than runtime hot-links
-- visual cohesion recorded as a release gate
-- open-source visual candidates researched and recorded
-- strict TypeScript/tests/build/Pages gate green
+The previous catalog pass had drifted into standees, cylinders, thin doors, and fractional prop geometry.
 
 ### Changes Made
 
-- Expanded the catalog schema for categories, generic shapes, dimensions, optional art, and tags.
-- Added **Build**: Stone, Stone Wall, Wood, Wood Wall, Door, Pillar.
-- Added **Props**: Table, Chair, Bed, Chest, Barrel, Crate, Torch.
-- Added **Characters**: Fighter, Cleric, Rogue, Wizard.
-- Added **Monsters**: Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit.
-- Preserved the legacy generic Orc for old saved prototype maps.
-- Added four catalog tabs instead of one long inventory.
-- Added local character/monster thumbnail art and generic textured board pieces.
-- Copied starter combatant art from pinned Iron Pit commit `24810df2a379b01a5dd63fa312dfd58426572efb`.
-- Added generic cylinder rendering for pillar/barrel-style objects while preserving the same universal catalog/renderer architecture.
-- Added local art support to the fallback renderer.
-- Vetted CC0 visual sources for selective later use:
-  - KayKit Dungeon Remastered
-  - Kenney Modular Dungeon Kit
-  - Kenney model catalog via Tiny Game Engine assets
-- Recorded **visual cohesion as a release gate**.
-- Recorded that open-source assets are raw material and must be normalized to the DND Blocks visual language.
-- Added catalog/provenance regression tests.
+- Replaced the catalog shape union with cube-only geometry.
+- Rebuilt every starter catalog entry through one universal cube factory.
+- Door, Pillar, Table, Chair, Bed, Chest, Barrel, Crate, Torch, Characters, and Monsters are all 1×1×1 cubes in this starter pass.
+- Removed cylinder/standee/fractional geometry from the Three.js renderer.
+- Character/monster identity art is printed on all four vertical cube faces.
+- Added a browser-base-aware asset URL resolver for GitHub Pages and Netlify-compatible relative deployment paths.
+- Catalog thumbnails, Three.js textures, and fallback images all use the same URL resolver.
+- Placement preview is exactly one cube / one grid square.
+- Added a regression that rejects any starter catalog item that is not a 1×1×1 cube.
+- Updated SOUL, visual language, catalog contract, and live handoff.
 - Netlify remains untouched.
-
-### Verification
-
-Checkpoint commit:
-
-- `351d107045c46f66c4b91fc5a729ab4e14754bcf`
-
-Connected verification:
-
-- **Deploy GitHub Pages Test run #10:** SUCCESS
-- **GitHub pages build and deployment run #24:** SUCCESS
-- TypeScript typecheck: passed
-- unit tests: passed
-- static build: passed
-- Pages deployment: passed
-
-The temporary push trigger is restored to manual-only in this cleanup commit.
 
 ### Decisions Made
 
-**The visual system is part of the product contract.**
+**Geometry never explains what an object is. Face art explains what it is.**
 
-The target feel is a premium physical dungeon-building toy set viewed on a tabletop. A mechanically correct feature does not pass a milestone if it makes the board look mismatched or cheap.
+A barrel is a cube with barrel art. A door is a cube with door art. A Fighter is a cube with Fighter art.
 
-**Open-source assets are a parts shelf, not the identity.**
+Creature scale remains:
 
-KayKit/Kenney CC0 assets are vetted candidates. They should only be imported selectively after camera/style testing, then normalized for scale/materials/lighting.
+- player / Small / Medium = 1 cube
+- Large = 2×2
+- Huge = 3×3
+- Gargantuan = 4×4
 
-**The full future catalog will stay grouped.**
-
-Build / Props / Characters / Monsters are the first top-level tabs. Hundreds of future monsters will not become one giant sidebar wall.
+Multi-cube creatures remain one logical entity.
 
 ### Cost Impact
 
 None.
 
-No new package, API, hosted service, or production deploy.
-
 ### Result
 
-The starter catalog is verified and live on the GitHub Pages test surface.
+Cube-only identity correction and deployed-art URL fix are prepared for strict verification.
 
 ### Exact Next Step
 
-1. Hard-refresh the test site.
-2. Test all four catalog tabs.
-3. Place several Build and Prop pieces.
-4. Place Fighter/Cleric/Rogue/Wizard and several monsters and judge readability at normal zoom/orbit.
-5. Record any visual mismatches.
-6. Then selectively upgrade construction/prop geometry using the vetted CC0 parts shelf where it materially improves the cohesive tabletop-toy look.
-7. After the visual baseline is accepted, expand the monster catalog/search and creature footprint sizes from the same schema.
+1. Push this cube-only checkpoint with temporary Pages verification.
+2. Require TypeScript, tests, build, and Pages deployment to pass.
+3. Restore Pages workflow to manual-only.
+4. Browser-check player/monster images and cube geometry.
+5. Then implement the accepted board system: default 30×30, grow by 10-square chunks, hard cap 100×100, plus printable top-down 1-inch grid pages.

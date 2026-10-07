@@ -8,6 +8,7 @@ import {
 import { MAX_BUILD_HEIGHT_FEET } from '../domain/spatial.js';
 import type { CatalogId, TerrainTheme } from '../domain/types.js';
 import type { BoardHandlers, BoardRenderer } from './types.js';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
 
 const GRID_SIZE = 20;
 const ORIGIN = GRID_SIZE / 2;
@@ -78,7 +79,7 @@ export function createFallbackRenderer(
           const item = PALETTE[top.catalogId];
           cell.style.setProperty('--piece-color', `#${item.color.toString(16).padStart(6, '0')}`);
           const visual = item.art
-            ? `<img src="${item.art.src}" alt="" loading="lazy" decoding="async">`
+            ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`
             : item.name.slice(0, 1);
           cell.innerHTML = `<span class="fallback-piece">${visual}</span>${occupants.length > 1 ? `<small>${occupants.length}</small>` : ''}`;
         }

@@ -69,7 +69,13 @@ The first live catalog is deliberately bounded and grouped into four kid-readabl
 
 **Monsters:** Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit, plus the legacy generic Orc so existing saved prototype maps remain readable.
 
-The catalog schema carries category, generic geometry, dimensions, color, optional art reference, and optional tags. Rendering remains generic: no FighterRenderer, GoblinRenderer, ChestRenderer, etc.
+The catalog schema carries category, cube footprint, color, optional face art reference, and optional tags.
+
+**Hard geometry rule:** every board object is rendered from 5-ft cubes. A barrel, door, table, torch, character, and monster all remain cube-based; identity is communicated by face artwork/material.
+
+Small/Medium/player pieces use one cube. Large/Huge/Gargantuan creatures use 2×2 / 3×3 / 4×4 cube footprints while remaining one logical entity.
+
+Rendering remains generic: no FighterRenderer, GoblinRenderer, ChestRenderer, etc.
 
 The first combatant art is bundled locally in DND Blocks; the browser does not hot-link Iron Pit.
 

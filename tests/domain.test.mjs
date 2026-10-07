@@ -166,3 +166,15 @@ test('starter combatant art is local and provenance tagged', () => {
     assert.match(item.art.src, /^assets\/catalog\/(heroes|monsters)\/.+\.webp$/);
   }
 });
+
+
+test('every starter catalog object obeys the perfect-cube invariant', () => {
+  for (const id of DEFAULT_PALETTE) {
+    const item = PALETTE[id];
+    assert.equal(item.shape, 'cube', `${id} must be a cube`);
+    assert.equal(item.width, 1, `${id} width must be one grid cell`);
+    assert.equal(item.depth, 1, `${id} depth must be one grid cell`);
+    assert.equal(item.height, 1, `${id} height must be one grid cell`);
+    assert.equal(item.footprintCells ?? 1, 1, `${id} starter footprint must be one cell`);
+  }
+});
