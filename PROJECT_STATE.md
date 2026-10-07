@@ -211,42 +211,71 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The custom Vite Pages workflow succeeded, but the live site still showed the loading fallback.
+GitHub's built-in Pages deployment was overwriting the custom Vite Pages artifact with a raw/Jekyll copy of the repository.
 
-The deployed artifacts were inspected directly.
+That raw artifact could not execute TypeScript directly, so the live site stayed on the loading fallback.
 
-### Root Cause
+### Root Cause Verified
 
-Two different Pages artifacts exist for the same source commit:
+Both artifacts were downloaded and inspected.
 
-1. **Custom workflow artifact** — correct Vite `dist` output with bundled JS/CSS.
-2. **GitHub built-in dynamic `pages build and deployment` artifact** — raw repository/Jekyll output containing `src/*.ts` and the uncompiled source `index.html`.
+Custom workflow artifact:
 
-The built-in dynamic deployment finishes after the custom deployment and overwrites the working artifact.
+- correct Vite build
+- bundled JavaScript/CSS
 
-Therefore the browser is not failing to execute the Vite bundle; the wrong artifact is being published last.
+Built-in dynamic Pages artifact:
+
+- raw repository files
+- raw `src/*.ts`
+- raw root `index.html`
+- finished after the custom deploy and became the live site
 
 ### Changes Made
 
-- Added a browser-runnable root strategy so even GitHub's legacy/raw branch deployment can serve working JavaScript.
-- Root `index.html` now uses relative CSS paths and `./web/main.js` rather than `/src/main.ts`.
-- Added `tsconfig.web.json` to emit browser-native ES modules from authoritative TypeScript source.
-- Added `npm run compile:web` and made the Vite build compile those modules first.
-- Added a temporary GitHub Actions workflow that compiles and commits the generated `web/` test bundle.
-- This follow-up handoff push exists specifically to trigger that newly added sync workflow after GitHub registered it.
+- Made the repository root itself browser-runnable for the GitHub Pages test surface.
+- Root `index.html` now references:
+  - relative CSS paths
+  - `./web/main.js`
+- Added `tsconfig.web.json` to compile authoritative TypeScript source into native browser ES modules.
+- Added `npm run compile:web`; the Vite build now compiles the browser modules first.
+- Used a temporary sync workflow to compile and commit the `web/` modules once.
+- Verified the generated commit `9468c984155dae6c04a00f63ec5e99a5ef2e63b2`.
+- Verified GitHub's built-in Pages run #8 completed successfully from that generated commit.
+- Downloaded and inspected the run #8 Pages artifact.
+- Verified the published artifact contains:
+  - `index.html`
+  - `web/main.js`
+  - all required `web/app`, `web/domain`, and `web/render` modules
+  - all three CSS files
+- Verified the published `index.html` loads `./web/main.js`, not TypeScript.
+- Removed the temporary auto-sync workflow after the successful generation.
+- Netlify remains untouched.
 
 ### Decision
 
-**Make the raw/root Pages artifact runnable instead of depending on GitHub's competing Pages deployment modes.**
+**For the temporary GitHub Pages test surface, keep a checked-in browser-compiled `web/` snapshot generated from the authoritative TypeScript source.**
 
 Reason:
 
-This is the most robust test-only fix. Netlify remains the production host and the source TypeScript remains authoritative.
+GitHub's legacy/dynamic Pages job is the deployment that actually wins in this repository. Making the root deployable eliminates the race between two Pages modes and gives us a stable test URL.
+
+The TypeScript in `src/` remains authoritative. Before a future GitHub Pages test milestone that changes source behavior, regenerate/update `web/` from `src/`.
+
+### Cost Impact
+
+None.
+
+No Netlify deploy or Supabase use occurred.
+
+### Result
+
+The final Pages artifact is browser-runnable and no longer points at raw TypeScript.
 
 ### Exact Next Step
 
-1. Let the new `Sync Browser Test Bundle` workflow run from this follow-up push.
-2. Verify it compiles and commits `web/`.
-3. Verify the subsequent built-in Pages deployment contains `web/main.js`.
-4. Reload the GitHub Pages test URL and confirm the homepage appears.
-5. Remove or disable the temporary sync workflow once the test surface is stable.
+1. Let the final Pages deployment from this cleanup push complete.
+2. Hard-refresh `https://cbw29512.github.io/DNDblocksbattlemaps/` with Ctrl+Shift+R.
+3. Verify the homepage appears.
+4. Test terrain selection -> builder -> place -> overlap -> remove -> Undo/Redo -> refresh persistence.
+5. Record UI/interaction feedback before adding the next Stage 1 feature.
