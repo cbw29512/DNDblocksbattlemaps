@@ -1,0 +1,173 @@
+# Initial Block Catalog
+
+> Status: planning only.
+>
+> This catalog records the first obvious block families discussed for DND Blocks Battle Maps. It is not yet an asset list or implementation commitment.
+
+## Catalog Rule
+
+A block should be understandable at a glance.
+
+The visual should communicate the thing itself from the useful viewing sides.
+
+Examples:
+
+- grass looks like grass
+- a door looks like a door
+- a torch looks like a torch
+- an orc looks like an orc
+
+Do not require ordinary object rotation just to identify or use the block.
+
+## Terrain / World Themes
+
+Initial hero-page terrain/theme choices:
+
+- Castle
+- Inn
+- Field
+- Sea
+- Volcano
+
+These choices may determine:
+
+- base ground appearance
+- suggested room/block palette
+- suggested props
+- suggested environmental blocks
+
+A terrain theme is not a separate game engine.
+
+It is data/configuration that selects appropriate ordinary blocks and defaults.
+
+## Room Construction Blocks
+
+Initial construction concepts:
+
+- floor
+- wall
+- door
+
+Future likely additions can include:
+
+- stairs
+- gate
+- bridge
+- fence
+- column
+
+Do not add them to MVP merely because they seem useful; validate against actual first-use needs.
+
+## Room Objects
+
+Initial requested objects:
+
+- table
+- torch
+- pit
+- trap
+- door
+
+Possible later objects:
+
+- chair
+- chest
+- barrel
+- crate
+- bed
+- bookshelf
+- altar
+- fireplace
+- statue
+
+Keep the initial library small.
+
+## Creature Blocks
+
+Creature blocks represent creatures rather than becoming independent world-building systems.
+
+Initial categories:
+
+- player
+- monster
+- NPC
+
+Specific monster art/data can be expanded later.
+
+Creature footprints:
+
+- Small: 1x1
+- Medium: 1x1
+- Large: 2x2
+- Huge: 3x3
+- Gargantuan: 4x4
+- Tiny: deferred
+
+A multi-square creature remains one entity.
+
+## Hidden/Interactive Blocks
+
+Initial relevant behaviors:
+
+- hidden from players
+- revealable
+- trigger on entry
+- movement-lock effect
+- openable
+- toggleable
+- movable
+- lockable
+
+These are universal behaviors.
+
+A trap is not a special engine.
+
+For the requested first trap:
+
+- appearance/source = trap
+- visibility = DM-only until revealed/triggered
+- trigger = entity enters cell
+- effect = movement lock
+- release authority = DM
+
+## Room Context
+
+The room/theme may influence which blocks appear first in the sidebar.
+
+Example:
+
+An Inn may prioritize:
+
+- table
+- chair
+- barrel
+- fireplace
+- door
+
+A Castle may prioritize:
+
+- stone wall
+- door
+- torch
+- table
+- chest
+
+A Field may prioritize:
+
+- grass
+- tree
+- rock
+- bush
+- creature
+
+This is a UI filtering/convenience feature.
+
+The same underlying catalog object can be reused in multiple themes.
+
+## Unresolved Catalog Item
+
+The user typed "date" in the room-object examples.
+
+The intended object is not known.
+
+Do not silently substitute another item.
