@@ -2,7 +2,7 @@
 
 > Decision date: 2026-10-07
 >
-> Status: **Accepted for MVP implementation**
+> Status: **Accepted for MVP implementation; hosting amended 2026-10-07 to Netlify by user decision**
 >
 > This is an architecture decision, not application code.
 
@@ -138,21 +138,36 @@ Realtime policy:
 
 ### Static Hosting
 
-**Cloudflare Pages**
+**Netlify**
 
 Sources:
 
-- https://developers.cloudflare.com/pages/
-- https://developers.cloudflare.com/pages/functions/pricing/
+- https://www.netlify.com/pricing/
+- https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/
 
 Reasons:
 
-- static frontend hosting
-- current Pages pricing makes static asset requests free/unlimited
-- global delivery
-- connects cleanly to Git-based deployment
-- optional Functions/Workers capacity exists later without requiring it now
-- no dedicated application server
+- user explicitly selected Netlify for hosting
+- static Vite frontend deploys directly from Git
+- global CDN
+- custom domains and SSL
+- deploy previews
+- Functions remain available later if a small server-side endpoint is actually needed
+- no dedicated application server required for MVP
+
+Current Free-plan snapshot at this decision:
+
+- $0/month
+- 300 credits/month hard limit
+- no auto-recharge on Free
+- production deploys currently consume 15 credits each
+- bandwidth currently consumes 20 credits/GB
+- web requests currently consume 2 credits per 10,000 requests
+- when the Free credit limit is reached, projects pause until the next billing cycle rather than generating an overage charge
+
+Cost-control implication:
+
+Production deploys should be intentional. Development/preview workflow should avoid unnecessary production publishes so the project does not waste Netlify credits.
 
 ### Source Control / Documentation
 
@@ -316,13 +331,13 @@ Expected prototype/early MVP infrastructure:
 - Vite: $0
 - Three.js: $0
 - native HTML/CSS: $0
-- Cloudflare Pages static hosting: $0 under current static-asset pricing
+- Netlify Free hosting: $0 within the current 300-credit monthly hard limit
 - Supabase Free: $0 within current plan quotas
 - original/CC0 assets: $0 licensing cost
 
 Current Supabase pricing includes 2 million Realtime messages/month on the Free tier at the time of this decision.
 
-Current Cloudflare Pages pricing states static asset requests are free and unlimited on free and paid plans.
+Current Netlify Free pricing provides 300 credits/month with a hard limit; production deploys, bandwidth, and web requests consume credits. The Free plan cannot incur overage charges because usage pauses at the limit.
 
 The stack must be re-audited before public production launch because provider pricing/limits can change.
 
@@ -335,7 +350,7 @@ GitHub
 Vite build
   |
   v
-Cloudflare Pages
+Netlify
   |
   v
 Browser
@@ -393,7 +408,7 @@ Revisit this ADR if:
 - Three.js requires materially more code than Babylon.js for the locked interaction contracts
 - Supabase free/paid economics change materially
 - a custom trusted server becomes necessary
-- Cloudflare Pages pricing/terms change
+- Netlify pricing/terms or credit economics change materially
 - browser performance tests fail on target hardware
 - realtime tests reveal a need for different synchronization architecture
 
