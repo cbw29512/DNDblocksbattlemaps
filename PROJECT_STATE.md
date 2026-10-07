@@ -80,7 +80,7 @@ The DM is the authority. The board must work without automated RPG rules.
 45. **Undo is compensating history.** Undo/Redo uses reversible commands; Undo records an inverse edit instead of deleting history.
 46. **Revision + action IDs protect realtime.** Game/map revisions detect gaps/staleness and unique action IDs deduplicate retries/reconnects.
 47. **Realtime sends logical edits, not frames.** Movement sync transmits committed grid moves/state changes rather than animation frames.
-48. **Accepted MVP stack.** TypeScript + Vite + Three.js + native HTML/CSS first + Supabase + Cloudflare Pages; no custom app server initially.
+48. **Accepted MVP stack.** TypeScript + Vite + Three.js + native HTML/CSS first + Supabase + Netlify; no custom app server initially.
 49. **Renderer is an adapter.** Authoritative world state drives Three.js; renderer objects are never the canonical state.
 50. **Shared walls are one object.** Adjacent generated rooms reuse one compatible wall WorldObject with membership in multiple RoomRegions; it is effectively locked if any associated room is locked.
 51. **Visual feedback is kid-readable and original.** Placement/ownership/hidden/lock/Tiny states use shape/icon/text/opacity cues and never rely on color alone; no copied Minecraft/VTT art.
@@ -204,89 +204,64 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The project had no application code.
+Stage 0 was substantially complete, with no application code and no installed application dependencies.
 
-The product interaction, placement, player join, traps/effects, camera, spatial, and persistence contracts were documented. Persistence/recovery had just been resolved, and the remaining Stage 0 work was to choose the MVP architecture, close shared-wall/visual gaps, and create a hard pre-code implementation gate.
+The accepted MVP stack previously named Cloudflare Pages as the static frontend host.
+
+The user explicitly changed the hosting decision to **Netlify**.
 
 ### Changes Made
 
-- Compared the smallest viable browser-first architecture against the now-complete product requirements.
-- Accepted `docs/ADR_001_MVP_WEB_STACK.md`.
-- Selected TypeScript + Vite + Three.js + native HTML/CSS first + Supabase + Cloudflare Pages for the MVP.
-- Retained Babylon.js and PocketBase as documented fallbacks/revisit options.
-- Created `docs/DEPENDENCY_REGISTER.md`; no packages have been installed yet.
-- Updated the technology-candidate research to point to the accepted ADR.
-- Created `docs/VISUAL_LANGUAGE.md` covering placement ghosts, player ownership, hidden DM-only objects, locks, interactables, traps/effects, creature footprints, Tiny auto-offset, overlap indicators, shared walls, accessibility, and asset provenance.
-- Resolved shared-wall behavior in `docs/SPATIAL_CONTRACT.md`: compatible adjacent walls are one shared WorldObject, not duplicates.
-- Updated `docs/DATA_SCHEMA.md` from single room ownership to many-to-many RoomObjectMembership so shared walls/doors can belong to multiple rooms.
-- Reconciled stale planning language in SOUL, Spatial Contract, README, and Roadmap after those decisions.
-- Created `docs/IMPLEMENTATION_RULES.md` to lock state-first architecture, renderer boundaries, universal behavior reuse, error/logging discipline, testing workflow, dependency discipline, security, and documentation completion.
-- Created `docs/PRE_IMPLEMENTATION_CHECKLIST.md` as the Stage 0 closure gate and Stage 1 Definition of Done.
-- Updated README so a new AI/human can immediately locate every authoritative contract and pre-code rule.
+- Read the current live project state and authoritative architecture documents before changing the decision.
+- Rechecked Netlify's current official Free-plan pricing/credit model.
+- Amended `docs/ADR_001_MVP_WEB_STACK.md` so Netlify is the accepted static frontend host.
+- Updated `SOUL.md` so the permanent selected architecture names Netlify.
+- Updated `docs/TECH_STACK_CANDIDATES.md` with the Netlify decision and current Free-plan credit model.
+- Updated `docs/DEPENDENCY_REGISTER.md` to register Netlify as the selected deployment target.
+- Updated `docs/PRE_IMPLEMENTATION_CHECKLIST.md` so the accepted architecture checklist names Netlify.
+- Updated README's architecture summary from Cloudflare to Netlify.
+- Updated this live handoff.
 
 ### Decisions Made
 
-**Decision:** Three.js is the MVP renderer; Babylon.js remains a fallback.
+**Decision:** Netlify replaces Cloudflare Pages as the selected MVP/frontend production host.
 
-**Reason:** The product needs a deliberately small browser 3D layer, not a broad game-engine architecture. Three.js covers the locked camera, picking, meshes, and repeated-block needs while keeping world state/application architecture under our control.
+**Reason:** Direct user decision. The rest of the architecture remains unchanged.
 
-**Decision:** Supabase is the MVP persistence/auth/realtime service; PocketBase remains a fallback.
+**Decision:** Keep Netlify deployment intentionally low-frequency during early development.
 
-**Reason:** It can provide hosted Postgres/Auth/Realtime without operating a custom server during early development, while preserving an open-source/self-host escape path.
+**Reason:** Netlify's current Free plan uses a monthly credit budget. Production deploys, bandwidth, and web requests consume credits, so unnecessary production publishes would conflict with the cheap-first rule.
 
-**Decision:** Native HTML/CSS + TypeScript is the initial UI layer.
+**Decision:** Local development and non-production testing should be preferred while building Stage 1; production deploys should be deliberate milestones.
 
-**Reason:** The locked UI is intentionally small. React/Vue/Svelte should only be introduced if actual implementation complexity proves they reduce code.
-
-**Decision:** Cloudflare Pages is the selected static frontend host.
-
-**Reason:** It supports the static-browser architecture without requiring a custom app server and is compatible with the cheap-first strategy.
-
-**Decision:** Three.js render objects are never canonical state.
-
-**Reason:** The authoritative state/schema must remain testable, persistent, recoverable, and renderer-independent.
-
-**Decision:** Shared walls are one WorldObject with multiple RoomRegion memberships.
-
-**Reason:** Adjacent rooms should not double-render/double-thicken the same physical wall. Shared construction is protected when any associated room remains locked.
-
-**Decision:** Visual state must use multiple cues rather than color alone.
-
-**Reason:** Ownership, hidden state, locking, placement, and movement restrictions must remain obvious and accessible without clutter.
-
-**Decision:** No application dependency enters the repository before the Dependency Register records its exact source/version/license/purpose.
-
-**Reason:** Open-source reuse must simplify the project without creating licensing or provenance debt.
-
-**Decision:** The implementation rules and pre-implementation checklist are mandatory.
-
-**Reason:** Another AI/session must not be able to resume the project and silently choose a different architecture, bypass state/schema, or reintroduce feature drift.
-
-**Decision:** Stage 0 is substantially complete.
-
-**Reason:** The product contract, data model, interaction model, camera, placement, hazards, multiplayer ownership, persistence/recovery, visuals, architecture, licensing policy, implementation rules, and Stage 1 DoD are all now documented.
+**Reason:** This preserves the user's Netlify preference while minimizing hosting-credit consumption.
 
 ### Cost Impact
 
 No cost incurred.
 
-No application code has been written and no npm/package dependency has been installed.
+Current Netlify Free-plan snapshot checked on 2026-10-07:
 
-The selected MVP architecture is intended to begin at approximately **$0 infrastructure cost while usage stays within current free-tier limits**, but all provider limits/pricing and exact package licenses must be rechecked before public production and exact package installation.
+- $0/month
+- 300 credits/month hard limit
+- production deploys currently consume 15 credits each
+- bandwidth currently consumes 20 credits/GB
+- web requests currently consume 2 credits per 10,000 requests
+- Free has no auto-recharge/overage charge; projects pause when the credit limit is reached
+
+This means the MVP can still begin at approximately **$0/month**, but production deploy frequency and traffic should be watched.
 
 ### Result
 
-The repository is now designed to be resumable by another AI or human without relying on chat history.
+The accepted Stage 1 stack is now:
 
-Stage 0 has a clean implementation boundary:
+> **TypeScript + Vite + Three.js + native HTML/CSS + Supabase + Netlify**
 
-> **Product/architecture contracts are substantially complete. Application code remains zero.**
+Cloudflare Pages is no longer the selected frontend host.
 
-The selected Stage 1 stack is:
+No application code has been written.
 
-> **TypeScript + Vite + Three.js + native HTML/CSS + Supabase + Cloudflare Pages.**
-
-Stage 1 has an explicit Definition of Done and architecture tests in `docs/PRE_IMPLEMENTATION_CHECKLIST.md`.
+No npm/application dependency has been installed.
 
 ### Remaining Implementation-Time Decisions
 
@@ -297,6 +272,7 @@ These are not blockers to beginning Stage 1 once the user explicitly directs it:
 3. original/CC0 placeholder asset production pipeline
 4. numeric bounded Undo/Redo retention after testing
 5. performance tuning based on real browser/device tests
+6. exact Netlify project/site configuration when deployment begins
 
 ### Exact Next Step
 
@@ -307,7 +283,5 @@ When that direction arrives:
 1. reread `PROJECT_STATE.md`, `SOUL.md`, the Stage 1 contracts, ADR-001, implementation rules, and pre-implementation checklist
 2. recheck exact package versions/licenses and update `DEPENDENCY_REGISTER.md`
 3. implement only the first Stage 1 vertical slice from authoritative state outward
-4. test the state behavior independently of Three.js where possible
+4. develop/test locally first and avoid unnecessary Netlify production deploys
 5. update/push the live handoff before stopping
-
-Until explicit coding direction is given, remain in design/audit mode.
