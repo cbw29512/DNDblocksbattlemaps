@@ -211,29 +211,69 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The Stage 1 code fix for the first Pages typecheck failure was already present on current `main`.
+The first manual Pages run had tested an old commit and failed on a TypeScript unused-parameter error.
 
-The remaining blocker was operational: the Pages test workflow was manual-only, and the user requested that the assistant fix and push the deployment rather than requiring another manual workflow launch.
+The code fix was already present on current `main`, but the fixed commit had not been exercised by GitHub Actions.
+
+The user explicitly asked the assistant to fix and push the deployment.
 
 ### Changes Made
 
-- Temporarily enabled the Pages test workflow on pushes to `main` in addition to manual dispatch.
-- Kept all existing typecheck, unit-test, build, artifact-upload, and Pages deployment gates intact.
-- Did not weaken TypeScript strictness.
-- Did not touch Netlify.
+- Temporarily added a push-to-`main` trigger to the Pages test workflow so the assistant could drive the repair end-to-end.
+- Pushed repair commit `a5435b663eac675ccef7e6cb5e4381cbaa46b74d`.
+- Watched the new **Deploy GitHub Pages Test** run directly.
+- Verified run #2 / ID 37682225331 used the correct repair commit.
+- Verified the workflow completed with **conclusion: success**.
+- Restored the Pages workflow to **manual-only** after the successful deployment.
+- Netlify remains untouched.
+
+### Verification
+
+Successful test workflow:
+
+- name: `Deploy GitHub Pages Test`
+- run number: 2
+- run ID: 37682225331
+- head commit: `a5435b663eac675ccef7e6cb5e4381cbaa46b74d`
+- result: **SUCCESS**
+
+The successful workflow passed:
+
+1. checkout
+2. Node setup
+3. exact dependency installation
+4. TypeScript typecheck
+5. unit tests
+6. Vite static build
+7. Pages configuration
+8. artifact upload
+9. Pages deployment
 
 ### Decision
 
-**Use a one-time push-triggered repair run, then restore the workflow to manual-only after a successful Pages deployment.**
+**Restore Pages deployment to manual-only after the repair run.**
 
 Reason:
 
-This lets the assistant drive the repair end-to-end now while preserving the project's long-term rule that ordinary pushes should not continuously publish the GitHub Pages test site.
+The temporary push trigger was only used to remove the manual-run blocker. Normal GitHub pushes should not continuously publish the test surface.
+
+### Cost Impact
+
+None.
+
+No Netlify deploy or Supabase use occurred.
+
+### Result
+
+The first real Stage 1 GitHub Pages build/deploy pipeline is now green.
+
+The test site should now serve the compiled Vite application rather than raw repository source.
 
 ### Exact Next Step
 
-1. Push this temporary workflow change to `main`.
-2. Watch the automatically triggered GitHub Actions Pages run.
-3. Fix any remaining build/deploy failures without bypassing the gates.
-4. Once a run succeeds, restore the workflow to manual-only.
-5. Verify the GitHub Pages site loads the built Vite application.
+1. Open/reload `https://cbw29512.github.io/DNDblocksbattlemaps/`.
+2. Verify the polished homepage appears.
+3. Click a terrain card and verify the builder opens.
+4. Test place -> overlap -> right-click remove -> Undo -> Redo -> refresh.
+5. Record any visual/interaction issues before adding the next Stage 1 features.
+6. Keep Netlify untouched until the prototype is worth a production milestone.
