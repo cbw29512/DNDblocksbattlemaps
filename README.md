@@ -47,6 +47,8 @@ The core product, interaction, state, permission, persistence, visual, and MVP a
 - [Visual Language](docs/VISUAL_LANGUAGE.md) — original block style, placement/hidden/ownership/lock/Tiny visual feedback
 - [MVP Stack ADR](docs/ADR_001_MVP_WEB_STACK.md) — accepted TypeScript/Vite/Three.js/Supabase/Cloudflare architecture
 - [Dependency Register](docs/DEPENDENCY_REGISTER.md) — required dependency/license/provenance ledger before third-party imports
+- [Implementation Rules](docs/IMPLEMENTATION_RULES.md) — mandatory state-first, testable, anti-drift coding rules
+- [Pre-Implementation Checklist](docs/PRE_IMPLEMENTATION_CHECKLIST.md) — Stage 0 closure gate and Stage 1 Definition of Done
 
 ## Development rule
 
