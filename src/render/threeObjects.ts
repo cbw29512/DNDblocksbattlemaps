@@ -1,52 +1,43 @@
 import { PALETTE } from '../domain/catalog.js';
-import type { CatalogId, WorldObject } from '../domain/types.js';
-
-export const CAMERA_DISTANCE = 19;
-export const MIN_CAMERA_DISTANCE = 5;
-export const MAX_CAMERA_DISTANCE = 46;
-
-export function geometryFor(THREE: any, catalogId: CatalogId): any {
-  const item = PALETTE[catalogId];
-  if (item.shape === 'creature') {
-    return new THREE.CylinderGeometry(item.width / 2, item.width * 0.58, item.height, 8);
-  }
-  return new THREE.BoxGeometry(item.width, item.height, item.depth);
+import type { CatalogId, PaletteItem, WorldObject } from '../domain/types.js';
+export const CAMERA_DISTANCE=19;
+export const MIN_CAMERA_DISTANCE=5;
+export const MAX_CAMERA_DISTANCE=46;
+const textureCache=new Map<string,any>();
+function textureFor(THREE:any,src:string):any{
+ const cached=textureCache.get(src); if(cached)return cached;
+ const texture=new THREE.TextureLoader().load(src,undefined,undefined,(error:unknown)=>console.warn('Catalog art failed to load',{src,error}));
+ texture.colorSpace=THREE.SRGBColorSpace; textureCache.set(src,texture); return texture;
 }
-
-export function meshFor(THREE: any, object: WorldObject): any {
-  const item = PALETTE[object.catalogId];
-  const mesh = new THREE.Mesh(
-    geometryFor(THREE, object.catalogId),
-    new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.72 })
-  );
-  mesh.position.set(object.x + 0.5, object.elevation + item.height / 2, object.z + 0.5);
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
-  mesh.userData.objectId = object.id;
-  mesh.userData.gridX = object.x;
-  mesh.userData.gridZ = object.z;
-  mesh.userData.elevation = object.elevation;
-  return mesh;
+function materialFor(THREE:any,item:PaletteItem):any{
+ if(!item.art)return new THREE.MeshStandardMaterial({color:item.color,roughness:.72});
+ const art=new THREE.MeshBasicMaterial({color:0xffffff,map:textureFor(THREE,item.art.src),transparent:true,alphaTest:.02});
+ const cap=new THREE.MeshStandardMaterial({color:item.color,roughness:.75});
+ return [art,art,cap,cap,art,art];
 }
-
-export function setDefaultCamera(camera: any, controls: any): void {
-  const horizontal = Math.cos(Math.PI / 6) * CAMERA_DISTANCE;
-  camera.position.set(horizontal / Math.sqrt(2), CAMERA_DISTANCE / 2, horizontal / Math.sqrt(2));
-  controls.target.set(0, 0, 0);
-  controls.update();
+export function geometryFor(THREE:any,catalogId:CatalogId):any{
+ const item=PALETTE[catalogId];
+ if(item.shape==='pillar')return new THREE.CylinderGeometry(item.width/2,item.width/2,item.height,12);
+ if(item.shape==='barrel')return new THREE.CylinderGeometry(item.width/2,item.width*.44,item.height,12);
+ return new THREE.BoxGeometry(item.width,item.height,item.depth);
 }
-
-export function rotateCamera(THREE: any, camera: any, controls: any, delta: number): void {
-  const offset = camera.position.clone().sub(controls.target);
-  offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), delta);
-  camera.position.copy(controls.target).add(offset);
-  controls.update();
+export function meshFor(THREE:any,object:WorldObject):any{
+ const item=PALETTE[object.catalogId];
+ const mesh=new THREE.Mesh(geometryFor(THREE,object.catalogId),materialFor(THREE,item));
+ mesh.position.set(object.x+.5,object.elevation+item.height/2,object.z+.5);
+ mesh.castShadow=true; mesh.receiveShadow=true;
+ mesh.userData.objectId=object.id; mesh.userData.gridX=object.x; mesh.userData.gridZ=object.z; mesh.userData.elevation=object.elevation;
+ return mesh;
 }
-
-export function zoomCamera(camera: any, controls: any, multiplier: number): void {
-  const offset = camera.position.clone().sub(controls.target).multiplyScalar(multiplier);
-  if (offset.length() >= MIN_CAMERA_DISTANCE && offset.length() <= MAX_CAMERA_DISTANCE) {
-    camera.position.copy(controls.target).add(offset);
-  }
-  controls.update();
+export function setDefaultCamera(camera:any,controls:any):void{
+ const horizontal=Math.cos(Math.PI/6)*CAMERA_DISTANCE;
+ camera.position.set(horizontal/Math.sqrt(2),CAMERA_DISTANCE/2,horizontal/Math.sqrt(2)); controls.target.set(0,0,0); controls.update();
+}
+export function rotateCamera(THREE:any,camera:any,controls:any,delta:number):void{
+ const offset=camera.position.clone().sub(controls.target); offset.applyAxisAngle(new THREE.Vector3(0,1,0),delta); camera.position.copy(controls.target).add(offset); controls.update();
+}
+export function zoomCamera(camera:any,controls:any,multiplier:number):void{
+ const offset=camera.position.clone().sub(controls.target).multiplyScalar(multiplier);
+ if(offset.length()>=MIN_CAMERA_DISTANCE&&offset.length()<=MAX_CAMERA_DISTANCE)camera.position.copy(controls.target).add(offset);
+ controls.update();
 }

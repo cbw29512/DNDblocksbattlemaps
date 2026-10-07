@@ -347,3 +347,44 @@ Current default preference:
 - no custom application server unless a proven requirement needs one
 
 See `TECH_STACK_CANDIDATES.md` for the current candidate stack and pricing snapshot.
+
+
+## Vetted CC0 Visual Parts Shelf
+
+Research refreshed 2026-10-07. These are candidate raw materials, not automatic imports.
+
+### KayKit Dungeon Remastered
+
+- source: https://github.com/KayKit-Game-Assets/KayKit-Dungeon-Remastered-1.0
+- license: CC0 1.0 Universal
+- useful for: stylized dungeon walls, stairs, doors, chests, barrels, tables, crates, traps, and related props
+- strength: low-poly set with a shared gradient-atlas approach that can help visual cohesion
+
+Current decision: strong first candidate for selective geometry after browser visual testing.
+
+### Kenney Modular Dungeon Kit
+
+- source: https://kenney.nl/assets/modular-dungeon-kit
+- license: CC0
+- useful for: modular dungeon structure and low-poly visual reference
+
+Current decision: strong second candidate/reference.
+
+### Kenney / Tiny Game Engine CC0 model catalog
+
+- source: https://github.com/Hidencod/tge-assets
+- repository describes a large Kenney-derived CC0 GLB/thumb catalog
+- useful for: discovering candidate furniture, castle, dungeon, nature, pirate, and character models
+
+Current decision: catalog/index reference only; do not bulk-import.
+
+### Reuse rule
+
+Before any model enters DND Blocks:
+
+1. verify the exact file/license
+2. record it in the dependency/asset register
+3. test it at the locked tabletop camera
+4. normalize scale/materials
+5. reject it if it breaks the cohesive toy-set look
+6. prefer a small consistent subset over a huge inconsistent library

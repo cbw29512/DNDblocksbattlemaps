@@ -104,6 +104,11 @@ The DM is the authority. The board must work without automated RPG rules.
 69. **Exact shared structural positions are reused.** Generated rooms do not create duplicate wall blocks at the same X/Z/elevation.
 70. **Room stamps choose direction automatically.** From the clicked outside-wall corner, test all four grid directions, reject out-of-bounds directions, and prefer a valid direction with less existing construction overlap. The preview must show the exact chosen direction before click.
 71. **Room stamp has an explicit cancel path.** While active, Build Room becomes Cancel Room; clicking it or pressing Escape exits room mode, removes the room preview, and restores the previously selected block.
+72. **Catalog UI uses four kid-readable groups.** Build / Props / Characters / Monsters are tabs; do not expose the future full library as one giant inventory.
+73. **Catalog rendering stays generic.** Items are data: category, dimensions, generic shape, color, optional art. Do not create item-specific renderers.
+74. **Visual cohesion is a release gate.** The board should read as one premium physical dungeon-toy set; mechanically correct but visually mismatched work does not pass a milestone.
+75. **Open-source art is a parts shelf, not our identity.** KayKit/Kenney CC0 resources are vetted candidates, but only selectively imported after camera/style testing and provenance recording.
+76. **Starter combatant art is bundled locally.** Initial hero/monster art is copied from pinned Iron Pit commit `24810df2a379b01a5dd63fa312dfd58426572efb`; no runtime hot-link.
 
 ## Cost Guardrail
 
@@ -222,60 +227,57 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-Smart four-direction room stamping was green and live, but the persistent room tool did not have an obvious enough exit path.
+The basic builder workflow was accepted as solid enough to move into the real catalog.
 
-### Changes Made
+The user emphasized that the **look is the honey**: visual quality and cohesion are a primary reason people will want to use the product, and open-source assets should be used when they simplify the project without weakening the visual identity.
 
-- Made the Room Builder action a visible toggle:
-  - inactive: **Build Room**
-  - active: **Cancel Room**
-- Clicking **Cancel Room**:
-  - exits room-stamp mode
-  - removes the gold room preview
-  - restores the previously selected block
-  - restores that block's active palette highlight
-- **Escape** performs the exact same cancel action.
-- Selecting another normal block still exits room mode.
-- Added visible sidebar help for Cancel Room / Esc.
-- Updated Room Builder instructional text and interaction contract.
-- Added cleanup for the Escape key listener when leaving the builder.
+### Definition of Done — Starter Catalog
+
+- one data-driven catalog schema
+- four kid-readable tabs: Build / Props / Characters / Monsters
+- useful room construction and furniture pieces
+- recognizable character pieces
+- recognizable monster pieces
+- generic rendering only
+- local Iron Pit face art rather than runtime hot-links
+- visual cohesion recorded as a release gate
+- open-source visual candidates researched and recorded
+- strict TypeScript/tests/build/Pages gate green
+
+### Changes Prepared
+
+- Expanded the catalog schema for categories, generic shapes, dimensions, optional art, and tags.
+- Added Build: Stone, Stone Wall, Wood, Wood Wall, Door, Pillar.
+- Added Props: Table, Chair, Bed, Chest, Barrel, Crate, Torch.
+- Added Characters: Fighter, Cleric, Rogue, Wizard.
+- Added Monsters: Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit.
+- Preserved the legacy generic Orc for old saved prototype maps.
+- Added four catalog tabs instead of one long inventory.
+- Added local character/monster thumbnail art and generic textured board pieces.
+- Copied starter art from pinned Iron Pit commit `24810df2a379b01a5dd63fa312dfd58426572efb`.
+- Vetted CC0 visual sources for selective later use:
+  - KayKit Dungeon Remastered
+  - Kenney Modular Dungeon Kit
+  - Kenney model catalog via Tiny Game Engine assets
+- Recorded **visual cohesion as a release gate**.
+- Recorded that external assets are raw material and must be normalized to the DND Blocks look.
 - Netlify remains untouched.
-
-### Verification
-
-Checkpoint commit:
-
-- `1472bd31ce40dd1b0e34574fdad2de9631b5a5c8`
-
-Connected verification:
-
-- **Deploy GitHub Pages Test run #9:** SUCCESS
-- **GitHub pages build and deployment run #22:** SUCCESS
-- TypeScript typecheck: passed
-- unit tests: passed
-- static build: passed
-- Pages deployment: passed
-
-The temporary push trigger is restored to manual-only in this cleanup commit.
-
-### Decision
-
-**Persistent tools need an obvious visible exit.**
-
-Rapid room stamping remains persistent because it is useful, but the DM should always see how to stop it.
 
 ### Cost Impact
 
 None.
 
+No new package, API, hosted service, or production deploy.
+
 ### Result
 
-Room stamping now has an explicit, kid-readable cancel path and remains fast for repeated room creation.
+Starter catalog and visual-quality checkpoint is prepared for strict verification.
 
 ### Exact Next Step
 
-1. Hard-refresh the test site.
-2. Test **Build Room → Cancel Room**.
-3. Test **Build Room → Escape**.
-4. Confirm the gold room preview disappears and the previous block becomes selected again.
-5. Continue catalog work after any remaining builder usability corrections.
+1. Push this checkpoint with temporary Pages verification.
+2. Require TypeScript, unit tests, static build, and Pages deployment to pass.
+3. Fix any failure without weakening checks.
+4. Restore Pages workflow to manual-only.
+5. Browser-test all four tabs, character/monster readability, and overall visual cohesion.
+6. Use that visual test to choose the first selective CC0 construction/prop geometry imports.

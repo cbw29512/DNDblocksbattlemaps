@@ -4,6 +4,9 @@ import {
   applyCommand, createBoardState, createWorldObject, invertCommand,
   placeCommand, placeManyCommand, removeCommand
 } from '../.test-build/src/domain/commands.js';
+import {
+  CATALOG_CATEGORIES, DEFAULT_PALETTE, PALETTE, catalogIdsForCategory
+} from '../.test-build/src/domain/catalog.js';
 import { commit, createHistory, redo, undo } from '../.test-build/src/domain/history.js';
 import { elevationAbove, stackElevationAt } from '../.test-build/src/domain/placement.js';
 import { normalizeRoomDimensions } from '../.test-build/src/domain/room.js';
@@ -143,4 +146,23 @@ test('room stamp rejects placement that would exceed build height', () => {
     chooseRoomPlacement(room, { x: 0, z: 0, elevation: 7 }, []),
     null
   );
+});
+
+
+test('starter catalog is grouped and every visible id resolves', () => {
+  assert.deepEqual(CATALOG_CATEGORIES, ['Build', 'Props', 'Characters', 'Monsters']);
+  assert.ok(DEFAULT_PALETTE.length >= 20);
+  for (const id of DEFAULT_PALETTE) assert.ok(PALETTE[id], `missing catalog item ${id}`);
+  for (const category of CATALOG_CATEGORIES) {
+    assert.ok(catalogIdsForCategory(category).length >= 4, `category ${category} is too sparse`);
+  }
+});
+
+test('starter combatant art is local and provenance tagged', () => {
+  const artItems = DEFAULT_PALETTE.map((id) => PALETTE[id]).filter((item) => item.art);
+  assert.ok(artItems.length >= 12);
+  for (const item of artItems) {
+    assert.equal(item.art.source, 'iron-pit');
+    assert.match(item.art.src, /^assets\/catalog\/(heroes|monsters)\/.+\.webp$/);
+  }
 });

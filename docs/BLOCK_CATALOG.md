@@ -1,6 +1,6 @@
 # Initial Block Catalog
 
-> Status: planning only.
+> Status: Stage 1 implementation contract.
 >
 > This catalog records the first obvious block families discussed for DND Blocks Battle Maps. It is not yet an asset list or implementation commitment.
 
@@ -56,6 +56,22 @@ As the catalog grows, favor a few kid-readable families:
 Within those families, use original art and our own data definitions for generic concepts such as grass, dirt, stone, wood, water, lava, walls, doors, stairs, fences, tables, beds, chests, torches, pits, traps, trees, rocks, players, NPCs, and monsters.
 
 Theme selection should filter these families to the most relevant blocks rather than exposing hundreds of choices at once.
+
+## Live Starter Catalog
+
+The first live catalog is deliberately bounded and grouped into four kid-readable tabs.
+
+**Build:** Stone, Stone Wall, Wood, Wood Wall, Door, Pillar.
+
+**Props:** Table, Chair, Bed, Chest, Barrel, Crate, Torch.
+
+**Characters:** Fighter, Cleric, Rogue, Wizard. These use local copies of the approved Iron Pit 2024 hero portrait art.
+
+**Monsters:** Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit, plus the legacy generic Orc so existing saved prototype maps remain readable.
+
+The catalog schema carries category, generic geometry, dimensions, color, optional art reference, and optional tags. Rendering remains generic: no FighterRenderer, GoblinRenderer, ChestRenderer, etc.
+
+The first combatant art is bundled locally in DND Blocks; the browser does not hot-link Iron Pit.
 
 ## Room Construction Blocks
 

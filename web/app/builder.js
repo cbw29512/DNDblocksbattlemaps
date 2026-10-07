@@ -1,5 +1,6 @@
+import { catalogPanelHtml, setCatalogCategory } from './catalogPanel.js';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
-import { DEFAULT_PALETTE, PALETTE, TERRAIN_THEMES } from '../domain/catalog.js';
+import { PALETTE, TERRAIN_THEMES } from '../domain/catalog.js';
 import { createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js';
 import { commit, createHistory, redo, undo } from '../domain/history.js';
 import { roomSummary } from '../domain/room.js';
@@ -18,10 +19,7 @@ export async function renderBuilder(root, terrainId, handlers) {
     let selected = 'stone-block';
     let armedRoom = null;
     let elevation = 0;
-    const palette = DEFAULT_PALETTE.map((id) => {
-        const item = PALETTE[id];
-        return `<button class="palette-item${id === selected ? ' active' : ''}" data-catalog="${id}" type="button"><i style="--item-color:#${item.color.toString(16).padStart(6, '0')}"></i><span>${item.name}</span></button>`;
-    }).join('');
+
     root.innerHTML = `
     <main class="builder-shell" style="--theme-accent:${theme.accentCss}">
       <header class="builder-topbar">
@@ -31,8 +29,7 @@ export async function renderBuilder(root, terrainId, handlers) {
       </header>
       <aside class="builder-sidebar">
         ${roomPanelHtml()}
-        <div class="sidebar-heading"><span class="eyebrow">Blocks</span><strong>Pick one. Keep clicking.</strong></div>
-        <div class="palette-list">${palette}</div>
+        ${catalogPanelHtml(selected)}
         <div class="elevation-control"><span>Elevation</span><div><button id="elev-down" type="button">−</button><b id="elev-value">Ground</b><button id="elev-up" type="button">+</button></div></div>
         <div class="prototype-tip"><b>Controls</b><span>Build Room → click a corner</span><span>Cancel Room / Esc → stop room tool</span><span>Gold room outline: valid</span><span>Top face: build up</span><span>Side face: build out</span><span>Right click: remove</span><span>Wheel: zoom</span></div>
       </aside>
@@ -71,6 +68,7 @@ export async function renderBuilder(root, terrainId, handlers) {
         }
     };
     const restoreSelectedBlock = () => {
+        setCatalogCategory(root, PALETTE[selected].category);
         renderer?.setSelectedCatalog(selected);
         root.querySelectorAll('.palette-item').forEach((item) => {
             item.classList.toggle('active', item.dataset.catalog === selected);
@@ -118,10 +116,14 @@ export async function renderBuilder(root, terrainId, handlers) {
         }
         setRoomMode(room);
     });
+    root.querySelectorAll('[data-category-tab]').forEach((button) => button.addEventListener('click', () => {
+        setCatalogCategory(root, button.dataset.categoryTab);
+    }));
     root.querySelectorAll('[data-catalog]').forEach((button) => button.addEventListener('click', () => {
         if (armedRoom)
             setRoomMode(null);
         selected = button.dataset.catalog;
+        setCatalogCategory(root, PALETTE[selected].category);
         root.querySelectorAll('.palette-item').forEach((item) => item.classList.toggle('active', item === button));
         renderer?.setSelectedCatalog(selected);
         status.textContent = `${PALETTE[selected].name} selected. Click empty grid, a top face, or a side face.`;

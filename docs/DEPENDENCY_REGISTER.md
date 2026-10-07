@@ -176,6 +176,43 @@ Rule:
 
 Every non-original asset must have source/license/provenance recorded before inclusion.
 
+### Iron Pit Internal Art Reuse
+
+Status: approved for Stage 1 by the owner/user of both repositories.
+
+Pinned source:
+
+- repository: `cbw29512/D20-ironpit`
+- commit: `24810df2a379b01a5dd63fa312dfd58426572efb`
+
+Copied assets:
+
+- 2024 Fighter, Cleric, Rogue, Wizard hero portraits
+- Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit monster silhouettes
+
+Destination:
+
+- `public/assets/catalog/heroes/`
+- `public/assets/catalog/monsters/`
+
+Purpose:
+
+- lightweight character/monster face art
+- reuse the existing approved identity mapping instead of creating a duplicate art system
+
+Runtime/infrastructure cost:
+
+- none
+- bundled locally; no cross-repository runtime requests
+
+Replacement path:
+
+- art is optional catalog data and can be replaced without changing placement/state mechanics
+
+Commercial-release note:
+
+- before public commercial launch, recheck and retain the underlying art-generation/source provenance and any required notices.
+
 ## Explicitly Not Selected for MVP
 
 ### Babylon.js

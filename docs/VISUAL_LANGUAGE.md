@@ -19,6 +19,30 @@ The visual direction is:
 
 Clarity matters more than realism.
 
+## Visual Cohesion Is a Release Gate
+
+The visual presentation is part of the product value, not optional polish.
+
+A feature can be mechanically correct and still fail a milestone if it makes the board look cheap, inconsistent, unreadable, or like a collection of unrelated asset packs.
+
+Target feel:
+
+> a premium physical dungeon-building toy set viewed on a tabletop
+
+All imported or original pieces should be normalized toward the same visual language:
+
+- chunky readable proportions
+- restrained low-poly detail
+- consistent material saturation and roughness
+- warm tabletop lighting
+- strong silhouettes
+- clear grid readability
+- consistent scale
+- consistent catalog thumbnail treatment
+- no sudden photorealistic/high-detail asset beside simple blocks
+
+Open-source/CC0 assets are raw material, not the product identity. Imported geometry may be recolored, simplified, rescaled, or selectively used so the set reads as one system.
+
 ## Block Identity
 
 A block should identify what it is from all useful viewing directions.

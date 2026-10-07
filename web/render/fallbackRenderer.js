@@ -59,7 +59,10 @@ export function createFallbackRenderer(container, handlers) {
                 if (top) {
                     const item = PALETTE[top.catalogId];
                     cell.style.setProperty('--piece-color', `#${item.color.toString(16).padStart(6, '0')}`);
-                    cell.innerHTML = `<span class="fallback-piece">${item.name.slice(0, 1)}</span>${occupants.length > 1 ? `<small>${occupants.length}</small>` : ''}`;
+                    const visual = item.art
+                        ? `<img src="${item.art.src}" alt="" loading="lazy" decoding="async">`
+                        : item.name.slice(0, 1);
+                    cell.innerHTML = `<span class="fallback-piece">${visual}</span>${occupants.length > 1 ? `<small>${occupants.length}</small>` : ''}`;
                 }
                 cell.addEventListener('pointerenter', () => {
                     if (!room)
