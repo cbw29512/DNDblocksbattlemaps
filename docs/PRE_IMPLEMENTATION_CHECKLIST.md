@@ -66,7 +66,7 @@ Required authoritative documents:
 - [x] Three.js
 - [x] native HTML/CSS first
 - [x] Supabase
-- [x] Cloudflare Pages
+- [x] Netlify
 - [x] GitHub source/docs
 - [x] no custom application server initially
 - [x] no Docker requirement initially
