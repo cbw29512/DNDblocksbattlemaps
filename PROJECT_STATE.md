@@ -211,60 +211,51 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-Stage 1 first-slice source was on `main` and locally verified, but the first external browser test showed a completely blank white GitHub Pages page at the project URL.
+The first Stage 1 prototype source was on `main`, and the user attempted to open the GitHub Pages test URL.
 
-The user supplied a screenshot of the blank page.
+The page displayed the raw-source diagnostic fallback rather than the built application.
 
 ### Diagnosis
 
-Checked the repository and GitHub Actions state.
+GitHub Actions was checked directly.
 
-GitHub reports:
+Observed:
 
-- current source checkpoint is on `main`
-- the manual Pages workflow file exists
-- **workflow-dispatch run count = 0**
+- GitHub has run the built-in dynamic workflow named **pages build and deployment**
+- that workflow is publishing from the `main` branch/root
+- the custom manual workflow **Deploy GitHub Pages Test** has **0 workflow-dispatch runs**
 
-Therefore the actual Pages build workflow has never run.
+Conclusion:
 
-The blank page is GitHub Pages serving the repository's raw source `index.html` rather than Vite's compiled `dist` output. Raw `index.html` references TypeScript/source paths, so it is not a deployable production artifact by itself.
+> GitHub Pages is still configured as **Deploy from a branch**, not **GitHub Actions**.
+
+That is why the repository's raw `index.html` is being served instead of the Vite-built `dist` artifact.
 
 ### Changes Made
 
-- Confirmed the blank page is a deployment-source problem, not evidence that the Stage 1 state/domain tests failed.
-- Removed the TypeScript config exclusion for `src/types/three-shim.d.ts` so the first connected Actions typecheck has the intended Three.js module declarations.
-- Added an inline raw-source diagnostic fallback to `index.html`. If Pages is ever pointed at the raw branch/root again, the user will now see a clear setup message instead of a blank white page.
-- Kept the actual GitHub Pages workflow **manual-only**.
-- Kept Netlify untouched.
-
-### Decisions Made
-
-**Decision:** Do not change GitHub Pages to auto-deploy on every push just to avoid the setup step.
-
-**Reason:** Manual test releases remain part of the project's local-first/release-discipline contract.
-
-**Decision:** The correct fix is to use **Settings -> Pages -> Source: GitHub Actions** and then manually run **Deploy GitHub Pages Test**.
-
-**Reason:** That workflow installs dependencies, typechecks, runs tests, builds Vite `dist`, and deploys the built artifact. Serving the source branch/root is not equivalent.
-
-### Cost Impact
-
-None.
-
-No Netlify deploy, Supabase use, or paid service change occurred.
+- No application code changes were required.
+- Confirmed the diagnostic fallback is behaving correctly.
+- Confirmed Netlify remains untouched.
 
 ### Result
 
-The repository is hardened for the first real GitHub Pages test.
+The Stage 1 source checkpoint is unchanged.
 
-The screenshot's blank page is explained: the build/deploy workflow has not yet executed.
+The next blocker is account/repository configuration, not code.
 
 ### Exact Next Step
 
-1. In GitHub repository **Settings -> Pages**, set **Source** to **GitHub Actions**.
-2. Open **Actions -> Deploy GitHub Pages Test**.
-3. Click **Run workflow** on `main`.
-4. Wait for the workflow to finish.
-5. Reload `https://cbw29512.github.io/DNDblocksbattlemaps/`.
-6. If the workflow fails, inspect the failed job/step before making any feature changes.
-7. Once the built site appears, test homepage -> terrain -> placement -> overlap -> remove -> Undo/Redo -> refresh persistence.
+In GitHub:
+
+1. Open repository **Settings**
+2. Open **Pages**
+3. Under **Build and deployment**, change **Source** from **Deploy from a branch** to **GitHub Actions**
+4. Save if GitHub presents a Save button
+5. Open **Actions**
+6. Select **Deploy GitHub Pages Test**
+7. Click **Run workflow**
+8. Run on `main`
+9. Wait for it to complete successfully
+10. Reload `https://cbw29512.github.io/DNDblocksbattlemaps/`
+
+Do not make feature changes until the actual built Vite site is visible and reviewed.
