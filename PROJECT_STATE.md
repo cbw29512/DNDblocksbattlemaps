@@ -71,6 +71,10 @@ The DM is the authority. The board must work without automated RPG rules.
 36. **Pick-up/put-down movement.** Unlocked existing objects are moved by selecting/picking up and dropping, not transform gizmos.
 37. **Overlap chooser only when needed.** Ambiguous overlapping selections use a minimal What's Here? chooser rather than a permanent object inspector.
 38. **Undo/Redo is Stage 1 safety infrastructure.** Fast placement/removal should remain confirmation-free because board edits are reversible.
+39. **Low-friction player join.** DM uses a durable signed-in identity; players join via link/code + display name with a lightweight session identity and no required standalone account in MVP.
+40. **DM assigns pieces.** Players control only assigned entities; DM may assign/reassign at any time and always retains override.
+41. **Player UI stays minimal.** No build tools; players see map, owned piece, visible objects, camera controls, and relevant interactions only.
+42. **Tiny creatures keep the 5-foot grid.** Tiny pieces share a 5-foot square and auto-offset visually rather than introducing a permanent 2.5-foot subgrid.
 
 ## Cost Guardrail
 
@@ -142,6 +146,7 @@ A work session is not complete until the handoff state is pushed.
 - `docs/CAMERA_CONTRACT.md` — authoritative tabletop camera elevation, orbit, pan, zoom, and recovery behavior.
 - `docs/TRAPS_AND_EFFECTS.md` — authoritative trigger/effect, hazard, permissive-overlap, and transforming-object contract.
 - `docs/PLACEMENT_CONTRACT.md` — authoritative select/place, stacking, elevation, overlap-selection, move, and undo interaction.
+- `docs/PLAYER_JOIN_CONTRACT.md` — authoritative player join, session identity, assignment, control, interaction, DM override, and Tiny creature behavior.
 
 Planned next documentation:
 
@@ -167,13 +172,11 @@ See `docs/COMPETITOR_RESEARCH.md`.
 
 These are deliberately unresolved and must not be guessed during implementation.
 
-1. Tiny creature placement.
-2. MVP identity/authentication/join model.
-3. Persistence granularity and recovery strategy behind Undo/Redo.
-4. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
-5. Technology stack final selection and hosting/persistence providers.
-6. Exact asset/art production approach.
-7. Player-side interaction contract beyond basic movement.
+1. Persistence granularity and recovery strategy behind Undo/Redo.
+2. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
+3. Technology stack final selection and hosting/persistence providers.
+4. Exact asset/art production approach.
+5. Exact visual treatment for player ownership, hidden DM-only objects, placement ghosts, and Tiny auto-offsets.
 
 ## Latest Work Record
 
@@ -185,104 +188,110 @@ These are deliberately unresolved and must not be guessed during implementation.
 
 The project remained in Stage 0 with no application code.
 
-DM-authoritative overlap, broad trigger/effect hazards, and transform/replace behavior were documented. The next unresolved design area was the ordinary manual placement experience.
+The manual placement contract had just been resolved and pushed. The next product questions were player join/ownership/control and Tiny-creature representation.
+
+### Research
+
+Reviewed D&D SRD 5.2.1 Creature Size and Space.
+
+The current SRD defines Tiny creature space as **2½ × 2½ feet**, with **four Tiny creatures per 5-foot square**.
+
+This supports preserving the product's single 5-foot grid while visually offsetting multiple Tiny creatures inside one square instead of introducing a permanent 2.5-foot subgrid.
 
 ### Changes Made
 
-- Read the live project state, SOUL, interaction spec, spatial contract, traps/effects contract, and data schema before work.
-- Created `docs/PLACEMENT_CONTRACT.md`.
-- Updated `SOUL.md` with persistent selection, natural surface stacking, explicit elevation fallback, pick-up/put-down movement, overlap selection, and Undo/Redo requirements.
-- Updated `docs/INTERACTION_SPEC.md` to resolve repeated placement, manual elevation, moving existing objects, overlap selection, and Undo/Redo.
-- Updated `docs/DATA_SCHEMA.md` with transient EditorState and renderer-independent EditHistory concepts.
-- Updated `docs/ROADMAP.md` so these behaviors are part of the first single-user builder prototype.
-- Linked the placement contract from README.
-- A GitHub read briefly disconnected during reconciliation; the read was retried in smaller batches and repository work continued without changing the design.
+- Continued from the verified live project state.
+- Created `docs/PLAYER_JOIN_CONTRACT.md`.
+- Updated `SOUL.md` with low-friction Player join, assignment, DM override, and Tiny representation.
+- Updated `docs/INTERACTION_SPEC.md` with player join, ownership, movement-lock feedback, and player-triggered interactions.
+- Updated `docs/DATA_SCHEMA.md` with durable-vs-session identity, expanded GameMember state, and the resolved Tiny model.
+- Corrected `docs/ROADMAP.md` so Undo/Redo is explicitly in Stage 1 rather than the later convenience stage.
+- Expanded Stage 2 roadmap with durable DM identity, Join as Player, reconnect, ownership indication, and Tiny auto-offset.
+- Linked the player join contract from README.
 
 ### Decisions Made
 
-**Decision:** Selecting a palette object persists until the DM chooses another object or clears placement mode.
+**Decision:** DM has a durable signed-in identity in MVP.
 
-**Reason:** Physical terrain building often requires placing several copies of the same thing, and returning to the sidebar after every block is unnecessary friction.
+**Reason:** The DM owns and saves games/maps and needs reliable continuity.
 
-**Decision:** Placement uses a ghost preview.
+**Decision:** Players use a dedicated **Join as Player** flow with join link/code plus display name.
 
-**Reason:** The DM should see exactly where and at what elevation the next object will appear before clicking.
+**Reason:** This preserves the explicit Player role without forcing account setup before play.
 
-**Decision:** Natural stacking follows the hovered surface.
+**Decision:** A permanent standalone player account is not required for MVP.
 
-**Reason:** Ground/floor, top-face, and side-face placement are visually understandable and avoid requiring users to think in X/Y/Z coordinates.
+**Reason:** Lower friction, lower implementation complexity, and lower infrastructure burden. The session still has a clear player identity and permissions.
 
-**Decision:** A visible elevation control in 5-foot units also exists.
+**Decision:** The browser should restore an active player's game/session assignment across refresh/reconnect when practical.
 
-**Reason:** It provides a simple escape hatch for exact heights or locations without a convenient visible support surface.
+**Reason:** Reconnecting should not require rebuilding the table state.
 
-**Decision:** Unsupported/floating placement is allowed.
+**Decision:** DM explicitly assigns character/game pieces to joined players.
 
-**Reason:** The DM may need flying creatures, suspended objects, magical platforms, falling hazards, or other intentionally unsupported elements. The app is not a physics engine.
+**Reason:** Ownership must remain unambiguous and DM-controlled.
 
-**Decision:** Moving an unlocked object uses pick-up → ghost → put-down.
+**Decision:** Player movement uses the same pick-up/put-down mental model as the editor but only for assigned entities.
 
-**Reason:** This matches the physical-block metaphor and avoids transform gizmos.
+**Reason:** Reusing the interaction model reduces learning burden.
 
-**Decision:** Ambiguous overlap gets a small `What's Here?` chooser only when needed.
+**Decision:** Player-interactable objects invoke the universal trigger/effect system.
 
-**Reason:** Normal clicks should remain direct; complexity should appear only when the map actually contains ambiguous overlapping objects.
+**Reason:** Doors, chests, switches, traps, mimic-style transformations, and future interactables should not need separate player-control engines.
 
-**Decision:** Right-click ordinary removal remains confirmation-free.
+**Decision:** Movement lock prevents the player from moving an affected piece but never removes DM override.
 
-**Reason:** Repeated confirmation dialogs would undermine the product's speed.
+**Reason:** This supports traps/restraints while preserving DM authority.
 
-**Decision:** Undo/Redo is required in Stage 1.
+**Decision:** Tiny creatures do not create a permanent 2.5-foot grid.
 
-**Reason:** Fast confirmation-free editing is only safe when mistakes are immediately reversible.
-
-**Decision:** New environment/construction objects can still be placed in a locked room and inherit that room's locked state after placement.
-
-**Reason:** Room lock protects existing layout from accidental movement; it must not prevent the DM from adding a later prop, hazard, or surprise.
+**Reason:** SRD 5.2.1 allows four Tiny creatures per 5-foot square, so the UI can preserve the universal 5-foot grid and auto-offset Tiny visuals inside it.
 
 ### Cost Impact
 
 None.
 
-This work changed documentation/product contracts only. No dependency, hosted service, asset, or application code was added.
+No application code, dependency, paid service, hosting change, or asset was added.
+
+The player-session model is intentionally compatible with the project's cheap-first architecture by avoiding a requirement for permanent accounts for every player.
 
 ### Result
 
-The manual editor now has a complete simple mental model:
+The player experience is now defined:
 
-> Pick a thing → see its ghost → click to place → keep clicking for more → Select/Done when finished.
+> Open link → enter name → join as Player → DM assigns piece → immediately move/interact.
 
-And:
+The DM experience remains authoritative:
 
-> Click an unlocked thing in Select mode → pick it up → click where it belongs → Escape to cancel.
+> DM owns the game, assigns/reassigns pieces, clears locks, triggers effects, reveals objects, and can override any board state.
 
-Vertical building does not require a separate editor:
-
-> floor = place here; top = stack above; side = place beside; height control = exact override.
+Tiny creatures retain RAW scale meaning without complicating the entire board grid.
 
 No application code has been written.
 
 ### Open Questions / Blockers
 
-1. Tiny creature placement.
-2. MVP authentication/join model.
-3. Persistence/recovery implementation behind Undo/Redo.
-4. Shared-wall editing if simple duplicate prevention proves insufficient.
-5. Three.js vs Babylon.js final choice.
-6. Exact art/asset production approach.
-7. Player-side interaction beyond basic movement.
+1. Persistence/recovery implementation behind Undo/Redo.
+2. Shared-wall editing if simple duplicate prevention proves insufficient.
+3. Three.js vs Babylon.js final rendering choice.
+4. Hosted persistence/auth/realtime final choice.
+5. Exact asset/art production approach.
+6. Visual language for placement ghosts, hidden DM-only objects, ownership cues, and Tiny auto-offset.
 
 ### Exact Next Step
 
 Stay in design mode.
 
-Resolve the **player/join and creature-control contract** next, including:
+Resolve **state persistence, Undo/Redo, and crash/reconnect recovery** next:
 
-- whether players need accounts or can join by code/name
-- how a DM assigns a character piece
-- what a player can click/interact with
-- what happens when a player's movement is locked
-- how DM override works
-- how Tiny creature representation should behave on a 5-foot grid
+- what board changes are stored as current state
+- what changes are stored as reversible commands
+- how much undo history is needed
+- how autosave works
+- what happens after browser refresh/crash
+- how multiplayer avoids stale/duplicate actions
+- how to keep this simple enough for the cheap browser-first stack
+
+After that, perform the written Three.js vs Babylon.js architecture comparison against the now much more complete product requirements.
 
 Do not write application code yet.
