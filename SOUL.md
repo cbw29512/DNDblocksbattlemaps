@@ -11,17 +11,18 @@ It should feel like using a box of magnetic dungeon terrain on a physical table,
 ## Prime Directives
 
 1. **Simple first.** The fastest path from an idea to a playable encounter wins.
-2. **Cheap first.** Prefer reliable free or near-free infrastructure until the product proves it needs more.
-3. **The DM is the game engine.** Rules automation is optional and must never be required to use the board.
-4. **Everything is data-driven.** Terrain, furniture, doors, traps, players, monsters, and decorations share universal object behavior wherever possible.
-5. **One square represents 5 feet.** The visual grid follows standard tabletop battle-map scale.
-6. **No unnecessary rotation.** Blocks should identify themselves clearly from all useful viewing sides.
-7. **Placed construction can be locked.** Once locked, a block does not move until the DM unlocks it.
-8. **The DM controls visibility.** Objects such as traps, secret doors, creatures, treasure, and encounter elements can be hidden from players and revealed later.
-9. **Players control only what they are assigned.** The DM retains authority over every object.
-10. **Templates create normal blocks.** Prefab rooms/buildings/encounters are recipes that place ordinary blocks; generated blocks never become a separate engine.
-11. **Never add complexity just because another VTT has it.**
-12. **Documentation is part of implementation.** Work is not complete until the live project state is updated and pushed to GitHub.
+2. **Kid-simple UI.** A child should be able to understand the basic build/play flow without reading a manual.
+3. **Cheap first.** Prefer reliable free or near-free infrastructure until the product proves it needs more.
+4. **The DM is the game engine.** Rules automation is optional and must never be required to use the board.
+5. **Everything is data-driven.** Terrain, furniture, doors, traps, players, monsters, and decorations share universal object behavior wherever possible.
+6. **One square represents 5 feet.** The visual grid follows standard tabletop battle-map scale.
+7. **No unnecessary rotation.** Blocks should identify themselves clearly from all useful viewing sides.
+8. **Placed construction can be locked.** Once locked, a block does not move until the DM unlocks it.
+9. **The DM controls visibility.** Objects such as traps, secret doors, creatures, treasure, and encounter elements can be hidden from players and revealed later.
+10. **Players control only what they are assigned.** The DM retains authority over every object.
+11. **Templates create normal blocks.** Prefab rooms/buildings/encounters are recipes that place ordinary blocks; generated blocks never become a separate engine.
+12. **Never add complexity just because another VTT has it.**
+13. **Documentation is part of implementation.** Work is not complete until the live project state is updated and pushed to GitHub.
 
 ## Mandatory Resume/Handoff Contract
 
@@ -141,7 +142,9 @@ Universal behavior describes what it can do.
 
 Initial building interaction:
 
-**Select block → click square → place.**
+**Left-click a block/tool in the sidebar → left-click the map to place → right-click a placed block to remove.**
+
+The exact repeated-placement behavior after one placement remains to be decided.
 
 Blocks snap to the grid.
 
@@ -159,6 +162,8 @@ Future convenience tools may include:
 - encounter templates
 
 All convenience tools must produce the same ordinary world objects as manual placement.
+
+Room generation must not automatically create ceilings at the current design stage. Rooms must remain open from above until roof/ceiling behavior is deliberately revisited.
 
 ## Locked Construction
 
@@ -189,6 +194,8 @@ Possible hidden objects include:
 The DM can reveal them manually.
 
 Advanced line of sight and dynamic lighting are not required for MVP.
+
+A requested first trap behavior is: when an assigned player piece enters the trap cell, the piece receives a reusable movement-lock effect until the DM releases it. Do not create trap-specific movement code when the same effect can be reused by pits, webs, cages, or other sources.
 
 ## Prefabricated Rooms
 
