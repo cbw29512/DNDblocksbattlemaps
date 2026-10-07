@@ -211,54 +211,43 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-GitHub Pages had been correctly switched to **GitHub Actions**, and the user manually ran **Deploy GitHub Pages Test** for the first time.
+GitHub Pages was correctly configured to use GitHub Actions. The first manual Pages test run failed on an unused TypeScript parameter. That code failure was fixed on `main` in commit `f4e9142d3492e939bbf665d4503cf94705bb25a1`.
 
-The workflow failed during the TypeScript/typecheck stage.
+The user then clicked **Re-run jobs** from the old failed run screen.
 
-### Failure
+### Diagnosis
 
-GitHub Actions annotation:
+GitHub Actions state was checked directly.
 
-`src/render/threeObjects.ts#L27`
+Current `main`:
 
-> 'THREE' is declared but its value is never read.
+- `f4e9142d3492e939bbf665d4503cf94705bb25a1`
 
-This was a strict TypeScript/noUnusedParameters failure in `setDefaultCamera`.
+Existing workflow-dispatch run:
 
-The workflow reached application typechecking, so the Pages source configuration itself is now correct.
+- run #1 / ID 37680818327
+- head commit: `90223e48b953d9fcef24fea222c8a6bad9a365c2`
+- conclusion: failure
 
-The Node 20 deprecation message shown by GitHub is a warning about current GitHub-maintained actions and is not the failing condition.
-
-### Changes Made
-
-- Removed the unused `THREE` parameter from `setDefaultCamera`.
-- Updated both renderer call sites to use `setDefaultCamera(camera, controls)`.
-- Did not weaken TypeScript strictness or `noUnusedParameters`.
-- Did not change product behavior.
-- Did not touch Netlify.
-
-### Decision
-
-**Keep the strict typecheck gate and fix the code rather than suppressing the warning.**
-
-Reason:
-
-The deployment workflow is doing its job: code that violates the project's compile discipline should not become the browser test build.
-
-### Cost Impact
-
-None.
-
-No paid service or production deployment was used.
+Therefore the re-run tested the **old commit again**, not the fixed current `main`.
 
 ### Result
 
-The specific GitHub Actions typecheck failure from test run #1 is fixed in source.
+No new code defect has been established by the re-run.
+
+The fixed commit has not yet been tested by GitHub Actions.
 
 ### Exact Next Step
 
-1. Push this fix to `main`.
-2. In **Actions -> Deploy GitHub Pages Test**, rerun the workflow on `main`.
-3. If it fails again, inspect the new first failing step rather than bypassing the gate.
-4. Once green, reload `https://cbw29512.github.io/DNDblocksbattlemaps/`.
-5. Browser-test homepage -> terrain -> place/overlap/remove -> Undo/Redo -> refresh persistence.
+Do **not** use **Re-run jobs** on run #1.
+
+Instead:
+
+1. Click the workflow name **Deploy GitHub Pages Test** near the upper-left/back area, or go to repository **Actions** and select that workflow from the left sidebar.
+2. On the workflow page, click **Run workflow**.
+3. Select branch **main**.
+4. Start the run.
+5. Confirm the new run uses commit beginning `f4e9142`.
+6. Wait for that new run to finish.
+7. If green, reload the Pages test URL.
+8. If red, inspect the new run's first failing step.
