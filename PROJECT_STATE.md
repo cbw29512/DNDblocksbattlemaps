@@ -75,6 +75,11 @@ The DM is the authority. The board must work without automated RPG rules.
 40. **DM assigns pieces.** Players control only assigned entities; DM may assign/reassign at any time and always retains override.
 41. **Player UI stays minimal.** No build tools; players see map, owned piece, visible objects, camera controls, and relevant interactions only.
 42. **Tiny creatures keep the 5-foot grid.** Tiny pieces share a 5-foot square and auto-offset visually rather than introducing a permanent 2.5-foot subgrid.
+43. **Current state is canonical.** Maps load from current persisted state, not by replaying the entire edit history.
+44. **Autosave is continuous.** Every committed board edit enters the save pipeline; ordinary use does not require a manual Save button.
+45. **Undo is compensating history.** Undo/Redo uses reversible commands; Undo records an inverse edit instead of deleting history.
+46. **Revision + action IDs protect realtime.** Game/map revisions detect gaps/staleness and unique action IDs deduplicate retries/reconnects.
+47. **Realtime sends logical edits, not frames.** Movement sync transmits committed grid moves/state changes rather than animation frames.
 
 ## Cost Guardrail
 
@@ -147,6 +152,7 @@ A work session is not complete until the handoff state is pushed.
 - `docs/TRAPS_AND_EFFECTS.md` — authoritative trigger/effect, hazard, permissive-overlap, and transforming-object contract.
 - `docs/PLACEMENT_CONTRACT.md` — authoritative select/place, stacking, elevation, overlap-selection, move, and undo interaction.
 - `docs/PLAYER_JOIN_CONTRACT.md` — authoritative player join, session identity, assignment, control, interaction, DM override, and Tiny creature behavior.
+- `docs/PERSISTENCE_UNDO_CONTRACT.md` — authoritative current-state persistence, autosave, Undo/Redo, revision, dedupe, crash, and reconnect behavior.
 
 Planned next documentation:
 
@@ -172,11 +178,11 @@ See `docs/COMPETITOR_RESEARCH.md`.
 
 These are deliberately unresolved and must not be guessed during implementation.
 
-1. Persistence granularity and recovery strategy behind Undo/Redo.
-2. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
-3. Technology stack final selection and hosting/persistence providers.
-4. Exact asset/art production approach.
-5. Exact visual treatment for player ownership, hidden DM-only objects, placement ghosts, and Tiny auto-offsets.
+1. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
+2. Technology stack final selection and hosting/persistence providers.
+3. Exact asset/art production approach.
+4. Exact visual treatment for player ownership, hidden DM-only objects, placement ghosts, and Tiny auto-offsets.
+5. Bounded Undo/Redo history retention after real usage testing.
 
 ## Latest Work Record
 
@@ -188,110 +194,92 @@ These are deliberately unresolved and must not be guessed during implementation.
 
 The project remained in Stage 0 with no application code.
 
-The manual placement contract had just been resolved and pushed. The next product questions were player join/ownership/control and Tiny-creature representation.
-
-### Research
-
-Reviewed D&D SRD 5.2.1 Creature Size and Space.
-
-The current SRD defines Tiny creature space as **2½ × 2½ feet**, with **four Tiny creatures per 5-foot square**.
-
-This supports preserving the product's single 5-foot grid while visually offsetting multiple Tiny creatures inside one square instead of introducing a permanent 2.5-foot subgrid.
+Player join/ownership and Tiny-creature behavior were resolved. The next open product architecture issue was persistence, Undo/Redo, autosave, crash recovery, and realtime reconnect behavior.
 
 ### Changes Made
 
 - Continued from the verified live project state.
-- Created `docs/PLAYER_JOIN_CONTRACT.md`.
-- Updated `SOUL.md` with low-friction Player join, assignment, DM override, and Tiny representation.
-- Updated `docs/INTERACTION_SPEC.md` with player join, ownership, movement-lock feedback, and player-triggered interactions.
-- Updated `docs/DATA_SCHEMA.md` with durable-vs-session identity, expanded GameMember state, and the resolved Tiny model.
-- Corrected `docs/ROADMAP.md` so Undo/Redo is explicitly in Stage 1 rather than the later convenience stage.
-- Expanded Stage 2 roadmap with durable DM identity, Join as Player, reconnect, ownership indication, and Tiny auto-offset.
-- Linked the player join contract from README.
+- Created `docs/PERSISTENCE_UNDO_CONTRACT.md`.
+- Updated `SOUL.md` with canonical-current-state, autosave, Undo/Redo, revision, action-ID, and reconnect rules.
+- Updated `docs/DATA_SCHEMA.md` with game revision and a fuller reversible EditHistory model.
+- Updated `docs/ROADMAP.md` with autosave, revision/dedupe, logical movement events, crash recovery, and reconnect recovery.
+- Linked the persistence/recovery contract from README.
 
 ### Decisions Made
 
-**Decision:** DM has a durable signed-in identity in MVP.
+**Decision:** Persist current board state separately from bounded recent edit history.
 
-**Reason:** The DM owns and saves games/maps and needs reliable continuity.
+**Reason:** A map should load directly from its current state and must not require replaying its entire lifetime history.
 
-**Decision:** Players use a dedicated **Join as Player** flow with join link/code plus display name.
+**Decision:** Every committed board edit enters the autosave pipeline.
 
-**Reason:** This preserves the explicit Player role without forcing account setup before play.
+**Reason:** The product should feel continuously saved and should not depend on a manual Save button.
 
-**Decision:** A permanent standalone player account is not required for MVP.
+**Decision:** Undo commits a compensating inverse edit rather than deleting the original edit.
 
-**Reason:** Lower friction, lower implementation complexity, and lower infrastructure burden. The session still has a clear player identity and permissions.
+**Reason:** This keeps history explainable and works better for multiplayer/reconnect recovery.
 
-**Decision:** The browser should restore an active player's game/session assignment across refresh/reconnect when practical.
+**Decision:** Bulk user actions are one logical history step.
 
-**Reason:** Reconnecting should not require rebuilding the table state.
+**Reason:** Generate Room or Lock Room should Undo as one user action rather than dozens of individual block edits.
 
-**Decision:** DM explicitly assigns character/game pieces to joined players.
+**Decision:** General shared-board Undo/Redo is a DM tool.
 
-**Reason:** Ownership must remain unambiguous and DM-controlled.
+**Reason:** Player corrections remain simple and DM authority stays clear.
 
-**Decision:** Player movement uses the same pick-up/put-down mental model as the editor but only for assigned entities.
+**Decision:** Every committed action gets a unique action ID and every game/map uses a monotonically increasing revision.
 
-**Reason:** Reusing the interaction model reduces learning burden.
+**Reason:** Retries/reconnects need deduplication, ordering, stale-state detection, and gap recovery.
 
-**Decision:** Player-interactable objects invoke the universal trigger/effect system.
+**Decision:** Initial load reads canonical current state first, then subscribes to later realtime changes.
 
-**Reason:** Doors, chests, switches, traps, mimic-style transformations, and future interactables should not need separate player-control engines.
+**Reason:** This avoids full event replay and makes map opening/recovery fast.
 
-**Decision:** Movement lock prevents the player from moving an affected piece but never removes DM override.
+**Decision:** Realtime movement transmits logical grid moves, not animation frames.
 
-**Reason:** This supports traps/restraints while preserving DM authority.
+**Reason:** This dramatically reduces network/realtime traffic and keeps the cheap-first architecture viable.
 
-**Decision:** Tiny creatures do not create a permanent 2.5-foot grid.
+**Decision:** Do not build CRDT/offline-first synchronization unless testing proves it necessary.
 
-**Reason:** SRD 5.2.1 allows four Tiny creatures per 5-foot square, so the UI can preserve the universal 5-foot grid and auto-offset Tiny visuals inside it.
+**Reason:** Strong DM authority, ownership, locks, revisions, and refresh-on-gap should handle the intended MVP without adding major complexity.
 
 ### Cost Impact
 
 None.
 
-No application code, dependency, paid service, hosting change, or asset was added.
+No application code, dependency, hosted service, or paid infrastructure was added.
 
-The player-session model is intentionally compatible with the project's cheap-first architecture by avoiding a requirement for permanent accounts for every player.
+The persistence contract intentionally minimizes future storage/realtime cost by keeping current state compact, history bounded, and network messages logical rather than frame-based.
 
 ### Result
 
-The player experience is now defined:
+The save/recovery mental model is now:
 
-> Open link → enter name → join as Player → DM assigns piece → immediately move/interact.
+> Every meaningful edit autosaves. Current board state opens directly. Recent edits remain reversible. Reconnect checks revision, deduplicates action IDs, and refreshes state instead of guessing.
 
-The DM experience remains authoritative:
-
-> DM owns the game, assigns/reassigns pieces, clears locks, triggers effects, reveals objects, and can override any board state.
-
-Tiny creatures retain RAW scale meaning without complicating the entire board grid.
+A browser crash should not lose important board state such as positions, hidden/revealed objects, transforms, assignments, room locks, or movement-lock effects.
 
 No application code has been written.
 
 ### Open Questions / Blockers
 
-1. Persistence/recovery implementation behind Undo/Redo.
-2. Shared-wall editing if simple duplicate prevention proves insufficient.
-3. Three.js vs Babylon.js final rendering choice.
-4. Hosted persistence/auth/realtime final choice.
-5. Exact asset/art production approach.
-6. Visual language for placement ghosts, hidden DM-only objects, ownership cues, and Tiny auto-offset.
+1. Shared-wall editing if simple duplicate prevention proves insufficient.
+2. Three.js vs Babylon.js final rendering choice.
+3. Hosted persistence/auth/realtime final choice.
+4. Exact asset/art production approach.
+5. Visual language for placement ghosts, hidden DM-only objects, ownership cues, and Tiny auto-offset.
+6. Final bounded Undo/Redo history retention after real usage testing.
 
 ### Exact Next Step
 
-Stay in design mode.
+Stay in design/architecture mode.
 
-Resolve **state persistence, Undo/Redo, and crash/reconnect recovery** next:
+Perform the written architecture decision comparing the smallest viable web stacks against the now-defined requirements:
 
-- what board changes are stored as current state
-- what changes are stored as reversible commands
-- how much undo history is needed
-- how autosave works
-- what happens after browser refresh/crash
-- how multiplayer avoids stale/duplicate actions
-- how to keep this simple enough for the cheap browser-first stack
+- Three.js vs Babylon.js
+- Supabase vs simpler alternatives
+- native HTML/CSS vs UI framework
+- Cloudflare Pages vs other low-cost static hosts
+- dependency/license/cost/complexity impact
 
-After that, perform the written Three.js vs Babylon.js architecture comparison against the now much more complete product requirements.
-
-Do not write application code yet.
+No application code yet.
