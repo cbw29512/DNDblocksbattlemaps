@@ -7,7 +7,8 @@ import {
 import { commit, createHistory, redo, undo } from '../.test-build/src/domain/history.js';
 import { elevationAbove, stackElevationAt } from '../.test-build/src/domain/placement.js';
 import { centeredRoomWallPositions, normalizeRoomDimensions } from '../.test-build/src/domain/room.js';
-import { MAX_BASE_ELEVATION } from '../.test-build/src/domain/spatial.js';
+import { MAX_BASE_ELEVATION, MAX_BUILD_HEIGHT_FEET } from '../.test-build/src/domain/spatial.js';
+import { placementFromSurface } from '../.test-build/src/domain/surfacePlacement.js';
 
 test('placing preserves intentional overlap', () => {
   let state = createBoardState('castle');
@@ -44,10 +45,11 @@ test('undo and redo operate as reversible commands', () => {
   assert.equal(redone.state.objects[0]?.id, 'wall-1');
 });
 
-test('top stacking adds one 5-ft level and obeys the hard height cap', () => {
+test('top stacking adds one 5-ft level and obeys the 8-block hard height cap', () => {
   assert.equal(elevationAbove(0, 0), 1);
   assert.equal(elevationAbove(2, 0), 3);
   assert.equal(elevationAbove(MAX_BASE_ELEVATION, 0), null);
+  assert.equal(MAX_BUILD_HEIGHT_FEET, 40);
 });
 
 test('fallback stacking uses the highest object at the cell', () => {
@@ -65,6 +67,7 @@ test('room dimensions snap safely and reject absurd height values', () => {
     lengthCells: 6, widthCells: 4, heightLevels: 2
   });
   assert.equal(normalizeRoomDimensions({ lengthFeet: 30, widthFeet: 20, heightFeet: 99999999999999999999 }), null);
+  assert.equal(normalizeRoomDimensions({ lengthFeet: 30, widthFeet: 20, heightFeet: 45 }), null);
   assert.equal(normalizeRoomDimensions({ lengthFeet: 95, widthFeet: 20, heightFeet: 10 }), null);
 });
 
@@ -87,4 +90,28 @@ test('room generation is reversible as one Undo step', () => {
   const undone = undo(committed.state, committed.history);
   assert.equal(committed.history.past.length, 1);
   assert.equal(undone.state.objects.length, 0);
+});
+
+
+test('surface placement uses top face for up and side faces for out', () => {
+  const clicked = { x: 2, z: 3, elevation: 4 };
+  assert.deepEqual(
+    placementFromSurface(clicked, 4, { x: 0, y: 1, z: 0 }, 0),
+    { x: 2, z: 3, elevation: 5 }
+  );
+  assert.deepEqual(
+    placementFromSurface(clicked, 4, { x: 1, y: 0, z: 0 }, 0),
+    { x: 3, z: 3, elevation: 4 }
+  );
+  assert.deepEqual(
+    placementFromSurface(clicked, 4, { x: 0, y: 0, z: -1 }, 0),
+    { x: 2, z: 2, elevation: 4 }
+  );
+});
+
+test('side-face placement cannot leave the current board', () => {
+  assert.equal(
+    placementFromSurface({ x: 9, z: 0, elevation: 0 }, 0, { x: 1, y: 0, z: 0 }, 0),
+    null
+  );
 });

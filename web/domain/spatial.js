@@ -1,9 +1,13 @@
 export const GRID_FEET = 5;
 export const BOARD_CELLS = 20;
-export const MAX_BUILD_HEIGHT_FEET = 50;
+export const MAX_BUILD_HEIGHT_FEET = 40;
 export const MAX_BUILD_LEVELS = MAX_BUILD_HEIGHT_FEET / GRID_FEET;
 export const MAX_BASE_ELEVATION = MAX_BUILD_LEVELS - 1;
 export const ROOM_MIN_FEET = 5;
 export const ROOM_MAX_LENGTH_FEET = (BOARD_CELLS - 2) * GRID_FEET;
 export const ROOM_MAX_WIDTH_FEET = (BOARD_CELLS - 2) * GRID_FEET;
 export const ROOM_MAX_HEIGHT_FEET = MAX_BUILD_HEIGHT_FEET;
+export function isBoardCell(x, z) {
+    const half = BOARD_CELLS / 2;
+    return x >= -half && x < half && z >= -half && z < half;
+}

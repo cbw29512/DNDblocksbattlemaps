@@ -44,40 +44,31 @@ The ghost:
 
 The ghost communicates **where the object will go**, not whether the DM is "allowed" to put it there.
 
-## Kid-Simple Surface Placement
+## Face-Aware Surface Placement
 
-The MVP uses a deliberately simple rule:
+The placement ghost follows the actual face under the pointer.
 
 ### Click empty grid/floor
 
 Place the selected object on that grid cell at the current explicit elevation.
 
-### Click any existing block
+### Click the top face of a block
 
-Treat the clicked block/stack as a stacking target and place the selected object on top of the highest object in that grid column.
+Place the selected object one 5-foot block level above the highest object in that grid column.
 
-The user does **not** need to hit the top face precisely.
+### Click a side face of a block
 
-Example:
+Place the selected object in the adjacent grid cell on that side, aligned to the clicked block's base elevation.
 
-- select Stone Block
-- click an existing 5-foot Stone Block anywhere on its visible surface
-- the ghost jumps to the next 5-foot level
-- click places the new Stone Block on top
+Examples:
 
-Repeated clicks build a tower naturally.
+- click the east side of a block at +10 ft → preview appears one cell east at +10 ft
+- click the north side → preview appears one cell north at the same level
+- click the top → preview appears one level higher
 
-### Side-face placement
+This allows fast towers, walls, ledges, bridges, and elevated structures without exposing X/Y/Z coordinates.
 
-Side-face-adjacent placement is **not part of the current MVP interaction**.
-
-Reason: at the locked ~30° camera angle, requiring the user to distinguish top vs side faces makes the basic interaction less discoverable.
-
-To build horizontally, click the desired empty grid cell.
-
-To build vertically, click an existing block.
-
-This is the canonical MVP rule unless playtesting proves a need for a more advanced surface mode.
+The stronger landing shadow/footprint is part of this interaction: it must visibly jump to the exact destination before placement so the user can distinguish **up** from **out**.
 
 ## Explicit Elevation Control
 

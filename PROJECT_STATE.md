@@ -66,7 +66,7 @@ The DM is the authority. The board must work without automated RPG rules.
 31. **Universal trigger/effect system.** Traps, hazards, switches, ambushes, and surprises are composed from reusable triggers/effects rather than named engines.
 32. **Universal transform/replace.** An object may change identity/category/capabilities in place when triggered, such as chest → mimic.
 33. **Select once, place many.** A palette item remains active until changed/cleared; repeated clicks place repeated copies.
-34. **Kid-simple stacking.** Empty grid places at the current elevation; clicking any existing block/stack places the selected object on top of the highest object in that grid column. The user does not need to hit a top face precisely. Side-face-adjacent placement is deferred.
+34. **Face-aware block placement.** Empty grid places at the current elevation; top face builds one level up; side face builds one grid cell outward at the clicked block's base elevation. The placement preview must show the exact resulting destination before click.
 35. **Floating placement allowed.** DM may deliberately place unsupported elevated objects; no physics validator blocks creation.
 36. **Pick-up/put-down movement.** Unlocked existing objects are moved by selecting/picking up and dropping, not transform gizmos.
 37. **Overlap chooser only when needed.** Ambiguous overlapping selections use a minimal What's Here? chooser rather than a permanent object inspector.
@@ -95,6 +95,9 @@ The DM is the authority. The board must work without automated RPG rules.
 60. **Pages deploys are manual-only.** Normal GitHub pushes do not automatically publish the test site.
 61. **Iron Pit monster silhouettes are the default monster face art.** Reuse the Chris-approved assets at `D20-ironpit/frontend/assets/portraits/monsters/{id}.webp` on monster blocks/standees, keyed by catalog/art ID rather than monster-specific rendering code.
 62. **Preserve silhouette identity discipline.** Do not substitute related creature art when Iron Pit already distinguishes variants, sizes, ages, or renamed edition creatures.
+63. **Vertical build cap is 8 blocks / 40 ft.** Taller stacks leave the useful tabletop view; room height and manual elevation share this cap.
+64. **Placement shadow is authoritative feedback.** The landing footprint/shadow must sit on the exact destination surface/cell so stacking and side placement remain obvious.
+65. **Zoom remains simple but farther.** Keep fixed camera elevation; allow more zoom-out so the 8th block can remain inspectable.
 
 ## Cost Guardrail
 
@@ -213,60 +216,68 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-Stage 1 is in active builder work. The current feature checkpoint in progress is:
+The room/stacking checkpoint was green, and browser testing showed two follow-up usability issues:
 
-- room builder Length × Width × Height with safe limits
-- true top-face vertical stacking
-- stronger placement ghost/target visibility
+1. tall stacks needed more obvious landing feedback and additional zoom-out
+2. the user needs to build sideways from elevated blocks, not only upward
 
-The user also directed that DND Blocks reuse the monster silhouettes already present in the Iron Pit repository as the face art for monster blocks.
+The user also observed that an eighth block is already near the useful vertical view limit.
 
-### Iron Pit Asset Audit
+### Changes Made
 
-Checked `cbw29512/D20-ironpit`.
-
-Verified:
-
-- `docs/artifacts/card-art/REAL_ART_INVENTORY.md` records **294 approved monster silhouettes**
-- processed monster assets live at `frontend/assets/portraits/monsters/{id}.webp`
-- processed files are 3:4 WebP, 480×640, under 20 KB
-- `frontend/combatant-art.js` maps the art across matching 2014/2024 IDs
-- the inventory deliberately keeps distinct creature variants separate rather than using loose lookalikes
+- Reduced the global vertical build cap from 50 ft / 10 levels to **40 ft / 8 levels**.
+- Room Height now shares the same 40-ft maximum.
+- Added a universal face-aware surface-placement primitive.
+- Top face → one level above the highest object in that column.
+- Side face → adjacent grid cell in the clicked face direction at the clicked block's elevation.
+- Side placement is blocked only when it would leave the current board.
+- Empty grid continues to use the current explicit elevation.
+- Strengthened the landing preview:
+  - brighter edge outline
+  - larger amber landing footprint
+  - larger/darker contact shadow
+- Extended camera zoom-out range while preserving the locked tabletop elevation.
+- Added unit coverage for:
+  - 8-block/40-ft cap
+  - room rejection above 40 ft
+  - top-face placement
+  - ±X/±Z side placement
+  - board-edge rejection
+- Updated placement, spatial, camera, and live-state contracts.
+- Netlify remains untouched.
 
 ### Decisions Made
 
-**Decision:** Iron Pit's approved monster silhouettes are the default monster face/standee art source for DND Blocks.
+**8 blocks / 40 ft is the Stage 1 vertical limit.**
 
-**Reason:** The assets are already compact, recognizable, curated, and consistently mapped. Reusing them avoids duplicating art production and fits the block/standee visual design.
+Reason: higher stacks leave the useful tabletop view and are disproportionate to the current board.
 
-**Decision:** Monster art remains data-driven.
+**Face-aware placement is the canonical manual block interaction.**
 
-**Reason:** A creature catalog entry points to an art ID/path; no GoblinRenderer/OgreRenderer/etc. is created.
+Reason: top = up and side = out matches the physical magnetic-block metaphor while still requiring only one click.
 
-**Decision:** Preserve Iron Pit's art identity distinctions.
+**The landing footprint/shadow is a primary placement cue.**
 
-**Reason:** Similar names do not imply interchangeable silhouettes. Existing distinctions such as Goblin vs Goblin Boss, Wolf vs Dire Wolf, dragon ages, and renamed edition variants remain meaningful.
+Reason: perspective makes exact placement harder as elevation rises; the target surface/cell must be obvious before click.
 
 ### Cost Impact
 
-No new cost.
-
-Reusing existing approved assets avoids a second art pipeline.
+None.
 
 ### Result
 
-`docs/BLOCK_CATALOG.md` now records the Iron Pit silhouette reuse contract.
-
-The current builder work remains the immediate implementation priority; monster/character/catalog expansion follows after the room/stacking/placement-preview checkpoint is green.
+Source and browser-snapshot implementation are prepared for the face-aware/40-ft checkpoint.
 
 ### Exact Next Step
 
-1. Finish and verify room Length × Width × Height generation with safe caps.
-2. Finish top-face stacking.
-3. Finish stronger placement preview.
-4. Push/test that checkpoint.
-5. Begin the real catalog lane:
-   - construction blocks
-   - props/furniture
-   - player/character pieces
-   - monster pieces using Iron Pit silhouettes.
+1. Push this checkpoint with a temporary verification trigger.
+2. Require strict TypeScript, unit tests, Vite build, and Pages deployment to pass.
+3. Restore Pages test workflow to manual-only.
+4. Browser-test:
+   - top-face stacking
+   - all four side-face directions
+   - 8th-level placement
+   - 9th-level rejection
+   - zoom-out at full height
+   - landing shadow clarity
+5. Then proceed to the real block/character/monster catalog.

@@ -2,6 +2,8 @@ import { PALETTE } from '../domain/catalog.js';
 import type { CatalogId, WorldObject } from '../domain/types.js';
 
 export const CAMERA_DISTANCE = 19;
+export const MIN_CAMERA_DISTANCE = 5;
+export const MAX_CAMERA_DISTANCE = 46;
 
 export function geometryFor(THREE: any, catalogId: CatalogId): any {
   const item = PALETTE[catalogId];
@@ -43,7 +45,7 @@ export function rotateCamera(THREE: any, camera: any, controls: any, delta: numb
 
 export function zoomCamera(camera: any, controls: any, multiplier: number): void {
   const offset = camera.position.clone().sub(controls.target).multiplyScalar(multiplier);
-  if (offset.length() >= 5 && offset.length() <= 34) {
+  if (offset.length() >= MIN_CAMERA_DISTANCE && offset.length() <= MAX_CAMERA_DISTANCE) {
     camera.position.copy(controls.target).add(offset);
   }
   controls.update();

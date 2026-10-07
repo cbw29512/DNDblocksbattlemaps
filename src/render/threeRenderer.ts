@@ -1,11 +1,14 @@
-import { elevationAbove } from '../domain/placement.js';
 import { BOARD_CELLS } from '../domain/spatial.js';
+import { placementFromSurface } from '../domain/surfacePlacement.js';
 import type { CatalogId, GridPosition, TerrainTheme } from '../domain/types.js';
 import {
   createPlacementPreview, disposePlacementPreview,
   hidePlacementPreview, showPlacementPreview
 } from './placementPreview.js';
-import { meshFor, rotateCamera, setDefaultCamera, zoomCamera } from './threeObjects.js';
+import {
+  MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE,
+  meshFor, rotateCamera, setDefaultCamera, zoomCamera
+} from './threeObjects.js';
 import type { BoardHandlers, BoardRenderer } from './types.js';
 
 export async function createThreeRenderer(
@@ -16,7 +19,7 @@ export async function createThreeRenderer(
   const { OrbitControls }: any = await import('three/addons/controls/OrbitControls.js');
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x11120f);
-  const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
+  const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 120);
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
@@ -26,8 +29,8 @@ export async function createThreeRenderer(
   controls.enableDamping = true;
   controls.minPolarAngle = Math.PI / 3;
   controls.maxPolarAngle = Math.PI / 3;
-  controls.minDistance = 5;
-  controls.maxDistance = 34;
+  controls.minDistance = MIN_CAMERA_DISTANCE;
+  controls.maxDistance = MAX_CAMERA_DISTANCE;
   controls.mouseButtons.LEFT = null;
   controls.mouseButtons.MIDDLE = THREE.MOUSE.PAN;
   controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
@@ -62,33 +65,35 @@ export async function createThreeRenderer(
     raycaster.setFromCamera(pointer, camera);
   }
 
-  function highestAt(x: number, z: number): number | null {
-    let highest: number | null = null;
+  function highestAt(x: number, z: number): number {
+    let highest = 0;
     for (const mesh of objectGroup.children) {
       const data = mesh.userData;
-      if (Number(data.gridX) !== x || Number(data.gridZ) !== z) continue;
-      const value = Number(data.elevation);
-      highest = highest === null ? value : Math.max(highest, value);
+      if (Number(data.gridX) === x && Number(data.gridZ) === z) {
+        highest = Math.max(highest, Number(data.elevation));
+      }
     }
     return highest;
   }
 
   function placementFor(event: PointerEvent | MouseEvent): GridPosition | null {
     setPointer(event);
-    const objectHit = raycaster.intersectObjects(objectGroup.children, false)[0];
-    if (objectHit) {
-      const data = objectHit.object.userData;
-      const x = Number(data.gridX);
-      const z = Number(data.gridZ);
-      const highest = highestAt(x, z);
-      const next = highest === null ? elevation : elevationAbove(highest, elevation);
-      return next === null ? null : { x, z, elevation: next };
+    const hit = raycaster.intersectObjects(objectGroup.children, false)[0];
+    if (hit?.face) {
+      const data = hit.object.userData;
+      const normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld);
+      return placementFromSurface(
+        { x: Number(data.gridX), z: Number(data.gridZ), elevation: Number(data.elevation) },
+        highestAt(Number(data.gridX), Number(data.gridZ)),
+        { x: normal.x, y: normal.y, z: normal.z },
+        elevation
+      );
     }
 
-    const hit = raycaster.intersectObject(placementPlane, false)[0];
-    if (!hit) return null;
-    const x = Math.floor(hit.point.x);
-    const z = Math.floor(hit.point.z);
+    const floorHit = raycaster.intersectObject(placementPlane, false)[0];
+    if (!floorHit) return null;
+    const x = Math.floor(floorHit.point.x);
+    const z = Math.floor(floorHit.point.z);
     return Math.abs(x) < BOARD_CELLS / 2 && Math.abs(z) < BOARD_CELLS / 2
       ? { x, z, elevation } : null;
   }
@@ -124,7 +129,7 @@ export async function createThreeRenderer(
   });
   resize.observe(container); setDefaultCamera(camera, controls);
   renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
-  handlers.onStatus('Bright target marks placement · click any block to stack on top.');
+  handlers.onStatus('Top face builds up · side face builds out · zoom out for tall structures.');
 
   return {
     mode: 'three',

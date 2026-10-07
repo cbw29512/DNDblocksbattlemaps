@@ -54,13 +54,13 @@ Current Stage 1 limits:
 
 - room Length: **5–90 ft**
 - room Width: **5–90 ft**
-- room Height: **5–50 ft**
-- manual/build height: **50 ft maximum**
+- room Height: **5–40 ft**
+- manual/build height: **40 ft maximum (8 block levels)**
 - all values resolve to 5-ft levels
 
 The 90-ft interior Length/Width maximum leaves one 5-ft perimeter wall cell on each side of the current 20×20 board.
 
-A 50-ft wall is 10 block levels high.
+A 40-ft wall is 8 block levels high.
 
 Inputs above these limits, including extremely large values such as `99999999999999999999`, are rejected rather than clamped into a giant generation request.
 
@@ -388,3 +388,10 @@ A child should be able to understand:
 > "A square is five feet. Type the room size in feet. Pick where it goes. Add stuff. Lock the room when you're done."
 
 If the spatial UI requires understanding X/Y/Z coordinates, voxel terminology, or renderer concepts, the UI has failed the product requirement.
+
+
+### Vertical Build Limit
+
+The current Stage 1 vertical limit is **8 blocks / 40 ft**.
+
+Reason: at the tabletop camera scale, taller stacks begin to leave the useful view and add little value for the current map size. The cap is a product/readability limit as well as a performance guardrail.

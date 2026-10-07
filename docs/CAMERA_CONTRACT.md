@@ -65,6 +65,20 @@ Set reasonable minimum and maximum zoom limits so the user cannot:
 - zoom so far out that the map becomes useless
 - lose the board entirely
 
+### Stage 1 Tall-Build Tuning
+
+The Stage 1 builder supports up to **8 block levels / 40 ft**.
+
+To keep the highest level inspectable:
+
+- visible Zoom In / Zoom Out controls remain required
+- mouse wheel zoom remains available
+- the camera may zoom farther out than the original prototype range
+- the fixed tabletop elevation remains unchanged
+- do not add free vertical camera tilt merely to inspect tall builds
+
+The current Three.js prototype uses a farther zoom-out ceiling so an 8-block structure can remain in view.
+
 ## Reset View
 
 There should be one obvious **Reset View / Home** control.
