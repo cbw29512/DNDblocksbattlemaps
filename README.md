@@ -36,6 +36,7 @@ The current priority is defining the product, interaction model, state model, pe
 - [Interaction Spec](docs/INTERACTION_SPEC.md) — kid-simple DM/player UI and room interaction contract
 - [Block Catalog](docs/BLOCK_CATALOG.md) — initial terrain, room-object, creature, and behavior catalog
 - [Competitor Research](docs/COMPETITOR_RESEARCH.md) — voxel/3D VTT landscape and differentiation
+- [Open-Source Reuse](docs/OPEN_SOURCE_REUSE.md) — Minecraft reference policy, license gate, and reusable engine candidates
 
 ## Development rule
 
