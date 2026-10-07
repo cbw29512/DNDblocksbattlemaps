@@ -9,7 +9,7 @@ export function roomPanelHtml(): string {
       <div class="room-builder-title">
         <span class="eyebrow">Room Builder</span>
         <strong id="room-builder-title">Length × Width × Height</strong>
-        <span class="room-builder-intro">Enter the inside size of the room.</span>
+        <span class="room-builder-intro">Enter the inside size, then click Build Room and pick a corner.</span>
       </div>
 
       <div class="room-inputs">

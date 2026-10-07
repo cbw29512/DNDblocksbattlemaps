@@ -84,6 +84,30 @@ The wall thickness does not subtract from the requested playable room size.
 
 This is the canonical room-dimension interpretation.
 
+## Room Corner Placement
+
+Room generation is positioned by a visible grid-snapped **outside wall corner**.
+
+Interaction:
+
+- DM enters room dimensions
+- DM clicks **Build Room**
+- the room preview follows the pointer
+- the grid square under the corner marker becomes the room's outside wall corner
+- the room extends from that corner across its full outer wall footprint
+
+The room preview shows the complete footprint before placement.
+
+The current Stage 1 stamp grows in one consistent world-grid direction from the chosen corner. Rotation/orientation controls are deferred until playtesting proves they are necessary.
+
+A room stamp must fit completely inside the current board and below the vertical build cap.
+
+After placement, the same stamp remains armed so multiple rooms of the same dimensions can be created rapidly.
+
+Generated structural positions reuse an existing identical wall block at the same X/Z/elevation rather than adding a duplicate. This makes snapped adjacent rooms capable of sharing exact wall positions.
+
+Each stamped room is committed as one reversible Undo/Redo action.
+
 ## Height Means Wall Height
 
 Room Height describes the wall height.

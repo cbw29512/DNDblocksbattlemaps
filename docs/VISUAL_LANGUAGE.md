@@ -254,14 +254,21 @@ Do not permanently display overlap counts across the entire map.
 
 Room generation preview should show:
 
-- interior playable footprint
-- wall perimeter
+- a bright **corner marker** on the exact anchor square
+- full room footprint
+- wall perimeter / outer bounds
 - wall height indication
 - no ceiling
 - existing shared walls that will be reused
 - any overlap with existing objects/rooms as information, not a hard rejection
 
-The DM confirms placement.
+Preview state:
+
+- gold/amber = room fits and can be stamped
+- red = room would leave the board or exceed the build-height cap
+- the room is not created until the DM clicks a valid corner
+
+After a valid click, the stamp stays active so the DM can place another room with the same dimensions quickly.
 
 ## Shared Wall Visual
 

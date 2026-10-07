@@ -8,10 +8,10 @@
 
 ## Current Status
 
-**Phase:** Stage 1 — Single-User Builder Prototype — first website-to-builder vertical slice implemented; browser test pending  
+**Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
 **Application code:** Yes. Stage 1 began after explicit user authorization on 2026-10-07.  
 **Repository:** `cbw29512/DNDblocksbattlemaps`  
-**Primary goal:** Browser-verify the first website-to-builder slice on the manual GitHub Pages test surface before adding the next Stage 1 feature. Netlify remains production and is not used for routine testing.
+**Primary goal:** Make fast multi-room construction work cleanly, then move into the real block/character/monster catalog. Netlify remains production and is not used for routine testing.
 
 ## Current Product Definition
 
@@ -99,6 +99,9 @@ The DM is the authority. The board must work without automated RPG rules.
 64. **Placement shadow is authoritative feedback.** The landing footprint/shadow must sit on the exact destination surface/cell so stacking and side placement remain obvious.
 65. **Zoom remains simple but farther.** Keep fixed camera elevation; allow more zoom-out so the 8th block can remain inspectable.
 66. **Room Builder labels are plain-language and readable.** Use full Length/Width/Height labels, vertically stacked fields, high contrast, and a large Build Room action; do not compress core dimensions into tiny L/W/H controls.
+67. **Build Room arms a reusable room stamp.** The DM chooses dimensions, clicks Build Room, then clicks a grid square that becomes the room's outside wall corner. The stamp remains active for rapid multiple-room placement until a normal block is selected.
+68. **Room preview is explicit.** Gold outline/corner means the room fits; red means it would leave the board or exceed the vertical cap. One stamped room is one Undo/Redo action.
+69. **Exact shared structural positions are reused.** Generated rooms do not create duplicate wall blocks at the same X/Z/elevation.
 
 ## Cost Guardrail
 
@@ -217,62 +220,77 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The face-aware placement / 8-block-height checkpoint was green and live.
+The readable Room Builder, face-aware block placement, 8-block height cap, and stronger placement shadow were green.
 
-Browser testing then showed the Room Builder was difficult to read because the L/W/H controls were cramped and the supporting text was too small and low-contrast.
+Browser testing exposed the next room-building usability gap: clicking **Build Room** immediately created a centered room, which made rapid multi-room layouts awkward.
+
+The user requested a placeable corner so multiple rooms can be positioned quickly.
 
 ### Changes Made
 
-- Widened the desktop builder sidebar from 250 px to 280 px.
-- Replaced L / W / H abbreviations with full **Length / Width / Height** labels.
-- Stacked room dimension controls vertically.
-- Increased numeric input size and contrast.
-- Made the feet unit explicit beside every value.
-- Added plain-language guidance: **Enter the inside size of the room.**
-- Moved the max-size/no-ceiling note into a clearer helper panel.
-- Increased the **Build Room** button size/weight.
-- Preserved all existing room behavior and the current **90 × 90 × 40 ft** safety limits.
-- Updated the visual-language contract.
+- Converted Build Room from immediate centered generation into a **room-stamp mode**.
+- The DM still enters Length × Width × Height first.
+- Clicking Build Room now arms the room stamp.
+- The selected room gets a 3D preview:
+  - gold footprint
+  - gold outside-corner marker
+  - wireframe showing full room extent and wall height
+- The grid square under the corner marker is the room's **outside wall corner**.
+- Red preview means the room would leave the board or exceed the height cap.
+- Clicking a valid corner stamps the room there.
+- After placement, the same room stamp remains armed so another identical room can be placed immediately.
+- Selecting Stone/Wall/Door/etc. exits room-stamp mode.
+- Added equivalent corner/perimeter feedback to the fallback renderer.
+- Added anchored room-domain primitives:
+  - room outer size
+  - fit validation
+  - wall positions from a clicked corner
+- Existing identical wall blocks at the same X/Z/elevation are reused rather than duplicated.
+- Each stamped room remains one Undo/Redo edit.
+- Added tests for:
+  - exact clicked-corner anchoring
+  - board-edge rejection
+  - vertical-limit rejection
+  - shared-wall overlap between adjacent room stamps
+- Updated interaction, spatial, visual, and live-state contracts.
 - Netlify remains untouched.
 
-### Verification
+### Decisions Made
 
-Checkpoint commit:
+**The clicked grid square is the room's outside wall corner.**
 
-- `7f6e542550017a4d315d5982112e5f1cfef59657`
+Reason: it is literal, visible, and easy to explain: “move the room outline, stick this corner where you want it, click.”
 
-Connected verification:
+**Room stamp stays active after placement.**
 
-- **Deploy GitHub Pages Test run #5:** SUCCESS
-- **GitHub pages build and deployment run #15:** SUCCESS
-- TypeScript typecheck: passed
-- unit tests: passed
-- static build: passed
-- Pages deployment: passed
+Reason: the user specifically wants to create multiple rooms quickly. Selecting a normal block is the simple exit action.
 
-The temporary push trigger used for verification is now restored to manual-only.
+**Invalid room footprints are shown, not guessed around.**
 
-### Decision
-
-**Primary build controls favor readability over density.**
-
-Reason: the product goal is kid-simple. Room dimensions are a core action and should not be compressed merely to save sidebar space.
+Reason: predictable placement is more important than automatic repositioning. Gold means it fits; red means move the corner.
 
 ### Cost Impact
 
 None.
 
+No new dependency or hosted service.
+
 ### Result
 
-The Room Builder readability redesign is verified and live on the GitHub Pages test surface.
+The reusable room-stamp implementation and browser snapshot are ready for strict verification.
 
 ### Exact Next Step
 
-1. Hard-refresh the test site.
-2. Confirm Length / Width / Height are easy to read and edit.
-3. Continue testing face-aware placement, landing shadow, zoom-out, and 8-block height cap.
-4. Then proceed to the real catalog lane:
-   - construction blocks
-   - furniture/props
-   - player/character pieces
-   - monster pieces using Iron Pit silhouettes.
+1. Push this checkpoint with a temporary verification trigger.
+2. Require TypeScript, tests, static build, and Pages deployment to pass.
+3. Fix any real gate failure without suppressing strict checks.
+4. Restore Pages workflow to manual-only after green.
+5. Browser-test:
+   - Build Room
+   - move gold room preview
+   - click a corner
+   - stamp several rooms quickly
+   - snap a second room onto an existing wall
+   - Undo one stamped room
+   - select a normal block and confirm room mode exits
+6. Then continue into construction/prop/character/monster catalog work.

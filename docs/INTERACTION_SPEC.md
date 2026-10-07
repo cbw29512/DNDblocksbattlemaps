@@ -184,12 +184,26 @@ The DM enters:
 
 Then chooses the room/build action.
 
+**Build Room arms a reusable room stamp rather than immediately placing the room.**
+
+Room placement flow:
+
+1. enter Length × Width × Height
+2. click **Build Room**
+3. a gold room footprint/height preview follows the grid
+4. the highlighted square is the room's **outside wall corner**
+5. click a valid corner to stamp the room
+6. the same room stamp stays active so the DM can click another corner and rapidly create another room
+7. choosing any normal block exits room-stamp mode
+
+If the room would leave the board or exceed the vertical build limit, the preview turns invalid/red and the click does not create the room.
+
 The room is generated from ordinary blocks.
 
 ### Room generation rules
 
-- rooms generate floors
-- rooms generate walls
+- the selected terrain/base surface remains the current prototype floor
+- rooms generate perimeter walls
 - rooms **do not generate ceilings**
 - ceilings are explicitly deferred because the board must remain visible and easy to use
 - generated blocks remain ordinary editable blocks

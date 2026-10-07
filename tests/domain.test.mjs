@@ -6,7 +6,7 @@ import {
 } from '../.test-build/src/domain/commands.js';
 import { commit, createHistory, redo, undo } from '../.test-build/src/domain/history.js';
 import { elevationAbove, stackElevationAt } from '../.test-build/src/domain/placement.js';
-import { centeredRoomWallPositions, normalizeRoomDimensions } from '../.test-build/src/domain/room.js';
+import { centeredRoomWallPositions, normalizeRoomDimensions, roomFitsAtCorner, roomWallPositionsFromCorner } from '../.test-build/src/domain/room.js';
 import { MAX_BASE_ELEVATION, MAX_BUILD_HEIGHT_FEET } from '../.test-build/src/domain/spatial.js';
 import { placementFromSurface } from '../.test-build/src/domain/surfacePlacement.js';
 
@@ -114,4 +114,32 @@ test('side-face placement cannot leave the current board', () => {
     placementFromSurface({ x: 9, z: 0, elevation: 0 }, 0, { x: 1, y: 0, z: 0 }, 0),
     null
   );
+});
+
+
+test('anchored room uses the clicked square as its outside wall corner', () => {
+  const room = normalizeRoomDimensions({ lengthFeet: 30, widthFeet: 20, heightFeet: 10 });
+  assert.ok(room);
+  const corner = { x: -9, z: -9, elevation: 0 };
+  assert.equal(roomFitsAtCorner(room, corner), true);
+  const positions = roomWallPositionsFromCorner(room, corner);
+  assert.ok(positions.some((p) => p.x === -9 && p.z === -9 && p.elevation === 0));
+  assert.ok(positions.some((p) => p.x === -2 && p.z === -4 && p.elevation === 1));
+});
+
+test('room stamp rejects corners that would leave the board or exceed build height', () => {
+  const room = normalizeRoomDimensions({ lengthFeet: 30, widthFeet: 20, heightFeet: 10 });
+  assert.ok(room);
+  assert.equal(roomFitsAtCorner(room, { x: 4, z: 0, elevation: 0 }), false);
+  assert.equal(roomFitsAtCorner(room, { x: -9, z: -9, elevation: 7 }), false);
+});
+
+test('adjacent room stamps can share exact wall positions without double-wall geometry', () => {
+  const room = normalizeRoomDimensions({ lengthFeet: 30, widthFeet: 20, heightFeet: 10 });
+  assert.ok(room);
+  const first = roomWallPositionsFromCorner(room, { x: -9, z: -8, elevation: 0 });
+  const second = roomWallPositionsFromCorner(room, { x: -2, z: -8, elevation: 0 });
+  const firstKeys = new Set(first.map((p) => `${p.x},${p.z},${p.elevation}`));
+  const shared = second.filter((p) => firstKeys.has(`${p.x},${p.z},${p.elevation}`));
+  assert.ok(shared.length > 0);
 });

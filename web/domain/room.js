@@ -1,4 +1,4 @@
-import { BOARD_CELLS, GRID_FEET, ROOM_MAX_HEIGHT_FEET, ROOM_MAX_LENGTH_FEET, ROOM_MAX_WIDTH_FEET, ROOM_MIN_FEET } from './spatial.js';
+import { BOARD_CELLS, GRID_FEET, MAX_BASE_ELEVATION, ROOM_MAX_HEIGHT_FEET, ROOM_MAX_LENGTH_FEET, ROOM_MAX_WIDTH_FEET, ROOM_MIN_FEET, isBoardCell } from './spatial.js';
 function snapFeet(value) {
     return Math.round(value / GRID_FEET) * GRID_FEET;
 }
@@ -21,23 +21,44 @@ export function normalizeRoomDimensions(input) {
         return null;
     return { lengthFeet, widthFeet, heightFeet, lengthCells, widthCells, heightLevels };
 }
-export function centeredRoomWallPositions(room) {
-    const outerLength = room.lengthCells + 2;
-    const outerWidth = room.widthCells + 2;
-    const startX = -Math.floor(outerLength / 2);
-    const startZ = -Math.floor(outerWidth / 2);
+export function roomOuterSize(room) {
+    return { lengthCells: room.lengthCells + 2, widthCells: room.widthCells + 2 };
+}
+export function roomFitsAtCorner(room, corner) {
+    const outer = roomOuterSize(room);
+    const farX = corner.x + outer.lengthCells - 1;
+    const farZ = corner.z + outer.widthCells - 1;
+    const topElevation = corner.elevation + room.heightLevels - 1;
+    return corner.elevation >= 0
+        && topElevation <= MAX_BASE_ELEVATION
+        && isBoardCell(corner.x, corner.z)
+        && isBoardCell(farX, farZ);
+}
+export function roomWallPositionsFromCorner(room, corner) {
+    if (!roomFitsAtCorner(room, corner))
+        return [];
+    const outer = roomOuterSize(room);
     const result = [];
-    for (let elevation = 0; elevation < room.heightLevels; elevation += 1) {
-        for (let dx = 0; dx < outerLength; dx += 1) {
-            result.push({ x: startX + dx, z: startZ, elevation });
-            result.push({ x: startX + dx, z: startZ + outerWidth - 1, elevation });
+    for (let level = 0; level < room.heightLevels; level += 1) {
+        const elevation = corner.elevation + level;
+        for (let dx = 0; dx < outer.lengthCells; dx += 1) {
+            result.push({ x: corner.x + dx, z: corner.z, elevation });
+            result.push({ x: corner.x + dx, z: corner.z + outer.widthCells - 1, elevation });
         }
-        for (let dz = 1; dz < outerWidth - 1; dz += 1) {
-            result.push({ x: startX, z: startZ + dz, elevation });
-            result.push({ x: startX + outerLength - 1, z: startZ + dz, elevation });
+        for (let dz = 1; dz < outer.widthCells - 1; dz += 1) {
+            result.push({ x: corner.x, z: corner.z + dz, elevation });
+            result.push({ x: corner.x + outer.lengthCells - 1, z: corner.z + dz, elevation });
         }
     }
     return result;
+}
+export function centeredRoomWallPositions(room) {
+    const outer = roomOuterSize(room);
+    return roomWallPositionsFromCorner(room, {
+        x: -Math.floor(outer.lengthCells / 2),
+        z: -Math.floor(outer.widthCells / 2),
+        elevation: 0
+    });
 }
 export function roomSummary(room) {
     return `${room.lengthFeet} × ${room.widthFeet} × ${room.heightFeet} ft`;

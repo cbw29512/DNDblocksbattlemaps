@@ -1,3 +1,4 @@
+import { roomFitsAtCorner, type NormalizedRoom, type RoomCorner } from '../domain/room.js';
 import { BOARD_CELLS } from '../domain/spatial.js';
 import { placementFromSurface } from '../domain/surfacePlacement.js';
 import type { CatalogId, GridPosition, TerrainTheme } from '../domain/types.js';
@@ -5,6 +6,10 @@ import {
   createPlacementPreview, disposePlacementPreview,
   hidePlacementPreview, showPlacementPreview
 } from './placementPreview.js';
+import {
+  createRoomPlacementPreview, disposeRoomPlacementPreview,
+  hideRoomPlacementPreview, showRoomPlacementPreview
+} from './roomPlacementPreview.js';
 import {
   MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE,
   meshFor, rotateCamera, setDefaultCamera, zoomCamera
@@ -57,6 +62,8 @@ export async function createThreeRenderer(
   let selected: CatalogId | null = null;
   let elevation = 0;
   let preview: any = null;
+  let roomPlacement: NormalizedRoom | null = null;
+  let roomPreview: any = null;
 
   function setPointer(event: PointerEvent | MouseEvent): void {
     const rect = renderer.domElement.getBoundingClientRect();
@@ -76,7 +83,7 @@ export async function createThreeRenderer(
     return highest;
   }
 
-  function placementFor(event: PointerEvent | MouseEvent): GridPosition | null {
+  function blockPlacementFor(event: PointerEvent | MouseEvent): GridPosition | null {
     setPointer(event);
     const hit = raycaster.intersectObjects(objectGroup.children, false)[0];
     if (hit?.face) {
@@ -98,23 +105,59 @@ export async function createThreeRenderer(
       ? { x, z, elevation } : null;
   }
 
+  function roomCornerFor(event: PointerEvent | MouseEvent): RoomCorner | null {
+    setPointer(event);
+    const floorHit = raycaster.intersectObject(placementPlane, false)[0];
+    if (!floorHit) return null;
+    return {
+      x: Math.floor(floorHit.point.x),
+      z: Math.floor(floorHit.point.z),
+      elevation
+    };
+  }
+
   function rebuildPreview(): void {
     if (preview) { scene.remove(preview); disposePlacementPreview(preview); }
     preview = selected ? createPlacementPreview(THREE, selected) : null;
     if (preview) scene.add(preview);
   }
 
+  function rebuildRoomPreview(): void {
+    if (roomPreview) { scene.remove(roomPreview); disposeRoomPlacementPreview(roomPreview); }
+    roomPreview = roomPlacement ? createRoomPlacementPreview(THREE, roomPlacement) : null;
+    if (roomPreview) scene.add(roomPreview);
+  }
+
   renderer.domElement.addEventListener('pointermove', (event: PointerEvent) => {
+    if (roomPlacement && roomPreview) {
+      const corner = roomCornerFor(event);
+      if (corner) showRoomPlacementPreview(roomPreview, corner, roomFitsAtCorner(roomPlacement, corner));
+      else hideRoomPlacementPreview(roomPreview);
+      return;
+    }
+
     if (!preview || !selected) return;
-    const position = placementFor(event);
+    const position = blockPlacementFor(event);
     if (position) showPlacementPreview(preview, position);
     else hidePlacementPreview(preview);
   });
+
   renderer.domElement.addEventListener('click', (event: MouseEvent) => {
+    if (roomPlacement) {
+      const corner = roomCornerFor(event);
+      if (!corner || !roomFitsAtCorner(roomPlacement, corner)) {
+        handlers.onStatus('That room does not fit from this corner. Move the room outline until it turns gold.');
+        return;
+      }
+      handlers.onRoomAnchor(corner);
+      return;
+    }
+
     if (!selected) return;
-    const position = placementFor(event);
+    const position = blockPlacementFor(event);
     if (position) handlers.onPlace(position);
   });
+
   renderer.domElement.addEventListener('contextmenu', (event: MouseEvent) => {
     event.preventDefault(); setPointer(event);
     const hit = raycaster.intersectObjects(objectGroup.children, false)[0];
@@ -129,12 +172,13 @@ export async function createThreeRenderer(
   });
   resize.observe(container); setDefaultCamera(camera, controls);
   renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
-  handlers.onStatus('Top face builds up · side face builds out · zoom out for tall structures.');
+  handlers.onStatus('Top face builds up · side face builds out · Build Room lets you stamp rooms by corner.');
 
   return {
     mode: 'three',
     setTheme(theme: TerrainTheme) { groundMaterial.color.setHex(theme.groundColor); },
     setSelectedCatalog(next) { selected = next; rebuildPreview(); },
+    setRoomPlacement(next) { roomPlacement = next; rebuildRoomPreview(); },
     setElevation(next) { elevation = next; placementPlane.position.y = next; },
     render(state) { objectGroup.clear(); state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item))); },
     rotate(delta) { rotateCamera(THREE, camera, controls, delta); },
@@ -143,6 +187,7 @@ export async function createThreeRenderer(
     dispose() {
       resize.disconnect(); renderer.setAnimationLoop(null);
       if (preview) disposePlacementPreview(preview);
+      if (roomPreview) disposeRoomPlacementPreview(roomPreview);
       renderer.dispose(); container.replaceChildren();
     }
   };
