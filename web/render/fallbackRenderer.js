@@ -1,10 +1,9 @@
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
 import { PALETTE } from '../domain/catalog.js';
 import { stackElevationAt } from '../domain/placement.js';
 import { roomOuterSize } from '../domain/room.js';
 import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js';
-import { MAX_BUILD_HEIGHT_FEET } from '../domain/spatial.js';
-const GRID_SIZE = 20;
-const ORIGIN = GRID_SIZE / 2;
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';
@@ -13,6 +12,7 @@ export function createFallbackRenderer(container, handlers) {
     let room = null;
     let elevation = 0;
     let theme = null;
+    let currentBounds = { ...DEFAULT_BOARD_BOUNDS };
     let currentObjects = [];
     function cellAt(x, z) {
         return board.querySelector(`[data-x="${x}"][data-z="${z}"]`);
@@ -45,8 +45,10 @@ export function createFallbackRenderer(container, handlers) {
     function draw() {
         board.innerHTML = '';
         board.style.setProperty('--fallback-ground', theme?.accentCss ?? '#879072');
-        for (let z = -ORIGIN; z < ORIGIN; z += 1) {
-            for (let x = -ORIGIN; x < ORIGIN; x += 1) {
+        board.style.gridTemplateColumns = `repeat(${boardWidth(currentBounds)}, 1fr)`;
+        board.style.gridTemplateRows = `repeat(${boardDepth(currentBounds)}, 1fr)`;
+        for (let z = currentBounds.minZ; z < currentBounds.maxZ; z += 1) {
+            for (let x = currentBounds.minX; x < currentBounds.maxX; x += 1) {
                 const cell = document.createElement('button');
                 cell.className = 'fallback-cell';
                 cell.type = 'button';
@@ -60,7 +62,7 @@ export function createFallbackRenderer(container, handlers) {
                     const item = PALETTE[top.catalogId];
                     cell.style.setProperty('--piece-color', `#${item.color.toString(16).padStart(6, '0')}`);
                     const visual = item.art
-                        ? `<img src="${item.art.src}" alt="" loading="lazy" decoding="async">`
+                        ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`
                         : item.name.slice(0, 1);
                     cell.innerHTML = `<span class="fallback-piece">${visual}</span>${occupants.length > 1 ? `<small>${occupants.length}</small>` : ''}`;
                 }
@@ -68,16 +70,16 @@ export function createFallbackRenderer(container, handlers) {
                     if (!room)
                         return;
                     const corner = { x, z, elevation };
-                    const placement = chooseRoomPlacement(room, corner, currentObjects);
+                    const placement = chooseRoomPlacement(room, corner, currentObjects, currentBounds);
                     paintRoomPreview(placement ?? previewRoomPlacement(corner), Boolean(placement));
                 });
                 cell.addEventListener('click', () => {
                     if (room) {
-                        const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects);
+                        const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects, currentBounds);
                         if (placement)
                             handlers.onRoomPlacement(placement);
                         else
-                            handlers.onStatus('That corner cannot fit this room.');
+                            handlers.onStatus('That room would exceed the map limit.');
                         return;
                     }
                     if (!selected)
@@ -98,17 +100,33 @@ export function createFallbackRenderer(container, handlers) {
             }
         }
     }
-    handlers.onStatus('Room stamp automatically flips direction to fit near map edges.');
+    handlers.onStatus('Build toward an edge and the map grows automatically.');
     return {
         mode: 'fallback',
-        setTheme(next) { theme = next; draw(); },
-        setSelectedCatalog(next) { selected = next; },
-        setRoomPlacement(next) { room = next; draw(); },
-        setElevation(next) { elevation = next; },
-        render(state) { currentObjects = state.objects; draw(); },
+        setTheme(next) {
+            theme = next;
+            draw();
+        },
+        setSelectedCatalog(next) {
+            selected = next;
+        },
+        setRoomPlacement(next) {
+            room = next;
+            draw();
+        },
+        setElevation(next) {
+            elevation = next;
+        },
+        render(state) {
+            currentBounds = { ...state.bounds };
+            currentObjects = state.objects;
+            draw();
+        },
         rotate() { },
         zoom() { },
         resetCamera() { },
-        dispose() { board.remove(); }
+        dispose() {
+            board.remove();
+        }
     };
 }

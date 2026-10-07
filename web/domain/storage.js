@@ -1,7 +1,16 @@
+import { normalizeBoardBounds } from './boardBounds.js';
 import { createBoardState } from './commands.js';
 const STORAGE_PREFIX = 'dndblocks:stage1:';
 function key(terrain) {
     return `${STORAGE_PREFIX}${terrain}`;
+}
+function normalizeBoardState(parsed, terrain) {
+    return {
+        terrain,
+        bounds: normalizeBoardBounds(parsed.bounds),
+        objects: Array.isArray(parsed.objects) ? parsed.objects : [],
+        revision: Number.isInteger(parsed.revision) ? Number(parsed.revision) : 0
+    };
 }
 export function loadBoard(terrain) {
     try {
@@ -12,7 +21,7 @@ export function loadBoard(terrain) {
         if (parsed.terrain !== terrain || !Array.isArray(parsed.objects)) {
             return createBoardState(terrain);
         }
-        return parsed;
+        return normalizeBoardState(parsed, terrain);
     }
     catch (error) {
         console.warn('[state] Could not restore local prototype board.', error);
@@ -28,5 +37,10 @@ export function saveBoard(state) {
     }
 }
 export function clearBoard(terrain) {
-    localStorage.removeItem(key(terrain));
+    try {
+        localStorage.removeItem(key(terrain));
+    }
+    catch (error) {
+        console.warn('[state] Could not clear local prototype board.', error);
+    }
 }

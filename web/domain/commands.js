@@ -1,5 +1,6 @@
+import { createDefaultBoardBounds } from './boardBounds.js';
 export function createBoardState(terrain) {
-    return { terrain, objects: [], revision: 0 };
+    return { terrain, bounds: createDefaultBoardBounds(), objects: [], revision: 0 };
 }
 export function createWorldObject(id, catalogId, position, createdAt = Date.now()) {
     return { id, catalogId, ...position, createdAt };

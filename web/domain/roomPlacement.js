@@ -1,5 +1,7 @@
-import { MAX_BASE_ELEVATION, isBoardCell } from './spatial.js';
+import { growBoardBounds } from './boardBounds.js';
+import { MAX_BASE_ELEVATION } from './spatial.js';
 import { roomOuterSize } from './room.js';
+import { DEFAULT_BOARD_BOUNDS } from './spatial.js';
 function directionOrder(corner) {
     const x = corner.x > 0 ? -1 : 1;
     const z = corner.z > 0 ? -1 : 1;
@@ -10,18 +12,25 @@ function directionOrder(corner) {
         { x: -x, z: -z }
     ];
 }
-export function roomFitsAtCorner(room, corner, orientation) {
+function roomExtentPoints(room, corner, orientation) {
     const outer = roomOuterSize(room);
     const farX = corner.x + orientation.x * (outer.lengthCells - 1);
     const farZ = corner.z + orientation.z * (outer.widthCells - 1);
-    const top = corner.elevation + room.heightLevels - 1;
-    return corner.elevation >= 0
-        && top <= MAX_BASE_ELEVATION
-        && isBoardCell(corner.x, corner.z)
-        && isBoardCell(farX, farZ);
+    return [
+        { x: corner.x, z: corner.z },
+        { x: farX, z: corner.z },
+        { x: corner.x, z: farZ },
+        { x: farX, z: farZ }
+    ];
 }
-export function roomWallPositions(room, placement) {
-    if (!roomFitsAtCorner(room, placement.corner, placement.orientation))
+export function roomFitsAtCorner(room, corner, orientation, bounds = DEFAULT_BOARD_BOUNDS) {
+    const top = corner.elevation + room.heightLevels - 1;
+    if (corner.elevation < 0 || top > MAX_BASE_ELEVATION)
+        return false;
+    return growBoardBounds(bounds, roomExtentPoints(room, corner, orientation)) !== null;
+}
+export function roomWallPositions(room, placement, bounds = DEFAULT_BOARD_BOUNDS) {
+    if (!roomFitsAtCorner(room, placement.corner, placement.orientation, bounds))
         return [];
     const outer = roomOuterSize(room);
     const { corner, orientation } = placement;
@@ -31,20 +40,12 @@ export function roomWallPositions(room, placement) {
         for (let dx = 0; dx < outer.lengthCells; dx += 1) {
             const x = corner.x + orientation.x * dx;
             result.push({ x, z: corner.z, elevation });
-            result.push({
-                x,
-                z: corner.z + orientation.z * (outer.widthCells - 1),
-                elevation
-            });
+            result.push({ x, z: corner.z + orientation.z * (outer.widthCells - 1), elevation });
         }
         for (let dz = 1; dz < outer.widthCells - 1; dz += 1) {
             const z = corner.z + orientation.z * dz;
             result.push({ x: corner.x, z, elevation });
-            result.push({
-                x: corner.x + orientation.x * (outer.lengthCells - 1),
-                z,
-                elevation
-            });
+            result.push({ x: corner.x + orientation.x * (outer.lengthCells - 1), z, elevation });
         }
     }
     return result;
@@ -69,10 +70,10 @@ function overlapScore(room, placement, objects) {
     }
     return occupied.size;
 }
-export function chooseRoomPlacement(room, corner, objects) {
+export function chooseRoomPlacement(room, corner, objects, bounds = DEFAULT_BOARD_BOUNDS) {
     const candidates = directionOrder(corner)
         .map((orientation) => ({ corner, orientation }))
-        .filter((placement) => roomFitsAtCorner(room, corner, placement.orientation));
+        .filter((placement) => roomFitsAtCorner(room, corner, placement.orientation, bounds));
     let best = null;
     let bestScore = Number.POSITIVE_INFINITY;
     for (const candidate of candidates) {
@@ -85,5 +86,6 @@ export function chooseRoomPlacement(room, corner, objects) {
     return best;
 }
 export function previewRoomPlacement(corner) {
-    return { corner, orientation: directionOrder(corner)[0] };
+    const first = directionOrder(corner)[0];
+    return { corner, orientation: first ?? { x: 1, z: 1 } };
 }

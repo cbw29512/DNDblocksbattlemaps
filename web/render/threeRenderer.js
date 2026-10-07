@@ -1,15 +1,15 @@
 import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js';
-import { BOARD_CELLS } from '../domain/spatial.js';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js';
 import { placementFromSurface } from '../domain/surfacePlacement.js';
 import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js';
 import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js';
-import { MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, setDefaultCamera, zoomCamera } from './threeObjects.js';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x11120f);
-    const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 120);
+    const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 400);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
@@ -30,14 +30,15 @@ export async function createThreeRenderer(container, handlers) {
     sun.castShadow = true;
     scene.add(sun);
     const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x617c45, roughness: 0.92 });
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(BOARD_CELLS, BOARD_CELLS), groundMaterial);
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), groundMaterial);
     ground.rotation.x = -Math.PI / 2;
     ground.receiveShadow = true;
     scene.add(ground);
-    const grid = new THREE.GridHelper(BOARD_CELLS, BOARD_CELLS, 0xe7dcc1, 0x353a36);
+    const gridMaterial = new THREE.LineBasicMaterial({ color: 0x353a36, transparent: true, opacity: 0.92 });
+    const grid = new THREE.LineSegments(new THREE.BufferGeometry(), gridMaterial);
     grid.position.y = 0.012;
     scene.add(grid);
-    const placementPlane = new THREE.Mesh(new THREE.PlaneGeometry(BOARD_CELLS, BOARD_CELLS), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, side: THREE.DoubleSide }));
+    const placementPlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, side: THREE.DoubleSide }));
     placementPlane.rotation.x = -Math.PI / 2;
     scene.add(placementPlane);
     const raycaster = new THREE.Raycaster();
@@ -48,6 +49,50 @@ export async function createThreeRenderer(container, handlers) {
     let preview = null;
     let roomPreview = null;
     let currentObjects = [];
+    let currentBounds = { ...DEFAULT_BOARD_BOUNDS };
+    function boardCenter(bounds) {
+        return {
+            x: (bounds.minX + bounds.maxX) / 2,
+            z: (bounds.minZ + bounds.maxZ) / 2
+        };
+    }
+    function gridGeometry(bounds) {
+        const vertices = [];
+        for (let x = bounds.minX; x <= bounds.maxX; x += 1) {
+            vertices.push(x, 0, bounds.minZ, x, 0, bounds.maxZ);
+        }
+        for (let z = bounds.minZ; z <= bounds.maxZ; z += 1) {
+            vertices.push(bounds.minX, 0, z, bounds.maxX, 0, z);
+        }
+        const geometry = new THREE.BufferGeometry();
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+        return geometry;
+    }
+    function updateBoardGeometry(bounds) {
+        const width = boardWidth(bounds);
+        const depth = boardDepth(bounds);
+        const center = boardCenter(bounds);
+        ground.geometry.dispose();
+        ground.geometry = new THREE.PlaneGeometry(width, depth);
+        ground.position.set(center.x, 0, center.z);
+        grid.geometry.dispose();
+        grid.geometry = gridGeometry(bounds);
+        placementPlane.geometry.dispose();
+        placementPlane.geometry = new THREE.PlaneGeometry(width, depth);
+        placementPlane.position.set(center.x, elevation, center.z);
+        currentBounds = { ...bounds };
+        controls.maxDistance = Math.max(MAX_CAMERA_DISTANCE, Math.max(width, depth) * 2.2);
+    }
+    function frameBoard() {
+        const center = boardCenter(currentBounds);
+        const span = Math.max(boardWidth(currentBounds), boardDepth(currentBounds));
+        const distance = Math.max(CAMERA_DISTANCE, span * 1.15);
+        const horizontal = Math.cos(Math.PI / 6) * distance;
+        const vertical = Math.sin(Math.PI / 6) * distance;
+        controls.target.set(center.x, 0, center.z);
+        camera.position.set(center.x + horizontal / Math.sqrt(2), vertical, center.z + horizontal / Math.sqrt(2));
+        controls.update();
+    }
     function setPointer(event) {
         const rect = renderer.domElement.getBoundingClientRect();
         pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
@@ -61,11 +106,12 @@ export async function createThreeRenderer(container, handlers) {
             return null;
         const x = Math.floor(hit.point.x);
         const z = Math.floor(hit.point.z);
-        return Math.abs(x) < BOARD_CELLS / 2 && Math.abs(z) < BOARD_CELLS / 2 ? { x, z, elevation } : null;
+        return isBoardCell(x, z, currentBounds) ? { x, z, elevation } : null;
     }
     function highestAt(x, z) {
         return currentObjects.reduce((highest, object) => object.x === x && object.z === z
-            ? Math.max(highest, object.elevation) : highest, 0);
+            ? Math.max(highest, object.elevation)
+            : highest, 0);
     }
     function blockPlacementFor(event) {
         setPointer(event);
@@ -80,7 +126,9 @@ export async function createThreeRenderer(container, handlers) {
         if (!activeRoom)
             return null;
         const corner = floorPosition(event);
-        return corner ? chooseRoomPlacement(activeRoom, corner, currentObjects) : null;
+        return corner
+            ? chooseRoomPlacement(activeRoom, corner, currentObjects, currentBounds)
+            : null;
     }
     function rebuildBlockPreview() {
         if (preview) {
@@ -107,7 +155,7 @@ export async function createThreeRenderer(container, handlers) {
                 hideRoomPlacementPreview(roomPreview);
                 return;
             }
-            const placement = chooseRoomPlacement(activeRoom, corner, currentObjects);
+            const placement = chooseRoomPlacement(activeRoom, corner, currentObjects, currentBounds);
             showRoomPlacementPreview(roomPreview, placement ?? previewRoomPlacement(corner), Boolean(placement));
             return;
         }
@@ -122,7 +170,7 @@ export async function createThreeRenderer(container, handlers) {
             if (placement)
                 handlers.onRoomPlacement(placement);
             else
-                handlers.onStatus('That corner cannot fit this room. Move the outline until it turns gold.');
+                handlers.onStatus('That room would exceed the 100 × 100 map limit or the height cap.');
             return;
         }
         if (!selected)
@@ -145,26 +193,58 @@ export async function createThreeRenderer(container, handlers) {
         camera.updateProjectionMatrix();
     });
     resize.observe(container);
-    setDefaultCamera(camera, controls);
-    renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
-    handlers.onStatus('Build Room auto-flips its corner direction to fit anywhere it can.');
+    updateBoardGeometry(currentBounds);
+    frameBoard();
+    renderer.setAnimationLoop(() => {
+        controls.update();
+        renderer.render(scene, camera);
+    });
+    handlers.onStatus('Build toward an edge and the map grows automatically.');
     return {
         mode: 'three',
-        setTheme(theme) { groundMaterial.color.setHex(theme.groundColor); },
-        setSelectedCatalog(next) { selected = next; rebuildBlockPreview(); },
-        setRoomPlacement(next) { activeRoom = next; rebuildRoomPreview(); },
-        setElevation(next) { elevation = next; placementPlane.position.y = next; },
+        setTheme(theme) {
+            groundMaterial.color.setHex(theme.groundColor);
+        },
+        setSelectedCatalog(next) {
+            selected = next;
+            rebuildBlockPreview();
+        },
+        setRoomPlacement(next) {
+            activeRoom = next;
+            rebuildRoomPreview();
+        },
+        setElevation(next) {
+            elevation = next;
+            const center = boardCenter(currentBounds);
+            placementPlane.position.set(center.x, elevation, center.z);
+        },
         render(state) {
+            const changed = state.bounds.minX !== currentBounds.minX ||
+                state.bounds.maxX !== currentBounds.maxX ||
+                state.bounds.minZ !== currentBounds.minZ ||
+                state.bounds.maxZ !== currentBounds.maxZ;
+            if (changed)
+                updateBoardGeometry(state.bounds);
             currentObjects = state.objects;
             objectGroup.clear();
             state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
         },
-        rotate(delta) { rotateCamera(THREE, camera, controls, delta); },
-        zoom(multiplier) { zoomCamera(camera, controls, multiplier); },
-        resetCamera() { setDefaultCamera(camera, controls); },
+        rotate(delta) {
+            rotateCamera(THREE, camera, controls, delta);
+        },
+        zoom(multiplier) {
+            zoomCamera(camera, controls, multiplier);
+        },
+        resetCamera() {
+            frameBoard();
+        },
         dispose() {
             resize.disconnect();
             renderer.setAnimationLoop(null);
+            ground.geometry.dispose();
+            grid.geometry.dispose();
+            gridMaterial.dispose();
+            placementPlane.geometry.dispose();
             if (preview)
                 disposePlacementPreview(preview);
             if (roomPreview)
