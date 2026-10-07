@@ -28,7 +28,7 @@ Selected stack:
 - Three.js
 - native HTML/CSS UI first
 - Supabase hosted Free plan for MVP
-- Cloudflare Pages
+- Netlify
 
 Fallbacks:
 
@@ -58,7 +58,7 @@ Browser
 Static frontend hosting:
 
 ```text
-Cloudflare Pages
+Netlify
 ```
 
 This eliminates the need for a dedicated FastAPI/Node backend in the MVP unless the product requirements later prove one is necessary.
@@ -292,30 +292,40 @@ Only add a CRDT layer if actual concurrent editing conflicts prove it necessary.
 
 This follows the project's "do not add complexity before the requirement exists" rule.
 
-## Static Hosting — Cloudflare Pages
+## Static Hosting — Netlify
 
 Sources:
 
-- https://developers.cloudflare.com/pages/
-- https://developers.cloudflare.com/pages/functions/pricing/
+- https://www.netlify.com/pricing/
+- https://docs.netlify.com/manage/accounts-and-billing/billing/billing-for-credit-based-plans/credit-based-pricing-plans/
 
-Current Free-plan observations:
+User decision:
 
-- static asset requests are free and unlimited
-- Pages Functions share the Workers Free quota
-- Workers Free currently provides 100,000 requests/day across relevant Workers/Pages Functions usage
+**Netlify is the selected frontend host.**
+
+Current Free-plan snapshot:
+
+- $0/month
+- 300 credits/month hard limit
+- no Free-plan auto-recharge
+- production deploys currently cost 15 credits each
+- bandwidth currently costs 20 credits/GB
+- web requests currently cost 2 credits per 10,000 requests
+- sites pause at the Free-plan credit limit instead of incurring overage charges
 
 Why it fits:
 
 - static Vite output
-- CDN distribution
-- no required application server
-- no static-bandwidth charge for ordinary Pages assets under the current pricing model
-- Functions remain available later if a tiny server-side endpoint becomes necessary
+- Git-based deployment
+- global CDN
+- custom domains + SSL
+- deploy previews
+- optional Functions if later justified
+- user already prefers Netlify for deployment workflows
 
-Current recommendation:
+Cost-control rule:
 
-**Preferred first hosting candidate.**
+Avoid unnecessary production deploys. Use local development and preview/development workflows where practical, and treat production publishes as intentional events.
 
 ## Why Not GitHub Pages for the Product
 
@@ -395,7 +405,7 @@ At current published free-tier limits, a prototype/MVP could potentially run wit
 - **TypeScript** — free/open source toolchain
 - **Vite** — MIT
 - **Three.js** — MIT
-- **Cloudflare Pages** — $0 static hosting
+- **Netlify Free** — $0 hosting within the current monthly credit limit
 - **Supabase Free** — $0 database/auth/realtime/storage within quotas
 - **Original/CC0 block assets** — $0 licensing cost
 
