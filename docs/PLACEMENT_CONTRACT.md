@@ -44,31 +44,40 @@ The ghost:
 
 The ghost communicates **where the object will go**, not whether the DM is "allowed" to put it there.
 
-## Natural Surface Placement
+## Kid-Simple Surface Placement
 
-The pointer uses the surface being hovered as the intuitive placement anchor.
+The MVP uses a deliberately simple rule:
 
-### Hover ground/floor
+### Click empty grid/floor
 
-Place the object on that floor/surface level.
+Place the selected object on that grid cell at the current explicit elevation.
 
-### Hover the top of a block
+### Click any existing block
 
-Place the object one supported block level above that block.
+Treat the clicked block/stack as a stacking target and place the selected object on top of the highest object in that grid column.
+
+The user does **not** need to hit the top face precisely.
 
 Example:
 
-- hover top of a 5-foot stone block
-- ghost appears at the next 5-foot elevation
-- click places the selected object there
+- select Stone Block
+- click an existing 5-foot Stone Block anywhere on its visible surface
+- the ghost jumps to the next 5-foot level
+- click places the new Stone Block on top
 
-This is the simplest manual stacking behavior.
+Repeated clicks build a tower naturally.
 
-### Hover the side of a block
+### Side-face placement
 
-Place the selected block in the adjacent grid position on that side, aligned to the clicked block's base level.
+Side-face-adjacent placement is **not part of the current MVP interaction**.
 
-This allows wall/tower construction without exposing X/Y/Z coordinates.
+Reason: at the locked ~30° camera angle, requiring the user to distinguish top vs side faces makes the basic interaction less discoverable.
+
+To build horizontally, click the desired empty grid cell.
+
+To build vertically, click an existing block.
+
+This is the canonical MVP rule unless playtesting proves a need for a more advanced surface mode.
 
 ## Explicit Elevation Control
 
@@ -88,7 +97,7 @@ Requirements:
 
 - user-facing units are feet
 - values move in 5-foot increments
-- the control changes the placement ghost's elevation
+- the control changes the placement ghost's elevation when placing on empty grid; clicking an existing stack still places at least one level above that stack
 - it never exposes raw Z coordinates
 
 This is an escape hatch, not the primary placement method.

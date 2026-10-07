@@ -14,6 +14,9 @@ export function meshFor(THREE, object) {
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     mesh.userData.objectId = object.id;
+    mesh.userData.gridX = object.x;
+    mesh.userData.gridZ = object.z;
+    mesh.userData.elevation = object.elevation;
     return mesh;
 }
 export function setDefaultCamera(camera, controls) {

@@ -14,22 +14,30 @@ export function createWorldObject(
 }
 
 export function applyCommand(state: BoardState, command: EditCommand): BoardState {
-  const objects = command.kind === 'place'
-    ? [...state.objects, command.object]
-    : state.objects.filter((item) => item.id !== command.object.id);
-
+  let objects = state.objects;
+  if (command.kind === 'place') objects = [...objects, command.object];
+  if (command.kind === 'remove') objects = objects.filter((item) => item.id !== command.object.id);
+  if (command.kind === 'place-many') objects = [...objects, ...command.objects];
+  if (command.kind === 'remove-many') {
+    const ids = new Set(command.objects.map((item) => item.id));
+    objects = objects.filter((item) => !ids.has(item.id));
+  }
   return { ...state, objects, revision: state.revision + 1 };
 }
 
 export function invertCommand(command: EditCommand): EditCommand {
-  return {
-    kind: command.kind === 'place' ? 'remove' : 'place',
-    object: command.object
-  };
+  if (command.kind === 'place') return { kind: 'remove', object: command.object };
+  if (command.kind === 'remove') return { kind: 'place', object: command.object };
+  if (command.kind === 'place-many') return { kind: 'remove-many', objects: command.objects };
+  return { kind: 'place-many', objects: command.objects };
 }
 
 export function placeCommand(object: WorldObject): EditCommand {
   return { kind: 'place', object };
+}
+
+export function placeManyCommand(objects: WorldObject[]): EditCommand {
+  return { kind: 'place-many', objects };
 }
 
 export function removeCommand(object: WorldObject): EditCommand {

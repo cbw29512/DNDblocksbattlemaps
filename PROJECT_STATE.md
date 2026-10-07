@@ -66,7 +66,7 @@ The DM is the authority. The board must work without automated RPG rules.
 31. **Universal trigger/effect system.** Traps, hazards, switches, ambushes, and surprises are composed from reusable triggers/effects rather than named engines.
 32. **Universal transform/replace.** An object may change identity/category/capabilities in place when triggered, such as chest → mimic.
 33. **Select once, place many.** A palette item remains active until changed/cleared; repeated clicks place repeated copies.
-34. **Surface-based stacking.** Floor places on floor, top face places one 5-foot level above, side face places adjacent at the clicked block's base level; explicit elevation in feet is available as an escape hatch.
+34. **Kid-simple stacking.** Empty grid places at the current elevation; clicking any existing block/stack places the selected object on top of the highest object in that grid column. The user does not need to hit a top face precisely. Side-face-adjacent placement is deferred.
 35. **Floating placement allowed.** DM may deliberately place unsupported elevated objects; no physics validator blocks creation.
 36. **Pick-up/put-down movement.** Unlocked existing objects are moved by selecting/picking up and dropping, not transform gizmos.
 37. **Overlap chooser only when needed.** Ambiguous overlapping selections use a minimal What's Here? chooser rather than a permanent object inspector.

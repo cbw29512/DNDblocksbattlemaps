@@ -46,6 +46,26 @@ The UI may show the derived block count as a helper, for example:
 
 The DM should not need to think in engine units.
 
+## MVP Safety Limits
+
+The initial browser builder uses hard spatial caps so malformed or extreme user input cannot generate an unbounded number of blocks.
+
+Current Stage 1 limits:
+
+- room Length: **5–90 ft**
+- room Width: **5–90 ft**
+- room Height: **5–50 ft**
+- manual/build height: **50 ft maximum**
+- all values resolve to 5-ft levels
+
+The 90-ft interior Length/Width maximum leaves one 5-ft perimeter wall cell on each side of the current 20×20 board.
+
+A 50-ft wall is 10 block levels high.
+
+Inputs above these limits, including extremely large values such as `99999999999999999999`, are rejected rather than clamped into a giant generation request.
+
+These are MVP safety limits, not a permanent claim that the product can never support larger maps/heights. Raise them only after performance testing justifies it.
+
 ## Room Dimensions Mean Usable Interior Space
 
 Room Length and Width describe the **usable playable interior**.

@@ -1,9 +1,12 @@
-import { PALETTE } from '../domain/catalog.js';
-import type { CatalogId, TerrainTheme } from '../domain/types.js';
-import { geometryFor, meshFor, rotateCamera, setDefaultCamera, zoomCamera } from './threeObjects.js';
+import { elevationAbove } from '../domain/placement.js';
+import { BOARD_CELLS } from '../domain/spatial.js';
+import type { CatalogId, GridPosition, TerrainTheme } from '../domain/types.js';
+import {
+  createPlacementPreview, disposePlacementPreview,
+  hidePlacementPreview, showPlacementPreview
+} from './placementPreview.js';
+import { meshFor, rotateCamera, setDefaultCamera, zoomCamera } from './threeObjects.js';
 import type { BoardHandlers, BoardRenderer } from './types.js';
-
-const GRID_SIZE = 20;
 
 export async function createThreeRenderer(
   container: HTMLElement,
@@ -14,7 +17,7 @@ export async function createThreeRenderer(
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x11120f);
   const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 100);
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   container.replaceChildren(renderer.domElement);
@@ -30,47 +33,27 @@ export async function createThreeRenderer(
   controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
 
   const objectGroup = new THREE.Group();
-  scene.add(objectGroup);
-  scene.add(new THREE.HemisphereLight(0xfff3d7, 0x26342f, 2.1));
+  scene.add(objectGroup, new THREE.HemisphereLight(0xfff3d7, 0x26342f, 2.1));
   const sun = new THREE.DirectionalLight(0xfff1ce, 2.5);
-  sun.position.set(8, 14, 7);
-  sun.castShadow = true;
-  scene.add(sun);
+  sun.position.set(8, 14, 7); sun.castShadow = true; scene.add(sun);
 
   const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x617c45, roughness: 0.92 });
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE), groundMaterial);
-  ground.rotation.x = -Math.PI / 2;
-  ground.receiveShadow = true;
-  scene.add(ground);
-  const grid = new THREE.GridHelper(GRID_SIZE, GRID_SIZE, 0xe7dcc1, 0x353a36);
-  grid.position.y = 0.012;
-  scene.add(grid);
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(BOARD_CELLS, BOARD_CELLS), groundMaterial);
+  ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
+  const grid = new THREE.GridHelper(BOARD_CELLS, BOARD_CELLS, 0xe7dcc1, 0x353a36);
+  grid.position.y = 0.012; scene.add(grid);
 
   const placementPlane = new THREE.Mesh(
-    new THREE.PlaneGeometry(GRID_SIZE, GRID_SIZE),
+    new THREE.PlaneGeometry(BOARD_CELLS, BOARD_CELLS),
     new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, side: THREE.DoubleSide })
   );
-  placementPlane.rotation.x = -Math.PI / 2;
-  scene.add(placementPlane);
+  placementPlane.rotation.x = -Math.PI / 2; scene.add(placementPlane);
 
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
   let selected: CatalogId | null = null;
   let elevation = 0;
-  let ghost: any = null;
-
-  function rebuildGhost(): void {
-    if (ghost) scene.remove(ghost);
-    ghost = null;
-    if (!selected) return;
-    const item = PALETTE[selected];
-    ghost = new THREE.Mesh(
-      geometryFor(THREE, selected),
-      new THREE.MeshBasicMaterial({ color: item.color, transparent: true, opacity: 0.42, depthWrite: false })
-    );
-    ghost.visible = false;
-    scene.add(ghost);
-  }
+  let preview: any = null;
 
   function setPointer(event: PointerEvent | MouseEvent): void {
     const rect = renderer.domElement.getBoundingClientRect();
@@ -79,56 +62,83 @@ export async function createThreeRenderer(
     raycaster.setFromCamera(pointer, camera);
   }
 
-  function snappedCell(event: PointerEvent | MouseEvent): { x: number; z: number } | null {
+  function highestAt(x: number, z: number): number | null {
+    let highest: number | null = null;
+    for (const mesh of objectGroup.children) {
+      const data = mesh.userData;
+      if (Number(data.gridX) !== x || Number(data.gridZ) !== z) continue;
+      const value = Number(data.elevation);
+      highest = highest === null ? value : Math.max(highest, value);
+    }
+    return highest;
+  }
+
+  function placementFor(event: PointerEvent | MouseEvent): GridPosition | null {
     setPointer(event);
+    const objectHit = raycaster.intersectObjects(objectGroup.children, false)[0];
+    if (objectHit) {
+      const data = objectHit.object.userData;
+      const x = Number(data.gridX);
+      const z = Number(data.gridZ);
+      const highest = highestAt(x, z);
+      const next = highest === null ? elevation : elevationAbove(highest, elevation);
+      return next === null ? null : { x, z, elevation: next };
+    }
+
     const hit = raycaster.intersectObject(placementPlane, false)[0];
     if (!hit) return null;
     const x = Math.floor(hit.point.x);
     const z = Math.floor(hit.point.z);
-    return Math.abs(x) < GRID_SIZE / 2 && Math.abs(z) < GRID_SIZE / 2 ? { x, z } : null;
+    return Math.abs(x) < BOARD_CELLS / 2 && Math.abs(z) < BOARD_CELLS / 2
+      ? { x, z, elevation } : null;
+  }
+
+  function rebuildPreview(): void {
+    if (preview) { scene.remove(preview); disposePlacementPreview(preview); }
+    preview = selected ? createPlacementPreview(THREE, selected) : null;
+    if (preview) scene.add(preview);
   }
 
   renderer.domElement.addEventListener('pointermove', (event: PointerEvent) => {
-    if (!ghost || !selected) return;
-    const cell = snappedCell(event);
-    ghost.visible = Boolean(cell);
-    if (!cell) return;
-    const item = PALETTE[selected];
-    ghost.position.set(cell.x + 0.5, elevation + item.height / 2, cell.z + 0.5);
+    if (!preview || !selected) return;
+    const position = placementFor(event);
+    if (position) showPlacementPreview(preview, position);
+    else hidePlacementPreview(preview);
   });
   renderer.domElement.addEventListener('click', (event: MouseEvent) => {
     if (!selected) return;
-    const cell = snappedCell(event);
-    if (cell) handlers.onPlace({ ...cell, elevation });
+    const position = placementFor(event);
+    if (position) handlers.onPlace(position);
   });
   renderer.domElement.addEventListener('contextmenu', (event: MouseEvent) => {
-    event.preventDefault();
-    setPointer(event);
+    event.preventDefault(); setPointer(event);
     const hit = raycaster.intersectObjects(objectGroup.children, false)[0];
     const id = hit?.object?.userData?.objectId;
     if (id) handlers.onRemove(String(id));
   });
 
   const resize = new ResizeObserver(() => {
-    const { clientWidth, clientHeight } = container;
-    renderer.setSize(clientWidth, clientHeight, false);
-    camera.aspect = clientWidth / Math.max(clientHeight, 1);
+    renderer.setSize(container.clientWidth, container.clientHeight, false);
+    camera.aspect = container.clientWidth / Math.max(container.clientHeight, 1);
     camera.updateProjectionMatrix();
   });
-  resize.observe(container);
-  setDefaultCamera(camera, controls);
+  resize.observe(container); setDefaultCamera(camera, controls);
   renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
-  handlers.onStatus('3D board ready — left click places, right drag orbits, wheel zooms.');
+  handlers.onStatus('Bright target marks placement · click any block to stack on top.');
 
   return {
     mode: 'three',
     setTheme(theme: TerrainTheme) { groundMaterial.color.setHex(theme.groundColor); },
-    setSelectedCatalog(next) { selected = next; rebuildGhost(); },
+    setSelectedCatalog(next) { selected = next; rebuildPreview(); },
     setElevation(next) { elevation = next; placementPlane.position.y = next; },
     render(state) { objectGroup.clear(); state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item))); },
     rotate(delta) { rotateCamera(THREE, camera, controls, delta); },
     zoom(multiplier) { zoomCamera(camera, controls, multiplier); },
     resetCamera() { setDefaultCamera(camera, controls); },
-    dispose() { resize.disconnect(); renderer.setAnimationLoop(null); renderer.dispose(); container.replaceChildren(); }
+    dispose() {
+      resize.disconnect(); renderer.setAnimationLoop(null);
+      if (preview) disposePlacementPreview(preview);
+      renderer.dispose(); container.replaceChildren();
+    }
   };
 }

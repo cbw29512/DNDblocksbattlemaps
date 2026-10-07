@@ -1,8 +1,13 @@
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
 import { DEFAULT_PALETTE, PALETTE, TERRAIN_THEMES } from '../domain/catalog.js';
-import { createWorldObject, findObject, placeCommand, removeCommand } from '../domain/commands.js';
+import {
+  createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand
+} from '../domain/commands.js';
 import { commit, createHistory, redo, undo } from '../domain/history.js';
+import { centeredRoomWallPositions, roomSummary } from '../domain/room.js';
+import { MAX_BASE_ELEVATION } from '../domain/spatial.js';
 import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js';
-import type { CatalogId, HistoryState, TerrainId } from '../domain/types.js';
+import type { CatalogId, EditCommand, HistoryState, TerrainId } from '../domain/types.js';
 import { createRenderer } from '../render/createRenderer.js';
 import type { BoardRenderer } from '../render/types.js';
 
@@ -37,10 +42,11 @@ export async function renderBuilder(
         <div class="builder-actions"><button id="undo" class="icon-button" type="button" title="Undo">↶</button><button id="redo" class="icon-button" type="button" title="Redo">↷</button><button id="clear" class="button button-ghost" type="button">Clear Map</button></div>
       </header>
       <aside class="builder-sidebar">
+        ${roomPanelHtml()}
         <div class="sidebar-heading"><span class="eyebrow">Blocks</span><strong>Pick one. Keep clicking.</strong></div>
         <div class="palette-list">${palette}</div>
         <div class="elevation-control"><span>Elevation</span><div><button id="elev-down" type="button">−</button><b id="elev-value">Ground</b><button id="elev-up" type="button">+</button></div></div>
-        <div class="prototype-tip"><b>Controls</b><span>Left click: place</span><span>Right click: remove</span><span>Right drag: orbit</span><span>Wheel: zoom</span></div>
+        <div class="prototype-tip"><b>Controls</b><span>Left click: place</span><span>Click block top: stack</span><span>Right click: remove</span><span>Right drag: orbit</span><span>Wheel: zoom</span></div>
       </aside>
       <section class="board-stage">
         <div class="board-canvas" id="board-canvas" aria-label="Interactive battle map"></div>
@@ -53,7 +59,10 @@ export async function renderBuilder(
   const status = document.getElementById('board-status') as HTMLElement;
   const canvas = document.getElementById('board-canvas') as HTMLElement;
   const refresh = () => { renderer?.render(state); saveBoard(state); };
-  const run = (command: ReturnType<typeof placeCommand>) => { const next = commit(state, history, command); state = next.state; history = next.history; refresh(); };
+  const run = (command: EditCommand) => {
+    const next = commit(state, history, command);
+    state = next.state; history = next.history; refresh();
+  };
 
   renderer = await createRenderer(canvas, {
     onPlace(position) { run(placeCommand(createWorldObject(makeId(), selected, position))); },
@@ -61,6 +70,19 @@ export async function renderBuilder(
     onStatus(message) { status.textContent = message; }
   });
   renderer.setTheme(theme); renderer.setSelectedCatalog(selected); renderer.setElevation(elevation); renderer.render(state);
+
+  document.getElementById('build-room')?.addEventListener('click', () => {
+    const room = readRoomPanel();
+    if (!room) { status.textContent = roomPanelError(); return; }
+    const positions = centeredRoomWallPositions(room);
+    const walls = positions
+      .filter((p) => !state.objects.some((o) => o.catalogId === 'wall' && o.x === p.x && o.z === p.z && o.elevation === p.elevation))
+      .map((p) => createWorldObject(makeId(), 'wall', p));
+    if (walls.length) run(placeManyCommand(walls));
+    status.textContent = walls.length
+      ? `Built ${roomSummary(room)} room · ${walls.length} wall blocks · no ceiling.`
+      : 'That centered room structure is already present.';
+  });
 
   root.querySelectorAll<HTMLButtonElement>('[data-catalog]').forEach((button) => button.addEventListener('click', () => {
     selected = button.dataset.catalog as CatalogId;
@@ -71,7 +93,11 @@ export async function renderBuilder(
   document.getElementById('undo')?.addEventListener('click', () => { const next = undo(state, history); state = next.state; history = next.history; refresh(); });
   document.getElementById('redo')?.addEventListener('click', () => { const next = redo(state, history); state = next.state; history = next.history; refresh(); });
   document.getElementById('clear')?.addEventListener('click', () => { if (confirm('Clear this prototype map?')) { clearBoard(theme.id); state = { terrain: theme.id, objects: [], revision: state.revision + 1 }; history = createHistory(); refresh(); } });
-  const updateElevation = (delta: number) => { elevation = Math.max(0, elevation + delta); renderer?.setElevation(elevation); (document.getElementById('elev-value') as HTMLElement).textContent = elevation === 0 ? 'Ground' : `+${elevation * 5} ft`; };
+  const updateElevation = (delta: number) => {
+    elevation = Math.min(MAX_BASE_ELEVATION, Math.max(0, elevation + delta));
+    renderer?.setElevation(elevation);
+    (document.getElementById('elev-value') as HTMLElement).textContent = elevation === 0 ? 'Ground' : `+${elevation * 5} ft`;
+  };
   document.getElementById('elev-down')?.addEventListener('click', () => updateElevation(-1));
   document.getElementById('elev-up')?.addEventListener('click', () => updateElevation(1));
   document.getElementById('rotate-left')?.addEventListener('click', () => renderer?.rotate(Math.PI / 8));

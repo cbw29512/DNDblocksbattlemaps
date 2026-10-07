@@ -110,7 +110,7 @@ Required:
 - [x] right-click/remove behavior on desktop
 - [ ] visible remove path for touch
 - [x] permissive overlap
-- [ ] ground/top/side surface placement
+- [x] empty-grid placement + click-any-block-to-stack (side-face adjacent placement deliberately deferred)
 - [x] explicit elevation control in 5-foot increments
 - [ ] floating placement
 - [ ] pick-up/put-down move

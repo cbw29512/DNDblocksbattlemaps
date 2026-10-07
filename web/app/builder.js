@@ -1,6 +1,9 @@
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
 import { DEFAULT_PALETTE, PALETTE, TERRAIN_THEMES } from '../domain/catalog.js';
-import { createWorldObject, findObject, placeCommand, removeCommand } from '../domain/commands.js';
+import { createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js';
 import { commit, createHistory, redo, undo } from '../domain/history.js';
+import { centeredRoomWallPositions, roomSummary } from '../domain/room.js';
+import { MAX_BASE_ELEVATION } from '../domain/spatial.js';
 import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js';
 import { createRenderer } from '../render/createRenderer.js';
 function makeId() {
@@ -25,10 +28,11 @@ export async function renderBuilder(root, terrainId, handlers) {
         <div class="builder-actions"><button id="undo" class="icon-button" type="button" title="Undo">↶</button><button id="redo" class="icon-button" type="button" title="Redo">↷</button><button id="clear" class="button button-ghost" type="button">Clear Map</button></div>
       </header>
       <aside class="builder-sidebar">
+        ${roomPanelHtml()}
         <div class="sidebar-heading"><span class="eyebrow">Blocks</span><strong>Pick one. Keep clicking.</strong></div>
         <div class="palette-list">${palette}</div>
         <div class="elevation-control"><span>Elevation</span><div><button id="elev-down" type="button">−</button><b id="elev-value">Ground</b><button id="elev-up" type="button">+</button></div></div>
-        <div class="prototype-tip"><b>Controls</b><span>Left click: place</span><span>Right click: remove</span><span>Right drag: orbit</span><span>Wheel: zoom</span></div>
+        <div class="prototype-tip"><b>Controls</b><span>Left click: place</span><span>Click block top: stack</span><span>Right click: remove</span><span>Right drag: orbit</span><span>Wheel: zoom</span></div>
       </aside>
       <section class="board-stage">
         <div class="board-canvas" id="board-canvas" aria-label="Interactive battle map"></div>
@@ -40,7 +44,12 @@ export async function renderBuilder(root, terrainId, handlers) {
     const status = document.getElementById('board-status');
     const canvas = document.getElementById('board-canvas');
     const refresh = () => { renderer?.render(state); saveBoard(state); };
-    const run = (command) => { const next = commit(state, history, command); state = next.state; history = next.history; refresh(); };
+    const run = (command) => {
+        const next = commit(state, history, command);
+        state = next.state;
+        history = next.history;
+        refresh();
+    };
     renderer = await createRenderer(canvas, {
         onPlace(position) { run(placeCommand(createWorldObject(makeId(), selected, position))); },
         onRemove(id) { const object = findObject(state, id); if (object)
@@ -51,6 +60,22 @@ export async function renderBuilder(root, terrainId, handlers) {
     renderer.setSelectedCatalog(selected);
     renderer.setElevation(elevation);
     renderer.render(state);
+    document.getElementById('build-room')?.addEventListener('click', () => {
+        const room = readRoomPanel();
+        if (!room) {
+            status.textContent = roomPanelError();
+            return;
+        }
+        const positions = centeredRoomWallPositions(room);
+        const walls = positions
+            .filter((p) => !state.objects.some((o) => o.catalogId === 'wall' && o.x === p.x && o.z === p.z && o.elevation === p.elevation))
+            .map((p) => createWorldObject(makeId(), 'wall', p));
+        if (walls.length)
+            run(placeManyCommand(walls));
+        status.textContent = walls.length
+            ? `Built ${roomSummary(room)} room · ${walls.length} wall blocks · no ceiling.`
+            : 'That centered room structure is already present.';
+    });
     root.querySelectorAll('[data-catalog]').forEach((button) => button.addEventListener('click', () => {
         selected = button.dataset.catalog;
         root.querySelectorAll('.palette-item').forEach((item) => item.classList.toggle('active', item === button));
@@ -65,7 +90,11 @@ export async function renderBuilder(root, terrainId, handlers) {
         history = createHistory();
         refresh();
     } });
-    const updateElevation = (delta) => { elevation = Math.max(0, elevation + delta); renderer?.setElevation(elevation); document.getElementById('elev-value').textContent = elevation === 0 ? 'Ground' : `+${elevation * 5} ft`; };
+    const updateElevation = (delta) => {
+        elevation = Math.min(MAX_BASE_ELEVATION, Math.max(0, elevation + delta));
+        renderer?.setElevation(elevation);
+        document.getElementById('elev-value').textContent = elevation === 0 ? 'Ground' : `+${elevation * 5} ft`;
+    };
     document.getElementById('elev-down')?.addEventListener('click', () => updateElevation(-1));
     document.getElementById('elev-up')?.addEventListener('click', () => updateElevation(1));
     document.getElementById('rotate-left')?.addEventListener('click', () => renderer?.rotate(Math.PI / 8));

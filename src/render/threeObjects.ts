@@ -21,6 +21,9 @@ export function meshFor(THREE: any, object: WorldObject): any {
   mesh.castShadow = true;
   mesh.receiveShadow = true;
   mesh.userData.objectId = object.id;
+  mesh.userData.gridX = object.x;
+  mesh.userData.gridZ = object.z;
+  mesh.userData.elevation = object.elevation;
   return mesh;
 }
 

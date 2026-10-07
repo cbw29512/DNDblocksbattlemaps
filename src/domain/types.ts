@@ -49,10 +49,11 @@ export interface TerrainTheme {
   swatchCss: string;
 }
 
-export interface EditCommand {
-  kind: 'place' | 'remove';
-  object: WorldObject;
-}
+export type EditCommand =
+  | { kind: 'place'; object: WorldObject }
+  | { kind: 'remove'; object: WorldObject }
+  | { kind: 'place-many'; objects: WorldObject[] }
+  | { kind: 'remove-many'; objects: WorldObject[] };
 
 export interface HistoryState {
   past: EditCommand[];
