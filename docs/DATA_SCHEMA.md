@@ -36,6 +36,7 @@ Authentication details are intentionally undecided.
 - id
 - game_id
 - name
+- terrain_theme
 - width_cells
 - height_cells
 - max_z
@@ -50,6 +51,7 @@ All placed things derive from this conceptual record.
 - id
 - map_id
 - catalog_object_id
+- room_region_id
 - display_name
 - category
 - x
@@ -127,8 +129,52 @@ Initial candidates:
 - revealable
 - player_controllable
 - stackable
+- trigger_on_enter
+- applies_movement_lock
 
 These are candidates, not an implementation commitment. Each must be validated against actual MVP interactions before code is written.
+
+The requested first trap behavior should use generic trigger/effect data: an entity entering a cell may receive a movement lock that only the DM can clear. This behavior should remain reusable by other sources.
+
+## RoomRegion
+
+A room/region is organizational state for room generation and bulk locking. It does not create a separate block engine.
+
+Candidate fields:
+
+- id
+- map_id
+- name
+- origin_x
+- origin_y
+- length_value
+- width_value
+- height_value
+- dimension_unit
+- dimension_mode
+- locked
+- created_at
+- updated_at
+
+WorldObjects generated into a room may reference `room_region_id`.
+
+The room-lock operation applies a bulk lock policy to the current objects associated with that region. The exact treatment of creature/player pieces remains an explicit interaction decision before implementation.
+
+Rooms currently generate **no ceiling**.
+
+## Movement Lock
+
+Movement restriction should be generic state/effect data rather than trap-specific code.
+
+Candidate data:
+
+- entity_id
+- source_object_id
+- effect_type: movement_lock
+- active
+- cleared_by_dm
+
+Potential sources later include traps, pits, webs, cages, or magical restraints.
 
 ## Creature Footprints
 
@@ -169,3 +215,4 @@ These must be resolved before implementation where relevant:
 5. How should Tiny creature positioning work?
 6. What identity/authentication level is required for MVP?
 7. What persistence granularity is needed for undo/redo and recovery?
+8. When a room is locked, which creature/player pieces, if any, are included in that bulk lock?
