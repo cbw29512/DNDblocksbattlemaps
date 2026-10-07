@@ -99,6 +99,55 @@ Possible later objects:
 
 Keep the initial library small.
 
+## Trap and Hazard Families
+
+Examples are intentionally broader than a single pit/spring trap.
+
+Useful visual/data families include:
+
+- hidden pit
+- spiked pit
+- pressure plate
+- trip wire
+- spring/hunting trap
+- falling net
+- dart/arrow launcher
+- poisoned needle
+- falling block/collapsing roof
+- rolling stone/object
+- fire/statue emitter
+- blade/scything hazard
+- flooding/water hazard
+- web/restraint hazard
+- difficult terrain
+- magical glyph/rune
+- alarm trigger
+- secret door/trigger
+- linked switch/lever
+- moving hazard
+- transform/disguise object
+
+These are catalog examples, not separate engines.
+
+They should be composed from universal triggers/effects documented in `TRAPS_AND_EFFECTS.md`.
+
+## Transforming / Surprise Objects
+
+Examples:
+
+- chest → mimic
+- statue → gargoyle
+- armor → animated armor
+- bones → skeleton
+- sarcophagus → undead creature
+- egg/cocoon → creature
+- dormant construct → active creature
+- ordinary scenery → hazard
+
+The initial appearance and transformed result are data.
+
+The universal behavior is trigger + transform/replace.
+
 ## Creature Blocks
 
 Creature blocks represent creatures rather than becoming independent world-building systems.
