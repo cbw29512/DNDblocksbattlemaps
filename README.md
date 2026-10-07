@@ -37,6 +37,7 @@ The current priority is defining the product, interaction model, state model, pe
 - [Block Catalog](docs/BLOCK_CATALOG.md) — initial terrain, room-object, creature, and behavior catalog
 - [Competitor Research](docs/COMPETITOR_RESEARCH.md) — voxel/3D VTT landscape and differentiation
 - [Open-Source Reuse](docs/OPEN_SOURCE_REUSE.md) — Minecraft reference policy, license gate, and reusable engine candidates
+- [Technology Stack Candidates](docs/TECH_STACK_CANDIDATES.md) — web-first, open-source-first, low-cost architecture options
 
 ## Development rule
 
