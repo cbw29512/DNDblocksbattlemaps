@@ -125,7 +125,6 @@ All placed things derive from this conceptual record.
 - id
 - map_id
 - catalog_object_id
-- room_region_id
 - display_name
 - category
 - x
@@ -345,6 +344,24 @@ The room-lock operation protects the position/removal of room construction/envir
 
 Rooms currently generate **no ceiling**.
 
+## RoomObjectMembership
+
+WorldObjects may belong to zero, one, or multiple RoomRegions.
+
+Candidate fields:
+
+- room_region_id
+- world_object_id
+- created_by_generation: true | false
+
+This many-to-many relation is required for shared walls/doors between adjacent rooms.
+
+Effective construction lock rule:
+
+> A shared construction object is locked if any associated RoomRegion is locked.
+
+Replacing a shared wall with a door preserves the relevant room memberships.
+
 ## Movement Lock
 
 Movement restriction should be generic state/effect data rather than trap-specific code.
@@ -391,6 +408,5 @@ A template generates ordinary WorldObjects. Generated blocks do not use a separa
 
 These must be resolved before implementation where relevant:
 
-1. How should shared walls between adjacent generated rooms be edited if the simple no-duplicate rule proves insufficient?
-2. What exact authentication provider/implementation best satisfies the durable-DM/lightweight-player contract?
-3. What bounded recent-history retention limit is appropriate after real usage testing?
+1. What exact authentication provider/implementation best satisfies the durable-DM/lightweight-player contract?
+2. What bounded recent-history retention limit is appropriate after real usage testing?
