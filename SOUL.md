@@ -250,9 +250,7 @@ Example:
 
 **Castle Room — 40 ft × 20 ft**
 
-With a 5-foot grid, the requested playable area can derive an 8×4-square interior if the room-dimension contract defines dimensions as interior space.
-
-The exact meaning of entered dimensions—interior playable size versus exterior wall-to-wall footprint—must be explicitly defined before prefab implementation.
+With a 5-foot grid, **40 ft × 20 ft** means an **8×4-square usable interior**. Room dimensions are entered in feet and describe interior playable space; wall thickness is outside that requested interior.
 
 Possible templates:
 
@@ -323,7 +321,7 @@ The MVP is complete when:
 - The DM can place walls and doors.
 - The DM can place basic furniture/objects.
 - The DM can place creatures and player pieces.
-- Creature footprints support Small/Medium/Large/Huge/Gargantuan sizes.
+- Creature footprints support Tiny/Small/Medium/Large/Huge/Gargantuan behavior, with Tiny pieces sharing a 5-foot square and auto-offset visually.
 - Placement snaps to the grid.
 - Vertical block placement is possible.
 - Objects can be locked/unlocked.
@@ -390,6 +388,24 @@ Before implementing any feature:
 11. Update documentation when a product-level decision changes.
 12. Update and push `PROJECT_STATE.md` before ending the work session.
 13. If implementation and this document disagree, stop and reconcile them before continuing.
+
+## Selected MVP Architecture
+
+The accepted MVP architecture is:
+
+- TypeScript
+- Vite
+- Three.js
+- native HTML/CSS UI first
+- Supabase hosted service for Postgres/Auth/Realtime in MVP
+- Cloudflare Pages for static frontend hosting
+- no custom application server initially
+- no React/Vue/Svelte unless real UI complexity justifies one
+- no CRDT layer unless real concurrent-edit testing proves necessary
+
+The renderer is never canonical state. Data/state drives rendering.
+
+See `docs/ADR_001_MVP_WEB_STACK.md` and `docs/DEPENDENCY_REGISTER.md`.
 
 ## Web-First Reuse Rule
 
