@@ -61,6 +61,8 @@ All placed things derive from this conceptual record.
 - footprint_depth
 - footprint_height
 - state
+- occupancy_mode
+- blocks_movement
 - visibility
 - locked
 - owner_user_id
@@ -75,6 +77,35 @@ Initial states:
 - dm_only
 
 Do not add complicated visibility states until a real requirement demands them.
+
+### occupancy_mode
+
+Candidate values:
+
+- solid
+- overlay
+
+Solid objects occupy physical board space. Overlay objects may share a playable cell with a creature/entity.
+
+Examples:
+
+- wall: solid
+- closed door: solid
+- table: solid
+- hidden trap trigger: overlay
+
+### blocks_movement
+
+Generic boolean behavior used only for obvious board-space blocking.
+
+Examples:
+
+- wall: true
+- closed door: true
+- open door: false
+- trap trigger: false
+
+This is not a D&D movement-rules engine.
 
 ### state
 
@@ -147,18 +178,18 @@ Candidate fields:
 - name
 - origin_x
 - origin_y
-- length_value
-- width_value
-- height_value
-- dimension_unit
-- dimension_mode
+- length_feet
+- width_feet
+- wall_height_feet
+- dimension_unit: feet
+- dimension_mode: interior_playable
 - locked
 - created_at
 - updated_at
 
 WorldObjects generated into a room may reference `room_region_id`.
 
-The room-lock operation applies a bulk lock policy to the current objects associated with that region. The exact treatment of creature/player pieces remains an explicit interaction decision before implementation.
+The room-lock operation protects the position/removal of room construction/environment objects associated with that region. Player, monster, and NPC pieces are not frozen by the room construction lock. Allowed state changes such as opening a door or triggering a trap remain possible while position is locked.
 
 Rooms currently generate **no ceiling**.
 
@@ -208,11 +239,9 @@ A template generates ordinary WorldObjects. Generated blocks do not use a separa
 
 These must be resolved before implementation where relevant:
 
-1. Are prefab room dimensions interior playable dimensions or exterior footprint dimensions?
-2. How should vertical placement be represented visually and selected by the DM?
-3. Do doors occupy the same cell as a wall or their own grid cell?
-4. What is the simplest useful player interaction model beyond movement?
-5. How should Tiny creature positioning work?
-6. What identity/authentication level is required for MVP?
-7. What persistence granularity is needed for undo/redo and recovery?
-8. When a room is locked, which creature/player pieces, if any, are included in that bulk lock?
+1. How should vertical placement/elevation be represented visually and selected by the DM outside generated room walls?
+2. What is the simplest useful player interaction model beyond movement?
+3. How should Tiny creature positioning work?
+4. What identity/authentication level is required for MVP?
+5. What persistence granularity is needed for undo/redo and recovery?
+6. How should shared walls between adjacent generated rooms be edited if the simple no-duplicate rule proves insufficient?
