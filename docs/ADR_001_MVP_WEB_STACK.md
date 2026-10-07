@@ -155,19 +155,16 @@ Reasons:
 - Functions remain available later if a small server-side endpoint is actually needed
 - no dedicated application server required for MVP
 
-Current Free-plan snapshot at this decision:
+Account/deployment policy:
 
-- $0/month
-- 300 credits/month hard limit
-- no auto-recharge on Free
-- production deploys currently consume 15 credits each
-- bandwidth currently consumes 20 credits/GB
-- web requests currently consume 2 credits per 10,000 requests
-- when the Free credit limit is reached, projects pause until the next billing cycle rather than generating an overage charge
+- user reports an existing paid/Plus Netlify plan
+- exact account-specific limits/legacy-plan details must be checked in the user's Netlify dashboard at deployment time
+- all normal development and automated testing happens locally
+- production deploys are milestone releases, not routine test runs
+- GitHub pushes are meaningful source checkpoints and do not automatically imply a production publish
+- preserve rollback to a known-good Netlify deployment
 
-Cost-control implication:
-
-Production deploys should be intentional. Development/preview workflow should avoid unnecessary production publishes so the project does not waste Netlify credits.
+Netlify's public pricing has changed over time and older accounts may retain legacy plans, so do not infer the user's exact limits from the current public pricing page.
 
 ### Source Control / Documentation
 
@@ -325,21 +322,17 @@ Add CRDT collaboration only if real concurrent-edit testing proves necessary.
 
 ## Cost Snapshot
 
-Expected prototype/early MVP infrastructure:
+Expected early-project incremental infrastructure cost remains low because the user already has Netlify hosting and the selected libraries are open source.
 
 - TypeScript: $0
 - Vite: $0
 - Three.js: $0
 - native HTML/CSS: $0
-- Netlify Free hosting: $0 within the current 300-credit monthly hard limit
-- Supabase Free: $0 within current plan quotas
-- original/CC0 assets: $0 licensing cost
+- Netlify: existing user plan; exact account-specific limits/cost are not inferred here
+- Supabase: use the lowest appropriate tier during development; recheck current limits before public launch
+- original/CC0 assets: $0 licensing cost where used
 
-Current Supabase pricing includes 2 million Realtime messages/month on the Free tier at the time of this decision.
-
-Current Netlify Free pricing provides 300 credits/month with a hard limit; production deploys, bandwidth, and web requests consume credits. The Free plan cannot incur overage charges because usage pauses at the limit.
-
-The stack must be re-audited before public production launch because provider pricing/limits can change.
+Provider pricing/limits must be re-audited before public production launch because they can change.
 
 ## Architecture Shape
 
