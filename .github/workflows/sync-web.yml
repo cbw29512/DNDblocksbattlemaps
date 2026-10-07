@@ -10,19 +10,14 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: sync-browser-bundle
   cancel-in-progress: true
 
 jobs:
-  sync-build-deploy:
+  sync-browser-bundle:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,39 +29,55 @@ jobs:
         with:
           node-version: '22.16.0'
 
-      - name: Install exact dependencies
+      - name: Install dependencies
         run: npm install --no-audit --no-fund
 
-      - name: Verify source
-        run: npm run typecheck && npm test
+      - name: Verify source and static build
+        run: npm run check
 
-      - name: Regenerate checked-in browser bundle
-        run: npm run compile:web
+      - name: Stamp browser module graph with this revision
+        env:
+          BUILD_REV: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          import re
 
-      - name: Commit regenerated web bundle
+          rev = os.environ["BUILD_REV"][:12]
+          root = Path("web")
+
+          # Every relative JS dependency gets the same revision query.
+          # This forces the browser/CDN to request the whole current module graph.
+          patterns = [
+              (re.compile(r"(from\s+['\"])(\.{1,2}/[^'\"]+?\.js)(?:\?v=[^'\"]+)?(['\"])"), r"\1\2?v=" + rev + r"\3"),
+              (re.compile(r"(import\(\s*['\"])(\.{1,2}/[^'\"]+?\.js)(?:\?v=[^'\"]+)?(['\"]\s*\))"), r"\1\2?v=" + rev + r"\3"),
+          ]
+
+          for path in root.rglob("*.js"):
+              text = path.read_text(encoding="utf-8")
+              for pattern, replacement in patterns:
+                  text = pattern.sub(replacement, text)
+              path.write_text(text, encoding="utf-8")
+
+          index = Path("index.html")
+          text = index.read_text(encoding="utf-8")
+          text = re.sub(r'(href="\./src/styles/(?:base|home|builder)\.css)(?:\?v=[^"]+)?(")', r'\1?v=' + rev + r'\2', text)
+          text = re.sub(r'(src="\./web/main\.js)(?:\?v=[^"]+)?(")', r'\1?v=' + rev + r'\2', text)
+          index.write_text(text, encoding="utf-8")
+
+          print(f"Stamped browser bundle revision {rev}")
+          PY
+
+      - name: Commit synchronized cache-busted browser bundle
         shell: bash
         run: |
-          if git diff --quiet -- web; then
-            echo "Browser bundle already matches src."
+          if git diff --quiet -- web index.html; then
+            echo "Browser bundle already matches src and current revision."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add web
-          git commit -m "Regenerate browser bundle"
+          git add web index.html
+          git commit -m "Regenerate cache-busted browser bundle"
           git push
-
-      - name: Build static site
-        run: npm run build
-
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist
-
-      - name: Deploy Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
