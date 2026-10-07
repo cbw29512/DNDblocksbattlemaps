@@ -333,3 +333,17 @@ For the eventual architecture comparison, start with:
 4. **Luanti/Terasology** — study concepts but avoid using them as the main product foundation unless a future requirement changes dramatically.
 
 No technology selection is final yet.
+
+
+## Web-First Architecture Rule
+
+All future reuse decisions should prioritize browser compatibility and the smallest deployable architecture.
+
+Current default preference:
+
+- static browser frontend
+- mature permissive 3D library
+- hosted open-source backend/realtime service on a free tier
+- no custom application server unless a proven requirement needs one
+
+See `TECH_STACK_CANDIDATES.md` for the current candidate stack and pricing snapshot.
