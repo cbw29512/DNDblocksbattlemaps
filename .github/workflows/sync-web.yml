@@ -1,0 +1,72 @@
+name: Sync Browser Bundle
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/sync-web.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: sync-browser-bundle
+  cancel-in-progress: true
+
+jobs:
+  sync-build-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+
+      - name: Install exact dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Verify source
+        run: npm run typecheck && npm test
+
+      - name: Regenerate checked-in browser bundle
+        run: npm run compile:web
+
+      - name: Commit regenerated web bundle
+        shell: bash
+        run: |
+          if git diff --quiet -- web; then
+            echo "Browser bundle already matches src."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web
+          git commit -m "Regenerate browser bundle"
+          git push
+
+      - name: Build static site
+        run: npm run build
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: Deploy Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
