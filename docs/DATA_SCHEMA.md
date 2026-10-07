@@ -14,6 +14,7 @@ Everything placed on the board should share a small universal object model. Obje
 - dm_user_id
 - active_map_id
 - player_movement_frozen
+- revision
 - created_at
 - updated_at
 
@@ -74,7 +75,23 @@ Palette selection persists until explicitly changed or cleared.
 
 ## EditHistory
 
-Undo/redo should record reversible editor commands.
+Undo/redo should record bounded reversible editor commands while current board state remains independently loadable.
+
+Candidate fields:
+
+- action_id
+- game_id
+- map_id
+- actor_id
+- actor_role
+- base_revision
+- committed_revision
+- action_type
+- forward_payload
+- inverse_payload
+- grouped_action_id
+- undone_by_action_id
+- created_at
 
 Candidate command types:
 
@@ -84,11 +101,22 @@ Candidate command types:
 - change_visibility
 - change_lock
 - change_state
+- assign_entity
 - generate_room
 - transform_replace
+- apply_effect
+- clear_effect
 - bulk_change
 
-Exact persistence granularity remains open, but implementation must not couple undo to renderer internals.
+Rules:
+
+- Undo creates a compensating inverse edit; it does not erase the original history row.
+- Current state remains valid if old history is pruned.
+- Bulk user actions such as Generate Room are one logical history step.
+- Unique action IDs support retry/reconnect deduplication.
+- Revision numbers support stale/gap detection.
+
+Exact history retention count remains a technology/cost decision.
 
 ## WorldObject
 
@@ -363,6 +391,6 @@ A template generates ordinary WorldObjects. Generated blocks do not use a separa
 
 These must be resolved before implementation where relevant:
 
-1. What persistence granularity is needed for undo/redo and recovery?
-2. How should shared walls between adjacent generated rooms be edited if the simple no-duplicate rule proves insufficient?
-3. What exact authentication provider/implementation best satisfies the durable-DM/lightweight-player contract?
+1. How should shared walls between adjacent generated rooms be edited if the simple no-duplicate rule proves insufficient?
+2. What exact authentication provider/implementation best satisfies the durable-DM/lightweight-player contract?
+3. What bounded recent-history retention limit is appropriate after real usage testing?
