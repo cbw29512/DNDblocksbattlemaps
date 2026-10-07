@@ -22,8 +22,16 @@
       }
     </script>
   </head>
-  <body>
-    <div id="app"></div>
+  <body style="margin:0;background:#11120f;color:#f2efe6;font-family:system-ui,sans-serif">
+    <div id="app">
+      <main style="min-height:100vh;display:grid;place-items:center;padding:2rem;text-align:center;background:radial-gradient(circle at top,#24261f,#11120f 58%)">
+        <div style="max-width:620px">
+          <div style="font-size:.75rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#d7b56d">DND Blocks Battle Maps</div>
+          <h1 style="font-size:clamp(2rem,7vw,4rem);line-height:1;margin:.6rem 0 1rem">Loading the battle map…</h1>
+          <p style="color:#bcb8ad;line-height:1.6">If this message stays on screen, GitHub Pages is serving the raw repository instead of the built test site. Set Pages to <strong>GitHub Actions</strong>, then run <strong>Deploy GitHub Pages Test</strong>.</p>
+        </div>
+      </main>
+    </div>
     <noscript>This prototype requires JavaScript to run the interactive battle map.</noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>

@@ -211,115 +211,60 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-Stage 0 was substantially complete with zero application code.
+Stage 1 first-slice source was on `main` and locally verified, but the first external browser test showed a completely blank white GitHub Pages page at the project URL.
 
-The user explicitly directed the project to build and test the first prototype and asked whether GitHub Pages could be used for testing while Netlify remains production.
+The user supplied a screenshot of the blank page.
 
-### Research / Dependency Gate
+### Diagnosis
 
-Current package versions/licenses were rechecked before writing package configuration:
+Checked the repository and GitHub Actions state.
 
-- Three.js 0.186.1 — MIT
-- Vite 8.3.3 — MIT
-- TypeScript 7.0.2 — Apache-2.0
-- GitHub Actions test runtime: Node 22.16.0
+GitHub reports:
 
-Vite 8's documented Node requirement is satisfied by the workflow runtime.
+- current source checkpoint is on `main`
+- the manual Pages workflow file exists
+- **workflow-dispatch run count = 0**
 
-GitHub Pages is accepted only as a temporary static project test surface. It is not the production/commercial SaaS host.
+Therefore the actual Pages build workflow has never run.
+
+The blank page is GitHub Pages serving the repository's raw source `index.html` rather than Vite's compiled `dist` output. Raw `index.html` references TypeScript/source paths, so it is not a deployable production artifact by itself.
 
 ### Changes Made
 
-- Began Stage 1 after explicit user authorization.
-- Added a single Vite/TypeScript product surface for the public website and builder.
-- Implemented a polished homepage with Build a Map / Join a Game actions and Castle/Inn/Field/Sea/Volcano quick-start cards.
-- Added a transparent Stage 2 placeholder Join screen rather than pretending multiplayer is complete.
-- Added renderer-independent BoardState, WorldObject, command, Undo/Redo, catalog, and local-storage modules.
-- Added a 20×20 five-foot builder grid.
-- Added Three.js rendering with the locked ~30° tabletop elevation, horizontal orbit, zoom, reset controls, grid picking, placement ghost, repeated placement, right-click remove, and terrain-specific ground color.
-- Added explicit elevation control in 5-foot increments.
-- Preserved intentional overlap in canonical board state.
-- Added a DOM/CSS interactive fallback renderer for environments where Three.js cannot initialize.
-- Added browser-local prototype autosave by terrain.
-- Added four Node domain tests covering overlap, targeted removal, inverse commands, and Undo/Redo.
-- Split the Three.js implementation so every TypeScript source module remains under the project's ~150-line review threshold.
-- Added exact package pins, direct license notices, and the updated Dependency Register.
-- Added a **manual-only** GitHub Pages Actions workflow. Normal pushes do not deploy Pages.
-- No Netlify production deploy was performed.
-- No Supabase/backend code was added.
-
-### Local Verification
-
-Available local verification completed:
-
-- domain tests: **4/4 PASS**
-- full local TypeScript source compile: **PASS**
-- module-size audit: **PASS** after splitting renderer helpers
-
-Environment limitation:
-
-The execution sandbox blocks browser navigation to localhost by administrator policy. Playwright/Chromium itself is available, but it cannot open the local HTTP test URL. Therefore a real click-through/screenshot test could not be truthfully completed inside this sandbox.
-
-The first GitHub Pages deployment is the browser-interaction gate for this slice.
+- Confirmed the blank page is a deployment-source problem, not evidence that the Stage 1 state/domain tests failed.
+- Removed the TypeScript config exclusion for `src/types/three-shim.d.ts` so the first connected Actions typecheck has the intended Three.js module declarations.
+- Added an inline raw-source diagnostic fallback to `index.html`. If Pages is ever pointed at the raw branch/root again, the user will now see a clear setup message instead of a blank white page.
+- Kept the actual GitHub Pages workflow **manual-only**.
+- Kept Netlify untouched.
 
 ### Decisions Made
 
-**Decision:** GitHub Pages may be used for temporary prototype/browser testing only.
+**Decision:** Do not change GitHub Pages to auto-deploy on every push just to avoid the setup step.
 
-**Reason:** It provides a convenient static test URL, while GitHub's Pages policy is not appropriate as the production commercial/SaaS host. Netlify remains production.
+**Reason:** Manual test releases remain part of the project's local-first/release-discipline contract.
 
-**Decision:** GitHub Pages deployment is manual-only.
+**Decision:** The correct fix is to use **Settings -> Pages -> Source: GitHub Actions** and then manually run **Deploy GitHub Pages Test**.
 
-**Reason:** A source push should not automatically create a hosted test release. We still want deliberate test checkpoints and minimal hosting/build churn.
-
-**Decision:** The first Stage 1 slice stops before rooms, traps, multiplayer, Supabase, and full persistence.
-
-**Reason:** The homepage -> terrain -> grid -> camera -> ghost -> place/remove loop should be visually and interactively validated before layering more systems on top.
-
-**Decision:** Keep a renderer-independent canonical state layer from the first line of code.
-
-**Reason:** This preserves the locked architecture boundary and keeps state/test behavior independent from Three.js.
+**Reason:** That workflow installs dependencies, typechecks, runs tests, builds Vite `dist`, and deploys the built artifact. Serving the source branch/root is not equivalent.
 
 ### Cost Impact
 
-No new paid infrastructure was added.
+None.
 
-- Netlify was not deployed.
-- Supabase was not used.
-- GitHub Pages test workflow uses the repository's GitHub Actions/Pages facilities and is manual-only.
-- Exact direct dependency versions are pinned; no local npm install occurred because this sandbox cannot reach npm.
+No Netlify deploy, Supabase use, or paid service change occurred.
 
 ### Result
 
-Stage 1 now has a coherent first working source checkpoint:
+The repository is hardened for the first real GitHub Pages test.
 
-> **homepage -> choose terrain -> real builder -> five-foot grid -> fixed-angle camera -> ghost -> place/remove blocks -> Undo/Redo -> local browser save**
-
-The source/state layer is locally compiled and tested.
-
-Real browser interaction remains pending on the GitHub Pages test deployment because localhost browser navigation is blocked in this execution environment.
-
-### Open Stage 1 Work
-
-After the first browser review:
-
-1. fix any homepage/builder visual or interaction issues found in the live test
-2. natural top/side surface stacking
-3. touch remove path
-4. pick-up/put-down move
-5. overlap chooser
-6. room generator/shared walls/door replacement
-7. construction lock/unlock
-8. creature footprints/Tiny visual behavior
-9. hidden/DM-only visual behavior
-10. move from localStorage prototype persistence toward the documented Stage 1 persistence plan when appropriate
+The screenshot's blank page is explained: the build/deploy workflow has not yet executed.
 
 ### Exact Next Step
 
-1. Verify this coherent source checkpoint on GitHub.
-2. In the repository, set **Settings -> Pages -> Source: GitHub Actions** once if it is not already configured.
-3. Manually run **Actions -> Deploy GitHub Pages Test -> Run workflow**.
-4. Inspect the workflow; if it fails, fix the build/test failure before user testing.
-5. Open the generated Pages URL and test homepage -> terrain -> place/overlap/remove -> Undo/Redo -> refresh persistence.
-6. Gather visual/interaction feedback before implementing the next Stage 1 slice.
-7. Keep Netlify untouched until a milestone is locally/browser-tested and worthy of production review.
+1. In GitHub repository **Settings -> Pages**, set **Source** to **GitHub Actions**.
+2. Open **Actions -> Deploy GitHub Pages Test**.
+3. Click **Run workflow** on `main`.
+4. Wait for the workflow to finish.
+5. Reload `https://cbw29512.github.io/DNDblocksbattlemaps/`.
+6. If the workflow fails, inspect the failed job/step before making any feature changes.
+7. Once the built site appears, test homepage -> terrain -> placement -> overlap -> remove -> Undo/Redo -> refresh persistence.
