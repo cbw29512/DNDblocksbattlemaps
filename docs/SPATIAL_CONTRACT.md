@@ -1,0 +1,359 @@
+# Spatial Contract
+
+> Status: Stage 0 product contract.
+>
+> This document defines the physical/grid meaning of rooms and blocks before implementation. It exists so room generation, placement, doors, locking, and later multiplayer all use the same spatial rules.
+
+## Core Unit
+
+The board uses one universal spatial unit:
+
+**1 grid cell = 5 feet × 5 feet**
+
+For the initial voxel/block presentation, one full vertical block level also represents:
+
+**5 feet of height**
+
+Therefore the base logical voxel is:
+
+**5 ft × 5 ft × 5 ft**
+
+The UI should speak in D&D-friendly feet first, not internal X/Y/Z coordinates.
+
+## Room Dimension Inputs
+
+The DM enters:
+
+- Length
+- Width
+- Height
+
+All three values are entered in **feet**.
+
+For MVP, values snap to 5-foot increments.
+
+Examples:
+
+- 20 ft = 4 grid cells
+- 40 ft = 8 grid cells
+- 10 ft height = 2 vertical block levels
+- 15 ft height = 3 vertical block levels
+
+The UI may show the derived block count as a helper, for example:
+
+> 40 ft × 20 ft × 10 ft  
+> 8 × 4 squares, walls 2 blocks high
+
+The DM should not need to think in engine units.
+
+## Room Dimensions Mean Usable Interior Space
+
+Room Length and Width describe the **usable playable interior**.
+
+Example:
+
+**40 ft × 20 ft room**
+
+creates:
+
+- 8 × 4 interior playable squares
+- wall blocks around the outside perimeter
+- no ceiling
+
+The wall thickness does not subtract from the requested playable room size.
+
+This is the canonical room-dimension interpretation.
+
+## Height Means Wall Height
+
+Room Height describes the wall height.
+
+Example:
+
+**Height = 10 ft**
+
+creates walls two full block levels high.
+
+Height does not create a ceiling.
+
+Height does not describe creature elevation.
+
+## Vertical Coordinate Convention
+
+Conceptual convention:
+
+- `z = 0`: terrain/floor support layer
+- `z = 1`: first above-floor block/entity layer
+- `z = 2`: second above-floor block layer
+- etc.
+
+A floor/terrain block occupies the support layer.
+
+Objects, creatures, and the first wall block sit above that support layer.
+
+This convention is conceptual and may be adapted to renderer internals later, but the user-facing meaning must remain stable.
+
+## Terrain and Room Floors
+
+The selected terrain provides the starting base layer.
+
+When a generated room requires a different floor material, the room floor **replaces or changes the base surface cells for that room interior** rather than stacking an extra 5-foot floor cube on top.
+
+This avoids accidentally raising every room five feet above the surrounding terrain.
+
+Example:
+
+- Field theme starts as grass
+- Castle room changes its interior floor cells to castle/stone floor
+- those cells remain at the same ground elevation
+
+## Walls
+
+Walls occupy perimeter cells outside the requested playable interior.
+
+Walls are generated to the requested wall height.
+
+A wall is ordinary world-object/block data.
+
+No separate wall engine should exist if ordinary block behavior can represent it.
+
+### Duplicate structural occupancy
+
+The generator should not create duplicate solid structural blocks at the same X/Y/Z position.
+
+If a valid structural block already occupies a generated position, room generation should preserve/reuse that position rather than stacking an identical block into the same cell.
+
+Exact shared-wall editing behavior between adjacent generated rooms can be refined later.
+
+## Doors
+
+A door occupies a wall position.
+
+Placing a door on a valid wall location **replaces the ground-level wall block at that position**.
+
+No separate adjacent door cell is created.
+
+For a wall more than 5 feet high:
+
+- the door occupies the lowest wall level
+- wall blocks above it remain
+
+Example:
+
+10-foot wall:
+
+```text
+upper level: WALL
+lower level: DOOR
+```
+
+The door block does not require rotation. Its art must make it recognizable from all useful viewing sides.
+
+Door state is universal state:
+
+- closed
+- open
+
+The door remains anchored in the same grid position.
+
+Opening the door changes its interactive/passability state; it does not physically swing into another grid cell.
+
+## Solid vs Non-Solid Placement
+
+Not every visible block/object should prevent another entity from occupying the same playable square.
+
+The world model therefore needs a generic occupancy concept.
+
+Candidate values:
+
+- **solid** — occupies/blockades physical space
+- **non_solid / overlay** — can share a playable cell with a creature/entity
+
+Examples:
+
+Likely solid:
+
+- wall
+- closed door
+- table
+- chest
+- large rock
+
+Likely non-solid/overlay:
+
+- hidden trap trigger
+- pit marker/trigger representation
+- secret trigger
+- effect marker
+
+This is universal behavior, not object-specific code.
+
+A hidden trap must be able to share a playable cell with the player who steps onto it.
+
+## Movement Blocking
+
+Movement blocking should be a generic property separate from appearance.
+
+Candidate behavior:
+
+- `blocks_movement = true | false`
+
+Examples:
+
+- wall: true
+- closed door: true
+- open door: false
+- trap trigger: false
+
+This does **not** mean the project is implementing full D&D movement rules.
+
+It only prevents obvious spatial contradictions such as walking through a closed wall/door when the board interaction requires physical blocking.
+
+The DM remains authoritative and may override board state.
+
+## Lock Room
+
+**Lock Room is an editing lock, not a combat/game-state freeze.**
+
+When the DM locks a room:
+
+Locked by the room:
+
+- floor/terrain changes belonging to the room
+- wall blocks
+- doors in their positions
+- furniture
+- props
+- lights
+- traps
+- pits/hazards
+- decorative room objects
+- other construction/environment blocks assigned to that room
+
+Not frozen by the room construction lock:
+
+- player pieces
+- monster pieces
+- NPC pieces
+
+Reason:
+
+Players and creatures must remain movable during play.
+
+A creature is visually a block/standee-like object, but it is a **game piece**, not locked construction.
+
+### State can still change while position is locked
+
+Locking a room prevents accidental:
+
+- repositioning
+- removal
+- restructuring
+
+It does **not** prevent allowed state changes.
+
+Examples:
+
+- a locked-position door can still open/close
+- a locked-position trap can still trigger
+- a locked-position torch can still toggle if that behavior exists
+
+This is critical: **position lock and interaction state are different concepts.**
+
+## Unlock Room
+
+Unlock Room restores DM editing of the room's construction/environment objects.
+
+The DM can then:
+
+- move furniture
+- remove a wall
+- reposition a door
+- change props
+- alter terrain/floor cells
+- rebuild the room
+
+Player/monster/NPC movement remains governed separately.
+
+## Right-Click Remove
+
+Right-click remove is a DM BUILD-mode action.
+
+If an object is protected by a room lock:
+
+- right-click remove does not delete it
+- the UI should make it obvious that the room/object is locked
+- the DM unlocks the room before restructuring it
+
+Game pieces are not protected by the room construction lock.
+
+Exact creature-removal controls in PLAY mode remain separate.
+
+## Room Placement
+
+When generating a room:
+
+1. DM selects room type/theme if applicable.
+2. DM enters Length × Width × Height in feet.
+3. Values snap to 5-foot increments.
+4. A placement preview should eventually show the footprint.
+5. DM selects the location.
+6. Room generates ordinary floor/wall blocks.
+7. No ceiling is generated.
+8. DM adds furniture, hazards, doors, creatures, etc.
+9. DM locks the room when satisfied.
+
+The exact preview/click flow can be refined during UI mockup design.
+
+## Adjacent Rooms
+
+Adjacent rooms are expected.
+
+Initial rule:
+
+> Never intentionally duplicate a solid structural block at the exact same X/Y/Z location.
+
+Later usability work may allow shared-wall merging, deleting a wall between two rooms, or turning a shared wall cell into a door.
+
+Do not build a complex architectural-merging system for MVP unless the simple occupancy rule proves insufficient.
+
+## Creature Footprints
+
+Creature footprints remain:
+
+- Small: 1×1
+- Medium: 1×1
+- Large: 2×2
+- Huge: 3×3
+- Gargantuan: 4×4
+- Tiny: deferred
+
+A multi-square creature is one entity.
+
+Its footprint occupies multiple playable X/Y cells but moves as one object.
+
+## Current Non-Goals
+
+This spatial contract does not introduce:
+
+- ceilings
+- roofs
+- physics
+- gravity simulation
+- jumping
+- climbing rules
+- fall damage
+- automatic D&D movement allowances
+- diagonal movement rules
+- line of sight
+- advanced collision physics
+
+Those require separate product decisions if they ever become necessary.
+
+## Usability Test
+
+A child should be able to understand:
+
+> "A square is five feet. Type the room size in feet. Pick where it goes. Add stuff. Lock the room when you're done."
+
+If the spatial UI requires understanding X/Y/Z coordinates, voxel terminology, or renderer concepts, the UI has failed the product requirement.
