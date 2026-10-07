@@ -2,6 +2,12 @@
 
 A simple browser-based battle-map builder and multiplayer virtual tabletop built from grid-snapped blocks.
 
+## Resume here
+
+**Anyone continuing this project should read [PROJECT_STATE.md](PROJECT_STATE.md) first.**
+
+It is the canonical live handoff document and records the current state, decisions, cost constraints, unresolved questions, and exact next step.
+
 ## Core idea
 
 The DM selects a block and places it on a 5-foot grid.
@@ -19,13 +25,20 @@ The goal is to make encounter setup feel like placing physical magnetic terrain 
 
 **Planning / architecture only. No application code yet.**
 
-The current priority is defining the product, state model, permissions, MVP boundary, and anti-drift rules before choosing a technology stack.
+The current priority is defining the product, interaction model, state model, permissions, MVP boundary, cost constraints, and anti-drift rules before choosing a technology stack.
 
 ## Project contracts
 
-- [SOUL.md](SOUL.md) — product philosophy and anti-drift rules
+- [PROJECT_STATE.md](PROJECT_STATE.md) — live resume/handoff state; read first
+- [SOUL.md](SOUL.md) — product philosophy, cost discipline, and anti-drift rules
 - [Data Schema](docs/DATA_SCHEMA.md) — conceptual world/state model
 - [Roadmap](docs/ROADMAP.md) — staged product plan
+
+## Development rule
+
+Documentation is part of implementation.
+
+Every meaningful work session must start by reading the live project state and end by updating and pushing it to GitHub.
 
 ## MVP principle
 
