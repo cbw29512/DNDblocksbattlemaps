@@ -93,6 +93,8 @@ The DM is the authority. The board must work without automated RPG rules.
 58. **Local-first release discipline.** Normal development/testing is local; GitHub pushes are coherent checkpoints; Netlify production deploys are deliberate milestone releases.
 59. **GitHub Pages is test-only.** It may host temporary static prototype builds for browser testing, but Netlify remains the production/commercial host.
 60. **Pages deploys are manual-only.** Normal GitHub pushes do not automatically publish the test site.
+61. **Iron Pit monster silhouettes are the default monster face art.** Reuse the Chris-approved assets at `D20-ironpit/frontend/assets/portraits/monsters/{id}.webp` on monster blocks/standees, keyed by catalog/art ID rather than monster-specific rendering code.
+62. **Preserve silhouette identity discipline.** Do not substitute related creature art when Iron Pit already distinguishes variants, sizes, ages, or renamed edition creatures.
 
 ## Cost Guardrail
 
@@ -211,71 +213,60 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-GitHub's built-in Pages deployment was overwriting the custom Vite Pages artifact with a raw/Jekyll copy of the repository.
+Stage 1 is in active builder work. The current feature checkpoint in progress is:
 
-That raw artifact could not execute TypeScript directly, so the live site stayed on the loading fallback.
+- room builder Length × Width × Height with safe limits
+- true top-face vertical stacking
+- stronger placement ghost/target visibility
 
-### Root Cause Verified
+The user also directed that DND Blocks reuse the monster silhouettes already present in the Iron Pit repository as the face art for monster blocks.
 
-Both artifacts were downloaded and inspected.
+### Iron Pit Asset Audit
 
-Custom workflow artifact:
+Checked `cbw29512/D20-ironpit`.
 
-- correct Vite build
-- bundled JavaScript/CSS
+Verified:
 
-Built-in dynamic Pages artifact:
+- `docs/artifacts/card-art/REAL_ART_INVENTORY.md` records **294 approved monster silhouettes**
+- processed monster assets live at `frontend/assets/portraits/monsters/{id}.webp`
+- processed files are 3:4 WebP, 480×640, under 20 KB
+- `frontend/combatant-art.js` maps the art across matching 2014/2024 IDs
+- the inventory deliberately keeps distinct creature variants separate rather than using loose lookalikes
 
-- raw repository files
-- raw `src/*.ts`
-- raw root `index.html`
-- finished after the custom deploy and became the live site
+### Decisions Made
 
-### Changes Made
+**Decision:** Iron Pit's approved monster silhouettes are the default monster face/standee art source for DND Blocks.
 
-- Made the repository root itself browser-runnable for the GitHub Pages test surface.
-- Root `index.html` now references:
-  - relative CSS paths
-  - `./web/main.js`
-- Added `tsconfig.web.json` to compile authoritative TypeScript source into native browser ES modules.
-- Added `npm run compile:web`; the Vite build now compiles the browser modules first.
-- Used a temporary sync workflow to compile and commit the `web/` modules once.
-- Verified the generated commit `9468c984155dae6c04a00f63ec5e99a5ef2e63b2`.
-- Verified GitHub's built-in Pages run #8 completed successfully from that generated commit.
-- Downloaded and inspected the run #8 Pages artifact.
-- Verified the published artifact contains:
-  - `index.html`
-  - `web/main.js`
-  - all required `web/app`, `web/domain`, and `web/render` modules
-  - all three CSS files
-- Verified the published `index.html` loads `./web/main.js`, not TypeScript.
-- Removed the temporary auto-sync workflow after the successful generation.
-- Netlify remains untouched.
+**Reason:** The assets are already compact, recognizable, curated, and consistently mapped. Reusing them avoids duplicating art production and fits the block/standee visual design.
 
-### Decision
+**Decision:** Monster art remains data-driven.
 
-**For the temporary GitHub Pages test surface, keep a checked-in browser-compiled `web/` snapshot generated from the authoritative TypeScript source.**
+**Reason:** A creature catalog entry points to an art ID/path; no GoblinRenderer/OgreRenderer/etc. is created.
 
-Reason:
+**Decision:** Preserve Iron Pit's art identity distinctions.
 
-GitHub's legacy/dynamic Pages job is the deployment that actually wins in this repository. Making the root deployable eliminates the race between two Pages modes and gives us a stable test URL.
-
-The TypeScript in `src/` remains authoritative. Before a future GitHub Pages test milestone that changes source behavior, regenerate/update `web/` from `src/`.
+**Reason:** Similar names do not imply interchangeable silhouettes. Existing distinctions such as Goblin vs Goblin Boss, Wolf vs Dire Wolf, dragon ages, and renamed edition variants remain meaningful.
 
 ### Cost Impact
 
-None.
+No new cost.
 
-No Netlify deploy or Supabase use occurred.
+Reusing existing approved assets avoids a second art pipeline.
 
 ### Result
 
-The final Pages artifact is browser-runnable and no longer points at raw TypeScript.
+`docs/BLOCK_CATALOG.md` now records the Iron Pit silhouette reuse contract.
+
+The current builder work remains the immediate implementation priority; monster/character/catalog expansion follows after the room/stacking/placement-preview checkpoint is green.
 
 ### Exact Next Step
 
-1. Let the final Pages deployment from this cleanup push complete.
-2. Hard-refresh `https://cbw29512.github.io/DNDblocksbattlemaps/` with Ctrl+Shift+R.
-3. Verify the homepage appears.
-4. Test terrain selection -> builder -> place -> overlap -> remove -> Undo/Redo -> refresh persistence.
-5. Record UI/interaction feedback before adding the next Stage 1 feature.
+1. Finish and verify room Length × Width × Height generation with safe caps.
+2. Finish top-face stacking.
+3. Finish stronger placement preview.
+4. Push/test that checkpoint.
+5. Begin the real catalog lane:
+   - construction blocks
+   - props/furniture
+   - player/character pieces
+   - monster pieces using Iron Pit silhouettes.

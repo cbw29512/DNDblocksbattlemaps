@@ -160,6 +160,41 @@ Initial categories:
 
 Specific monster art/data can be expanded later.
 
+## Monster Face-Art Reuse
+
+DND Blocks should reuse the **Chris-approved Iron Pit monster silhouettes** as the default face/standee artwork for matching monsters rather than creating a second monster-art system.
+
+Authoritative Iron Pit source:
+
+- repository: `cbw29512/D20-ironpit`
+- processed monster art: `frontend/assets/portraits/monsters/{id}.webp`
+- inventory: `docs/artifacts/card-art/REAL_ART_INVENTORY.md`
+- mapping/provenance: `frontend/combatant-art.js`
+
+Current Iron Pit inventory records **294 approved monster silhouettes**.
+
+Processed monster assets are already:
+
+- 3:4 WebP
+- 480×640
+- under 20 KB each
+- mapped across matching 2014/2024 creature IDs when the creature is genuinely the same
+
+DND Blocks rendering rule:
+
+- monster identity/data remains catalog-driven
+- the monster block/standee references a silhouette asset by creature/art ID
+- do not write monster-specific rendering code
+- use the silhouette on the visible face/standee surface
+- preserve distinct artwork for distinct creatures/variants where Iron Pit already does so
+- do not silently substitute a related creature image merely because the name is similar
+- creature footprint comes from size data, not image dimensions
+- missing art falls back to a generic approved creature marker until proper art exists
+
+The Iron Pit asset inventory/mapping should be treated as the source of truth for which silhouette belongs to which monster.
+
+Before copying or packaging the assets into a public release, record the asset provenance/license in the DND Blocks dependency/asset register.
+
 Creature footprints:
 
 - Small: 1x1
@@ -167,7 +202,7 @@ Creature footprints:
 - Large: 2x2
 - Huge: 3x3
 - Gargantuan: 4x4
-- Tiny: deferred
+- Tiny: shares a 5-foot square using the current Tiny visual-offset contract
 
 A multi-square creature remains one entity.
 
