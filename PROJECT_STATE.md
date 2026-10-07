@@ -222,7 +222,7 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-Smart four-direction room stamping was green and live, but the room stamp intentionally stayed active for rapid multi-room creation. Browser testing exposed that the exit path was not obvious enough.
+Smart four-direction room stamping was green and live, but the persistent room tool did not have an obvious enough exit path.
 
 ### Changes Made
 
@@ -235,17 +235,34 @@ Smart four-direction room stamping was green and live, but the room stamp intent
   - restores the previously selected block
   - restores that block's active palette highlight
 - **Escape** performs the exact same cancel action.
-- Selecting another normal block still exits room mode as before.
+- Selecting another normal block still exits room mode.
 - Added visible sidebar help for Cancel Room / Esc.
 - Updated Room Builder instructional text and interaction contract.
-- Added cleanup for the Escape listener when leaving the builder.
+- Added cleanup for the Escape key listener when leaving the builder.
 - Netlify remains untouched.
+
+### Verification
+
+Checkpoint commit:
+
+- `1472bd31ce40dd1b0e34574fdad2de9631b5a5c8`
+
+Connected verification:
+
+- **Deploy GitHub Pages Test run #9:** SUCCESS
+- **GitHub pages build and deployment run #22:** SUCCESS
+- TypeScript typecheck: passed
+- unit tests: passed
+- static build: passed
+- Pages deployment: passed
+
+The temporary push trigger is restored to manual-only in this cleanup commit.
 
 ### Decision
 
 **Persistent tools need an obvious visible exit.**
 
-Rapid room stamping remains persistent because it is useful, but the user should never have to discover that selecting another tool is the only way out.
+Rapid room stamping remains persistent because it is useful, but the DM should always see how to stop it.
 
 ### Cost Impact
 
@@ -253,12 +270,12 @@ None.
 
 ### Result
 
-Explicit room-stamp cancellation is prepared for strict verification.
+Room stamping now has an explicit, kid-readable cancel path and remains fast for repeated room creation.
 
 ### Exact Next Step
 
-1. Push the cancel-room checkpoint with temporary verification.
-2. Require TypeScript, unit tests, build, and Pages deployment to pass.
-3. Restore the Pages workflow to manual-only.
-4. Browser-test Build Room → Cancel Room and Build Room → Escape.
+1. Hard-refresh the test site.
+2. Test **Build Room → Cancel Room**.
+3. Test **Build Room → Escape**.
+4. Confirm the gold room preview disappears and the previous block becomes selected again.
 5. Continue catalog work after any remaining builder usability corrections.
