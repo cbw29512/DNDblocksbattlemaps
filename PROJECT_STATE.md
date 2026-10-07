@@ -8,10 +8,10 @@
 
 ## Current Status
 
-**Phase:** Stage 0 — Product Contract / Design Only  
-**Application code:** None. Do not begin coding yet.  
+**Phase:** Stage 0 — Product/Architecture Contract — substantially complete; pre-implementation gate  
+**Application code:** None. Do not begin coding until the user explicitly directs Stage 1 implementation.  
 **Repository:** `cbw29512/DNDblocksbattlemaps`  
-**Primary goal:** Define a very simple, low-cost, browser-based block battle map before selecting or implementing the technology stack.
+**Primary goal:** Keep the documented contracts internally consistent and preserve a clean handoff boundary before Stage 1. The MVP technology stack is selected; package versions/licenses are recorded immediately before installation.
 
 ## Current Product Definition
 
@@ -80,6 +80,13 @@ The DM is the authority. The board must work without automated RPG rules.
 45. **Undo is compensating history.** Undo/Redo uses reversible commands; Undo records an inverse edit instead of deleting history.
 46. **Revision + action IDs protect realtime.** Game/map revisions detect gaps/staleness and unique action IDs deduplicate retries/reconnects.
 47. **Realtime sends logical edits, not frames.** Movement sync transmits committed grid moves/state changes rather than animation frames.
+48. **Accepted MVP stack.** TypeScript + Vite + Three.js + native HTML/CSS first + Supabase + Cloudflare Pages; no custom app server initially.
+49. **Renderer is an adapter.** Authoritative world state drives Three.js; renderer objects are never the canonical state.
+50. **Shared walls are one object.** Adjacent generated rooms reuse one compatible wall WorldObject with membership in multiple RoomRegions; it is effectively locked if any associated room is locked.
+51. **Visual feedback is kid-readable and original.** Placement/ownership/hidden/lock/Tiny states use shape/icon/text/opacity cues and never rely on color alone; no copied Minecraft/VTT art.
+52. **Implementation rules are mandatory.** Coding must be state-first, universal-behavior-first, testable, error-aware, and documentation-complete.
+53. **Dependency/license register is mandatory.** No third-party code or asset enters the repo before source/version/license/purpose/provenance are recorded.
+54. **Explicit coding gate.** Stage 1 application code does not begin until the pre-implementation checklist is satisfied and the user explicitly directs implementation.
 
 ## Cost Guardrail
 
@@ -153,10 +160,15 @@ A work session is not complete until the handoff state is pushed.
 - `docs/PLACEMENT_CONTRACT.md` — authoritative select/place, stacking, elevation, overlap-selection, move, and undo interaction.
 - `docs/PLAYER_JOIN_CONTRACT.md` — authoritative player join, session identity, assignment, control, interaction, DM override, and Tiny creature behavior.
 - `docs/PERSISTENCE_UNDO_CONTRACT.md` — authoritative current-state persistence, autosave, Undo/Redo, revision, dedupe, crash, and reconnect behavior.
+- `docs/VISUAL_LANGUAGE.md` — authoritative original block style and visual feedback for placement, hidden state, ownership, locks, overlaps, and Tiny pieces.
+- `docs/ADR_001_MVP_WEB_STACK.md` — accepted MVP architecture decision and fallback/revisit triggers.
+- `docs/DEPENDENCY_REGISTER.md` — required dependency/license/provenance ledger.
+- `docs/IMPLEMENTATION_RULES.md` — mandatory coding architecture, testing, error/logging, dependency, and no-drift rules.
+- `docs/PRE_IMPLEMENTATION_CHECKLIST.md` — Stage 0 closure gate and Stage 1 Definition of Done.
 
-Planned next documentation:
+No additional product-contract document is currently required before Stage 1.
 
-- Architecture/cost decision record after product interactions are stable.
+Before the first package installation, update the Dependency Register with exact versions/licenses and recheck provider/library terms.
 
 ## Current Competitive Position
 
@@ -174,15 +186,15 @@ The closest product to watch is Terrablox. The closest browser product to watch 
 
 See `docs/COMPETITOR_RESEARCH.md`.
 
-## Open Design Questions
+## Remaining Implementation-Time Decisions
 
-These are deliberately unresolved and must not be guessed during implementation.
+These are intentionally deferred until implementation/testing provides evidence. They are **not product-design blockers** for Stage 1.
 
-1. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
-2. Technology stack final selection and hosting/persistence providers.
-3. Exact asset/art production approach.
-4. Exact visual treatment for player ownership, hidden DM-only objects, placement ghosts, and Tiny auto-offsets.
-5. Bounded Undo/Redo history retention after real usage testing.
+1. Exact package versions and transitive license notices immediately before installation.
+2. Exact Supabase authentication/session implementation details within the locked durable-DM/lightweight-player contract.
+3. Exact original/CC0 placeholder asset production pipeline.
+4. Numeric bounded Undo/Redo history retention after real usage/storage testing.
+5. Performance thresholds and tuning based on target browser/device testing.
 
 ## Latest Work Record
 
@@ -192,94 +204,110 @@ These are deliberately unresolved and must not be guessed during implementation.
 
 ### Starting State
 
-The project remained in Stage 0 with no application code.
+The project had no application code.
 
-Player join/ownership and Tiny-creature behavior were resolved. The next open product architecture issue was persistence, Undo/Redo, autosave, crash recovery, and realtime reconnect behavior.
+The product interaction, placement, player join, traps/effects, camera, spatial, and persistence contracts were documented. Persistence/recovery had just been resolved, and the remaining Stage 0 work was to choose the MVP architecture, close shared-wall/visual gaps, and create a hard pre-code implementation gate.
 
 ### Changes Made
 
-- Continued from the verified live project state.
-- Created `docs/PERSISTENCE_UNDO_CONTRACT.md`.
-- Updated `SOUL.md` with canonical-current-state, autosave, Undo/Redo, revision, action-ID, and reconnect rules.
-- Updated `docs/DATA_SCHEMA.md` with game revision and a fuller reversible EditHistory model.
-- Updated `docs/ROADMAP.md` with autosave, revision/dedupe, logical movement events, crash recovery, and reconnect recovery.
-- Linked the persistence/recovery contract from README.
+- Compared the smallest viable browser-first architecture against the now-complete product requirements.
+- Accepted `docs/ADR_001_MVP_WEB_STACK.md`.
+- Selected TypeScript + Vite + Three.js + native HTML/CSS first + Supabase + Cloudflare Pages for the MVP.
+- Retained Babylon.js and PocketBase as documented fallbacks/revisit options.
+- Created `docs/DEPENDENCY_REGISTER.md`; no packages have been installed yet.
+- Updated the technology-candidate research to point to the accepted ADR.
+- Created `docs/VISUAL_LANGUAGE.md` covering placement ghosts, player ownership, hidden DM-only objects, locks, interactables, traps/effects, creature footprints, Tiny auto-offset, overlap indicators, shared walls, accessibility, and asset provenance.
+- Resolved shared-wall behavior in `docs/SPATIAL_CONTRACT.md`: compatible adjacent walls are one shared WorldObject, not duplicates.
+- Updated `docs/DATA_SCHEMA.md` from single room ownership to many-to-many RoomObjectMembership so shared walls/doors can belong to multiple rooms.
+- Reconciled stale planning language in SOUL, Spatial Contract, README, and Roadmap after those decisions.
+- Created `docs/IMPLEMENTATION_RULES.md` to lock state-first architecture, renderer boundaries, universal behavior reuse, error/logging discipline, testing workflow, dependency discipline, security, and documentation completion.
+- Created `docs/PRE_IMPLEMENTATION_CHECKLIST.md` as the Stage 0 closure gate and Stage 1 Definition of Done.
+- Updated README so a new AI/human can immediately locate every authoritative contract and pre-code rule.
 
 ### Decisions Made
 
-**Decision:** Persist current board state separately from bounded recent edit history.
+**Decision:** Three.js is the MVP renderer; Babylon.js remains a fallback.
 
-**Reason:** A map should load directly from its current state and must not require replaying its entire lifetime history.
+**Reason:** The product needs a deliberately small browser 3D layer, not a broad game-engine architecture. Three.js covers the locked camera, picking, meshes, and repeated-block needs while keeping world state/application architecture under our control.
 
-**Decision:** Every committed board edit enters the autosave pipeline.
+**Decision:** Supabase is the MVP persistence/auth/realtime service; PocketBase remains a fallback.
 
-**Reason:** The product should feel continuously saved and should not depend on a manual Save button.
+**Reason:** It can provide hosted Postgres/Auth/Realtime without operating a custom server during early development, while preserving an open-source/self-host escape path.
 
-**Decision:** Undo commits a compensating inverse edit rather than deleting the original edit.
+**Decision:** Native HTML/CSS + TypeScript is the initial UI layer.
 
-**Reason:** This keeps history explainable and works better for multiplayer/reconnect recovery.
+**Reason:** The locked UI is intentionally small. React/Vue/Svelte should only be introduced if actual implementation complexity proves they reduce code.
 
-**Decision:** Bulk user actions are one logical history step.
+**Decision:** Cloudflare Pages is the selected static frontend host.
 
-**Reason:** Generate Room or Lock Room should Undo as one user action rather than dozens of individual block edits.
+**Reason:** It supports the static-browser architecture without requiring a custom app server and is compatible with the cheap-first strategy.
 
-**Decision:** General shared-board Undo/Redo is a DM tool.
+**Decision:** Three.js render objects are never canonical state.
 
-**Reason:** Player corrections remain simple and DM authority stays clear.
+**Reason:** The authoritative state/schema must remain testable, persistent, recoverable, and renderer-independent.
 
-**Decision:** Every committed action gets a unique action ID and every game/map uses a monotonically increasing revision.
+**Decision:** Shared walls are one WorldObject with multiple RoomRegion memberships.
 
-**Reason:** Retries/reconnects need deduplication, ordering, stale-state detection, and gap recovery.
+**Reason:** Adjacent rooms should not double-render/double-thicken the same physical wall. Shared construction is protected when any associated room remains locked.
 
-**Decision:** Initial load reads canonical current state first, then subscribes to later realtime changes.
+**Decision:** Visual state must use multiple cues rather than color alone.
 
-**Reason:** This avoids full event replay and makes map opening/recovery fast.
+**Reason:** Ownership, hidden state, locking, placement, and movement restrictions must remain obvious and accessible without clutter.
 
-**Decision:** Realtime movement transmits logical grid moves, not animation frames.
+**Decision:** No application dependency enters the repository before the Dependency Register records its exact source/version/license/purpose.
 
-**Reason:** This dramatically reduces network/realtime traffic and keeps the cheap-first architecture viable.
+**Reason:** Open-source reuse must simplify the project without creating licensing or provenance debt.
 
-**Decision:** Do not build CRDT/offline-first synchronization unless testing proves it necessary.
+**Decision:** The implementation rules and pre-implementation checklist are mandatory.
 
-**Reason:** Strong DM authority, ownership, locks, revisions, and refresh-on-gap should handle the intended MVP without adding major complexity.
+**Reason:** Another AI/session must not be able to resume the project and silently choose a different architecture, bypass state/schema, or reintroduce feature drift.
+
+**Decision:** Stage 0 is substantially complete.
+
+**Reason:** The product contract, data model, interaction model, camera, placement, hazards, multiplayer ownership, persistence/recovery, visuals, architecture, licensing policy, implementation rules, and Stage 1 DoD are all now documented.
 
 ### Cost Impact
 
-None.
+No cost incurred.
 
-No application code, dependency, hosted service, or paid infrastructure was added.
+No application code has been written and no npm/package dependency has been installed.
 
-The persistence contract intentionally minimizes future storage/realtime cost by keeping current state compact, history bounded, and network messages logical rather than frame-based.
+The selected MVP architecture is intended to begin at approximately **$0 infrastructure cost while usage stays within current free-tier limits**, but all provider limits/pricing and exact package licenses must be rechecked before public production and exact package installation.
 
 ### Result
 
-The save/recovery mental model is now:
+The repository is now designed to be resumable by another AI or human without relying on chat history.
 
-> Every meaningful edit autosaves. Current board state opens directly. Recent edits remain reversible. Reconnect checks revision, deduplicates action IDs, and refreshes state instead of guessing.
+Stage 0 has a clean implementation boundary:
 
-A browser crash should not lose important board state such as positions, hidden/revealed objects, transforms, assignments, room locks, or movement-lock effects.
+> **Product/architecture contracts are substantially complete. Application code remains zero.**
 
-No application code has been written.
+The selected Stage 1 stack is:
 
-### Open Questions / Blockers
+> **TypeScript + Vite + Three.js + native HTML/CSS + Supabase + Cloudflare Pages.**
 
-1. Shared-wall editing if simple duplicate prevention proves insufficient.
-2. Three.js vs Babylon.js final rendering choice.
-3. Hosted persistence/auth/realtime final choice.
-4. Exact asset/art production approach.
-5. Visual language for placement ghosts, hidden DM-only objects, ownership cues, and Tiny auto-offset.
-6. Final bounded Undo/Redo history retention after real usage testing.
+Stage 1 has an explicit Definition of Done and architecture tests in `docs/PRE_IMPLEMENTATION_CHECKLIST.md`.
+
+### Remaining Implementation-Time Decisions
+
+These are not blockers to beginning Stage 1 once the user explicitly directs it:
+
+1. exact dependency versions and transitive license notices
+2. exact Supabase auth/session implementation details within the locked contract
+3. original/CC0 placeholder asset production pipeline
+4. numeric bounded Undo/Redo retention after testing
+5. performance tuning based on real browser/device tests
 
 ### Exact Next Step
 
-Stay in design/architecture mode.
+**Do not write application code unless the user explicitly directs Stage 1 implementation.**
 
-Perform the written architecture decision comparing the smallest viable web stacks against the now-defined requirements:
+When that direction arrives:
 
-- Three.js vs Babylon.js
-- Supabase vs simpler alternatives
-- native HTML/CSS vs UI framework
-- Cloudflare Pages vs other low-cost static hosts
-- dependency/license/cost/complexity impact
+1. reread `PROJECT_STATE.md`, `SOUL.md`, the Stage 1 contracts, ADR-001, implementation rules, and pre-implementation checklist
+2. recheck exact package versions/licenses and update `DEPENDENCY_REGISTER.md`
+3. implement only the first Stage 1 vertical slice from authoritative state outward
+4. test the state behavior independently of Three.js where possible
+5. update/push the live handoff before stopping
 
-No application code yet.
+Until explicit coding direction is given, remain in design/audit mode.
