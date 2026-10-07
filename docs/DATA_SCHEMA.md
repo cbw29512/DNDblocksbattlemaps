@@ -21,15 +21,25 @@ Everything placed on the board should share a small universal object model. Obje
 
 - id
 - display_name
+- durable_account: true | false
 
-Authentication details are intentionally undecided.
+MVP product contract:
+
+- DM uses a durable signed-in identity.
+- Player may use a lightweight game-session identity without a permanent standalone account.
+
+Exact authentication provider remains a technology decision.
 
 ## GameMember
 
 - game_id
 - user_id
 - role: dm | player
+- display_name
+- session_token/reference
 - assigned_entity_ids
+- joined_at
+- last_seen_at
 
 ## Map
 
@@ -323,7 +333,7 @@ Potential sources later include traps, pits, webs, cages, or magical restraints.
 
 ## Creature Footprints
 
-- Tiny: deferred
+- Tiny: shares one 5-foot square; up to four Tiny pieces auto-offset visually by default, no permanent 2.5-foot subgrid
 - Small: 1×1
 - Medium: 1×1
 - Large: 2×2
@@ -353,8 +363,6 @@ A template generates ordinary WorldObjects. Generated blocks do not use a separa
 
 These must be resolved before implementation where relevant:
 
-1. What is the simplest useful player interaction model beyond movement?
-2. How should Tiny creature positioning work?
-3. What identity/authentication level is required for MVP?
-4. What persistence granularity is needed for undo/redo and recovery?
-5. How should shared walls between adjacent generated rooms be edited if the simple no-duplicate rule proves insufficient?
+1. What persistence granularity is needed for undo/redo and recovery?
+2. How should shared walls between adjacent generated rooms be edited if the simple no-duplicate rule proves insufficient?
+3. What exact authentication provider/implementation best satisfies the durable-DM/lightweight-player contract?
