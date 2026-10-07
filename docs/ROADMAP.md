@@ -30,6 +30,7 @@ Required concepts:
 - 5-foot grid
 - block palette
 - click-to-place
+- permissive overlap/stack placement
 - right-click remove for DM build mode
 - room generator: Length × Width × Height in feet, 5-foot increments, interior-playable dimensions
 - no automatic ceilings
@@ -69,6 +70,9 @@ Goal: DM and players can share one live board.
 - door open/close
 - basic toggle interactions
 - hidden monsters/traps/secret objects
+- generic trigger/effect system
+- transform/replace objects (for example chest → creature)
+- manual DM trigger/release controls
 
 Keep behavior universal and data-driven.
 
