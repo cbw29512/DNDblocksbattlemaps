@@ -247,7 +247,7 @@ Instead:
 2. On the workflow page, click **Run workflow**.
 3. Select branch **main**.
 4. Start the run.
-5. Confirm the new run uses commit beginning `f4e9142`.
+5. Confirm the new run is using the current `main` and is **not** old commit `90223e4`.
 6. Wait for that new run to finish.
 7. If green, reload the Pages test URL.
 8. If red, inspect the new run's first failing step.
