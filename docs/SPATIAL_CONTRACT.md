@@ -291,17 +291,42 @@ When generating a room:
 
 The exact preview/click flow can be refined during UI mockup design.
 
-## Adjacent Rooms
+## Adjacent Rooms and Shared Walls
 
 Adjacent rooms are expected.
 
-Initial rule:
+When a generated room perimeter lands on an existing compatible wall block at the same X/Y/Z:
 
-> Never intentionally duplicate a solid structural block at the exact same X/Y/Z location.
+- reuse the existing wall object
+- do not create a duplicate wall
+- associate the same wall object with both RoomRegions
 
-Later usability work may allow shared-wall merging, deleting a wall between two rooms, or turning a shared wall cell into a door.
+A shared wall is still one ordinary WorldObject.
 
-Do not build a complex architectural-merging system for MVP unless the simple occupancy rule proves insufficient.
+### Locking shared walls
+
+A shared construction object is effectively locked if **any associated room is locked**.
+
+To reposition/remove/replace shared construction in BUILD mode, all room locks protecting that object must be unlocked.
+
+This prevents editing one side of a wall while another locked room still depends on it.
+
+### Opening rooms into each other
+
+When all relevant room locks are open:
+
+- removing the shared wall opens the rooms into each other
+- placing a door replaces the lowest shared wall block
+- the resulting door retains membership in the associated rooms
+- taller wall blocks above the door remain
+
+No separate shared-wall engine is created.
+
+### Intentional room overlap
+
+The DM may still deliberately overlap rooms/objects.
+
+Generated room previews should inform the DM about reused/shared structure and overlaps, but the DM remains authoritative.
 
 ## Creature Footprints
 
