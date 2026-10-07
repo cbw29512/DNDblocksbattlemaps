@@ -61,6 +61,7 @@ The DM is the authority. The board must work without automated RPG rules.
 26. **Door placement.** A door replaces the lowest wall block at its wall position; wall blocks above remain.
 27. **Room lock scope.** Lock Room protects construction/environment positions and removal, not player/monster/NPC movement; allowed state changes still work.
 28. **Universal occupancy.** Solid vs overlay and generic movement-blocking are board primitives so traps can share a cell with creatures while walls/closed doors can block space.
+29. **Camera contract.** Default camera elevation is near 30° above the board plane; vertical tilt is locked for MVP; users may orbit horizontally, pan, zoom, and Reset/Home.
 
 ## Cost Guardrail
 
@@ -129,6 +130,7 @@ A work session is not complete until the handoff state is pushed.
 - `docs/OPEN_SOURCE_REUSE.md` — Minecraft inspiration boundary, license gate, and open-source engine/library candidates.
 - `docs/TECH_STACK_CANDIDATES.md` — web-first, open-source-first, low-cost technology candidates and current free-tier research.
 - `docs/SPATIAL_CONTRACT.md` — authoritative 5-foot room dimensions, floor/wall/door placement, occupancy, and room-lock behavior.
+- `docs/CAMERA_CONTRACT.md` — authoritative tabletop camera elevation, orbit, pan, zoom, and recovery behavior.
 
 Planned next documentation:
 
@@ -154,15 +156,14 @@ See `docs/COMPETITOR_RESEARCH.md`.
 
 These are deliberately unresolved and must not be guessed during implementation.
 
-1. Exact visual/camera model for the board.
-2. Exact manual vertical placement/elevation interaction outside generated room walls.
-3. Tiny creature placement.
-4. MVP identity/authentication model.
-5. Persistence and undo/redo strategy.
-6. Whether a selected block remains active for repeated placement or clears after one placement.
-7. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
-8. Technology stack final selection and hosting/persistence providers.
-9. Exact asset/art production approach.
+1. Exact manual vertical placement/elevation interaction outside generated room walls.
+2. Tiny creature placement.
+3. MVP identity/authentication model.
+4. Persistence and undo/redo strategy.
+5. Whether a selected block remains active for repeated placement or clears after one placement.
+6. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
+7. Technology stack final selection and hosting/persistence providers.
+8. Exact asset/art production approach.
 
 ## Latest Work Record
 
@@ -172,98 +173,91 @@ These are deliberately unresolved and must not be guessed during implementation.
 
 ### Starting State
 
-The project remained in Stage 0 with no application code.
+The project was in Stage 0 with no application code.
 
-The web-first/open-source-first stack strategy had been documented. The next required product decision was the room spatial contract: what Length × Width × Height mean, how walls/doors occupy the grid, and what Lock Room actually freezes.
+The room spatial contract had been resolved. The next open design topic was the camera/view model and manual placement feel.
+
+The user proposed a camera around a 30-degree tabletop angle that can move around the map.
 
 ### Changes Made
 
-- Read the live project state, SOUL, interaction specification, data schema, and technology candidates before making changes.
-- Created `docs/SPATIAL_CONTRACT.md`.
-- Updated `SOUL.md` with the room dimension and construction-lock rules.
-- Updated `docs/INTERACTION_SPEC.md` to resolve room dimensions, lock scope, and door placement.
-- Updated `docs/DATA_SCHEMA.md` with resolved room dimensions plus generic occupancy/movement-blocking concepts.
-- Updated `docs/ROADMAP.md` with the resolved room-builder semantics.
-- Linked the spatial contract from README.
+- Read the live project state, SOUL, interaction spec, and spatial contract before changes.
+- Created `docs/CAMERA_CONTRACT.md`.
+- Updated `SOUL.md` with the fixed-angle tabletop camera rule.
+- Updated `docs/INTERACTION_SPEC.md` with visible camera controls and candidate mouse shortcuts.
+- Updated `docs/ROADMAP.md` with camera requirements.
+- Linked the camera contract from README.
+- Updated this live state and removed the camera model from unresolved questions.
 
 ### Decisions Made
 
-**Decision:** All room dimensions are entered in feet.
+**Decision:** Default camera elevation is approximately 30° above the board plane.
 
-**Reason:** D&D-facing users naturally think in feet, while the software can derive grid cells.
+**Reason:** It gives a readable 3D tabletop view while keeping walls, room interiors, and stacked blocks understandable.
 
-**Decision:** Room dimensions snap to 5-foot increments.
+**Decision:** The exact rendering angle may be tuned slightly during visual testing; mathematical isometric purity is not required.
 
-**Reason:** One grid cell is 5 feet, so this keeps the model simple and predictable.
+**Reason:** A true isometric elevation is roughly 35.3°, but readability is more important than exact projection geometry.
 
-**Decision:** Length × Width mean usable interior playable space.
+**Decision:** Vertical camera tilt is locked for MVP.
 
-**Reason:** A DM asking for a 40 ft × 20 ft room should receive 8 × 4 playable interior squares rather than losing playable space to wall thickness.
+**Reason:** Users should not be able to flip under the board, look upside down, or lose the map through free-fly camera controls.
 
-**Decision:** Height means wall height, with one vertical block level = 5 feet.
+**Decision:** Camera can orbit horizontally around its focus point while maintaining the fixed elevation.
 
-**Reason:** This preserves the single block scale in all three dimensions.
+**Reason:** This gives access to all sides of the board without requiring object rotation.
 
-**Decision:** Terrain/floor occupies the base support layer and room floors replace/change the base surface rather than stacking a new 5-foot cube on top.
+**Decision:** Pan and zoom are supported.
 
-**Reason:** Generated rooms should not accidentally sit five feet above the surrounding terrain.
+**Reason:** DMs need to move between rooms and inspect details.
 
-**Decision:** A door replaces the lowest wall block at a chosen wall position.
+**Decision:** An obvious Reset/Home control is required.
 
-**Reason:** A door is part of the wall, not a separate adjacent cell. For taller walls, upper wall blocks remain.
+**Reason:** A child/new user must always be able to recover the view.
 
-**Decision:** Lock Room is a construction editing lock.
+**Decision:** Visible camera controls are authoritative; mouse/touch gestures are optional conveniences.
 
-**Reason:** It should protect floor/walls/doors/furniture/lights/traps/decor from accidental repositioning or deletion without freezing player, monster, or NPC pieces.
-
-**Decision:** Positional lock and state changes are separate.
-
-**Reason:** A locked-position door must still be able to open/close and a locked-position trap must still be able to trigger.
-
-**Decision:** Add universal solid-vs-overlay and movement-blocking concepts.
-
-**Reason:** A hidden trap must share a playable square with the creature that steps on it, while walls and closed doors may need to block obvious movement.
+**Reason:** Basic operation should not depend on knowing hidden desktop gestures.
 
 ### Cost Impact
 
 None.
 
-This work is documentation and product design only. No dependency, service, hosting, asset license, or application code was added.
+This is documentation and product design only. No dependency, service, asset, or application code was added.
 
 ### Result
 
-The project now has an authoritative room spatial contract.
+The camera model is now defined:
 
-Canonical example:
+> fixed tabletop angle near 30° + horizontal orbit + pan + zoom + Reset/Home.
 
-> 40 ft × 20 ft × 10 ft room = 8 × 4 playable interior squares with 2-block-high walls, no ceiling.
+No first-person, free-fly, or free vertical tilt is part of MVP.
 
-Room generation, door placement, locking, and trap occupancy now have consistent rules that future code must follow.
+Both Three.js and Babylon.js can support this model, so this decision does not force the rendering-library choice.
 
 No application code has been written.
 
 ### Open Questions / Blockers
 
-1. Exact camera/view model.
-2. Exact manual vertical placement/elevation interaction.
-3. Tiny creature placement.
-4. MVP authentication/join identity model.
-5. Persistence and undo/redo strategy.
-6. Repeated-placement behavior after selecting a block.
-7. Shared-wall editing between adjacent rooms if needed.
-8. Three.js vs Babylon.js final rendering choice.
-9. Exact art/asset production approach.
+1. Exact manual vertical placement/elevation interaction.
+2. Tiny creature placement.
+3. MVP authentication/join identity model.
+4. Persistence and undo/redo strategy.
+5. Repeated-placement behavior after selecting a block.
+6. Shared-wall editing if needed.
+7. Three.js vs Babylon.js final choice.
+8. Exact art/asset production approach.
 
 ### Exact Next Step
 
 Stay in design mode.
 
-Resolve the **camera/view and manual placement interaction** next:
+Resolve **manual block placement behavior** next:
 
-- fixed isometric vs orbit/90-degree camera
-- pan/zoom controls
-- how the DM places a block above another block
-- whether the selected block remains active after placement
-- how placement previews communicate valid/invalid cells
+- how the DM places a block on top of another block
+- whether selected blocks remain active for repeated placement
+- placement preview behavior
+- valid/invalid placement feedback
+- how moving an existing unlocked block differs from placing a new block
 
 Do not write application code yet.
