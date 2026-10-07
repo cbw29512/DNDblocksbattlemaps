@@ -31,9 +31,11 @@ Required concepts:
 - block palette
 - click-to-place
 - right-click remove for DM build mode
-- room generator: length × width × height
+- room generator: Length × Width × Height in feet, 5-foot increments, interior-playable dimensions
 - no automatic ceilings
-- room/region bulk lock
+- door replaces a wall position
+- 5-foot vertical block levels
+- room/region bulk position lock for construction/environment only
 - snapping
 - delete
 - lock/unlock
