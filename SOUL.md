@@ -1,0 +1,268 @@
+# DND Blocks Battle Maps — SOUL.md
+
+## Purpose
+
+DND Blocks Battle Maps is a browser-based virtual tabletop built around one idea:
+
+> The DM builds the world from simple, grid-snapped blocks and remains the final authority over the game.
+
+It should feel like using a box of magnetic dungeon terrain on a physical table, not configuring a complicated VTT.
+
+## Prime Directives
+
+1. **Simple first.** The fastest path from an idea to a playable encounter wins.
+2. **The DM is the game engine.** Rules automation is optional and must never be required to use the board.
+3. **Everything is data-driven.** Terrain, furniture, doors, traps, players, monsters, and decorations share universal object behavior wherever possible.
+4. **One square represents 5 feet.** The visual grid follows standard tabletop battle-map scale.
+5. **No unnecessary rotation.** Blocks should identify themselves clearly from all useful viewing sides.
+6. **Placed construction can be locked.** Once locked, a block does not move until the DM unlocks it.
+7. **The DM controls visibility.** Objects such as traps, secret doors, creatures, treasure, and encounter elements can be hidden from players and revealed later.
+8. **Players control only what they are assigned.** The DM retains authority over every object.
+9. **Templates create normal blocks.** Prefab rooms/buildings/encounters are recipes that place ordinary blocks; generated blocks never become a separate engine.
+10. **Never add complexity just because another VTT has it.**
+
+## Product Experience
+
+The basic DM workflow is:
+
+1. Create or open a map.
+2. Select a block type.
+3. Click a grid location.
+4. The block snaps into place.
+5. Lock construction when desired.
+6. Place creatures, objects, traps, and player pieces.
+7. Hide anything players should not see.
+8. Share a join link/code.
+9. Play.
+
+The player workflow should be smaller:
+
+1. Join.
+2. Receive control of a character.
+3. Move that character.
+4. Interact with objects the DM permits.
+5. See updates from everyone in real time.
+
+## Scale
+
+- 1 grid square = 5 feet.
+- Small and Medium creatures: 1×1 squares.
+- Large creatures: 2×2.
+- Huge creatures: 3×3.
+- Gargantuan creatures: 4×4.
+- Tiny creature handling is intentionally deferred until its interaction model is designed.
+
+A multi-square creature is one entity with a footprint, not several independent creature blocks.
+
+## Universal Object Principle
+
+Before implementing an object-specific feature, ask:
+
+> What does this object actually do?
+
+Then represent it with existing universal properties or behaviors whenever possible.
+
+Examples:
+
+- Door and chest → openable.
+- Trap and hidden monster → hidden/revealable.
+- Torch and lamp → toggleable.
+- Player, monster, NPC → movable.
+- Terrain, wall, furniture → lockable.
+
+Do not create a DoorEngine, TorchEngine, OrcEngine, etc. when a universal mechanic already describes the behavior.
+
+Only introduce a new universal primitive when existing mechanics cannot accurately represent the required behavior.
+
+## Core Object Concepts
+
+Every placed world object should be describable with data such as:
+
+- identity
+- type
+- appearance reference
+- grid position
+- vertical position
+- footprint
+- state
+- visibility
+- locked/unlocked state
+- permissions
+- interaction capabilities
+
+Cards/assets/data describe what an object is.
+
+Universal behavior describes what it can do.
+
+## Building
+
+Initial building interaction:
+
+**Select block → click square → place.**
+
+Blocks snap to the grid.
+
+Future convenience tools may include:
+
+- click-drag lines
+- rectangles
+- fill
+- duplicate
+- copy/paste
+- multi-select
+- saved groups
+- room templates
+- building templates
+- encounter templates
+
+All convenience tools must produce the same ordinary world objects as manual placement.
+
+## Locked Construction
+
+Locking is a universal editing control.
+
+Typical terrain, walls, furniture, and decorations become locked after placement.
+
+Locked means they cannot accidentally move during ordinary play.
+
+The DM can unlock them at any time.
+
+Creatures and player pieces normally remain movable.
+
+## Hidden Objects
+
+The DM must be able to see objects that players cannot.
+
+Possible hidden objects include:
+
+- traps
+- monsters
+- secret doors
+- treasure
+- NPCs
+- ambushes
+- encounter elements
+
+The DM can reveal them manually.
+
+Advanced line of sight and dynamic lighting are not required for MVP.
+
+## Prefabricated Rooms
+
+Prefab rooms are an important future feature.
+
+A prefab is a recipe for placing standard blocks.
+
+Example:
+
+**Castle Room — 40 ft × 20 ft**
+
+With a 5-foot grid, the requested playable area can derive an 8×4-square interior if the room-dimension contract defines dimensions as interior space.
+
+The exact meaning of entered dimensions—interior playable size versus exterior wall-to-wall footprint—must be explicitly defined before prefab implementation.
+
+Possible templates:
+
+- Castle Room
+- Dungeon Chamber
+- Corridor
+- Tavern
+- House
+- Cave
+- Forest Clearing
+- Temple
+- Crypt
+- Camp
+- Throne Room
+
+After generation, every block can be edited normally.
+
+## Multiplayer Authority
+
+- The DM owns the world state.
+- Players control assigned entities.
+- The DM can move any entity.
+- The DM can change visibility.
+- The DM can lock/unlock construction.
+- The DM can freeze/unfreeze player movement.
+- Board changes synchronize in real time.
+- Maps persist across reloads.
+
+## MVP Definition of Done
+
+The MVP is complete when:
+
+- A DM can create a game/map.
+- The board uses 5-foot grid squares.
+- The DM can place basic terrain.
+- The DM can place walls and doors.
+- The DM can place basic furniture/objects.
+- The DM can place creatures and player pieces.
+- Creature footprints support Small/Medium/Large/Huge/Gargantuan sizes.
+- Placement snaps to the grid.
+- Vertical block placement is possible.
+- Objects can be locked/unlocked.
+- Objects can be deleted.
+- Objects can be hidden from players.
+- Hidden objects can be revealed.
+- The DM can create/share a join link or code.
+- Multiple players can join in a browser.
+- Each player can control an assigned character.
+- Everyone sees synchronized movement.
+- The DM can control all entities.
+- The DM can freeze player movement.
+- The map saves persistently.
+- Reloading restores the board.
+
+## Explicit MVP Non-Goals
+
+Do not add these merely because traditional VTTs have them:
+
+- automated combat
+- character sheets
+- hit points
+- initiative automation
+- spell automation
+- rules enforcement
+- automatic movement allowances
+- dynamic lighting
+- advanced line of sight
+- physics simulation
+- animated doors
+- detailed 3D models
+- free-angle object rotation
+- asset marketplace
+- procedural dungeon generation
+- campaign-management suite
+- voice/video chat
+- complex macros
+- modding/plugin system
+
+## Future Rules Integration
+
+Rules automation may eventually exist, but it must remain modular and optional.
+
+A DM must always be able to say:
+
+> I decide what happens.
+
+Automation assists the DM; it does not replace the DM.
+
+## Anti-Drift Contract
+
+Before implementing any feature:
+
+1. Read this file.
+2. Read the current data schema.
+3. Read the current architecture documentation.
+4. Identify the real behavior being requested.
+5. Search for an existing universal mechanic that already represents it.
+6. Reuse existing mechanics whenever behavior is equivalent.
+7. Add a new primitive only when necessary.
+8. Keep source-specific appearance/data separate from universal behavior.
+9. Update documentation when a product-level decision changes.
+10. If implementation and this document disagree, stop and reconcile them before continuing.
+
+## Current Guiding Image
+
+> A digital box of magnetic dungeon blocks that a DM can dump onto a virtual table and immediately start building with.
