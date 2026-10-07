@@ -164,10 +164,8 @@ This is a UI filtering/convenience feature.
 
 The same underlying catalog object can be reused in multiple themes.
 
-## Unresolved Catalog Item
+## Deferred Idea
 
-The user typed "date" in the room-object examples.
+The earlier "date" entry was a typo and is not part of the initial catalog.
 
-The intended object is not known.
-
-Do not silently substitute another item.
+A calendar/date-display block is a possible future idea only. Do not add it to MVP unless a concrete use case justifies it.
