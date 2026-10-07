@@ -52,6 +52,10 @@ Required concepts:
 - pick-up/put-down move interaction
 - overlap chooser when object selection is ambiguous
 - undo/redo safety for core edits
+- autosave every committed board edit
+- current-state persistence separate from recent history
+- unique action IDs and board revision
+- refresh/crash recovery
 - creature footprints
 - save/load locally or through the eventual persistence layer
 
@@ -70,6 +74,8 @@ Goal: DM and players can share one live board.
 - obvious player-owned-piece indicator
 - Tiny creature auto-offset within shared 5-foot square
 - real-time movement
+- logical move events only; no animation-frame streaming
+- realtime deduplication/revision-gap recovery
 - player movement freeze
 - persistent map state
 - reconnect/reload recovery
