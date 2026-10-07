@@ -92,11 +92,17 @@ The core mouse interaction is:
 
 This is the preferred interaction contract because it is easy to explain and easy to remember.
 
-Open question:
+Resolved behavior:
 
-- whether the selected block remains active for repeated placement after one placement, or automatically clears after each placement
+- selected palette item remains active after placement
+- keep clicking to place additional copies
+- choosing another palette item changes the active item
+- Select/Done or Escape clears placement mode
+- touch devices must have a visible Select/Done control
 
 Do not add drag handles, rotation widgets, nested object inspectors, or complex context menus unless a real requirement later demands them.
+
+See `PLACEMENT_CONTRACT.md`.
 
 ## Permissive Placement
 
@@ -111,6 +117,47 @@ DM BUILD placement is permissive.
 Placement preview should therefore communicate **where the object will go**, not enforce a physics validator.
 
 PLAY movement/blocking behavior is separate and may still use object properties such as `blocks_movement`.
+
+## Manual Elevation and Stacking
+
+Natural placement follows the surface under the pointer:
+
+- floor/ground → place on that surface
+- top face → place one 5-foot block level above
+- side face → place in the adjacent grid position at the clicked block's base level
+
+A small visible elevation control in feet provides exact manual height selection when needed.
+
+Unsupported/floating placement is allowed.
+
+The DM may intentionally place creatures, objects, hazards, or scenery at elevated positions without a support block.
+
+## Moving Existing Objects
+
+When no palette item is active:
+
+- left-click an unlocked movable object to pick it up
+- a ghost follows the pointer using the same placement rules
+- left-click drops it
+- Escape cancels and restores its original position
+
+Locked construction cannot be picked up until unlocked.
+
+## Overlap Selection
+
+When a click clearly identifies one visible object, target it directly.
+
+When several objects overlap ambiguously, show a tiny **What's Here?** chooser listing only the objects at that location with minimal actions such as Select/Move, Hide/Reveal, and Remove.
+
+Do not open a full property inspector merely because objects overlap.
+
+## Undo/Redo
+
+Undo/Redo is required in the first builder prototype, not deferred to a later convenience phase.
+
+Fast actions should remain confirmation-free when safely reversible.
+
+At minimum, Undo should cover placement, removal, move, hide/reveal, lock/unlock, room generation, and other major board edits.
 
 ## Transforming Object Interaction
 
