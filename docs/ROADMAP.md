@@ -29,6 +29,8 @@ Required concepts:
 - hero-page terrain/theme choice
 - 5-foot grid
 - block palette
+- persistent select-once/place-many palette behavior
+- placement ghost preview
 - click-to-place
 - permissive overlap/stack placement
 - right-click remove for DM build mode
@@ -44,7 +46,11 @@ Required concepts:
 - horizontal orbit
 - pan/zoom
 - Reset/Home camera recovery
-- basic vertical placement
+- surface-based vertical placement
+- visible elevation control in 5-foot increments
+- unsupported/floating placement allowed
+- pick-up/put-down move interaction
+- overlap chooser when object selection is ambiguous
 - creature footprints
 - save/load locally or through the eventual persistence layer
 
