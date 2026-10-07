@@ -27,6 +27,12 @@ Goal: prove the placement experience.
 
 Required concepts:
 
+- public website/quick-start front door
+- polished hero that explains the product immediately
+- Build a Map and Join a Game primary actions
+- terrain quick-start cards
+- real product visual/showcase
+- local-first development; Netlify milestone deploy only
 - kid-simple first-use flow
 - hero-page terrain/theme choice
 - 5-foot grid
