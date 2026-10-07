@@ -281,10 +281,10 @@ Do not add these while solving the first-use experience:
 - detailed object property panels
 - multi-level nested menus
 
-## Unresolved Input
+## Future Idea — Calendar/Date Block
 
-The user included the word "date" in the example room-object list.
+The earlier word "date" in the room-object list was a typo and is **not** a required object.
 
-Its intended meaning is unclear.
+A calendar/date-display block was mentioned afterward as a possible future decorative or utility block, but no product decision has been made to include it.
 
-Do not reinterpret it as another object type without explicit clarification.
+It is not part of the MVP catalog.
