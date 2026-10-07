@@ -43,6 +43,7 @@ The current priority is defining the product, interaction model, state model, pe
 - [Traps & Effects](docs/TRAPS_AND_EFFECTS.md) — universal trigger/effect, hazard, overlap, and transforming-object contract
 - [Placement Contract](docs/PLACEMENT_CONTRACT.md) — select-once/place-many, stacking, elevation, overlap selection, moving, and undo rules
 - [Player Join Contract](docs/PLAYER_JOIN_CONTRACT.md) — player entry, identity, assignment, movement, interaction, override, and Tiny creature rules
+- [Persistence & Recovery](docs/PERSISTENCE_UNDO_CONTRACT.md) — autosave, Undo/Redo, revisions, deduplication, crash recovery, and reconnect rules
 
 ## Development rule
 
