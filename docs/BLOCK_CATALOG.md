@@ -40,6 +40,23 @@ A terrain theme is not a separate game engine.
 
 It is data/configuration that selects appropriate ordinary blocks and defaults.
 
+## Broader Catalog Families
+
+Minecraft's creative inventory is being used only as a usability reference for the idea of grouping many blocks into obvious families. We are not copying Minecraft assets or reproducing its inventory.
+
+As the catalog grows, favor a few kid-readable families:
+
+- Terrain
+- Construction
+- Furniture / Room Objects
+- Lights / Utility
+- Hazards / Secrets
+- Creatures
+
+Within those families, use original art and our own data definitions for generic concepts such as grass, dirt, stone, wood, water, lava, walls, doors, stairs, fences, tables, beds, chests, torches, pits, traps, trees, rocks, players, NPCs, and monsters.
+
+Theme selection should filter these families to the most relevant blocks rather than exposing hundreds of choices at once.
+
 ## Room Construction Blocks
 
 Initial construction concepts:
