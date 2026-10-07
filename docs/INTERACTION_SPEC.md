@@ -99,15 +99,24 @@ The room is generated from ordinary blocks.
 - the generated room can later be modified by the DM
 - the room is associated with a room/region identity so it can be locked or unlocked as a group
 
-### Unresolved dimension contracts
+### Room dimension contract
 
-Before implementation, explicitly decide:
+The room spatial contract is now defined:
 
-1. whether Length and Width are entered in feet or grid squares
-2. whether requested room dimensions describe interior playable area or total exterior wall-to-wall footprint
-3. whether Height is entered in feet, block levels, or another simple unit
+- Length is entered in feet.
+- Width is entered in feet.
+- Height is entered in feet.
+- Values snap to 5-foot increments.
+- Length × Width describe **usable interior playable space**.
+- Height describes **wall height**.
+- One vertical block level represents 5 feet.
+- The UI may show the derived grid/block count as a helper.
 
-Do not guess these in rendering code.
+Example:
+
+**40 ft × 20 ft × 10 ft** = **8 × 4 playable interior squares with 2-block-high walls**.
+
+See `SPATIAL_CONTRACT.md`.
 
 ## No Ceiling Rule
 
@@ -150,19 +159,39 @@ Unlocking the room allows the DM to reposition or remove those blocks again.
 
 The room-lock operation should be a simple bulk control, not a complicated permissions system.
 
-### Open lock-scope question
+### Room lock scope
 
-The user stated that when the room is locked, "all current blocks can't move until the DM unlocks the room."
+Lock Room is an **editing/position lock** for room construction and environment objects.
 
-Before implementation, confirm whether this includes:
+It protects:
 
-- structural blocks only
-- furniture/props
-- traps
-- monsters/NPCs
+- floors/terrain belonging to the room
+- walls
+- doors in position
+- furniture and props
+- lights
+- traps and hazards
+- decorative/environment objects
+
+It does **not** freeze:
+
 - player pieces
+- monster pieces
+- NPC pieces
 
-Do not silently narrow or broaden the user's stated behavior.
+Allowed state changes remain possible while position is locked. A locked-position door can still open/close and a locked-position trap can still trigger.
+
+See `SPATIAL_CONTRACT.md`.
+
+## Door Placement Contract
+
+A door replaces the lowest wall block at a selected wall position.
+
+It does not occupy a separate adjacent grid square.
+
+For walls taller than 5 feet, wall blocks above the door remain.
+
+The door stays anchored to its wall position and changes state between open/closed rather than physically rotating into another square.
 
 ## Hidden Blocks
 
