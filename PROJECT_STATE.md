@@ -62,6 +62,9 @@ The DM is the authority. The board must work without automated RPG rules.
 27. **Room lock scope.** Lock Room protects construction/environment positions and removal, not player/monster/NPC movement; allowed state changes still work.
 28. **Universal occupancy.** Solid vs overlay and generic movement-blocking are board primitives so traps can share a cell with creatures while walls/closed doors can block space.
 29. **Camera contract.** Default camera elevation is near 30° above the board plane; vertical tilt is locked for MVP; users may orbit horizontally, pan, zoom, and Reset/Home.
+30. **DM-authoritative placement.** BUILD mode allows intentional overlap/stacking; occupancy may warn but does not reject DM placement.
+31. **Universal trigger/effect system.** Traps, hazards, switches, ambushes, and surprises are composed from reusable triggers/effects rather than named engines.
+32. **Universal transform/replace.** An object may change identity/category/capabilities in place when triggered, such as chest → mimic.
 
 ## Cost Guardrail
 
@@ -131,6 +134,7 @@ A work session is not complete until the handoff state is pushed.
 - `docs/TECH_STACK_CANDIDATES.md` — web-first, open-source-first, low-cost technology candidates and current free-tier research.
 - `docs/SPATIAL_CONTRACT.md` — authoritative 5-foot room dimensions, floor/wall/door placement, occupancy, and room-lock behavior.
 - `docs/CAMERA_CONTRACT.md` — authoritative tabletop camera elevation, orbit, pan, zoom, and recovery behavior.
+- `docs/TRAPS_AND_EFFECTS.md` — authoritative trigger/effect, hazard, permissive-overlap, and transforming-object contract.
 
 Planned next documentation:
 
@@ -161,9 +165,10 @@ These are deliberately unresolved and must not be guessed during implementation.
 3. MVP identity/authentication model.
 4. Persistence and undo/redo strategy.
 5. Whether a selected block remains active for repeated placement or clears after one placement.
-6. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
-7. Technology stack final selection and hosting/persistence providers.
-8. Exact asset/art production approach.
+6. How right-click removal behaves when multiple overlapping objects occupy the exact same visible location.
+7. Shared-wall editing behavior between adjacent generated rooms if the simple no-duplicate rule is insufficient.
+8. Technology stack final selection and hosting/persistence providers.
+9. Exact asset/art production approach.
 
 ## Latest Work Record
 
@@ -175,65 +180,89 @@ These are deliberately unresolved and must not be guessed during implementation.
 
 The project was in Stage 0 with no application code.
 
-The room spatial contract had been resolved. The next open design topic was the camera/view model and manual placement feel.
+The camera contract had been resolved. The next design topic was manual placement behavior.
 
-The user proposed a camera around a 30-degree tabletop angle that can move around the map.
+The user clarified that the DM should be able to place **whatever block wherever they want**, including creatures inside pits, creatures on traps, and other overlapping combinations. The user also asked for broader D&D trap thinking rather than treating pit/spring traps as the complete design space.
+
+During the discussion, the user provided a further example: a chest-looking block that transforms into a mimic creature when the player's character touches/interacts with it.
+
+### Research
+
+Reviewed current official/free D&D trap examples and trap structure.
+
+2024 Free Rules/SRD trap patterns include:
+
+- collapsing roof
+- falling net
+- fire-casting statue
+- hidden pit
+- poisoned darts
+- poisoned needle
+- rolling stone
+- spiked pit
+
+The 2024 rules describe traps through reusable concepts including **Trigger**, **Duration**, effects, and optional detection/disarm procedures.
+
+Reviewed 2014 Basic Rules/SRD trap guidance, which includes mechanical and magical traps such as pits, arrows/darts, falling blocks, flooded rooms, blades, and spell traps.
+
+Reviewed the 2014 Basic Rules Mimic as an example of an object-form creature: it can appear as an ordinary object and adheres to creatures that touch it. The project is not copying the monster mechanics into the map engine; the reference validates the need for generic object→creature transformation/reveal behavior.
 
 ### Changes Made
 
-- Read the live project state, SOUL, interaction spec, and spatial contract before changes.
-- Created `docs/CAMERA_CONTRACT.md`.
-- Updated `SOUL.md` with the fixed-angle tabletop camera rule.
-- Updated `docs/INTERACTION_SPEC.md` with visible camera controls and candidate mouse shortcuts.
-- Updated `docs/ROADMAP.md` with camera requirements.
-- Linked the camera contract from README.
-- Updated this live state and removed the camera model from unresolved questions.
+- Read the live project state, SOUL, interaction spec, spatial contract, data schema, and block catalog before changes.
+- Researched D&D trap patterns using current official/free D&D sources.
+- Created `docs/TRAPS_AND_EFFECTS.md`.
+- Updated `SOUL.md` with DM-authoritative placement and universal trigger/effect/transform principles.
+- Updated `docs/SPATIAL_CONTRACT.md` so occupancy describes PLAY behavior but never blocks DM BUILD placement.
+- Updated `docs/DATA_SCHEMA.md` with generic InteractionRule and transform/replace concepts.
+- Expanded `docs/BLOCK_CATALOG.md` with broad trap/hazard families and transforming surprise objects.
+- Updated `docs/INTERACTION_SPEC.md` with permissive overlap and chest→mimic-style transform interaction.
+- Updated `docs/ROADMAP.md` with permissive placement, generic trigger/effect behavior, and transform/replace support.
+- Linked the new traps/effects contract from README.
 
 ### Decisions Made
 
-**Decision:** Default camera elevation is approximately 30° above the board plane.
+**Decision:** The DM may place any object anywhere in BUILD mode, including intentional overlap.
 
-**Reason:** It gives a readable 3D tabletop view while keeping walls, room interiors, and stacked blocks understandable.
+**Reason:** The board must enable creativity rather than enforce physics or assumptions about what belongs in a cell.
 
-**Decision:** The exact rendering angle may be tuned slightly during visual testing; mathematical isometric purity is not required.
+**Decision:** Occupancy and movement-blocking properties describe PLAY behavior only.
 
-**Reason:** A true isometric elevation is roughly 35.3°, but readability is more important than exact projection geometry.
+**Reason:** A wall may block ordinary player movement, but that must not prevent the DM from placing a monster in that location if desired.
 
-**Decision:** Vertical camera tilt is locked for MVP.
+**Decision:** The editor may warn about overlap but may not reject the placement.
 
-**Reason:** Users should not be able to flip under the board, look upside down, or lose the map through free-fly camera controls.
+**Reason:** The DM is authoritative.
 
-**Decision:** Camera can orbit horizontally around its focus point while maintaining the fixed elevation.
+**Decision:** Traps and hazards are composed from reusable triggers and effects.
 
-**Reason:** This gives access to all sides of the board without requiring object rotation.
+**Reason:** D&D examples vary widely—pressure plates, trip wires, pits, nets, darts, falling objects, magical effects, moving hazards—but share reusable structural concepts.
 
-**Decision:** Pan and zoom are supported.
+**Decision:** Transform/replace is a universal effect.
 
-**Reason:** DMs need to move between rooms and inspect details.
+**Reason:** A chest becoming a mimic is the same underlying behavior class as statue→gargoyle, armor→animated armor, bones→skeleton, sarcophagus→undead, or scenery→hazard.
 
-**Decision:** An obvious Reset/Home control is required.
+**Decision:** A transform should be able to preserve map placement while changing appearance, category, capabilities, footprint, and interaction behavior.
 
-**Reason:** A child/new user must always be able to recover the view.
-
-**Decision:** Visible camera controls are authoritative; mouse/touch gestures are optional conveniences.
-
-**Reason:** Basic operation should not depend on knowing hidden desktop gestures.
+**Reason:** The surprise should happen in place rather than requiring a special-case engine.
 
 ### Cost Impact
 
 None.
 
-This is documentation and product design only. No dependency, service, asset, or application code was added.
+This session added documentation and research only. No dependency, service, asset, hosting cost, or application code was added.
 
 ### Result
 
-The camera model is now defined:
+The placement/hazard architecture is now substantially broader:
 
-> fixed tabletop angle near 30° + horizontal orbit + pan + zoom + Reset/Home.
+> BUILD mode permits any DM placement. PLAY behavior comes from reusable object properties and trigger/effect rules.
 
-No first-person, free-fly, or free vertical tilt is part of MVP.
+And:
 
-Both Three.js and Babylon.js can support this model, so this decision does not force the rendering-library choice.
+> A chest can be placed as an ordinary-looking object, then on touch/interact transform in place into a mimic creature block.
+
+The same primitives cover a much wider set of D&D-style hazards, ambushes, and environmental surprises.
 
 No application code has been written.
 
@@ -244,20 +273,21 @@ No application code has been written.
 3. MVP authentication/join identity model.
 4. Persistence and undo/redo strategy.
 5. Repeated-placement behavior after selecting a block.
-6. Shared-wall editing if needed.
-7. Three.js vs Babylon.js final choice.
-8. Exact art/asset production approach.
+6. Right-click removal behavior when several overlapping objects share the same visible location.
+7. Shared-wall editing if needed.
+8. Three.js vs Babylon.js final choice.
+9. Exact art/asset production approach.
 
 ### Exact Next Step
 
 Stay in design mode.
 
-Resolve **manual block placement behavior** next:
+Resolve **manual placement and object-selection behavior** next:
 
-- how the DM places a block on top of another block
-- whether selected blocks remain active for repeated placement
-- placement preview behavior
-- valid/invalid placement feedback
-- how moving an existing unlocked block differs from placing a new block
+- how clicking the top/side of a block chooses elevation
+- whether the selected palette block remains active for repeated placement
+- placement ghost/preview appearance
+- how overlapping objects are selected/removed without making the UI complicated
+- how an unlocked existing block is picked up and moved
 
 Do not write application code yet.
