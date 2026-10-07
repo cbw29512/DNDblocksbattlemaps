@@ -332,12 +332,12 @@ Generated room previews should inform the DM about reused/shared structure and o
 
 Creature footprints remain:
 
+- Tiny: shares a 5-foot square; first four auto-offset visually without creating a permanent 2.5-foot subgrid
 - Small: 1×1
 - Medium: 1×1
 - Large: 2×2
 - Huge: 3×3
 - Gargantuan: 4×4
-- Tiny: deferred
 
 A multi-square creature is one entity.
 
