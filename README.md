@@ -42,6 +42,7 @@ The current priority is defining the product, interaction model, state model, pe
 - [Camera Contract](docs/CAMERA_CONTRACT.md) — fixed tabletop angle, orbit, pan, zoom, and view-recovery rules
 - [Traps & Effects](docs/TRAPS_AND_EFFECTS.md) — universal trigger/effect, hazard, overlap, and transforming-object contract
 - [Placement Contract](docs/PLACEMENT_CONTRACT.md) — select-once/place-many, stacking, elevation, overlap selection, moving, and undo rules
+- [Player Join Contract](docs/PLAYER_JOIN_CONTRACT.md) — player entry, identity, assignment, movement, interaction, override, and Tiny creature rules
 
 ## Development rule
 
