@@ -25,7 +25,7 @@ The goal is to make encounter setup feel like placing physical magnetic terrain 
 
 **Planning / architecture only. No application code yet.**
 
-The current priority is defining the product, interaction model, state model, permissions, MVP boundary, cost constraints, and anti-drift rules before choosing a technology stack.
+The core product, interaction, state, permission, persistence, visual, and MVP architecture contracts are now documented. No application code has been written yet; implementation begins only after the pre-implementation audit/checklist is satisfied and the user directs the project to code.
 
 ## Project contracts
 
@@ -44,6 +44,9 @@ The current priority is defining the product, interaction model, state model, pe
 - [Placement Contract](docs/PLACEMENT_CONTRACT.md) — select-once/place-many, stacking, elevation, overlap selection, moving, and undo rules
 - [Player Join Contract](docs/PLAYER_JOIN_CONTRACT.md) — player entry, identity, assignment, movement, interaction, override, and Tiny creature rules
 - [Persistence & Recovery](docs/PERSISTENCE_UNDO_CONTRACT.md) — autosave, Undo/Redo, revisions, deduplication, crash recovery, and reconnect rules
+- [Visual Language](docs/VISUAL_LANGUAGE.md) — original block style, placement/hidden/ownership/lock/Tiny visual feedback
+- [MVP Stack ADR](docs/ADR_001_MVP_WEB_STACK.md) — accepted TypeScript/Vite/Three.js/Supabase/Cloudflare architecture
+- [Dependency Register](docs/DEPENDENCY_REGISTER.md) — required dependency/license/provenance ledger before third-party imports
 
 ## Development rule
 
