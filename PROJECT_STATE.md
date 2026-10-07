@@ -114,6 +114,7 @@ The DM is the authority. The board must work without automated RPG rules.
 79. **Board hard cap is 100×100.** Width and depth independently stop at 100 squares as a Stage 1 safety limit.
 80. **Board bounds are authoritative persisted state.** Renderer ground/grid geometry derives from state and does not own map size.
 81. **Print Map bridges digital and physical play.** Print a derived top-down map at 1 physical inch per 5-ft square, tiled as 8×10-square Letter pages, using built-content bounds plus one-square padding.
+82. **Browser bundle parity is a release gate.** Because the current Pages test can serve checked-in `web/` files, `web/` must be regenerated from `src/` before a browser-test checkpoint is considered complete. Source-green alone is insufficient.
 
 ## Cost Guardrail
 
@@ -232,108 +233,62 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The starter catalog had introduced two types of drift that were corrected first:
+The user asked whether the expandable-board/Print Map work had actually been pushed because the live screenshot still showed the old builder UI.
 
-- character/monster artwork showed broken placeholders on the Pages test build
-- props/combatants had begun using non-cube geometry even though the product is fundamentally a 5-ft cube builder
+Inspection confirmed:
 
-After the cube-only correction passed, the user approved an expandable board and printable physical map.
+- `src/app/builder.ts` contained Print Map, dynamic board size, and growth logic.
+- `web/app/builder.js` was still the older 20×20/no-Print-Map browser bundle.
+- The source commits and CI were green, but the checked-in browser bundle used by the Pages test surface had not been regenerated and committed.
 
 ### Changes Made
 
-#### Cube identity correction
+- Added `.github/workflows/sync-web.yml` as a browser-bundle safeguard.
+- The first sync run failed because this repo intentionally has no `package-lock.json`; corrected the workflow from `npm ci` to the repository's existing successful `npm install --no-audit --no-fund` pattern.
+- Sync run #2:
+  - installed dependencies
+  - ran TypeScript + unit tests
+  - regenerated `web/` from `src/`
+  - committed the compiled browser bundle
+  - rebuilt/deployed Pages
+- Generated browser bundle commit:
+  - `94bb2ab2ab10a87da8d0f1b7de68c977e09dc3c5`
+- Verified current `web/app/builder.js` now contains:
+  - Print Map
+  - dynamic board growth
+  - live board-size display
+- Pages build/deployment #31 on the generated-bundle commit: **SUCCESS**.
+- Added a permanent browser-bundle parity rule to implementation guidance and project state.
 
-- All starter catalog objects now render as exact 1×1×1 5-ft cubes.
-- Removed standee, cylinder, thin-door, and fractional prop geometry.
-- Barrel, Door, Table, Torch, Fighter, Goblin, etc. are distinguished by face art/material rather than custom mesh shape.
-- Character/monster art is painted on all four vertical cube faces.
-- Added browser-base-aware asset URL resolution for Pages/Netlify-relative deployment.
-- Added a regression that rejects any starter catalog item that is not a perfect one-cell cube.
+### Decision
 
-#### Dynamic board
+**A green source build is not enough while the Pages test surface can serve checked-in `web/` output.**
 
-- Default board is now **30×30 squares**.
-- Board bounds are authoritative persisted state.
-- Existing Stage 1 local saves without bounds migrate to a 30×30 default.
-- Building on an outer edge expands only that side by **10 squares**.
-- Existing world coordinates never recenter or move.
-- Width and depth independently stop at **100 squares**.
-- Room stamping uses the same board-growth primitive.
-- Side-face placement may request a new cell beyond the current edge; board growth accepts/rejects it.
-- Three.js ground, grid, placement plane, camera zoom range, and Home framing derive from current board bounds.
-- Fallback grid also derives from current bounds.
-- Clear Map resets to a fresh 30×30 board.
-- Builder top bar shows current map dimensions.
+Before reporting a browser-visible feature as live, verify:
 
-#### Print Map
+1. `src/` is correct
+2. `web/` is regenerated from `src/`
+3. the committed browser bundle contains the feature
+4. Pages succeeds on that exact bundle commit
+5. then perform browser verification
 
-- Added **Print Map** in the builder top bar.
-- Print output is a separate top-down derived view, not a screenshot of the 3D camera.
-- One printed grid square = **1 physical inch = 5 ft**.
-- US Letter pages contain **8×10** grid squares.
-- Large layouts tile automatically over multiple pages.
-- Printing uses placed-content bounds plus one square of padding so a small dungeon does not waste the entire 30×30 workspace.
-- Pages include page labels and corner alignment marks.
-- Art-backed pieces use catalog face art; non-art pieces use catalog color plus a readable label.
-- The editor UI is hidden from print output.
-- The user should choose **Actual Size / 100%** in the browser print dialog for exact miniature scale.
-
-### Verification
-
-Cube-only correction:
-
-- commit `49c8c1c5f0c5275cde8723f95215fde18581f6bb`
-- Deploy GitHub Pages Test #11: **SUCCESS**
-- pages build and deployment #26: **SUCCESS**
-
-Expandable board + Print Map:
-
-- commit `3d89320f02cd8312ec00382c076f3ce9e6d788ac`
-- Deploy GitHub Pages Test #12: **SUCCESS**
-- pages build and deployment #27: **SUCCESS**
-- TypeScript typecheck: passed
-- unit tests: passed
-- static build: passed
-- Pages deployment: passed
-
-The temporary push trigger is restored to manual-only in this cleanup commit.
-
-### Decisions Made
-
-**The cube language is non-negotiable.**
-
-Geometry never explains the identity of an object. Face art/material does.
-
-**Map size is not a setup question.**
-
-The DM starts with 30×30 and simply builds. Space grows in 10-square chunks as needed.
-
-**Growth is persistent workspace, not Undo history.**
-
-Undo/removal does not shrink the map after it expanded.
-
-**Print bridges digital and physical tabletop play.**
-
-The printable view is top-down and physically scaled rather than a 3D screenshot.
+The new Sync Browser Bundle workflow is manual-safe after its bootstrap trigger and does not run on normal source pushes unless explicitly invoked/changed.
 
 ### Cost Impact
 
 None.
 
-No new package, API, paid service, or Netlify production deployment.
-
 ### Result
 
-Cube-only catalog identity, 30×30 dynamic board growth, 100×100 safety cap, and physical-scale Print Map are green on the GitHub Pages test surface.
+The browser bundle is now actually synchronized and Pages has successfully deployed the synchronized commit.
 
 ### Exact Next Step
 
-1. Hard-refresh the test site.
-2. Confirm character/monster pictures now load.
-3. Confirm Barrel/Door/Table/etc. are square cubes.
-4. Place blocks on each outside edge and watch the map grow by 10 squares on that side.
-5. Stamp a room near an edge and confirm the board expands without moving existing rooms.
-6. Press Home and confirm the enlarged map reframes.
-7. Click Print Map and inspect tiled print preview.
-8. For a ruler check, print/test at Actual Size / 100% and confirm one grid square measures 1 inch.
-9. Then implement multi-cube Large/Huge/Gargantuan creatures and continue face-art quality for Build/Props.
+1. Hard-refresh the Pages test site.
+2. Confirm the top bar now shows:
+   - live board dimensions such as **30 × 30 squares**
+   - **Print Map**
+3. Confirm Fighter/Cleric/Rogue/Wizard and monster art load.
+4. Confirm all board objects are cubes.
+5. Test edge growth and Print Map.
+6. If browser behavior matches, continue with multi-cube Large/Huge/Gargantuan creature footprints and Build/Prop face art.

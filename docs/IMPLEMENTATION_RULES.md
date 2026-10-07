@@ -259,6 +259,20 @@ Never commit:
 
 Browser code may only use credentials explicitly designed for public client use and must still rely on correct backend authorization/RLS.
 
+## Browser Bundle Parity Gate
+
+The current repository keeps generated browser JavaScript under `web/` while authoritative TypeScript lives under `src/`.
+
+For any browser-visible checkpoint:
+
+1. regenerate `web/` from `src/` using `npm run compile:web`
+2. verify the generated `web/` diff is included in the checkpoint
+3. verify the browser bundle contains the new behavior
+4. do not report a Pages feature as live merely because TypeScript/tests/build passed in an isolated CI workspace
+5. verify Pages on the exact commit containing the synchronized browser bundle
+
+The `Sync Browser Bundle` workflow exists as a safeguard, not as a substitute for coherent local-first checkpoints.
+
 ## Documentation Completion Gate
 
 A code task is not complete until:
