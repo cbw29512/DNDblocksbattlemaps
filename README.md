@@ -38,6 +38,7 @@ The current priority is defining the product, interaction model, state model, pe
 - [Competitor Research](docs/COMPETITOR_RESEARCH.md) — voxel/3D VTT landscape and differentiation
 - [Open-Source Reuse](docs/OPEN_SOURCE_REUSE.md) — Minecraft reference policy, license gate, and reusable engine candidates
 - [Technology Stack Candidates](docs/TECH_STACK_CANDIDATES.md) — web-first, open-source-first, low-cost architecture options
+- [Spatial Contract](docs/SPATIAL_CONTRACT.md) — authoritative room dimensions, wall/door placement, occupancy, and room-lock rules
 
 ## Development rule
 
