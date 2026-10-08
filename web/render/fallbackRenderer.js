@@ -104,9 +104,9 @@ export function createFallbackRenderer(container, handlers) {
                     const placement = chooseRoomPlacement(room, corner, currentObjects, currentBounds);
                     paintRoomPreview(placement ?? previewRoomPlacement(corner), Boolean(placement));
                 });
-                cell.addEventListener('click', () => {
+                cell.addEventListener('click', (event) => {
                     if (areaTemplate) {
-                        handlers.onAreaPoint({ x, z, elevation }, true);
+                        handlers.onAreaPoint({ x, z, elevation }, true, event.pointerType === 'touch');
                         return;
                     }
                     if (top && handlers.onMarkTarget(top.id))
