@@ -12,7 +12,7 @@ export const STARTER_TEMPLATES = [
   { id: 'cave', name: 'Goblin Cave', terrain: 'castle', description: 'Winding stone chambers, crates, campfire, and an ambush.' },
   { id: 'temple', name: 'Ancient Temple', terrain: 'castle', description: 'Antechamber, columns, altar, and sealed inner sanctum.' },
   { id: 'ruins', name: 'Ruined Outpost', terrain: 'field', description: 'Broken walls, collapsed sections, and scattered supplies.' }
-];
+] as const;
 
 export function buildStarterTemplate(templateId: string, mapId: string, roster: PartyRoster = {}): BoardState {
   const template = STARTER_TEMPLATES.find(t => t.id === templateId);
@@ -46,18 +46,25 @@ export function buildStarterTemplate(templateId: string, mapId: string, roster: 
       add('open-doorway',doorX,doorZ);
     }
   };
+  const doorway = (x: number, z: number): void => {
+    for(let i=objects.length-1;i>=0;i--){
+      if(objects[i].x===x && objects[i].z===z && objects[i].elevation===1 &&
+        ['wood-wall','stone-wall','cave-wall','castle-wall'].includes(objects[i].catalogId)) objects.splice(i,1);
+    }
+    add('open-doorway',x,z);
+  };
   if (templateId === 'inn') {
     floor('wood-block',-9,-8,9,9);
     walls('wood-wall',-9,-8,9,9,0,9);
-    line('wood-wall',-9,-1,9,-1); add('open-doorway',0,-1);
-    line('wood-wall',-2,-8,-2,-2); add('open-doorway',-2,-5);
-    line('wood-wall',4,-8,4,-2); add('open-doorway',4,-5);
+    line('wood-wall',-9,-1,9,-1); doorway(0,-1);
+    line('wood-wall',-2,-8,-2,-2); doorway(-2,-5);
+    line('wood-wall',4,-8,4,-2); doorway(4,-5);
     for (const [x,z] of [[-6,4],[0,4],[6,4]]) {
       add('table',x,z); add('chair',x-1,z); add('chair',x+1,z);
     }
     line('table',-7,0,-3,0); add('barrel',-8,-6);add('barrel',-7,-6);
     add('chest',0,-7);add('bed',6,-6);add('bed',8,-6);add('bed',-5,-6);
-    add('fireplace',8,-1);add('stairs',-7,-2);add('door',0,9);
+    add('fireplace',8,-1);add('stairs',-7,-2);
   } else if (templateId === 'castle') {
     floor('cobblestone',-11,-10,11,10);walls('castle-wall',-11,-10,11,10,0,10);
     walls('stone-wall',-7,-7,7,-2,0,-2);add('stairs',-5,-3);
@@ -67,7 +74,7 @@ export function buildStarterTemplate(templateId: string, mapId: string, roster: 
     floor('dungeon-tile',-10,-10,10,9);walls('stone-wall',-10,-10,10,9,0,9);
     line('stone-wall',-3,-10,-3,5);line('stone-wall',4,-10,4,5);
     line('stone-wall',-10,2,10,2);
-    for (const [x,z] of [[-3,-4],[4,-4],[-3,2],[4,2]]) add('open-doorway',x,z);
+    for (const [x,z] of [[-3,-4],[4,-4],[-3,2],[4,2]]) doorway(x,z);
     add('trapdoor',-7,-5);add('chest',7,-7);add('stairs',0,8);add('pillar',-7,5);
   } else if (templateId === 'forest') {
     floor('grass',-11,-10,11,10);
@@ -83,11 +90,11 @@ export function buildStarterTemplate(templateId: string, mapId: string, roster: 
   } else if(templateId==='cave') {
     floor('dirt',-10,-9,10,9);walls('cave-wall',-10,-9,10,9,0,9);
     line('cave-wall',-4,-9,-4,0);line('cave-wall',3,0,3,9);
-    add('open-doorway',-4,-3);add('open-doorway',3,5);add('chest',8,-7);
+    doorway(-4,-3);doorway(3,5);add('chest',8,-7);
     add('rock',-7,1);add('rock',6,2);add('campfire',-1,-5);
   } else if(templateId==='temple') {
     floor('stone-block',-10,-9,10,9);walls('stone-wall',-10,-9,10,9,0,9);
-    line('stone-wall',-10,-2,10,-2);add('open-doorway',0,-2);
+    line('stone-wall',-10,-2,10,-2);doorway(0,-2);
     for (const x of [-7,-3,3,7]) for(const z of [-6,3])add('pillar',x,z);
     add('table',0,-7);add('chest',-7,-7);
   } else {
