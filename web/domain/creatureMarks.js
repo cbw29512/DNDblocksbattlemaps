@@ -12,6 +12,14 @@ export const CONDITIONS = [
   'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'
 ];
 
+export const CONDITION_COLORS = {
+  Blinded: 0x8a8c91, Charmed: 0xec74b4, Deafened: 0x6e91ab,
+  Exhaustion: 0xb58955, Frightened: 0x9d82ee, Grappled: 0x4cc4aa,
+  Incapacitated: 0x8978a9, Invisible: 0x89d4e5, Paralyzed: 0xf7a04c,
+  Petrified: 0x9aa19b, Poisoned: 0x6edc75, Prone: 0xe7c47f,
+  Restrained: 0x659ada, Stunned: 0xffdc62, Unconscious: 0xecece4
+};
+
 export function isCreature(object) {
   const category = getCatalogItem(object.catalogId).category;
   return category === 'Characters' || category === 'Monsters';
