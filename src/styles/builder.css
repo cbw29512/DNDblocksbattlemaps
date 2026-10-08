@@ -260,3 +260,6 @@
   .mobile-spell-actions button{min-width:100px;min-height:48px;padding:10px 14px;border-radius:9px;border:1px solid #d1b78d;background:#755a3c;color:white;font-weight:700}
   .mobile-spell-actions button:disabled{opacity:.5}
 }
+
+/* UA [hidden] can be overridden by our sidebar flex layout; never show combat spells in Build Mode. */
+.builder-sidebar #combat-spells-panel[hidden] { display: none !important; }
