@@ -28,6 +28,8 @@ export interface WorldObject extends GridPosition {
   catalogId: CatalogId;
   /** Character-only ring color; red is reserved for monsters. */
   ringColor?: number;
+  conditions?: string[];
+  exhaustion?: number;
   createdAt: number;
 }
 
@@ -62,6 +64,7 @@ export interface TerrainTheme {
 }
 
 export type EditCommand =
+  | { kind: 'update'; before: WorldObject; after: WorldObject }
   | { kind: 'place'; object: WorldObject }
   | { kind: 'remove'; object: WorldObject }
   | { kind: 'place-many'; objects: WorldObject[] }
