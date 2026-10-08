@@ -1,15 +1,15 @@
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=3aba2c42c4ac';
-import { printBoardMap } from './printMap.js?v=3aba2c42c4ac';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=3aba2c42c4ac';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=3aba2c42c4ac';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=3aba2c42c4ac';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=3aba2c42c4ac';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=3aba2c42c4ac';
-import { roomSummary } from '../domain/room.js?v=3aba2c42c4ac';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=3aba2c42c4ac';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=3aba2c42c4ac';
-import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=3aba2c42c4ac';
-import { createRenderer } from '../render/createRenderer.js?v=3aba2c42c4ac';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=ironart1008';
+import { printBoardMap } from './printMap.js?v=ironart1008';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=ironart1008';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=ironart1008';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=ironart1008';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=ironart1008';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=ironart1008';
+import { roomSummary } from '../domain/room.js?v=ironart1008';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=ironart1008';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=ironart1008';
+import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=ironart1008';
+import { createRenderer } from '../render/createRenderer.js?v=ironart1008';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }

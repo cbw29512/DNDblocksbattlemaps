@@ -1,5 +1,5 @@
-import { getCatalogItem } from '../domain/catalog.js?v=3aba2c42c4ac';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=3aba2c42c4ac';
+import { getCatalogItem } from '../domain/catalog.js?v=ironart1008';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=ironart1008';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;
@@ -23,6 +23,7 @@ function materialFor(THREE, item) {
         // SVG data URLs work in <img>, but direct WebGL upload can produce black faces.
         // Rasterize into a concrete, sized canvas before sending pixels to the GPU.
         const source = new Image();
+    source.crossOrigin = 'anonymous';
         source.onload = () => {
             try {
                 if (!source.naturalWidth || !source.naturalHeight)

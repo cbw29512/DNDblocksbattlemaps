@@ -186,7 +186,7 @@ test('ordinary blocks have generated face art and combatants keep local Iron Pit
     for (const id of catalogIdsForCategory(category)) {
       const item = PALETTE[id];
       assert.equal(item.art?.source, 'iron-pit', `${id} must use Iron Pit art`);
-      assert.match(item.art?.src ?? '', /^assets\/catalog\/(heroes|monsters)\/.+\.webp$/);
+      assert.match(item.art?.src ?? '', /^https:\/\/raw\.githubusercontent\.com\/cbw29512\/D20-ironpit\/main\/frontend\/assets\/portraits\/(heroes|monsters)\/.+\.webp$/);
     }
   }
 });

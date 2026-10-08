@@ -12,14 +12,14 @@ export const TERRAIN_THEMES: Record<TerrainId, TerrainTheme> = {
 };
 
 const heroArt = (id: string, name: string): CatalogArt => ({
-  src: 'assets/catalog/heroes/' + id + '.webp',
+  src: 'https://raw.githubusercontent.com/cbw29512/D20-ironpit/main/frontend/assets/portraits/heroes/' + id + '.webp',
   alt: name,
   source: 'iron-pit',
   sourceId: id
 });
 
 const monsterArt = (id: string, name: string): CatalogArt => ({
-  src: 'assets/catalog/monsters/' + id + '.webp',
+  src: 'https://raw.githubusercontent.com/cbw29512/D20-ironpit/main/frontend/assets/portraits/monsters/' + id + '.webp',
   alt: name,
   source: 'iron-pit',
   sourceId: id
