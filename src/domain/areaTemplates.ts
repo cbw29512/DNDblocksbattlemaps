@@ -52,9 +52,16 @@ export function areaContainsPoint(t: AreaTemplate, p: AreaPlacement, point: Area
       point.x===p.origin.x+step*ux && point.z===p.origin.z+step*uz;
   }
   if (t.shape==='sphere') {
-    const sliceRadius=Math.sqrt(Math.max(0,t.sizeFeet*t.sizeFeet-cy*cy));
-    return Math.abs(cy)<t.sizeFeet+EPSILON &&
-      circularGridCellAffected(sliceRadius,p.center.x,p.center.z,point.x,point.z);
+    // Grid cells are full 5-foot volumes, not point samples or horizontal slices.
+    // The center and each cell coordinate refer to a grid boundary.
+    // Squared distance to the nearest point of the cell's axis-aligned cube
+    // gives an exact sphere/cube positive-intersection test.
+    const r=t.sizeFeet/GRID_FEET;
+    const distanceAxis=(origin:number,low:number)=>Math.max(low-origin,origin-(low+1),0);
+    const ax=distanceAxis(p.center.x,point.x);
+    const az=distanceAxis(p.center.z,point.z);
+    const ay=distanceAxis(p.center.elevation,point.elevation);
+    return ax*ax+az*az+ay*ay < r*r-EPSILON;
   }
   if (t.shape==='cylinder') return Math.hypot(cx,cz)<=t.sizeFeet+EPSILON &&
     cy>=-EPSILON && cy<=(t.heightFeet ?? 20)+EPSILON;
