@@ -9,6 +9,7 @@ export function createFallbackRenderer(container, handlers) {
     board.className = 'fallback-board';
     container.replaceChildren(board);
     let selected = null;
+    let movingCreatureId = null;
     let room = null;
     let elevation = 0;
     let theme = null;
@@ -93,6 +94,14 @@ export function createFallbackRenderer(container, handlers) {
                             handlers.onStatus('That room would exceed the map limit.');
                         return;
                     }
+                    if (movingCreatureId) {
+                        handlers.onMoveCreature({ x, z, elevation });
+                        return;
+                    }
+                    if (top && ['Characters', 'Monsters'].includes(getCatalogItem(top.catalogId).category)) {
+                        handlers.onPickCreature(top.id);
+                        return;
+                    }
                     if (!selected)
                         return;
                     const next = stackElevationAt(currentObjects, x, z, elevation);
@@ -133,6 +142,7 @@ export function createFallbackRenderer(container, handlers) {
             room = next;
             draw();
         },
+        setMovingCreature(id) { movingCreatureId = id; },
         setElevation(next) {
             elevation = next;
         },
