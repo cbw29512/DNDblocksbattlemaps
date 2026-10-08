@@ -378,3 +378,14 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Result:** 2×2 mesh expansion committed to draft PR #1, tests/browser checks unverified. No Large monster was added to the palette.
 - **Open Questions / Blockers:** individual subcubes currently repeat the full illustration instead of composing a single creature silhouette. Need coherent tiled art, creature footprint state/placement selection verification and verified Ogre asset.
 - **Exact Next Step:** fix coherent multi-cube face textures, run `npm run check`, visually inspect 2×2 Ogre on Pages test deployment, and merge only after green checks.
+
+
+## 2026-10-07 — Placement click defect report
+
+- **Starting State:** user reports choosing a catalog block and clicking the map does nothing.
+- **Changes Made:** Three.js placement ray now retries the visible ground mesh when invisible placement-plane raycasting misses; if no valid placement is found, a clear board-status message replaces silent failure. Authoritative source and checked-in browser module updated in the draft PR branch.
+- **Decisions Made:** no changes to WorldObject, command pipeline, cube geometry, or room placement rules. This is a defensive fix and diagnostic; root cause has not been reproduced in a real browser.
+- **Cost Impact:** zero new packages, services or deploys.
+- **Result:** fix pushed to PR #1, not merged/deployed/tested. Current production and Pages may still contain old code.
+- **Blockers:** run browser reproduction, validate palette click activates tool and hover ghost, inspect console and click status. Review CSS overlays and script caching if it persists.
+- **Exact Next Step:** reproduce on Pages test, run npm check and compare served browser revision to source before merging/releasing.
