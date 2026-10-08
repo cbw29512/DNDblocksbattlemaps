@@ -189,6 +189,7 @@ export async function renderBuilder(
     spellCenter=point;
     renderer?.setAreaPreview(activeSpell,placement);
     const targets=previewTargets();
+    renderer?.setAreaTargets(targets.map(o=>o.id));
     status.textContent='Preview intersects '+targets.length+' creature(s): '+(targets.map(o=>getCatalogItem(o.catalogId).name).join(', ')||'none')+'. Geometry provisional; not RAW-confirmed.';
     castButton.disabled=false;
     if(commit) castArea();
@@ -212,6 +213,7 @@ export async function renderBuilder(
     casterOrigin=chosen ? {x:chosen.x,z:chosen.z,elevation:chosen.elevation} : {x:0,z:0,elevation:0};
     spellCenter=null; castButton.disabled=true; cancelButton.disabled=false;
     renderer?.setAreaPreview(null,null);
+    renderer?.setAreaTargets([]);
     spellInstructions.textContent='Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
     status.textContent='Area preview armed. First creature on map used as origin if present.';
   });
