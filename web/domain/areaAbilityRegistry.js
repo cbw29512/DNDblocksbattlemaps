@@ -1,4 +1,4 @@
-import { AREA_PRESETS } from './areaTemplates.js?v=52bb29362d61';
+import { AREA_PRESETS } from './areaTemplates.js?v=32b0f453931a';
 /** No sample below is certified RAW; each edition has an independent identity. */
 export const AREA_ABILITY_REGISTRY = ['2014', '2024']
     .flatMap(edition => AREA_PRESETS.map(area => ({
