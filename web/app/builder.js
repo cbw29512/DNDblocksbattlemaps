@@ -1,6 +1,7 @@
+import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js';
 import { areaCells } from '../domain/areaTemplates.js?v=e0b1f72628a1';
 import { previewAffectedCreatures } from '../domain/areaTargets.js?v=e0b1f72628a1';
-import { AREA_PRESETS, isInCastingRange } from '../domain/areaTemplates.js?v=e0b1f72628a1';
+import { isInCastingRange } from '../domain/areaTemplates.js?v=e0b1f72628a1';
 import { createBrowserBackup } from '../domain/browserBackup.js?v=e0b1f72628a1';
 import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=e0b1f72628a1';
 import { setPartyMembership } from '../domain/party.js?v=e0b1f72628a1';
@@ -58,7 +59,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         <section class="combat-spell-tools" aria-label="Spell measurement and combat log">
           <strong>Spell &amp; Area Preview</strong>
           <label for="spell-choice">Effect</label>
-          <select id="spell-choice"><option value="fireball">Fireball — 20 ft radius</option>${AREA_PRESETS.filter(t => t.id !== 'fireball').map(t => `<option value="${t.id}">${t.label}</option>`).join('')}</select>
+          <select id="spell-choice">${AREA_ABILITY_REGISTRY.map(record=>`<option value="${record.key}">${record.edition} · ${record.area.label} (sample preview — unverified)</option>`).join('')}</select>
           <label for="spell-caster">Caster on map</label><select id="spell-caster"><option value="">Choose a creature</option></select>
           <button id="preview-spell" type="button">Preview Area</button>
           <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
@@ -207,7 +208,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     };
     root.querySelector('#preview-spell')?.addEventListener('click', () => {
         const id = root.querySelector('#spell-choice')?.value;
-        activeSpell = AREA_PRESETS.find(x => x.id === id) ?? AREA_PRESETS[0] ?? null;
+        activeSpell = getAreaAbility(id ?? '')?.area ?? null;
         const casterId = root.querySelector('#spell-caster')?.value;
         const chosen = state.objects.find(x => x.id === casterId && ['Characters', 'Monsters'].includes(getCatalogItem(x.catalogId).category));
         if (!chosen) {
@@ -222,7 +223,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         renderer?.setAreaPreview(null, null);
         renderer?.setAreaTargets([]);
         spellInstructions.textContent = 'Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
-        status.textContent = 'Area preview armed. Selected creature is the caster origin.';
+        status.textContent = 'Area preview armed (unverified sample). Selected creature is the caster origin.';
     });
     castButton.addEventListener('click', castArea);
     cancelButton.addEventListener('click', cancelArea);

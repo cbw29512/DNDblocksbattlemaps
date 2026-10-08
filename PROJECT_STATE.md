@@ -523,3 +523,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Website How to Play grid-spell notice
 - Added explicit guidance that AoE spells with a radius/sphere/cone display as full 5-foot squares/cubes on DND Blocks; RAW measurements, saves and damage remain unchanged. Linked this documentation requirement into the combat plan. Documentation-only; no renderer or rules change.
+
+## 2026-10-08 — A3 initial edition-keyed ability registry (IN PROGRESS)
+- New source and browser registry keys existing sample effects by `edition:source entity:action` for 2014 and 2024; every sample explicitly labeled `illustrative` and without source verification. Editor lists its edition and unverified label, resolving by stable key. This is *not* a verified 2014/2024 spell library and sample sizes are not certified. Tests ensure keys remain distinct and no sample passes RAW certification. Pending CI/browser QA.

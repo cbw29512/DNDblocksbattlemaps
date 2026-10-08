@@ -628,3 +628,15 @@ test('DMG circular half-square grid: 20-foot Fireball has 52 horizontal squares,
   assert.ok(circularSquareCoverage(20,0,0,-4,-4)<0.5);
   assert.equal(circularGridCellAffected(10,0,0,0,0),true);
 });
+
+test('area registry keeps edition identities distinct and samples fail closed',async()=>{
+ const {AREA_ABILITY_REGISTRY,getAreaAbility,isRawCertified}=await import('../.test-build/src/domain/areaAbilityRegistry.js');
+ const entries=AREA_ABILITY_REGISTRY.filter(x=>x.actionId==='fireball');
+ assert.deepEqual(entries.map(x=>x.edition),['2014','2024']);
+ assert.notEqual(entries[0].key,entries[1].key);
+ assert.equal(new Set(AREA_ABILITY_REGISTRY.map(x=>x.key)).size,AREA_ABILITY_REGISTRY.length);
+ assert.equal(getAreaAbility('2014:sample:fireball')?.verification,'illustrative');
+ assert.equal(getAreaAbility('2024:sample:fireball')?.verification,'illustrative');
+ assert.equal(getAreaAbility('2024:sample:missing'),null);
+ assert.ok(AREA_ABILITY_REGISTRY.every(x=>!isRawCertified(x)));
+});
