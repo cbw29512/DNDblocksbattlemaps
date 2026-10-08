@@ -289,3 +289,7 @@ If implementation pressure suggests violating a locked product contract:
 **stop implementation and update/reconcile the contract first.**
 
 Do not silently make code the new source of truth.
+
+
+## Always update user-facing instructions
+Any change to Build, Combat, map creation, movement, status rings, Party, camera controls, printing or onboarding must also update `public/how-to-play.html` (served at /how-to-play.html) in the same PR. A new user should be able to find the page from within the builder. Never describe planned multiplayer features as if implemented.

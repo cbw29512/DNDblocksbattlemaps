@@ -213,3 +213,12 @@
 .campaign-map-tabs strong {grid-column:1/-1;}
 .campaign-map-tabs button {border:1px solid #686e66;border-radius:6px;background:#252a25;color:#fff;cursor:pointer;padding:.4rem;font-size:.76rem;}
 .campaign-map-tabs button[aria-current="page"] {border-color:#c6a75e;background:#4b402b;}
+
+.starter-map-panel {display:grid;gap:.5rem;padding:.75rem;border:1px solid rgba(255,255,255,.2);border-radius:10px;margin:0 0 .75rem;color:#f2efe6;}
+.starter-map-panel strong {font-size:.86rem;}
+.starter-map-panel small {font-size:.72rem;line-height:1.4;color:#bcb8ad;}
+.starter-map-panel select {background:#252922;color:#fff;border:1px solid #898779;border-radius:6px;padding:.5rem;min-width:0;width:100%;}
+.starter-map-panel[hidden] {display:none;}
+.status-token {cursor:pointer;}
+.status-token.selected {background:#4c492d;border:2px solid #ffe28c;box-shadow:0 0 0 2px rgba(255,226,140,.2);font-weight:800;}
+.status-token:focus-visible {outline:3px solid #f6da7a;outline-offset:2px;}

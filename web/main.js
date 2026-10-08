@@ -1,6 +1,7 @@
-import { renderBuilder } from './app/builder.js?v=startfix1008';
-import { renderHome } from './app/home.js?v=startfix1008';
-import { renderJoin } from './app/join.js?v=startfix1008';
+import { listCampaignMaps } from './domain/storage.js?v=templates1008';
+import { renderBuilder } from './app/builder.js?v=templates1008';
+import { renderHome } from './app/home.js?v=templates1008';
+import { renderJoin } from './app/join.js?v=templates1008';
 function requireRoot() {
     const element = document.getElementById('app');
     if (!element)
@@ -26,7 +27,9 @@ async function route() {
     const view = params.get('view');
     if (view === 'build') {
         const terrain = (params.get('terrain') ?? 'castle');
-        cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() });
+        const requested = params.get('map');
+        const selectedMap = listCampaignMaps().find(map => map.id === requested && map.terrain === terrain);
+        cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
         return;
     }
     if (view === 'join') {

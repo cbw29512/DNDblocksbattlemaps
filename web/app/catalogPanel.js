@@ -1,4 +1,5 @@
-import { CATALOG_CATEGORIES, PALETTE, catalogIdsForCategory, catalogMatches, getCatalogItem } from '../domain/catalog.js?v=srdblocks1008';
+import { catalogIdsForArea } from '../domain/catalogOrder.js?v=templates1008';
+import { CATALOG_CATEGORIES, PALETTE, catalogMatches, getCatalogItem } from '../domain/catalog.js?v=srdblocks1008';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=srdblocks1008';
 function visual(item) {
     return item.art
@@ -11,14 +12,14 @@ function button(item, selected) {
         '" data-catalog="' + item.id + '" data-catalog-search="' + searchText +
         '" type="button">' + visual(item) + '<span>' + item.name + '</span></button>';
 }
-export function catalogPanelHtml(selected) {
+export function catalogPanelHtml(selected, terrain, templateId) {
     const active = PALETTE[selected]?.category ?? 'Build';
     const tabs = CATALOG_CATEGORIES.map((category) => '<button class="catalog-tab' + (category === active ? ' active' : '') +
         '" data-category-tab="' + category + '" type="button" aria-selected="' +
         String(category === active) + '">' + category + '</button>').join('');
     const panels = CATALOG_CATEGORIES.map((category) => '<div class="palette-list" data-category-panel="' + category + '"' +
         (category === active ? '' : ' hidden') + '>' +
-        catalogIdsForCategory(category).map((id) => button(getCatalogItem(id), selected)).join('') +
+        catalogIdsForArea(category, terrain, templateId).map((id) => button(getCatalogItem(id), selected)).join('') +
         '<div class="catalog-empty" hidden>No matching blocks.</div></div>').join('');
     return '<section class="catalog-panel" aria-label="Block catalog">' +
         '<div class="sidebar-heading"><span class="eyebrow">Catalog</span><strong>Pick one. Keep clicking.</strong></div>' +

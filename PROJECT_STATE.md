@@ -471,3 +471,17 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - Root cause isolated: checked-in `web/render/threeObjects.js` accidentally included TypeScript-only `: void` on `function monsterExterior(THREE, root, item, n): void`, preventing the entire browser module graph from parsing.
 - Removed invalid annotation and bumped entrypoint/import cache keys. Syntax parsing checks on affected core browser modules passed. No changes to the monster roster or cube geometry.
 - Browser deployment/reload and full npm gate remain unverified; the DM should hard-refresh after the Pages workflow publishes this fix.
+
+
+## 2026-10-08 — Starter maps, safe copies, and clickable status rings
+- Added eight editable block-built map templates: Roadside Inn, Castle Keep, Starter Dungeon, Forest Camp, Harbor Dock, Goblin Cave, Ancient Temple, Ruined Outpost.
+- Each template is an array of actual approved 5-ft catalog cube IDs, with a stable generated map ID; a new map has its own saved object list and terrain. Existing five base maps are never overwritten by creating a template; independently created Inns have different IDs and storage keys.
+- Inn includes floor, surrounding walls, room partitions, genuinely open doorways, bar/tables/chairs, kitchen/rooms, beds, hearth, stairs, storage, and party entrance marker. Party checked characters populate new copies at the entrance and retain their original IDs, colors, and statuses.
+- Custom map list and map switching added to sidebar. Campaign Party propagation now loops over saved template maps too, not only five terrain maps. Clear Map targets the current map slot.
+- Status ring UX fixed: click status button to select (visual highlight, aria-pressed), then click creatures to apply/remove; clicking selected status or Escape clears. Previous drag-and-drop remains available. Applies in both 3D and fallback through a common handler.
+- A visible How to Play link and static public instructions page explain features and local browser storage limitations. Implementation rules updated to require instructions changes with user-facing features.
+- Added domain regressions for all eight templates, Inn openings, no duplicate objects, Party entrance and identity preservation, multiple Inns and non-destructive base-map storage.
+- **Validation:** GitHub connector used to edit; npm/TypeScript/browser tests **not executed locally** because execution environment cannot resolve github.com for checkout; do not report tests passed or deployment verified. PR review and Actions remain required.
+- **Limits:** local browser prototype, not multiplayer. Templates are visual blocks; they do not instantiate D&D mechanics or automatically spawn enemies.
+
+- **Area-prioritized catalogs (2026-10-08):** All Build/Props/Characters/Monsters catalog items remain accessible in their categories. For each open map, tags matching its area (Inn, Castle, Field, Sea, Volcano) or named starter template (Dungeon, Cave, Temple, Harbor, Forest, Ruins) come first, alphabetically; all other blocks remain below them alphabetically. No forced filter and no extra heading. Source/browser sorting helper, catalog panel, builder wiring, and regression tests updated. Browser/CI verification pending.

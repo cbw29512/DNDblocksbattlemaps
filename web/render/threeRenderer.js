@@ -171,6 +171,11 @@ export async function createThreeRenderer(container, handlers) {
         position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
     });
     renderer.domElement.addEventListener('click', (event) => {
+    setPointer(event);
+    const marked = raycaster.intersectObjects(objectGroup.children, true)
+      .find(hit => hit.object.userData.objectId)?.object?.userData?.objectId;
+    if (marked && handlers.onMarkTarget(String(marked))) return;
+
         if (activeRoom) {
             const placement = roomPlacementFor(event);
             if (placement)

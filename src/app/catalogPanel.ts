@@ -1,7 +1,8 @@
+import { catalogIdsForArea } from '../domain/catalogOrder.js';
 import {
-  CATALOG_CATEGORIES, PALETTE, catalogIdsForCategory, catalogMatches, getCatalogItem
+  CATALOG_CATEGORIES, PALETTE, catalogMatches, getCatalogItem
 } from '../domain/catalog.js';
-import type { CatalogCategory, CatalogId, PaletteItem } from '../domain/types.js';
+import type { CatalogCategory, CatalogId, PaletteItem, TerrainId } from '../domain/types.js';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
 
 function visual(item: PaletteItem): string {
@@ -17,7 +18,7 @@ function button(item: PaletteItem, selected: CatalogId): string {
     '" type="button">' + visual(item) + '<span>' + item.name + '</span></button>';
 }
 
-export function catalogPanelHtml(selected: CatalogId): string {
+export function catalogPanelHtml(selected: CatalogId, terrain: TerrainId, templateId?: string): string {
   const active = PALETTE[selected]?.category ?? 'Build';
   const tabs = CATALOG_CATEGORIES.map((category) =>
     '<button class="catalog-tab' + (category === active ? ' active' : '') +
@@ -28,7 +29,7 @@ export function catalogPanelHtml(selected: CatalogId): string {
   const panels = CATALOG_CATEGORIES.map((category) =>
     '<div class="palette-list" data-category-panel="' + category + '"' +
     (category === active ? '' : ' hidden') + '>' +
-    catalogIdsForCategory(category).map((id) => button(getCatalogItem(id), selected)).join('') +
+    catalogIdsForArea(category, terrain, templateId).map((id) => button(getCatalogItem(id), selected)).join('') +
     '<div class="catalog-empty" hidden>No matching blocks.</div></div>'
   ).join('');
 

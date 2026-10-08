@@ -32,8 +32,6 @@ function materialFor(THREE: any, item: PaletteItem): any {
     source.onload = () => {
       try {
         if (!source.naturalWidth || !source.naturalHeight) throw new Error('Image has no dimensions');
-        const existing = creatureLabelMaterials.get(name);
-  if (existing) return configureLabel(new THREE.Sprite(existing));
   const canvas = document.createElement('canvas');
         canvas.width = 256;
         canvas.height = 256;
