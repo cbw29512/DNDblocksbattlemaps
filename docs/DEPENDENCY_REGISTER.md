@@ -351,3 +351,15 @@ Direct package versions pinned in `package.json`:
 `THIRD_PARTY_NOTICES.md` retains the Three.js MIT notice and direct dependency license references.
 
 The current execution sandbox could not reach npm, so no local package installation was performed. A package lock and transitive-license inventory should be generated/retained from the first normal network-connected install before a production Netlify milestone.
+
+
+## Iron Pit cross-repository portrait source — test-stage asset wiring (2026-10-08)
+
+- **Owner/source:** user's own public repository `cbw29512/D20-ironpit`; branch `main`; portraits `frontend/assets/portraits/heroes/hero-2024-{class}.webp` and `frontend/assets/portraits/monsters/{monster}.webp`.
+- **Inventory/provenance:** `D20-ironpit/docs/artifacts/card-art/REAL_ART_INVENTORY.md` (24 approved hero portraits, 294 approved monster silhouettes).
+- **Purpose:** show the existing approved artwork on all six cube faces of DND Blocks character and monster pieces.
+- **License/commercial use:** user-owned/approved art according to Iron Pit inventory; *independent commercial rights must still be confirmed before public monetization*. No third-party license asserted.
+- **Attribution:** preserve original Iron Pit art provenance and names; no outside attribution claimed.
+- **Runtime cost:** approximately one WebP request per distinct displayed type; external public GitHub Raw host and network required. No new software dependency or infrastructure charge assumed.
+- **Replacement path:** copy verified image assets into `assets/catalog` using a binary-safe process with hashes and use local paths for production; external URLs are a temporary browser-test solution.
+- **Risk:** cross-origin image rasterization requires CORS; renderer now requests anonymous CORS, falling back to catalog colors on load failure.
