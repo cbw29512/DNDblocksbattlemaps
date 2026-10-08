@@ -47,7 +47,7 @@ export function buildStarterTemplate(templateId, mapId, roster = {}) {
   const doorway = (x, z) => {
     for(let i=objects.length-1;i>=0;i--){
       if(objects[i].x===x && objects[i].z===z && objects[i].elevation===1 &&
-        ['wood-wall','stone-wall','cave-wall','castle-wall'].includes(objects[i].catalogId)) objects.splice(i,1);
+        ['wood-wall','wall','cave-wall','castle-wall'].includes(objects[i].catalogId)) objects.splice(i,1);
     }
     add('open-doorway',x,z);
   };
@@ -65,13 +65,13 @@ export function buildStarterTemplate(templateId, mapId, roster = {}) {
     add('fireplace',8,-1);add('stairs',-7,-2);
   } else if (templateId === 'castle') {
     floor('cobblestone',-11,-10,11,10);walls('castle-wall',-11,-10,11,10,0,10);
-    walls('stone-wall',-7,-7,7,-2,0,-2);add('stairs',-5,-3);
+    walls('wall',-7,-7,7,-2,0,-2);add('stairs',-5,-3);
     for (const [x,z] of [[-10,-9],[10,-9],[-10,9],[10,9]])add('pillar',x,z);
     add('chest',3,-5);add('table',0,-5);
   } else if (templateId === 'dungeon') {
-    floor('dungeon-tile',-10,-10,10,9);walls('stone-wall',-10,-10,10,9,0,9);
-    line('stone-wall',-3,-10,-3,5);line('stone-wall',4,-10,4,5);
-    line('stone-wall',-10,2,10,2);
+    floor('dungeon-tile',-10,-10,10,9);walls('wall',-10,-10,10,9,0,9);
+    line('wall',-3,-10,-3,5);line('wall',4,-10,4,5);
+    line('wall',-10,2,10,2);
     for (const [x,z] of [[-3,-4],[4,-4],[-3,2],[4,2]]) doorway(x,z);
     add('trapdoor',-7,-5);add('chest',7,-7);add('stairs',0,8);add('pillar',-7,5);
   } else if (templateId === 'forest') {
@@ -91,14 +91,14 @@ export function buildStarterTemplate(templateId, mapId, roster = {}) {
     doorway(-4,-3);doorway(3,5);add('chest',8,-7);
     add('rock',-7,1);add('rock',6,2);add('campfire',-1,-5);
   } else if(templateId==='temple') {
-    floor('stone-block',-10,-9,10,9);walls('stone-wall',-10,-9,10,9,0,9);
-    line('stone-wall',-10,-2,10,-2);doorway(0,-2);
+    floor('stone-block',-10,-9,10,9);walls('wall',-10,-9,10,9,0,9);
+    line('wall',-10,-2,10,-2);doorway(0,-2);
     for (const x of [-7,-3,3,7]) for(const z of [-6,3])add('pillar',x,z);
     add('table',0,-7);add('chest',-7,-7);
   } else {
-    floor('grass',-10,-9,10,9);line('stone-wall',-9,-8,9,-8);
-    line('stone-wall',-9,-8,-9,7);line('stone-wall',9,-8,9,7);
-    line('stone-wall',-9,7,-2,7);line('stone-wall',3,7,9,7);
+    floor('grass',-10,-9,10,9);line('wall',-9,-8,9,-8);
+    line('wall',-9,-8,-9,7);line('wall',9,-8,9,7);
+    line('wall',-9,7,-2,7);line('wall',3,7,9,7);
     for(const [x,z] of [[-7,-6],[6,-6],[-7,5]])add('rock',x,z);
     add('crate',-3,1);add('barrel',-4,1);
   }
