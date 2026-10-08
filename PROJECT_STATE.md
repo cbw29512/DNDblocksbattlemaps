@@ -529,3 +529,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Cardinal cube line preview checkpoint (IN PROGRESS)
 - Updated the shared line inclusion predicate for horizontal one-square-wide cardinal rows: 60-foot sample = twelve whole 5-foot cubes; 100-foot existing Lightning Bolt sample = twenty. Both 3D rendering and candidate-target scans now take the caster's origin into account when computing bounds. Focused unit tests added; final-head CI/browser QA pending. Diagonal/vertical aiming and complete RAW line rules remain unverified.
+
+## 2026-10-08 — Self-origin area contract implementation (IN PROGRESS)
+- Explicit `originMode` distinguishes Self-starting line/cone samples from point-targeted AoEs. Self examples remain anchored to the selected caster, and pointer position supplies aim only; existing projected cardinal line geometry draws from caster. Focused unit tests added. Large caster footprint origin, unrestricted angles and certified RAW geometry remain future gates. CI/browser verification pending.

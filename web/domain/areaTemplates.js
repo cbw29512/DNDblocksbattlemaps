@@ -1,11 +1,11 @@
 import { GRID_FEET } from './spatial.js?v=af8354d0e85f';
 export const AREA_PRESETS = [
     { id: 'fireball', label: 'Fireball', shape: 'sphere', sizeFeet: 20, maxRangeFeet: 150, visual: 'fire' },
-    { id: 'lightning-bolt', label: 'Lightning Bolt', shape: 'line', sizeFeet: 100, widthFeet: 5, maxRangeFeet: 0, visual: 'lightning' },
-    { id: 'burning-hands', label: 'Burning Hands', shape: 'cone', sizeFeet: 15, maxRangeFeet: 0, visual: 'fire' },
-    { id: 'cone-of-cold', label: 'Cone of Cold', shape: 'cone', sizeFeet: 60, maxRangeFeet: 0, visual: 'cold' },
-    { id: 'dragon-fire-cone', label: 'Dragon Fire Breath (cone)', shape: 'cone', sizeFeet: 30, maxRangeFeet: 0, visual: 'fire' },
-    { id: 'dragon-fire-line', label: 'Dragon Fire Breath (line)', shape: 'line', sizeFeet: 60, widthFeet: 5, maxRangeFeet: 0, visual: 'fire' },
+    { id: 'lightning-bolt', label: 'Lightning Bolt', shape: 'line', sizeFeet: 100, widthFeet: 5, maxRangeFeet: 0, originMode:'self', visual: 'lightning' },
+    { id: 'burning-hands', label: 'Burning Hands', shape: 'cone', sizeFeet: 15, maxRangeFeet: 0, originMode:'self', visual: 'fire' },
+    { id: 'cone-of-cold', label: 'Cone of Cold', shape: 'cone', sizeFeet: 60, maxRangeFeet: 0, originMode:'self', visual: 'cold' },
+    { id: 'dragon-fire-cone', label: 'Dragon Fire Breath (cone)', shape: 'cone', sizeFeet: 30, maxRangeFeet: 0, originMode:'self', visual: 'fire' },
+    { id: 'dragon-fire-line', label: 'Dragon Fire Breath (line)', shape: 'line', sizeFeet: 60, widthFeet: 5, maxRangeFeet: 0, originMode:'self', visual: 'fire' },
     { id: 'cloudkill', label: 'Cloudkill', shape: 'sphere', sizeFeet: 20, maxRangeFeet: 120, visual: 'poison' },
     { id: 'darkness', label: 'Darkness', shape: 'sphere', sizeFeet: 15, maxRangeFeet: 60, visual: 'neutral' }
 ];
@@ -65,7 +65,7 @@ export function areaCells(t, p, limits) {
     return cells;
 }
 export function isInCastingRange(t, p) {
-    return t.maxRangeFeet === 0 || feetBetween(p.origin, p.center) <= t.maxRangeFeet + EPSILON;
+    return t.originMode === 'self' || feetBetween(p.origin, p.center) <= t.maxRangeFeet + EPSILON;
 }
 /**
  * Grid-template rule for a circular horizontal cross-section (2014/2024 DMG).

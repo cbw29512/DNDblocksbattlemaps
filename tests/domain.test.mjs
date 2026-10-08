@@ -661,3 +661,23 @@ test('standard sample 100-foot line is 20 five-foot cubes',async()=>{
  assert.equal(cubes.length,20);
  assert.ok(cubes.every(p=>p.z===2 && p.elevation===0));
 });
+
+test('Self-origin line and cone stay anchored at caster while pointer changes aim',async()=>{
+ const {AREA_PRESETS,areaCells,isInCastingRange}=await import('../.test-build/src/domain/areaTemplates.js');
+ const origin={x:8,z:8,elevation:0};
+ const limits={minX:0,maxX:32,minZ:0,maxZ:32,minElevation:0,maxElevation:0};
+ for(const id of ['lightning-bolt','burning-hands','cone-of-cold','dragon-fire-line']){
+  const shape=AREA_PRESETS.find(x=>x.id===id);
+  assert.equal(shape.originMode,'self');
+  const east={origin,center:{x:12,z:8,elevation:0}};
+  const north={origin,center:{x:8,z:12,elevation:0}};
+  assert.ok(isInCastingRange(shape,east));
+  const e=areaCells(shape,east,limits),n=areaCells(shape,north,limits);
+  assert.ok(e.length>0 && n.length>0);
+  assert.notDeepEqual(e,n,'aim changes affected cells without changing the caster origin');
+  assert.ok(e.some(p=>p.x>=origin.x && p.z===origin.z));
+ }
+ const fireball=AREA_PRESETS.find(x=>x.id==='fireball');
+ assert.notEqual(fireball.originMode,'self');
+ assert.equal(isInCastingRange(fireball,{origin,center:{x:100,z:100,elevation:0}}),false);
+});
