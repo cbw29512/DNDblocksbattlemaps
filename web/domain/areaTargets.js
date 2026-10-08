@@ -1,4 +1,4 @@
-import { getCatalogItem } from './catalog.js?v=bc84cff504a5';
+import { getCatalogItem } from './catalog.js?v=efd373994236';
 /** Full cubic occupied space of a creature, starting at its anchor. */
 export function creatureOccupiedCells(creature) {
     const item = getCatalogItem(creature.catalogId);
