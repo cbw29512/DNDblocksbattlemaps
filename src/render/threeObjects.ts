@@ -62,6 +62,30 @@ export function meshFor(THREE: any, object: WorldObject): any {
   return mesh;
 }
 
+
+/** Render a multi-cell creature as one selectable group of ordinary 5-ft cubes. */
+export function meshesFor(THREE: any, object: WorldObject): any[] {
+  const item = getCatalogItem(object.catalogId);
+  const size = item.footprintCells ?? 1;
+  if (size === 1) return [meshFor(THREE, object)];
+  if (item.category !== 'Monsters' && item.category !== 'Characters') {
+    console.warn('[render] Ignoring noncreature footprint.', { catalogId: object.catalogId, size });
+    return [meshFor(THREE, object)];
+  }
+  const meshes: any[] = [];
+  for (let z = 0; z < size; z += 1) {
+    for (let x = 0; x < size; x += 1) {
+      const part = meshFor(THREE, { ...object, x: object.x + x, z: object.z + z });
+      // All component cubes still point to one WorldObject ID.
+      part.userData.objectId = object.id;
+      part.userData.footprintX = x;
+      part.userData.footprintZ = z;
+      meshes.push(part);
+    }
+  }
+  return meshes;
+}
+
 export function setDefaultCamera(camera: any, controls: any): void {
   const horizontal = Math.cos(Math.PI / 6) * CAMERA_DISTANCE;
   camera.position.set(horizontal / Math.sqrt(2), CAMERA_DISTANCE / 2, horizontal / Math.sqrt(2));
