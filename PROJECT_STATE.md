@@ -584,3 +584,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Spell cancel highlight cleanup
 - PR #53 instruction correction passed exact-head CI and merged. Audit found cancelArea cleared the area cubes but not renderer areaTargetIds, leaving provisional yellow highlights after right-click/Escape/Cancel. Updated TypeScript and checked-in browser JS to clear provisional targets on cancellation without changing objects or combat log. Await current PR CI and interactive browser tests.
+
+## 2026-10-08 — AoE friendly-fire regression
+- Verified PR #54 succeeded and merged; cancellation clears projected red area and provisional yellow target highlights without mutating combat log/world state. Added domain regression that Fireball's geometric affected creature list includes the selected caster, an allied player, and an enemy monster, excludes scenery/out-of-area creatures, and counts a Large monster once. No saves/damage or RAW line-of-effect adjudication added. Focused test PR pending CI.
