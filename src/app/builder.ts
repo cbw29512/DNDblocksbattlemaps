@@ -157,6 +157,9 @@ export async function renderBuilder(
     </main>
   `;
 
+  // On narrow touch screens, keep map cells accessible until the log is requested.
+  const combatLogDetails=root.querySelector<HTMLDetailsElement>('.combat-log-dock details');
+  if(combatLogDetails && window.matchMedia('(max-width: 720px)').matches) combatLogDetails.open=false;
   const status = document.getElementById('board-status') as HTMLElement;
 
   const canvas = document.getElementById('board-canvas') as HTMLElement;
