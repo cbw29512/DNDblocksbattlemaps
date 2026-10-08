@@ -1,5 +1,5 @@
-import { createBoardState, createWorldObject } from './commands.js?v=81e60cc34a5e';
-import { reconcilePartyOnMap } from './party.js?v=81e60cc34a5e';
+import { createBoardState, createWorldObject } from './commands.js?v=d313c65b7249';
+import { reconcilePartyOnMap } from './party.js?v=d313c65b7249';
 export const STARTER_TEMPLATES = [
     { id: 'inn', name: 'Roadside Inn', terrain: 'inn', description: 'Common room, bar, kitchen, guest rooms, and a welcoming front door.' },
     { id: 'castle', name: 'Castle Keep', terrain: 'castle', description: 'Courtyard, gate, watch posts, and a fortified hall.' },

@@ -1,4 +1,4 @@
-import { GRID_FEET } from './spatial.js?v=81e60cc34a5e';
+import { GRID_FEET } from './spatial.js?v=d313c65b7249';
 export const AREA_PRESETS = [
     { id: 'fireball', label: 'Fireball', shape: 'sphere', sizeFeet: 20, maxRangeFeet: 150, visual: 'fire' },
     { id: 'lightning-bolt', label: 'Lightning Bolt', shape: 'line', sizeFeet: 100, widthFeet: 5, maxRangeFeet: 0, visual: 'lightning' },
@@ -18,8 +18,9 @@ export function areaContainsPoint(t, p, point) {
     const cx = (point.x - p.center.x) * GRID_FEET, cz = (point.z - p.center.z) * GRID_FEET;
     const cy = (point.elevation - p.center.elevation) * GRID_FEET;
     if (t.shape === 'sphere') {
-        const sliceRadius=Math.sqrt(Math.max(0,t.sizeFeet*t.sizeFeet-cy*cy));
-        return Math.abs(cy)<t.sizeFeet+EPSILON && circularGridCellAffected(sliceRadius,p.center.x,p.center.z,point.x,point.z);
+        const sliceRadius = Math.sqrt(Math.max(0, t.sizeFeet * t.sizeFeet - cy * cy));
+        return Math.abs(cy) < t.sizeFeet + EPSILON &&
+            circularGridCellAffected(sliceRadius, p.center.x, p.center.z, point.x, point.z);
     }
     if (t.shape === 'cylinder')
         return Math.hypot(cx, cz) <= t.sizeFeet + EPSILON &&
@@ -55,7 +56,6 @@ export function areaCells(t, p, limits) {
 export function isInCastingRange(t, p) {
     return t.maxRangeFeet === 0 || feetBetween(p.origin, p.center) <= t.maxRangeFeet + EPSILON;
 }
-
 /**
  * Grid-template rule for a circular horizontal cross-section (2014/2024 DMG).
  * Uses the exact circle/square intersection geometry with Simpson integration;
@@ -63,19 +63,20 @@ export function isInCastingRange(t, p) {
  * The center is a grid intersection. Vertical slices are NOT certified by this helper.
  */
 export function circularSquareCoverage(radiusFeet, originX, originZ, cellX, cellZ) {
-  if (!Number.isFinite(radiusFeet) || radiusFeet <= 0) return 0;
-  const r=radiusFeet/GRID_FEET;
-  const step=1/128;
-  let sum=0;
-  for(let i=0;i<=128;i++){
-    const x=cellX+i*step;
-    const dx=x-originX;
-    const extent=Math.sqrt(Math.max(0,r*r-dx*dx));
-    const clipped=Math.abs(dx)>r ? 0 : Math.max(0,Math.min(cellZ+1,originZ+extent)-Math.max(cellZ,originZ-extent));
-    sum+=(i===0||i===128?1:i%2===0?2:4)*clipped;
-  }
-  return Math.min(1,Math.max(0,sum*step/3));
+    if (!Number.isFinite(radiusFeet) || radiusFeet <= 0)
+        return 0;
+    const r = radiusFeet / GRID_FEET;
+    const step = 1 / 128;
+    let sum = 0;
+    for (let i = 0; i <= 128; i++) {
+        const x = cellX + i * step;
+        const dx = x - originX;
+        const extent = Math.sqrt(Math.max(0, r * r - dx * dx));
+        const clipped = Math.abs(dx) > r ? 0 : Math.max(0, Math.min(cellZ + 1, originZ + extent) - Math.max(cellZ, originZ - extent));
+        sum += (i === 0 || i === 128 ? 1 : i % 2 === 0 ? 2 : 4) * clipped;
+    }
+    return Math.min(1, Math.max(0, sum * step / 3));
 }
 export function circularGridCellAffected(radiusFeet, originX, originZ, cellX, cellZ) {
-  return circularSquareCoverage(radiusFeet,originX,originZ,cellX,cellZ)>=0.5-1e-9;
+    return circularSquareCoverage(radiusFeet, originX, originZ, cellX, cellZ) >= 0.5 - 1e-9;
 }
