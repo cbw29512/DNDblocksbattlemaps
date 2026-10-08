@@ -50,3 +50,9 @@
 When closing a checkbox add: **date; edition(s); verified source URL/book/page; reviewed values; code paths; tests; exact PR/head/CI; live browser proof; remaining exceptions**. Update this file as the work progresses, without rescanning the whole roster each time.
 
 **Checkpoint through PR #38:** Cube-only visuals and initial preview/cast controls implemented; ability registry keyed by edition but examples unverified; whole-creature candidate scanning, cardinal and eight-direction line previews are provisional; no full RAW target/damage, occlusion, 3D or live browser certification.
+
+## Latest clarification — 2026-10-08: geometry continues through hidden/off-map space
+
+User instruction supersedes the earlier request to stop AoE visualization at walls: sphere/other AoE *geometric projection* continues through floors, walls and beyond the visible viewport or map; clipping the camera does not truncate the effect. Full 5-foot cubes light up on any positive volume overlap; no partial cubes. Do not mistake unseen cubes for absent geometry. **Rules distinction:** published 2014/2024 AoE mechanics may still block spell effects at Total Cover; the user has approved geometry that visually continues through barriers, which is a DND Blocks custom presentation/house rule and must not be marked edition RAW. Keep geometric candidates separate from any future actual target/effect adjudication. This clarification overrides the wall-stop wording of open PR #40, which must be reconciled before merging.
+
+Implemented in current sphere-preview branch: exact 3D sphere vs axis-aligned 5-foot cube positive-intersection test; generated candidate cells are still bounded by the caller's limits. Renderer clipping/auto-expansion, other shapes, live browser proof and actual effect resolution remain outstanding.
