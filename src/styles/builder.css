@@ -222,3 +222,8 @@
 .status-token {cursor:pointer;}
 .status-token.selected {background:#4c492d;border:2px solid #ffe28c;box-shadow:0 0 0 2px rgba(255,226,140,.2);font-weight:800;}
 .status-token:focus-visible {outline:3px solid #f6da7a;outline-offset:2px;}
+
+.map-mode-switch{display:inline-flex;align-items:center;border:1px solid #8c805e;border-radius:9px;padding:3px;gap:3px;background:#1d211d}
+.map-mode-choice{background:transparent;border:0;border-radius:6px;padding:.5rem .8rem;color:#c8c7bd;font-weight:800;cursor:pointer}
+.map-mode-choice.active{background:#d6b66d;color:#181a16}
+.map-mode-choice:focus-visible{outline:3px solid #fff0a8;outline-offset:2px}
