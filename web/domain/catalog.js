@@ -30,8 +30,10 @@ function generated(id, name, category, color, icon, tags = []) {
 function hero(id, name, color) {
     return cube('hero-' + id, name, 'Characters', color, heroArt('hero-2024-' + id, name), ['player', 'class', id]);
 }
+const STARTER_2014_CR = { goblin: '1/4', skeleton: '1/4', zombie: '1/4', wolf: '1/4', mimic: '2', ghoul: '1', kobold: '1/8', bandit: '1/8', orc: '1/2' };
+
 function monster(id, name, color) {
-    return cube('monster-' + id, name, 'Monsters', color, monsterArt(id, name), ['monster', id]);
+    return { ...cube('monster-' + id, name, 'Monsters', color, monsterArt(id, name), ['monster', id]), challengeRating: STARTER_2014_CR[id], edition: '2014' };
 }
 const BUILD_ITEMS = [
     generated('stone-block', 'Stone', 'Build', 0x818680, 'stone', ['stone', 'floor', 'castle', 'dungeon']),
