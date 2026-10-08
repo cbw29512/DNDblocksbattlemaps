@@ -77,3 +77,5 @@ Repository source of truth: this document plus SOUL.md, PROJECT_STATE.md and doc
 
 ## Anti-drift governance
 `docs/ANTI_DRIFT.md` is mandatory for each session and hourly run. Use the single completion tracker above. Work on G0a next; record checkpoint, PR, CI and backward-compatibility evidence, and do not mark completion solely because implementation was pushed.
+
+**G0a status: IN PROGRESS** — a read-only versioned export/download plus tests is on a feature branch. This does not implement import, migration, or the entire G0 completion gate; do not check G0 as completed until those parts pass.
