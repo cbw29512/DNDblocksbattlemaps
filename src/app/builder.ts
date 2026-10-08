@@ -232,7 +232,9 @@ export async function renderBuilder(
     if(!chosen){status.textContent='Choose a caster on this map before previewing.';activeSpell=null;return;}
     casterOrigin={x:chosen.x,z:chosen.z,elevation:chosen.elevation};
     spellCenter=null; castButton.disabled=true; cancelButton.disabled=false;
-    renderer?.setAreaPreview(null,null);
+    // Arm the renderer so pointer events can reach onAreaPoint.
+    // The caster-anchored placeholder stays provisional until the pointer moves.
+    renderer?.setAreaPreview(activeSpell,{origin:casterOrigin,center:casterOrigin});
     renderer?.setAreaTargets([]);
     spellInstructions.textContent='Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
     status.textContent='Area preview armed (unverified sample). Selected creature is the caster origin.';
