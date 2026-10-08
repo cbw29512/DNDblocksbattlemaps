@@ -40,3 +40,6 @@ Rendering is **all-or-nothing per 5-foot cube**, not partial/smooth shapes. Do n
 
 ## A1 provisional target visualization (2026-10-08)
 - IN PROGRESS: `setAreaTargets` renderer method highlights each cube of candidate targets as a visible yellow outline in 3D and affected occupied cells in fallback mode; clears on cancel/cast. This is a **preview only**, not guaranteed RAW hit adjudication. Do not mark A1/A4 complete without browser and edition-specific rule certification.
+
+## Explicit caster origin checkpoint (2026-10-08)
+- Caster must be explicitly chosen from current-map creature IDs before preview; first-unit fallback is forbidden. Selected creature anchor is provisional source origin pending edition-specific RAW origin/footprint certification. Check updates to caster selection after board edits and interactions on mobile.
