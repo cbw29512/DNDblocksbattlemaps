@@ -625,3 +625,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Creature marker controls restricted to Combat Mode
 - Hid Creature Markers section on initial Build Mode and toggled full section on Combat Mode entry/exit. Corrected child identity-ring-tools visibility in Combat Mode. Added specific hidden CSS to defeat sidebar flex override. TS/checked-in JS parity, no marker state erasure; awaiting CI and real UI validation.
+
+## 2026-10-08 — Follow-up Creature Markers PR #66 audit
+- Exact-head initial CI passed, but behavioral audit found an armed status selection persisted after returning to Build Mode. Fixed by clearing the transient status selection and visual pressed state on exit. Added `moveMode` guards to condition click and marker drag/drop handlers to prevent Build Mode mutations through hidden controls. Existing condition/ring data stays intact; browser JS parity updated. New CI required before merge.
