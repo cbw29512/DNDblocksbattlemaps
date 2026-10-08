@@ -19,6 +19,7 @@ export interface BoardRenderer {
   readonly mode: 'three' | 'fallback';
   setTheme(theme: TerrainTheme): void;
   setAreaPreview(template: AreaTemplate | null, placement: AreaPlacement | null): void;
+  setAreaTargets(ids: readonly string[]): void;
   setSelectedCatalog(catalogId: CatalogId | null): void;
   setRoomPlacement(room: NormalizedRoom | null): void;
   setElevation(elevation: number): void;
