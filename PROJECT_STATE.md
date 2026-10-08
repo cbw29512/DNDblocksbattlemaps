@@ -438,3 +438,12 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - Implementation: rename Move Creatures UI toggle to Combat Mode/Build Mode; wrap Build/catalog and identity-ring sections and hide in Combat; keep status ring toolbox available in both modes. Existing creature movement and marker authority remain DM prototype. No credentials/player ownership, network sync or per-role view yet; do not imply those work.
 - Campaign contract: **Never split the party**: exactly one DM-selected active map for all connected players. On map switch, clients follow DM automatically and player characters retain identities/ownership/colors/statuses; DM prep maps are private. Map Manager and multiplayer sync not implemented yet.
 - Pending full CI and browser checks.
+
+
+## 2026-10-08 — Monster CR filters and SRD expansion audit
+
+- Current monster catalog has nine starter monsters, all represented as Medium-sized single 1x1 cubes; no valid Large/Huge footprint support in Three.js geometry or placement; don't claim larger creatures have been tried.
+- Added 2014 edition and exact challengeRating metadata to the nine existing catalog entries, CR/edition selectors in Monsters tab, input change wiring, UI cache refresh, and metadata regression test.
+- Known coverage: Iron Pit 2024 certification manifest enumerates 330 catalog monsters, 141 public-ready and 189 blocked as recorded in that manifest; these counts relate to Iron Pit engine readiness, not DND Blocks visual asset coverage. Art inventory records 294 approved silhouettes. Avoid assuming all monsters have images or mechanical certification.
+- Required next slices: import source-backed full 2014 and 2024 SRD catalogs with CR/size/edition; map source artwork with fallbacks and provenance; build one logical multi-cube creature footprint based on grid squares; certify Large and Huge placement, movement, clicks and render before bulk catalog import; keep Gargantuan in the same generic primitive.
+- CI/browser checks remain pending; this PR does not certify full SRD, large or huge creatures.
