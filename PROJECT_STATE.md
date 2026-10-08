@@ -596,3 +596,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Rescoped building block face overhaul
 - Older PR #58 diverged from main and its latest head did not expose passing CI; transferred the audited build/prop faceArt, catalog and lit/aspect-preserving cube renderer changes to a fresh current-main branch. Includes specialty terrain, doors, props and traps; does not modify character or monster artwork. Added coverage regression and material-mock change. Old PR #58 remains open pending safe closure once replacement validation succeeds. Current PR needs exact-head CI and browser visual QA; do not claim deployed or hand-painted art quality.
+
+## 2026-10-08 — PR #59 exact-head CI correction
+- First CI failed TypeScript TS2345: `catalog.ts` passes a general CatalogCategory to generatedCubeArt which accepted only Build/Props. Widened the optional parameter to string while keeping the conditional treatment exclusive to Build/Props; Characters and Monsters continue through their existing portrait/placeholder route. Await rerun on corrected head before merge. Do not treat procedural face decorations as final art acceptance without screenshot review.
