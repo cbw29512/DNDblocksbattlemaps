@@ -95,9 +95,9 @@ export function saveBoard(state) {
         console.warn('[state] Could not save local prototype board.', error);
     }
 }
-export function clearBoard(terrain) {
+export function clearBoard(terrain, mapId) {
     try {
-        localStorage.removeItem(key(terrain));
+        localStorage.removeItem(mapId ? customKey(mapId) : key(terrain));
     }
     catch (error) {
         console.warn('[state] Could not clear local prototype board.', error);
