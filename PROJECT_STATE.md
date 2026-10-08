@@ -516,3 +516,7 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Explicit AoE caster selection (IN PROGRESS)
 - Replaces guessed first-creature spell origin with required caster selection from characters/monsters on current board. Range and origin now use the chosen creature; cast announcement uses the selected creature name. Does not certify RAW area-cell rules. CI pending.
+
+## 2026-10-08 — Fireball half-square grid coverage (IN PROGRESS)
+- Replaced center-point inclusion for sphere AoE cube previews with deterministic circle/square area coverage >= 50% per horizontal slice. Regression: 20-foot-radius Fireball spans 52 squares at a grid intersection on ground-level slice (not a full 8×8 box). Reuses 5-foot full-cube rendering; no save mutations.
+- 2014 DMG p.251 circular AoE and 2024 DMG Miniatures AoE half-square guidance recorded in `docs/COMBAT_AREA_AND_LOG_PLAN.md`. Height slices are provisional and true 3D volume, walls/cover/line of effect, cones/lines/cylinders, caster origin and total edition certification remain incomplete. Tests and browser checks pending.
