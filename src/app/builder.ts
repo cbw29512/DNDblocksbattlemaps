@@ -189,12 +189,12 @@ export async function renderBuilder(
     const radius=Math.ceil(activeSpell.sizeFeet/5)+1;
     const p=spellPlacement(spellCenter);
     const area=areaCells(activeSpell,p,{
-      minX:Math.max(state.bounds.minX,Math.min(spellCenter.x,p.origin.x)-radius),
-      maxX:Math.min(state.bounds.maxX,Math.max(spellCenter.x,p.origin.x)+radius+1),
-      minZ:Math.max(state.bounds.minZ,Math.min(spellCenter.z,p.origin.z)-radius),
-      maxZ:Math.min(state.bounds.maxZ,Math.max(spellCenter.z,p.origin.z)+radius+1),
-      minElevation:Math.max(0,spellCenter.elevation-radius),
-      maxElevation:Math.min(8,spellCenter.elevation+radius)
+      minX:Math.min(spellCenter.x,p.origin.x)-radius,
+      maxX:Math.max(spellCenter.x,p.origin.x)+radius+1,
+      minZ:Math.min(spellCenter.z,p.origin.z)-radius,
+      maxZ:Math.max(spellCenter.z,p.origin.z)+radius+1,
+      minElevation:Math.min(spellCenter.elevation,p.origin.elevation)-radius,
+      maxElevation:Math.max(spellCenter.elevation,p.origin.elevation)+radius
     });
     return previewAffectedCreatures(state.objects,area);
   };
