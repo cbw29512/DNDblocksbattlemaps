@@ -1,4 +1,4 @@
-import { GRID_FEET } from './spatial.js?v=4bc24a98640c';
+import { GRID_FEET } from './spatial.js?v=bc4f9b422e47';
 export const AREA_PRESETS = [
     { id: 'fireball', label: 'Fireball', shape: 'sphere', sizeFeet: 20, maxRangeFeet: 150, visual: 'fire' },
     { id: 'lightning-bolt', label: 'Lightning Bolt', shape: 'line', sizeFeet: 100, widthFeet: 5, maxRangeFeet: 0, originMode: 'self', visual: 'lightning' },
@@ -36,8 +36,10 @@ export function areaContainsPoint(t, p, point) {
             point.x === p.origin.x + step * ux && point.z === p.origin.z + step * uz;
     }
     if (t.shape === 'sphere') {
-        // Exact positive-volume sphere-to-cell intersection, including elevation.
-        // Cell coordinates are lower cube bounds; do not clip geometry to visible map.
+        // Grid cells are full 5-foot volumes, not point samples or horizontal slices.
+        // The center and each cell coordinate refer to a grid boundary.
+        // Squared distance to the nearest point of the cell's axis-aligned cube
+        // gives an exact sphere/cube positive-intersection test.
         const r = t.sizeFeet / GRID_FEET;
         const distanceAxis = (origin, low) => Math.max(low - origin, origin - (low + 1), 0);
         const ax = distanceAxis(p.center.x, point.x);
