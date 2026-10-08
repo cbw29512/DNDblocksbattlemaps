@@ -98,7 +98,7 @@ export async function createThreeRenderer(
   scene.add(targetGroup);
   function rebuildTargetOutlines() {
     for(const child of [...targetGroup.children]) {targetGroup.remove(child);child.geometry.dispose();child.material.dispose();}
-    if(!activeArea || !areaPlacement)return;
+    // Confirmed cast outlines persist after the temporary AoE disappears.
     for(const o of currentObjects.filter(o=>areaTargetIds.has(o.id))){
       for(const cell of creatureOccupiedCells(o)){
         const line=new THREE.LineSegments(
