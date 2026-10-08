@@ -66,29 +66,29 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           <small id="spell-instructions">Choose a spell, aim over the map, left-click to cast or right-click to cancel.</small>
 
         </section></details>
-        <section id="party-manager" class="party-manager" aria-label="Campaign party">
+        <details class="builder-tool-group"><summary>Party</summary><section id="party-manager" class="party-manager" aria-label="Campaign party">
           <strong>Campaign Party</strong>
           <small>Check Party once. The same character appears on every campaign map.</small>
           <div id="party-members"></div>
-        </section>
-        <nav class="campaign-map-tabs" aria-label="Campaign maps">
+        </section></details>
+        <details class="builder-tool-group"><summary>Maps &amp; Themes</summary><nav class="campaign-map-tabs" aria-label="Campaign maps">
           <strong>Maps</strong>
           ${listCampaignMaps().map(m => `<button type="button" data-map-id="${m.id}" ${m.id === mapId ? 'aria-current="page"' : ''}>${m.name}</button>`).join('')}
           ${Object.values(TERRAIN_THEMES).map(t => `<button type="button" data-map-terrain="${t.id}" ${t.id === theme.id ? 'aria-current="page"' : ''}>${t.name}</button>`).join('')}
-        </nav>
-        <section class="starter-map-panel" id="starter-map-panel" aria-label="Starter map templates">
+        </nav></details>
+        <details class="builder-tool-group"><summary>Starter Maps</summary><section class="starter-map-panel" id="starter-map-panel" aria-label="Starter map templates">
           <strong>Create a Starter Map</strong>
           <small>Creates a new editable map. Existing maps stay untouched.</small>
           <select id="starter-template-choice" aria-label="Choose starter map">
             ${STARTER_TEMPLATES.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}
           </select>
           <button id="create-starter-map" type="button" class="button button-ghost">Create New Map</button>
-        </section>
-        <div id="build-tools">
+        </section></details>
+        <details class="builder-tool-group" open><summary>Build &amp; Blocks</summary><div id="build-tools">
         ${roomPanelHtml()}
         ${catalogPanelHtml(selected, theme.id, mapId ? listCampaignMaps().find(m => m.id === mapId)?.templateId : undefined)}
-        </div>
-        <section class="creature-ring-tools" aria-label="Creature markers">
+        </div></details>
+        <details class="builder-tool-group"><summary>Creature Markers</summary><section class="creature-ring-tools" aria-label="Creature markers">
           <div id="identity-ring-tools">
           <strong>Drag rings onto creatures</strong>
           <small>Each player color belongs to one character. Red is for monsters.</small>
@@ -101,7 +101,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           <div class="creature-status-options" role="group" aria-label="Select a status condition">
             ${CONDITIONS.map(s => `<button type="button" draggable="true" class="status-token" data-condition="${s}" style="--status-ring:#${CONDITION_COLORS[s].toString(16).padStart(6, '0')}">${s}</button>`).join('')}
           </div>
-        </section>
+        </section></details>
         <div class="elevation-control">
           <span>Elevation</span>
           <div>

@@ -241,3 +241,14 @@
 .builder-tool-group{border:1px solid #8e8676;border-radius:10px;min-width:0}
 .builder-tool-group>.combat-spell-tools{border:0;border-top:1px solid #8e8676;border-radius:0 0 10px 10px}
 @media(max-width:720px){.combat-log-dock{right:8px;top:8px;width:min(230px,calc(100% - 16px))}.combat-log-dock #combat-log{max-height:22vh}.builder-tool-group{min-width:260px}}
+
+/* Section grouping keeps existing tool IDs and controls intact. */
+.builder-sidebar>.builder-tool-group{margin-bottom:.65rem}
+.builder-tool-group>summary{background:#262a24;color:#f4f1df;border-radius:9px}
+.builder-tool-group:not([open])>summary{border-radius:9px}
+.builder-tool-group>[id],.builder-tool-group>nav,.builder-tool-group>section{min-width:0}
+@media(max-width:720px){
+  .builder-sidebar>.builder-tool-group{flex:0 0 auto;max-height:100%;overflow:auto;margin-bottom:0}
+  .builder-sidebar>.builder-tool-group[open]{min-width:290px}
+  .builder-sidebar>.builder-tool-group:not([open]){min-width:140px}
+}

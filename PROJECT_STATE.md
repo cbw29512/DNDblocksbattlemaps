@@ -566,3 +566,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Combat-log sidebar declutter (PR pending)
 - Moved the existing accessible combat log (same #combat-log target and live entries) out of the left tools palette into a collapsible board-side floating panel. Kept the 3D battlefield unobstructed when collapsed; phone/tablet panel constrained in size. Collapsed/expandable Spells & Areas controls in left panel; other tools remain unchanged. TS and checked-in browser JS plus CSS updated. Need CI and manual mobile visual QA before claiming layout certified.
+
+## 2026-10-08 — Toolbar organization
+- After combat log was moved to board-side panel (PR #48 merged), grouped Party, Maps & Themes, Starter Maps, Build & Blocks, and Creature Markers into native HTML details sections. Build & Blocks stays open by default; other groups start collapsed to reduce sidebar crowding. Kept existing element IDs/event listeners; source and browser JS parity; responsive CSS. Pending exact-head CI and manual desktop/touch usability check.
