@@ -197,8 +197,9 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         renderer?.setAreaTargets(targets.map(o => o.id));
         status.textContent = 'Preview intersects ' + targets.length + ' creature(s): ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Geometry provisional; not RAW-confirmed.';
         castButton.disabled = false;
+        // Placement must remain visible for inspection until Cast is pressed.
         if (commit)
-            castArea();
+            spellInstructions.textContent = 'Area placed. Inspect the cubes, then press Cast or Cancel.';
     };
     const castArea = () => {
         if (!activeSpell || !spellCenter)
