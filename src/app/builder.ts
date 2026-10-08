@@ -78,7 +78,7 @@ export async function renderBuilder(
           <strong>Spell &amp; Area Preview</strong>
           <label for="spell-choice">Effect</label>
           <select id="spell-choice"><option value="fireball">Fireball — 20 ft radius</option>${AREA_PRESETS.filter(t=>t.id!=='fireball').map(t=>`<option value="${t.id}">${t.label}</option>`).join('')}</select>
-          <label for="spell-caster">Caster name</label><input id="spell-caster" type="text" placeholder="Player or monster" value="Wizard">
+          <label for="spell-caster">Caster on map</label><select id="spell-caster"><option value="">Choose a creature</option></select>
           <button id="preview-spell" type="button">Preview Area</button>
           <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
           <small id="spell-instructions">Select Preview Area, move over the battlefield, then left-click/tap or press Cast to confirm. Escape, right-click, or Cancel dismisses.</small>
@@ -165,6 +165,18 @@ export async function renderBuilder(
     castButton.disabled=true; cancelButton.disabled=true;
     spellInstructions.textContent='Preview canceled or complete. Select Preview Area to start again.';
   };
+  const refreshCasterOptions = (): void => {
+    const select=root.querySelector<HTMLSelectElement>('#spell-caster');
+    if(!select)return;
+    const prior=select.value;
+    select.replaceChildren(new Option('Choose a creature',''));
+    for(const o of state.objects.filter(o=>['Characters','Monsters'].includes(getCatalogItem(o.catalogId).category))){
+      const option=new Option(getCatalogItem(o.catalogId).name+' ['+o.id.slice(0,8)+']',o.id);
+      select.add(option);
+    }
+    if([...select.options].some(o=>o.value===prior))select.value=prior;
+  };
+  refreshCasterOptions();
   const previewTargets = () => {
     if(!activeSpell || !spellCenter)return [];
     const radius=Math.ceil(activeSpell.sizeFeet/5)+1;
@@ -196,7 +208,7 @@ export async function renderBuilder(
   };
   const castArea = (): void => {
     if(!activeSpell || !spellCenter)return;
-    const caster=root.querySelector<HTMLInputElement>('#spell-caster')?.value.trim() || 'Unknown caster';
+    const caster=getCatalogItem(state.objects.find(o=>o.id===root.querySelector<HTMLSelectElement>('#spell-caster')?.value)?.catalogId ?? '').name;
     const label=activeSpell.label;
     const record=document.createElement('li');
     const targets=previewTargets();
@@ -208,17 +220,19 @@ export async function renderBuilder(
   root.querySelector('#preview-spell')?.addEventListener('click',()=>{
     const id=root.querySelector<HTMLSelectElement>('#spell-choice')?.value;
     activeSpell=AREA_PRESETS.find(x=>x.id===id) ?? AREA_PRESETS[0] ?? null;
-    const chosen=state.objects.find(x=>getCatalogItem(x.catalogId).category==='Characters') ??
-      state.objects.find(x=>getCatalogItem(x.catalogId).category==='Monsters');
-    casterOrigin=chosen ? {x:chosen.x,z:chosen.z,elevation:chosen.elevation} : {x:0,z:0,elevation:0};
+    const casterId=root.querySelector<HTMLSelectElement>('#spell-caster')?.value;
+    const chosen=state.objects.find(x=>x.id===casterId && ['Characters','Monsters'].includes(getCatalogItem(x.catalogId).category));
+    if(!chosen){status.textContent='Choose a caster on this map before previewing.';activeSpell=null;return;}
+    casterOrigin={x:chosen.x,z:chosen.z,elevation:chosen.elevation};
     spellCenter=null; castButton.disabled=true; cancelButton.disabled=false;
     renderer?.setAreaPreview(null,null);
     renderer?.setAreaTargets([]);
     spellInstructions.textContent='Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
-    status.textContent='Area preview armed. First creature on map used as origin if present.';
+    status.textContent='Area preview armed. Selected creature is the caster origin.';
   });
   castButton.addEventListener('click',castArea);
   cancelButton.addEventListener('click',cancelArea);
+  root.querySelector('#spell-caster')?.addEventListener('change',()=>{if(activeSpell)cancelArea();});
   const onAreaRightClick=(event:MouseEvent):void=>{if(activeSpell){event.preventDefault();event.stopImmediatePropagation();cancelArea();}};
   canvas.addEventListener('contextmenu',onAreaRightClick,true);
 
@@ -267,6 +281,7 @@ export async function renderBuilder(
     saveBoard(state);
     propagateParty(state);
     refreshPartyManager();
+    refreshCasterOptions();
     updateBoardSize();
     updateRingTokens();
   };
@@ -442,6 +457,7 @@ export async function renderBuilder(
   renderer.setRoomPlacement(null);
   renderer.setElevation(elevation);
   renderer.render(state);
+  refreshCasterOptions();
   updateBoardSize();
   updateRingTokens();
   refreshPartyManager();
