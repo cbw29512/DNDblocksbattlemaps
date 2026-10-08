@@ -17,6 +17,17 @@ export function feetBetween(a, b) {
 export function areaContainsPoint(t, p, point) {
     const cx = (point.x - p.center.x) * GRID_FEET, cz = (point.z - p.center.z) * GRID_FEET;
     const cy = (point.elevation - p.center.elevation) * GRID_FEET;
+    // Full five-foot cubes in one grid-aligned row, not a thin ray.
+    if (t.shape === 'line' && (t.widthFeet ?? 5) === GRID_FEET &&
+        p.origin.elevation === p.center.elevation && t.sizeFeet % GRID_FEET === 0) {
+        const dx = p.center.x-p.origin.x, dz=p.center.z-p.origin.z;
+        if (dx===0 && dz===0) return false;
+        const horizontal=Math.abs(dx)>=Math.abs(dz);
+        const dir=(horizontal?dx:dz)>=0?1:-1;
+        const step=horizontal?(point.x-p.origin.x)*dir:(point.z-p.origin.z)*dir;
+        return point.elevation===p.origin.elevation && step>=1 && step<=t.sizeFeet/GRID_FEET &&
+           (horizontal?point.z===p.origin.z:point.x===p.origin.x);
+    }
     if (t.shape === 'sphere') {
         const sliceRadius = Math.sqrt(Math.max(0, t.sizeFeet * t.sizeFeet - cy * cy));
         return Math.abs(cy) < t.sizeFeet + EPSILON &&
