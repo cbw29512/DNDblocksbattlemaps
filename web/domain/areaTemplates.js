@@ -17,7 +17,6 @@ export function feetBetween(a, b) {
 export function areaContainsPoint(t, p, point) {
     const cx = (point.x - p.center.x) * GRID_FEET, cz = (point.z - p.center.z) * GRID_FEET;
     const cy = (point.elevation - p.center.elevation) * GRID_FEET;
-    const len = Math.hypot(cx, cz, cy);
     if (t.shape === 'sphere') {
         const sliceRadius=Math.sqrt(Math.max(0,t.sizeFeet*t.sizeFeet-cy*cy));
         return Math.abs(cy)<t.sizeFeet+EPSILON && circularGridCellAffected(sliceRadius,p.center.x,p.center.z,point.x,point.z);
