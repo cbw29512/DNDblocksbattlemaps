@@ -1,6 +1,6 @@
-import { CONDITIONS, CONDITION_COLORS } from '../domain/creatureMarks.js?v=54d57171a3e0';
-import { getCatalogItem } from '../domain/catalog.js?v=54d57171a3e0';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=54d57171a3e0';
+import { CONDITIONS, CONDITION_COLORS } from '../domain/creatureMarks.js?v=a44a9017d418';
+import { getCatalogItem } from '../domain/catalog.js?v=a44a9017d418';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=a44a9017d418';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;

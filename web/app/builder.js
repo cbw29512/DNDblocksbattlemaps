@@ -1,23 +1,23 @@
-import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js?v=54d57171a3e0';
-import { areaCells } from '../domain/areaTemplates.js?v=54d57171a3e0';
-import { previewAffectedCreatures, selfAreaOriginCell } from '../domain/areaTargets.js?v=54d57171a3e0';
-import { isInCastingRange } from '../domain/areaTemplates.js?v=54d57171a3e0';
-import { createBrowserBackup } from '../domain/browserBackup.js?v=54d57171a3e0';
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=54d57171a3e0';
-import { setPartyMembership } from '../domain/party.js?v=54d57171a3e0';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=54d57171a3e0';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=54d57171a3e0';
-import { printBoardMap } from './printMap.js?v=54d57171a3e0';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=54d57171a3e0';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=54d57171a3e0';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=54d57171a3e0';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=54d57171a3e0';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=54d57171a3e0';
-import { roomSummary } from '../domain/room.js?v=54d57171a3e0';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=54d57171a3e0';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=54d57171a3e0';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=54d57171a3e0';
-import { createRenderer } from '../render/createRenderer.js?v=54d57171a3e0';
+import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js?v=a44a9017d418';
+import { areaCells } from '../domain/areaTemplates.js?v=a44a9017d418';
+import { previewAffectedCreatures, selfAreaOriginCell } from '../domain/areaTargets.js?v=a44a9017d418';
+import { isInCastingRange } from '../domain/areaTemplates.js?v=a44a9017d418';
+import { createBrowserBackup } from '../domain/browserBackup.js?v=a44a9017d418';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=a44a9017d418';
+import { setPartyMembership } from '../domain/party.js?v=a44a9017d418';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=a44a9017d418';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=a44a9017d418';
+import { printBoardMap } from './printMap.js?v=a44a9017d418';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=a44a9017d418';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=a44a9017d418';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=a44a9017d418';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=a44a9017d418';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=a44a9017d418';
+import { roomSummary } from '../domain/room.js?v=a44a9017d418';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=a44a9017d418';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=a44a9017d418';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=a44a9017d418';
+import { createRenderer } from '../render/createRenderer.js?v=a44a9017d418';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -224,7 +224,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         activeSpell = getAreaAbility(id ?? '')?.area ?? null;
         const select = root.querySelector('#spell-caster');
         const creatures = state.objects.filter(x => ['Characters', 'Monsters'].includes(getCatalogItem(x.catalogId).category));
-        if (!select?.value && creatures.length === 1)
+        if (select && !select.value && creatures.length === 1 && creatures[0])
             select.value = creatures[0].id;
         const chosen = creatures.find(x => x.id === select?.value);
         if (!activeSpell || !chosen) {
@@ -246,7 +246,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     root.querySelector('#spell-caster')?.addEventListener('change', armArea);
     castButton.addEventListener('click', castArea);
     cancelButton.addEventListener('click', cancelArea);
-  const onAreaRightClick = (event) => { if (activeSpell) {
+    const onAreaRightClick = (event) => { if (activeSpell) {
         event.preventDefault();
         event.stopImmediatePropagation();
         cancelArea();
