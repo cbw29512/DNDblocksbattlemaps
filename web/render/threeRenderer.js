@@ -225,11 +225,14 @@ export async function createThreeRenderer(container, handlers) {
         const position = blockPlacementFor(event);
         position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
     });
+    let lastPointerWasTouch = false;
+    renderer.domElement.addEventListener('pointerdown', (event) => { lastPointerWasTouch = event.pointerType === 'touch'; });
     renderer.domElement.addEventListener('click', (event) => {
         if (activeArea) {
             const point = floorPosition(event);
             if (point)
-                handlers.onAreaPoint(point, true, event.pointerType === 'touch');
+                handlers.onAreaPoint(point, true, lastPointerWasTouch || event.pointerType === 'touch');
+                lastPointerWasTouch = false;
             return;
         }
         setPointer(event);
