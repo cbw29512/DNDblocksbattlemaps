@@ -1,3 +1,4 @@
+import { PLAYER_RINGS, CONDITIONS, availableRings, assignRing, toggleCondition, isCreature } from '../domain/creatureMarks.js';
 import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js';
 import { printBoardMap } from './printMap.js';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
@@ -59,17 +60,18 @@ export async function renderBuilder(
       <aside class="builder-sidebar">
         ${roomPanelHtml()}
         ${catalogPanelHtml(selected)}
-        <label class="player-ring-picker">Character Ring Color
-          <select id="player-ring-color" aria-label="Character ring color">
-            <option value="2688dc">Blue</option>
-            <option value="31b86b">Green</option>
-            <option value="e0be3d">Yellow</option>
-            <option value="a369d7">Purple</option>
-            <option value="f18b35">Orange</option>
-            <option value="f4f4f4">White</option>
-          </select>
-          <small>Red is reserved for monsters. Applies to new characters.</small>
-        </label>
+        <section class="creature-ring-tools" aria-label="Creature markers">
+          <strong>Drag rings onto creatures</strong>
+          <small>Each player color belongs to one character. Red is for monsters.</small>
+          <div class="creature-ring-options" id="available-ring-colors">
+            ${PLAYER_RINGS.map(r => `<button type="button" draggable="true" class="ring-token" data-ring-color="${r.color}" title="Drag ${r.name} onto a character"><i style="--ring:#${r.color.toString(16).padStart(6,'0')}"></i>${r.name}</button>`).join('')}
+          </div>
+          <strong>Status rings</strong>
+          <small>Drag a condition onto a character or monster. Drop it again to remove. Exhaustion increases through 6, then clears.</small>
+          <div class="creature-status-options">
+            ${CONDITIONS.map(s => `<button type="button" draggable="true" class="status-token" data-condition="${s}">${s}</button>`).join('')}
+          </div>
+        </section>
         <div class="elevation-control">
           <span>Elevation</span>
           <div>
@@ -114,10 +116,20 @@ export async function renderBuilder(
       `${boardWidth(state.bounds)} × ${boardDepth(state.bounds)} squares · saves in this browser`;
   };
 
+  const updateRingTokens = (): void => {
+    const available = new Set(availableRings(state));
+    root.querySelectorAll<HTMLButtonElement>('[data-ring-color]').forEach(button => {
+      const color = Number(button.dataset.ringColor);
+      button.hidden = !available.has(color);
+      button.draggable = available.has(color);
+    });
+  };
+
   const refresh = (): void => {
     renderer?.render(state);
     saveBoard(state);
     updateBoardSize();
+    updateRingTokens();
   };
 
   const run = (
@@ -178,10 +190,7 @@ export async function renderBuilder(
 
   renderer = await createRenderer(canvas, {
     onPlace(position) {
-      const ring = getCatalogItem(selected).category === 'Characters'
-        ? Number.parseInt((root.querySelector<HTMLSelectElement>('#player-ring-color')?.value ?? '2688dc'), 16)
-        : undefined;
-      const object = createWorldObject(makeId(), selected, position, Date.now(), ring);
+      const object = createWorldObject(makeId(), selected, position);
       const grew = run(placeCommand(object), [position]);
       if (grew !== null && !grew) status.textContent = `${getCatalogItem(selected).name} placed. Click again to place more.`;
       if (grew) {
@@ -222,6 +231,24 @@ export async function renderBuilder(
       status.textContent =
         `Built ${roomSummary(armedRoom)} room.${growthText} Move the gold outline and click again.`;
     },
+    onMarkDrop(id, payload) {
+      const object = findObject(state, id);
+      if (!object || !isCreature(object)) {
+        status.textContent = 'Rings can only be attached to characters or monsters.';
+        return;
+      }
+      let updated = null;
+      if (payload.startsWith('ring:')) {
+        updated = assignRing(state, id, Number.parseInt(payload.slice(5), 16));
+        if (!updated) { status.textContent = 'That player ring is unavailable or reserved.'; return; }
+      } else if (payload.startsWith('status:')) {
+        const condition = payload.slice(7);
+        if (!CONDITIONS.some(c => c === condition)) return;
+        updated = toggleCondition(object, condition as typeof CONDITIONS[number]);
+      } else return;
+      run({ kind: 'update', before: object, after: updated }, []);
+      status.textContent = `${getCatalogItem(object.catalogId).name} markers updated.`;
+    },
     onRemove(id) {
       const object = findObject(state, id);
       if (object) run(removeCommand(object), []);
@@ -237,6 +264,17 @@ export async function renderBuilder(
   renderer.setElevation(elevation);
   renderer.render(state);
   updateBoardSize();
+  updateRingTokens();
+
+  root.querySelectorAll<HTMLElement>('[data-ring-color], [data-condition]').forEach(token => {
+    token.addEventListener('dragstart', (event: DragEvent) => {
+      const payload = token.dataset.ringColor
+        ? 'ring:' + Number(token.dataset.ringColor).toString(16)
+        : 'status:' + token.dataset.condition;
+      event.dataTransfer?.setData('text/plain', payload);
+      if (event.dataTransfer) event.dataTransfer.effectAllowed = 'copy';
+    });
+  });
 
   buildRoomButton.addEventListener('click', () => {
     if (armedRoom) {
