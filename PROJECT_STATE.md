@@ -354,3 +354,13 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Cost Impact:** zero dependencies or hosting changes.
 - **Result:** isolated black-material fix branch. Full npm/browser tests not yet run.
 - **Next Step:** deploy tested Pages build and visually confirm Stone, Barrel, Fighter; if any stay black after load, inspect SVG GPU upload/texture format before adding features.
+
+
+## 2026-10-08 — Black textured faces reproduced via user screenshot
+
+- **Starting State:** screenshot shows black opaque placed cubes while catalog image previews are colored; placement and geometry render successfully.
+- **Changes Made:** changed shared cube face texture loading to use browser Image → 256×256 Canvas 2D rasterization → Three.js CanvasTexture rather than uploading SVG data image directly. Keep solid catalog color until rasterization succeeds; failures stay colored and log warnings. Source + browser JS synchronized; unit test updated.
+- **Decisions:** Rendering-only fix, no changes to placement, geometry or catalog. The screenshot demonstrates the previous renderer problem but does not yet verify this correction.
+- **Cost:** no dependencies or hosting change.
+- **Result:** isolated code fix pending browser certification.
+- **Exact Next Step:** deploy current main to Pages test and verify Stone, Wood Floor, Barrel, hero cube each shows face art. Inspect Console if all remain dark.

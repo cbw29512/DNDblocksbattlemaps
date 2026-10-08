@@ -19,20 +19,35 @@ function materialFor(THREE, item) {
         return material;
     try {
         const url = resolveBrowserAssetUrl(item.art.src);
-        new THREE.TextureLoader().load(url, (texture) => {
+        const source = new Image();
+        source.onload = () => {
             try {
+                if (!source.naturalWidth || !source.naturalHeight)
+                    throw new Error('Image has no dimensions');
+                const canvas = document.createElement('canvas');
+                canvas.width = 256;
+                canvas.height = 256;
+                const context = canvas.getContext('2d');
+                if (!context)
+                    throw new Error('Canvas 2D context unavailable');
+                context.fillStyle = '#' + item.color.toString(16).padStart(6, '0');
+                context.fillRect(0, 0, 256, 256);
+                context.drawImage(source, 0, 0, 256, 256);
+                const texture = new THREE.CanvasTexture(canvas);
                 texture.colorSpace = THREE.SRGBColorSpace;
                 face.map = texture;
                 face.color.setHex(0xffffff);
                 face.needsUpdate = true;
             }
             catch (error) {
-                console.warn('[render] Failed to apply block face art.', { id: item.id, error });
+                console.warn('[render] Face art rasterization failed; keeping cube color.', { id: item.id, error });
             }
-        }, undefined, (error) => console.warn('[render] Block face art unavailable; keeping visible color.', { id: item.id, error }));
+        };
+        source.onerror = (error) => console.warn('[render] Block art failed; keeping cube color.', { id: item.id, error });
+        source.src = url;
     }
     catch (error) {
-        console.warn('[render] Failed to request block face art; keeping visible color.', { id: item.id, error });
+        console.warn('[render] Could not load block face art; keeping cube color.', { id: item.id, error });
     }
     return material;
 }
