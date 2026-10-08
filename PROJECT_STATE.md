@@ -389,3 +389,14 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Result:** fix pushed to PR #1, not merged/deployed/tested. Current production and Pages may still contain old code.
 - **Blockers:** run browser reproduction, validate palette click activates tool and hover ghost, inspect console and click status. Review CSS overlays and script caching if it persists.
 - **Exact Next Step:** reproduce on Pages test, run npm check and compare served browser revision to source before merging/releasing.
+
+
+## 2026-10-07 — Continued user blocker: no visible blocks
+
+- **Starting State:** User confirms no blocks appear after clicking, despite earlier defensive placement patch; fixes remain on unmerged draft PR and therefore cannot affect deployed site.
+- **Changes Made:** Updated source and checked-in browser builder to explicitly report successful placement coordinates instead of only reporting board growth. This separates input/command success from invisible rendering. Prior ground-raycast fallback remains on branch.
+- **Decisions:** Do not assert bug fixed without browser reproduction. Do not confuse pushed PR with GitHub Pages/Netlify deployment.
+- **Cost Impact:** none.
+- **Result:** debug-status improvement committed to PR branch, unmerged/unpublished, unverified.
+- **Blocker:** GitHub Pages workflow requires manual dispatch and PR must first be reviewed/merged. GitHub integration does not expose workflow dispatch. Real deployment/browser reproduction needed to localize rendering vs input.
+- **Exact Next Step:** run npm check on review branch; release test build through manually dispatched GitHub Pages workflow; select Stone and click grid, note status feedback and whether block appears; investigate rendering if success text appears without cube.
