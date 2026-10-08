@@ -22,6 +22,7 @@ export async function renderBuilder(root, terrainId, handlers) {
     let selected = 'stone-block';
     let armedRoom = null;
     let elevation = 0;
+    let pickedCreatureId = null;
     root.innerHTML = `
     <main class="builder-shell" style="--theme-accent:${theme.accentCss}">
       <header class="builder-topbar">
@@ -158,6 +159,23 @@ export async function renderBuilder(root, terrainId, handlers) {
         status.textContent = `Room placement canceled. ${getCatalogItem(selected).name} selected.`;
     };
     renderer = await createRenderer(canvas, {
+        onPickCreature(id) {
+            const creature = findObject(state, id);
+            if (!creature || !isCreature(creature)) return;
+            pickedCreatureId = id;
+            renderer?.setMovingCreature(id);
+            status.textContent = `${getCatalogItem(creature.catalogId).name} picked up. Click a destination square or press Escape.`;
+        },
+        onMoveCreature(position) {
+            const creature = pickedCreatureId ? findObject(state, pickedCreatureId) : null;
+            if (!creature || !isCreature(creature)) return;
+            const after = { ...creature, x: position.x, z: position.z, elevation: creature.elevation };
+            const result = run({ kind: 'update', before: creature, after }, [position]);
+            if (result === null) return;
+            pickedCreatureId = null;
+            renderer?.setMovingCreature(null);
+            status.textContent = `${getCatalogItem(creature.catalogId).name} moved. Ring and conditions preserved.`;
+        },
         onPlace(position) {
             const object = createWorldObject(makeId(), selected, position);
       const grew = run(placeCommand(object), [position]);
@@ -320,8 +338,15 @@ export async function renderBuilder(root, terrainId, handlers) {
     document.getElementById('zoom-in')?.addEventListener('click', () => renderer?.zoom(0.82));
     document.getElementById('zoom-out')?.addEventListener('click', () => renderer?.zoom(1.2));
     const onKeyDown = (event) => {
-        if (event.key !== 'Escape' || !armedRoom)
+        if (event.key !== 'Escape') return;
+        if (pickedCreatureId) {
+            pickedCreatureId = null;
+            renderer?.setMovingCreature(null);
+            status.textContent = 'Creature movement canceled.';
+            event.preventDefault();
             return;
+        }
+        if (!armedRoom) return;
         event.preventDefault();
         cancelRoomMode();
     };
