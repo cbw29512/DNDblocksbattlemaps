@@ -198,3 +198,5 @@
 .fallback-creature-name {position:absolute;bottom:90%;left:50%;transform:translateX(-50%);z-index:4;max-width:150px;padding:2px 3px;border:1px solid #d3c6aa;border-radius:4px;background:#161816;color:white;font-size:9px;white-space:nowrap;pointer-events:none;}
 
  .status-token::before {content:'';width:13px;height:13px;box-sizing:border-box;border:3px solid var(--status-ring, #e7b94a);border-radius:50%;flex:none;}
+
+#creature-mode.is-armed {background:#326b6c;color:#fff;border-color:#8ce5dc;box-shadow:0 0 0 2px rgba(95,221,203,.23);}

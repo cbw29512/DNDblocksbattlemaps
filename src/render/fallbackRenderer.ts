@@ -21,6 +21,7 @@ export function createFallbackRenderer(
 
   let selected: CatalogId | null = null;
   let movingCreatureId: string | null = null;
+  let creatureMoveMode = false;
   let room: NormalizedRoom | null = null;
   let elevation = 0;
   let theme: TerrainTheme | null = null;
@@ -115,6 +116,11 @@ export function createFallbackRenderer(
             return;
           }
 
+          if (creatureMoveMode && !movingCreatureId) {
+            if (top && ['Characters','Monsters'].includes(getCatalogItem(top.catalogId).category)) handlers.onPickCreature(top.id);
+            else handlers.onStatus('Move Creatures: select a creature.');
+            return;
+          }
           if (movingCreatureId) {
             handlers.onMoveCreature({ x, z, elevation });
             return;
@@ -166,6 +172,7 @@ export function createFallbackRenderer(
       draw();
     },
     setMovingCreature(id) { movingCreatureId = id; },
+    setCreatureMoveMode(enabled) { creatureMoveMode = enabled; },
     setElevation(next) {
       elevation = next;
     },

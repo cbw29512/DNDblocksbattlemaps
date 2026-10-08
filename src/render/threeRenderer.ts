@@ -81,6 +81,7 @@ export async function createThreeRenderer(
 
   let selected: CatalogId | null = null;
   let movingCreatureId: string | null = null;
+  let creatureMoveMode = false;
   let activeRoom: NormalizedRoom | null = null;
   let elevation = 0;
   let preview: any = null;
@@ -202,7 +203,7 @@ export async function createThreeRenderer(
       scene.remove(preview);
       disposePlacementPreview(preview);
     }
-    preview = selected ? createPlacementPreview(THREE, selected) : null;
+    preview = selected && !creatureMoveMode ? createPlacementPreview(THREE, selected) : null;
     if (preview) scene.add(preview);
   }
 
@@ -232,7 +233,7 @@ export async function createThreeRenderer(
       return;
     }
 
-    if (!preview || !selected) return;
+    if (creatureMoveMode || !preview || !selected) return;
     const position = blockPlacementFor(event);
     position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
   });
@@ -245,12 +246,21 @@ export async function createThreeRenderer(
       return;
     }
 
+    if (creatureMoveMode && !movingCreatureId) {
+      setPointer(event);
+      const candidate = raycaster.intersectObjects(objectGroup.children.filter(mesh => currentObjects.some(o => o.id === mesh.userData.objectId && ['Characters','Monsters'].includes(getCatalogItem(o.catalogId).category))), false)[0];
+      const id = candidate?.object?.userData?.objectId;
+      if (id) handlers.onPickCreature(String(id));
+      else handlers.onStatus('Move Creatures: click a character or monster to pick it up.');
+      return;
+    }
     if (movingCreatureId) {
       const destination = floorPosition(event);
       if (destination) handlers.onMoveCreature(destination);
       else handlers.onStatus('Choose a square inside the map to move this creature.');
       return;
     }
+    if (!selected) return;
     setPointer(event);
     const clicked = raycaster.intersectObjects(objectGroup.children, false)[0]?.object?.userData?.objectId;
     if (clicked && currentObjects.some(o => o.id === clicked && ['Characters', 'Monsters'].includes(getCatalogItem(o.catalogId).category))) {
@@ -313,6 +323,7 @@ export async function createThreeRenderer(
       rebuildRoomPreview();
     },
     setMovingCreature(id) { movingCreatureId = id; },
+    setCreatureMoveMode(enabled) { creatureMoveMode = enabled; rebuildBlockPreview(); },
     setElevation(next) {
       elevation = next;
       const center = boardCenter(currentBounds);
