@@ -346,3 +346,7 @@ Implementation on branch `catalog-face-art-oct07`; verification and merge pendin
 ### Additional face art — doors and hazards (2026-10-07)
 
 The five existing blocks Secret Door, Open Doorway, Trapdoor, Spike Trap and Dart Trap now have their own pictograms instead of borrowing ordinary wall, arch, door, or generic trap artwork. A reusable Mimic pictogram is also available for later catalog records. Geometry is unchanged: all six cube faces show their own catalog art; no per-object renderer was introduced. A regression checks unique art sources and 1×1 cube footprints. Source and checked-in browser JavaScript were both changed on the draft PR branch; runtime verification remains pending.
+
+### Universal footprint groundwork — 2026-10-07
+
+`src/domain/footprint.ts` now supplies deterministic contiguous coordinate expansion for any 1×1, 2×2, 3×3, or 4×4 footprint, without adding separate WorldObject records. Targeted domain regression exercises all four sizes and rejects unsupported sizes. This is **domain groundwork only**: renderer tiling, coherent creature silhouette art, pointer hit mapping and full user-visible Ogre placement have not been implemented or certified. The local Ogre asset was not found in this repository. Do not mark Ogre implemented.
