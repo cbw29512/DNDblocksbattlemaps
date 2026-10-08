@@ -1,3 +1,4 @@
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=startermaps1008';
 import { setPartyMembership } from '../domain/party.js?v=startfix1008';
 import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=startfix1008';
 import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=startfix1008';
@@ -10,14 +11,14 @@ import { commit, createHistory, redo, undo } from '../domain/history.js?v=startf
 import { roomSummary } from '../domain/room.js?v=startfix1008';
 import { roomWallPositions } from '../domain/roomPlacement.js?v=startfix1008';
 import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=startfix1008';
-import { clearBoard, loadBoard, saveBoard, propagateParty } from '../domain/storage.js?v=startfix1008';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=startfix1008';
 import { createRenderer } from '../render/createRenderer.js?v=startfix1008';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
-export async function renderBuilder(root, terrainId, handlers) {
+export async function renderBuilder(root, terrainId, handlers, mapId) {
     const theme = TERRAIN_THEMES[terrainId] ?? TERRAIN_THEMES.castle;
-    let state = normalizeRingAssignments(loadBoard(theme.id));
+    let state = normalizeRingAssignments(loadBoard(theme.id, mapId));
     let history = createHistory();
     let renderer = null;
     let selected = 'stone-block';
@@ -32,7 +33,7 @@ export async function renderBuilder(root, terrainId, handlers) {
           <span class="brand-mark"><i></i><i></i><i></i></span><span>DND Blocks</span>
         </button>
         <div class="map-title">
-          <b>${theme.name} Map</b>
+          <b>${mapId ? (listCampaignMaps().find(m => m.id === mapId)?.name ?? theme.name + ' Map') : theme.name + ' Map'}</b>
           <small id="board-size"></small>
         </div>
         <div class="builder-actions">
@@ -51,8 +52,17 @@ export async function renderBuilder(root, terrainId, handlers) {
         </section>
         <nav class="campaign-map-tabs" aria-label="Campaign maps">
           <strong>Maps</strong>
+          ${listCampaignMaps().map(m => `<button type="button" data-map-id="${m.id}" ${m.id === mapId ? 'aria-current="page"' : ''}>${m.name}</button>`).join('')}
           ${Object.values(TERRAIN_THEMES).map(t => `<button type="button" data-map-terrain="${t.id}" ${t.id === theme.id ? 'aria-current="page"' : ''}>${t.name}</button>`).join('')}
         </nav>
+        <section class="starter-map-panel" id="starter-map-panel" aria-label="Starter map templates">
+          <strong>Create a Starter Map</strong>
+          <small>Creates a new editable map. Existing maps stay untouched.</small>
+          <select id="starter-template-choice" aria-label="Choose starter map">
+            ${STARTER_TEMPLATES.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}
+          </select>
+          <button id="create-starter-map" type="button" class="button button-ghost">Create New Map</button>
+        </section>
         <div id="build-tools">
         ${roomPanelHtml()}
         ${catalogPanelHtml(selected)}
@@ -321,6 +331,8 @@ export async function renderBuilder(root, terrainId, handlers) {
     if (buildTools) buildTools.hidden = moveMode;
     const partyTools = root.querySelector('#party-manager');
     if (partyTools) partyTools.hidden = moveMode;
+    const starterTools = root.querySelector('#starter-map-panel');
+    if (starterTools) starterTools.hidden = moveMode;
     if (identityTools) identityTools.hidden = moveMode;
     const button = root.querySelector('#creature-mode');
     button?.setAttribute('aria-pressed', String(moveMode));
@@ -338,6 +350,26 @@ export async function renderBuilder(root, terrainId, handlers) {
       saveBoard(state);
       propagateParty(state);
       window.location.search = '?view=build&terrain=' + encodeURIComponent(map);
+    });
+  });
+
+  root.querySelector('#create-starter-map')?.addEventListener('click', () => {
+    const choice = root.querySelector('#starter-template-choice');
+    if (!choice) return;
+    try {
+      const created = createStarterMap(choice.value);
+      window.location.search = '?view=build&terrain=' + encodeURIComponent(created.terrain) + '&map=' + encodeURIComponent(created.id);
+    } catch(error) {
+      status.textContent = 'Could not create starter map. Your current map was not changed.';
+      console.warn('[templates]',error);
+    }
+  });
+  root.querySelectorAll('[data-map-id]').forEach(button => {
+    button.addEventListener('click', () => {
+      const target = listCampaignMaps().find(m => m.id === button.getAttribute('data-map-id'));
+      if(!target) return;
+      saveBoard(state);
+      window.location.search = '?view=build&terrain=' + encodeURIComponent(target.terrain) + '&map=' + encodeURIComponent(target.id);
     });
   });
 
@@ -410,8 +442,8 @@ export async function renderBuilder(root, terrainId, handlers) {
     document.getElementById('clear')?.addEventListener('click', () => {
         if (!confirm('Clear this prototype map?'))
             return;
-        clearBoard(theme.id);
-        state = createBoardState(theme.id);
+        clearBoard(theme.id, mapId);
+        state = { ...createBoardState(theme.id), ...(mapId ? { mapId } : {}) };
         history = createHistory();
         refresh();
     });
