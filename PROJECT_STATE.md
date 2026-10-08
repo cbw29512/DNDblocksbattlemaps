@@ -364,3 +364,13 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Cost:** no dependencies or hosting change.
 - **Result:** isolated code fix pending browser certification.
 - **Exact Next Step:** deploy current main to Pages test and verify Stone, Wood Floor, Barrel, hero cube each shows face art. Inspect Console if all remain dark.
+
+
+## 2026-10-08 — Black cubes: stale browser bundle and unlit materials
+
+- **User evidence:** repeated black cube faces; palette art loads and cubes place correctly.
+- **Identified issue:** `index.html` and nested checked-in `web/` imports continued using cache query `b60b427fbe81` (the pre-rasterization renderer). A browser may therefore retain stale modules despite new backend commits.
+- **Changes:** switched only catalog cube face material to unlit `MeshBasicMaterial`, avoiding light/shadow-related darkening; disabled receiveShadow on cubes. Updated the cached module import chain through index → main → builder → renderer → threeObjects to a new cache key. Kept previous image → canvas → texture loader and solid-color fallback. Updated test mock for MeshBasicMaterial.
+- **Scope:** targeted rendering and cache invalidation; no placement, catalog, or room logic changed.
+- **Verification:** changes committed; browser behavior not yet confirmed; deployment state must be checked. The static site build may regenerate version query strings.
+- **Next:** verify exact deployed page source and that Wood Floor renders a recognizably brown cube with its face art; if not, inspect Console/WebGL errors and actual generated network module URLs rather than iterating blindly.
