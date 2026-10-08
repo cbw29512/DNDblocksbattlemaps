@@ -1,4 +1,4 @@
-import { PLAYER_RINGS, CONDITIONS, availableRings, assignRing, toggleCondition, isCreature } from '../domain/creatureMarks.js?v=creaturerings1008';
+import { PLAYER_RINGS, CONDITIONS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=creaturerings1008';
 import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=creaturerings1008';
 import { printBoardMap } from './printMap.js?v=creaturerings1008';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=creaturerings1008';
@@ -16,7 +16,7 @@ function makeId() {
 }
 export async function renderBuilder(root, terrainId, handlers) {
     const theme = TERRAIN_THEMES[terrainId] ?? TERRAIN_THEMES.castle;
-    let state = loadBoard(theme.id);
+    let state = normalizeRingAssignments(loadBoard(theme.id));
     let history = createHistory();
     let renderer = null;
     let selected = 'stone-block';
