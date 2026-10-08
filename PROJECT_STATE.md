@@ -509,3 +509,7 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 ## 2026-10-08 — A4 partial multi-cube preview target intersection (IN PROGRESS)
 - Added reusable `creatureOccupiedCells` and `previewAffectedCreatures` to match an entire 1/2/3/4-cube creature volume against whole affected 5-foot cells, returning each creature only once. Fireball preview status reports candidate creatures and confirmed-cast log records provisional counts. Tests exercise Large/Huge/Gargantuan intersection and ignoring scenery.
 - **NOT RAW CERTIFIED:** uses provisional A0 center-cell AoE masks, no cover/line-of-effect, no edition-verified spell geometry, no save/damage rolls, no persistent log or target-outline visuals. Do not confuse candidate targets with actual hits. Next: exact-head CI, then renderer outlining and RAW inclusion certification.
+
+## 2026-10-08 — A1 candidate creature cube outlines (IN PROGRESS)
+- Adds renderer `setAreaTargets(ids)` to draw yellow visible edge outlines on each 5-foot cube of a provisional AoE-intersecting creature, including 2×2×2, 3×3×3 and 4×4×4 monsters. Fallback grid highlights their occupied cells. Preview changes refresh IDs; cancel/commit clears outlines. AoE is still provisional and not RAW-certified; no saves/damage and no persistent log.
+- Exact-head CI and live browser validation pending. Next: certify RAW area-cell inclusion/edition-specific rules, then actual selected-caster origin and combat log persistence.
