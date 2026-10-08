@@ -34,7 +34,10 @@ function materialFor(THREE: any, item: PaletteItem): any {
     map: textureFor(THREE, item.art.src),
     transparent: true,
     alphaTest: 0.02,
-    roughness: 0.82
+    roughness: 0.82,
+    // Subtle self-illumination; does not add costly dynamic light sources.
+    emissive: item.tags?.includes('light-source') ? 0xffa33e : 0x000000,
+    emissiveIntensity: item.tags?.includes('light-source') ? 0.48 : 0
   });
 
   // Every side of a DND Block represents the same object identity.
