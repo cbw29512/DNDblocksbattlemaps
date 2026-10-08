@@ -2,7 +2,7 @@ import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPa
 import { printBoardMap } from './printMap.js';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
 import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js';
-import { PALETTE, TERRAIN_THEMES } from '../domain/catalog.js';
+import { PALETTE, TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js';
 import {
   createBoardState, createWorldObject, findObject,
   placeCommand, placeManyCommand, removeCommand
@@ -151,7 +151,7 @@ export async function renderBuilder(
   };
 
   const restoreSelectedBlock = (): void => {
-    setCatalogCategory(root, PALETTE[selected].category);
+    setCatalogCategory(root, getCatalogItem(selected).category);
     renderer?.setSelectedCatalog(selected);
     root.querySelectorAll<HTMLButtonElement>('.palette-item').forEach((item) => {
       item.classList.toggle('active', item.dataset.catalog === selected);
@@ -162,7 +162,7 @@ export async function renderBuilder(
     if (!armedRoom) return;
     setRoomMode(null);
     restoreSelectedBlock();
-    status.textContent = `Room placement canceled. ${PALETTE[selected].name} selected.`;
+    status.textContent = `Room placement canceled. ${getCatalogItem(selected).name} selected.`;
   };
 
   renderer = await createRenderer(canvas, {
@@ -254,13 +254,13 @@ export async function renderBuilder(
     button.addEventListener('click', () => {
       if (armedRoom) setRoomMode(null);
       selected = button.dataset.catalog as CatalogId;
-      setCatalogCategory(root, PALETTE[selected].category);
+      setCatalogCategory(root, getCatalogItem(selected).category);
       root.querySelectorAll('.palette-item').forEach((item) => {
         item.classList.toggle('active', item === button);
       });
       renderer?.setSelectedCatalog(selected);
       status.textContent =
-        `${PALETTE[selected].name} selected. Click empty grid, a top face, or a side face.`;
+        `${getCatalogItem(selected).name} selected. Click empty grid, a top face, or a side face.`;
     });
   });
 
