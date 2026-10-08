@@ -295,3 +295,16 @@ test('door and hazard blocks display distinct generated face art', () => {
     assert.equal(PALETTE[id].footprintCells, 1);
   }
 });
+
+test('universal creature footprints cover contiguous squares as one logical entity', async () => {
+  const { cubeFootprint } = await import('../.test-build/src/domain/footprint.js');
+  const origin = { x: 7, z: -3, elevation: 2 };
+  for (const size of [1, 2, 3, 4]) {
+    const occupied = cubeFootprint(origin, size);
+    assert.equal(occupied.length, size * size);
+    assert.equal(new Set(occupied.map((cell) => cell.x + ',' + cell.z)).size, size * size);
+    assert.deepEqual(occupied[0], origin);
+    assert.deepEqual(occupied.at(-1), { x: 7 + size - 1, z: -3 + size - 1, elevation: 2 });
+  }
+  assert.throws(() => cubeFootprint(origin, 5), RangeError);
+});
