@@ -393,7 +393,7 @@ export async function renderBuilder(
   });
 
   root.querySelector('#create-starter-map')?.addEventListener('click', () => {
-    const choice = root.querySelector('#starter-template-choice');
+    const choice = root.querySelector<HTMLSelectElement>('#starter-template-choice');
     if (!choice) return;
     try {
       const created = createStarterMap(choice.value);
