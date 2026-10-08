@@ -546,3 +546,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Remove finite map/elevation preview clipping (IN PROGRESS)
 - Builder target scan and Three.js 3D overlay bounds now extend to the template's finite geometric bounds regardless of map edges, floor zero or arbitrary elevation eight. Source and browser JS changed together. The 2D fallback intentionally displays only current viewport slice; it is not a complete volumetric viewer. No cover blocking occurs in the pure geometric preview. CI and interactive proof outstanding.
+
+## 2026-10-08 — Fireball blank preview root-cause fix (IN PROGRESS)
+- User reported selecting Fireball but no overlay appears. Traced event gate: renderer sends onAreaPoint only when activeArea is non-null, while Preview Area previously called setAreaPreview(null,null); no pointermove/click could reach choosePoint. Fixed source and browser JS by arming setAreaPreview(activeSpell,{origin:casterOrigin,center:casterOrigin}) on Preview Area, allowing pointer to update area. Cancel still sets null. Exact-head CI/live browser confirmation pending; do not label publicly validated until verified.
