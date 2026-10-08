@@ -26,6 +26,8 @@ export interface BoardBounds {
 export interface WorldObject extends GridPosition {
   id: string;
   catalogId: CatalogId;
+  /** Character-only ring color; red is reserved for monsters. */
+  ringColor?: number;
   createdAt: number;
 }
 
