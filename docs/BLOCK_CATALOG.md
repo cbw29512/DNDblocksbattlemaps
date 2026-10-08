@@ -366,3 +366,8 @@ The toolbar toggle **Move Creatures** switches from ordinary Build mode to creat
 **Combat Mode:** lock Build and Props, hide the whole block catalog and player-identity ring tools. Show only condition/status ring controls. The DM can move any creature and apply/remove any status on any character or monster. Each player should be able to move and apply/remove statuses only on their own assigned character, without initiative restrictions. In the current prototype no player login/shared session/ownership enforcement exists; the working UI is DM-side only. Server-validated ownership is required before enabling player edits.
 
 **Map switching policy: never split the party.** One active map per game session, DM-controlled. When DM switches map all connected players automatically follow. Transfer party characters with names, ring colors, statuses and ownership intact. Map library/private prep can contain other maps but no player sees them until DM activates one. Networking and multi-map storage remain future work, not falsely advertised as functional.
+
+
+### Campaign party auto-propagation (local prototype)
+
+DM checks **Party** next to a placed Character on Build Mode. Each checked hero's stable WorldObject ID becomes a campaign roster entry, automatically populated on the five existing terrain maps without requiring the DM to place the hero five times. Each map has independent grid position while shared identity, ring and conditions follow the roster. Unchecking Party or deleting a party character removes propagated copies while retaining the original if unchecked. Map tabs switch the current local DM view. No arbitrary map creation, online players, live network sync, secure ownership or party-start marker yet: these remain separate work.
