@@ -200,3 +200,5 @@
  .status-token::before {content:'';width:13px;height:13px;box-sizing:border-box;border:3px solid var(--status-ring, #e7b94a);border-radius:50%;flex:none;}
 
 #creature-mode.is-armed {background:#326b6c;color:#fff;border-color:#8ce5dc;box-shadow:0 0 0 2px rgba(95,221,203,.23);}
+
+#build-tools[hidden], #identity-ring-tools[hidden] { display: none !important; }

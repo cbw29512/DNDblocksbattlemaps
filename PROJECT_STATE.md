@@ -430,3 +430,11 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - Added toolbar Move Creatures toggle, excludes scenery meshes from selection raycast while move mode active, blocks ordinary placement, preserves one-creature Undo/Redo movement, and cancels movement when switching mode. Both 3D and fallback renderers updated with source/browser parity.
 - Build/Props remain visible but are not selectable for movement; red monster rings, character rings and statuses stay attached.
 - CI and actual browser usability pending; do not claim certified.
+
+
+## 2026-10-08 — Build/Combat tool visibility; single shared active map
+
+- User rule: Build Mode offers all blocks, props, characters, monsters, and status/identity rings. Combat Mode locks the scenery and exposes only status-ring tools. DM always retains control over every creature and status; a player may move/status only an owned character at any time.
+- Implementation: rename Move Creatures UI toggle to Combat Mode/Build Mode; wrap Build/catalog and identity-ring sections and hide in Combat; keep status ring toolbox available in both modes. Existing creature movement and marker authority remain DM prototype. No credentials/player ownership, network sync or per-role view yet; do not imply those work.
+- Campaign contract: **Never split the party**: exactly one DM-selected active map for all connected players. On map switch, clients follow DM automatically and player characters retain identities/ownership/colors/statuses; DM prep maps are private. Map Manager and multiplayer sync not implemented yet.
+- Pending full CI and browser checks.

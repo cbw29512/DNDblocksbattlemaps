@@ -357,3 +357,12 @@ After placing a Character or Monster, click its cube to pick up the logical piec
 ### Move Creatures mode (2026-10-08)
 
 The toolbar toggle **Move Creatures** switches from ordinary Build mode to creature-only interaction. While active, Build and Props remain visible and non-movable; the 3D hit test excludes scenery when picking a creature, and map clicks cannot place new Build blocks. Click a Character or Monster and then click its destination. The moved object preserves its ID, status, rings, and undo history. Switch mode off to resume building. Browser verification remains pending.
+
+
+### Build Mode vs Combat Mode (2026-10-08)
+
+**Build Mode (DM):** show all terrain/build blocks, props, Characters, Monsters, identity rings and condition/status rings. Normal authoring and creature arrangement permitted.
+
+**Combat Mode:** lock Build and Props, hide the whole block catalog and player-identity ring tools. Show only condition/status ring controls. The DM can move any creature and apply/remove any status on any character or monster. Each player should be able to move and apply/remove statuses only on their own assigned character, without initiative restrictions. In the current prototype no player login/shared session/ownership enforcement exists; the working UI is DM-side only. Server-validated ownership is required before enabling player edits.
+
+**Map switching policy: never split the party.** One active map per game session, DM-controlled. When DM switches map all connected players automatically follow. Transfer party characters with names, ring colors, statuses and ownership intact. Map library/private prep can contain other maps but no player sees them until DM activates one. Networking and multi-map storage remain future work, not falsely advertised as functional.
