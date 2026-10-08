@@ -64,8 +64,9 @@ function iconMarkup(icon: FaceIcon): string {
       return linePath('M38 31c17-8 35-8 52 0l6 67c-22 9-42 9-64 0zM35 48h58M33 80h62M44 32c-5 23-5 43 0 65M84 32c5 23 5 43 0 65');
     case 'crate':
       return '<rect x="28" y="28" width="72" height="72" fill="none" stroke="' + STROKE + '" stroke-width="6"/>' + linePath('m31 31 66 66m0-66L31 97');
-    case 'torch':
     case 'lantern':
+      return '<rect x="41" y="43" width="46" height="56" rx="8" fill="none" stroke="' + STROKE + '" stroke-width="6"/>' + linePath('M49 43V29h30v14M49 99h30M64 54v32') + '<path d="M64 53c13 14 9 29 0 32-11-6-11-18 0-32z" fill="#ffd15c"/>';
+    case 'torch':
       return linePath('M64 57 55 108M64 57l9 51') + '<path d="M64 18c22 22 11 40 0 45-15-6-20-22 0-45z" fill="#ffd15c" stroke="' + STROKE + '" stroke-width="5"/>';
     case 'books':
       return '<rect x="24" y="28" width="80" height="75" fill="none" stroke="' + STROKE + '" stroke-width="6"/>' + linePath('M37 38v55M54 38v55M74 38v55M92 38v55');
@@ -135,13 +136,15 @@ function escapeXml(value: string): string {
 
 export function generatedCubeArt(id: string, name: string, icon: FaceIcon, color: number): CatalogArt {
   const label = escapeXml(name.toUpperCase());
+    // Fit longer names inside the cube label area.
+    const fontSize = Math.max(6, Math.min(10, Math.floor(105 / (name.length * 0.66))));
   const svg =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' +
     '<rect width="128" height="128" rx="13" fill="' + hex(color) + '"/>' +
     '<rect x="5" y="5" width="118" height="118" rx="10" fill="none" stroke="#f7efd7" stroke-opacity=".42" stroke-width="3"/>' +
     '<g transform="translate(0 -7)">' + iconMarkup(icon) + '</g>' +
     '<rect x="8" y="101" width="112" height="20" rx="6" fill="#11120f" fill-opacity=".83"/>' +
-    '<text x="64" y="115" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="800" fill="#fff8e6">' + label + '</text>' +
+    '<text x="64" y="115" text-anchor="middle" font-family="Arial,sans-serif" font-size="' + fontSize + '" font-weight="800" fill="#fff8e6">' + label + '</text>' +
     '</svg>';
 
   return {
