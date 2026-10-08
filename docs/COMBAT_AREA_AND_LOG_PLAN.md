@@ -68,3 +68,6 @@ Rendering is **all-or-nothing per 5-foot cube**, not partial/smooth shapes. Do n
 
 ## Large caster self-origin checkpoint (2026-10-08)
 - New `selfAreaOriginCell` finds the caster's forwardmost **occupied cube** in the aimed cardinal direction for 1×1 through 4×4 actors; preview rendering and candidate targeting use that same origin. No independently positioned Self templates. The origin remains provisional for diagonals, arbitrary angles, 3D elevation and edition-specific rulings; do not claim full RAW certification. Test Large/Huge/Gargantuan forward/left/back orientations.
+
+## Eight-direction diagonal line preview (2026-10-08)
+- Horizontal 5-ft-wide line samples now snap to eight compass directions instead of four. Diagonal 5-foot cells are corner-adjacent; measure travel at 5×sqrt(2) feet per diagonal step rather than falsely treating a diagonal cube as only 5 feet. Thus 60 ft renders twelve cardinal cubes or eight 45-degree diagonal cubes. These are provisional **aim previews**, not an authoritative RAW affected-cell adjudicator; square/cube line coverage, corner contacts, blocking and 2014/2024 rules require source review. Self origins remain attached to the selected caster's occupied space.
