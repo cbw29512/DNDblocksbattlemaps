@@ -65,3 +65,6 @@ New user requirements go into the appropriate contract and tracker before implem
 
 ## Next gate
 `G0a` — read-only legacy-save inventory and versioned export backup; do not modify existing storage until migration and rollback certification passes.
+
+## Combat overlay work lane (2026-10-08)
+See `docs/COMBAT_AREA_AND_LOG_PLAN.md` for the separate A0-A5 source-of-truth gates. Do not represent a generic dimension/geometry primitive as an implemented per-spell visualization, certified RAW adjudication or combat log. Bind 2014/2024 spell dimensions from verified sources before claiming full coverage.
