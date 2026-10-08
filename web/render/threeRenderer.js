@@ -66,8 +66,7 @@ export async function createThreeRenderer(container, handlers) {
             child.geometry.dispose();
             child.material.dispose();
         }
-        if (!activeArea || !areaPlacement)
-            return;
+        // Retain selected target outlines when the temporary preview is removed.
         for (const o of currentObjects.filter(o => areaTargetIds.has(o.id))) {
             for (const cell of creatureOccupiedCells(o)) {
                 const line = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.025, 1.025, 1.025)), new THREE.LineBasicMaterial({ color: 0xfff08d, depthTest: false, transparent: true, opacity: 1 }));
