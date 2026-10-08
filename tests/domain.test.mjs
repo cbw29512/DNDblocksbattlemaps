@@ -752,3 +752,16 @@ test('Fireball area reports caster, friendly hero and enemy once each, not scene
     ['caster','ally','enemy']);
   assert.equal(previewAffectedCreatures(objects, []).length,0);
 });
+
+test('core terrain blocks carry distinct square face patterns without changing cube geometry', async () => {
+  const { generatedCubeArt } = await import('../.test-build/src/domain/faceArt.js');
+  const ids = ['grass','stone-block','wood-block','water','lava','brick-wall','sand'];
+  const svgs = ids.map(id => decodeURIComponent(generatedCubeArt(id,id,'terrain',0x777777).src.split(',')[1]));
+  assert.equal(new Set(svgs).size, ids.length);
+  for (const svg of svgs) {
+    assert.match(svg, /viewBox="0 0 128 128"/);
+    assert.match(svg, /<rect width="128" height="128"/);
+    assert.doesNotMatch(svg, /<text/);
+  }
+  assert.match(decodeURIComponent(generatedCubeArt('barrel','Barrel','barrel',0x777777).src.split(',')[1]), /<text/);
+});
