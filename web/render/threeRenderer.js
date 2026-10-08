@@ -1,10 +1,10 @@
-import { getCatalogItem } from '../domain/catalog.js?v=startfix1008';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=startfix1008';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=startfix1008';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=startfix1008';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=startfix1008';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=startfix1008';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=startfix1008';
+import { getCatalogItem } from '../domain/catalog.js?v=24dfe329c65b';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=24dfe329c65b';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=24dfe329c65b';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=24dfe329c65b';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=24dfe329c65b';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=24dfe329c65b';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=24dfe329c65b';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -121,7 +121,7 @@ export async function createThreeRenderer(container, handlers) {
     }
     function blockPlacementFor(event) {
         setPointer(event);
-        const hit = raycaster.intersectObjects(objectGroup.children, true).find(hit => hit.object.userData.objectId);
+        const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit) => hit.object.userData.objectId);
         if (!hit?.face)
             return floorPosition(event);
         const data = hit.object.userData;
@@ -171,11 +171,11 @@ export async function createThreeRenderer(container, handlers) {
         position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
     });
     renderer.domElement.addEventListener('click', (event) => {
-    setPointer(event);
-    const marked = raycaster.intersectObjects(objectGroup.children, true)
-      .find(hit => hit.object.userData.objectId)?.object?.userData?.objectId;
-    if (marked && handlers.onMarkTarget(String(marked))) return;
-
+        setPointer(event);
+        const marked = raycaster.intersectObjects(objectGroup.children, true)
+            .find((hit) => hit.object.userData.objectId)?.object?.userData?.objectId;
+        if (marked && handlers.onMarkTarget(String(marked)))
+            return;
         if (activeRoom) {
             const placement = roomPlacementFor(event);
             if (placement)
@@ -186,21 +186,26 @@ export async function createThreeRenderer(container, handlers) {
         }
         if (creatureMoveMode && !movingCreatureId) {
             setPointer(event);
-            const candidate = raycaster.intersectObjects(objectGroup.children.filter(mesh => currentObjects.some(o => o.id === mesh.userData.objectId && ['Characters','Monsters'].includes(getCatalogItem(o.catalogId).category))), true).find(hit => hit.object.userData.objectId);
+            const candidate = raycaster.intersectObjects(objectGroup.children.filter((mesh) => currentObjects.some(o => o.id === mesh.userData.objectId && ['Characters', 'Monsters'].includes(getCatalogItem(o.catalogId).category))), true).find((hit) => hit.object.userData.objectId);
             const id = candidate?.object?.userData?.objectId;
-            if (id) handlers.onPickCreature(String(id));
-            else handlers.onStatus('Move Creatures: click a character or monster to pick it up.');
+            if (id)
+                handlers.onPickCreature(String(id));
+            else
+                handlers.onStatus('Move Creatures: click a character or monster to pick it up.');
             return;
         }
         if (movingCreatureId) {
             const destination = floorPosition(event);
-            if (destination) handlers.onMoveCreature(destination);
-            else handlers.onStatus('Choose a square inside the map to move this creature.');
+            if (destination)
+                handlers.onMoveCreature(destination);
+            else
+                handlers.onStatus('Choose a square inside the map to move this creature.');
             return;
         }
-        if (!selected) return;
+        if (!selected)
+            return;
         setPointer(event);
-        const clicked = raycaster.intersectObjects(objectGroup.children, true).find(hit => hit.object.userData.objectId)?.object?.userData?.objectId;
+        const clicked = raycaster.intersectObjects(objectGroup.children, true).find((hit) => hit.object.userData.objectId)?.object?.userData?.objectId;
         if (clicked && currentObjects.some(o => o.id === clicked && ['Characters', 'Monsters'].includes(getCatalogItem(o.catalogId).category))) {
             handlers.onPickCreature(String(clicked));
             return;
@@ -213,21 +218,22 @@ export async function createThreeRenderer(container, handlers) {
         else
             handlers.onStatus('Could not place at that point. Use Reset Camera and click inside the grid.');
     });
-    renderer.domElement.addEventListener('dragover', event => { event.preventDefault(); });
-    renderer.domElement.addEventListener('drop', event => {
-      event.preventDefault();
-      setPointer(event);
-      const hit = raycaster.intersectObjects(objectGroup.children, true).find(hit => hit.object.userData.objectId);
-      const id = hit?.object?.userData?.objectId;
-      const payload = event.dataTransfer?.getData('text/plain');
-      if (id && payload) handlers.onMarkDrop(String(id), payload);
-      else handlers.onStatus('Drop a ring directly onto a character or monster cube.');
+    renderer.domElement.addEventListener('dragover', (event) => { event.preventDefault(); });
+    renderer.domElement.addEventListener('drop', (event) => {
+        event.preventDefault();
+        setPointer(event);
+        const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit) => hit.object.userData.objectId);
+        const id = hit?.object?.userData?.objectId;
+        const payload = event.dataTransfer?.getData('text/plain');
+        if (id && payload)
+            handlers.onMarkDrop(String(id), payload);
+        else
+            handlers.onStatus('Drop a ring directly onto a character or monster cube.');
     });
-
     renderer.domElement.addEventListener('contextmenu', (event) => {
         event.preventDefault();
         setPointer(event);
-        const hit = raycaster.intersectObjects(objectGroup.children, true).find(hit => hit.object.userData.objectId);
+        const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit) => hit.object.userData.objectId);
         const id = hit?.object?.userData?.objectId;
         if (id)
             handlers.onRemove(String(id));

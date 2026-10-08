@@ -1,4 +1,4 @@
-import { createDefaultBoardBounds } from './boardBounds.js?v=00134766f884';
+import { createDefaultBoardBounds } from './boardBounds.js?v=24dfe329c65b';
 export function createBoardState(terrain) {
     return { terrain, bounds: createDefaultBoardBounds(), objects: [], revision: 0 };
 }
@@ -7,7 +7,8 @@ export function createWorldObject(id, catalogId, position, createdAt = Date.now(
 }
 export function applyCommand(state, command) {
     let objects = state.objects;
-    if (command.kind === 'update') objects = objects.map(item => item.id === command.before.id ? command.after : item);
+    if (command.kind === 'update')
+        objects = objects.map(item => item.id === command.before.id ? command.after : item);
     if (command.kind === 'place')
         objects = [...objects, command.object];
     if (command.kind === 'remove')
@@ -21,6 +22,8 @@ export function applyCommand(state, command) {
     return { ...state, objects, revision: state.revision + 1 };
 }
 export function invertCommand(command) {
+    if (command.kind === 'update')
+        return { kind: 'update', before: command.after, after: command.before };
     if (command.kind === 'place')
         return { kind: 'remove', object: command.object };
     if (command.kind === 'remove')

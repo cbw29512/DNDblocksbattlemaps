@@ -1,5 +1,5 @@
-import { SRD_MONSTER_BLOCKS } from './srdMonsterBlocks.js?v=srdblocks1008';
-import { generatedCubeArt } from './faceArt.js?v=srdblocks1008';
+import { SRD_MONSTER_BLOCKS } from './srdMonsterBlocks.js?v=24dfe329c65b';
+import { generatedCubeArt } from './faceArt.js?v=24dfe329c65b';
 export const TERRAIN_THEMES = {
     castle: { id: 'castle', name: 'Castle', tagline: 'Stone halls & keeps', groundColor: 0x777b77, accentCss: '#d7b56d', swatchCss: 'linear-gradient(135deg,#454946,#9aa09a)' },
     inn: { id: 'inn', name: 'Inn', tagline: 'Warm rooms & taverns', groundColor: 0x75533c, accentCss: '#e1a85e', swatchCss: 'linear-gradient(135deg,#593b2d,#bd875a)' },
@@ -32,7 +32,6 @@ function hero(id, name, color) {
     return cube('hero-' + id, name, 'Characters', color, heroArt('hero-2024-' + id, name), ['player', 'class', id]);
 }
 const STARTER_2014_CR = { goblin: '1/4', skeleton: '1/4', zombie: '1/4', wolf: '1/4', mimic: '2', ghoul: '1', kobold: '1/8', bandit: '1/8', orc: '1/2' };
-
 function monster(id, name, color) {
     return { ...cube('monster-' + id, name, 'Monsters', color, monsterArt(id, name), ['monster', id]), challengeRating: STARTER_2014_CR[id], edition: '2014' };
 }
@@ -155,17 +154,16 @@ const MONSTER_ITEMS = [
 const SRD_MONSTER_ITEMS = SRD_MONSTER_BLOCKS.map(([id, name, size, cr, art]) => {
     const footprint = size === 'Gargantuan' ? 4 : size === 'Huge' ? 3 : size === 'Large' ? 2 : 1;
     const artwork = art ? monsterArt(art, name) : generatedCubeArt('monster-srd-' + id, name, 'rune', 0x806347);
-    return { ...cube('monster-srd-' + id, name, 'Monsters', 0x806347, artwork, ['monster','srd',size.toLowerCase()]),
+    return { ...cube('monster-srd-' + id, name, 'Monsters', 0x806347, artwork, ['monster', 'srd', size.toLowerCase()]),
         footprintCells: footprint, creatureSize: size, challengeRating: cr ?? undefined, edition: '2024' };
 });
-
 export const CATALOG_CATEGORIES = ['Build', 'Props', 'Characters', 'Monsters'];
 export const DEFAULT_PALETTE = [
     ...BUILD_ITEMS.map((item) => item.id),
     ...PROP_ITEMS.map((item) => item.id),
     ...CHARACTER_ITEMS.map((item) => item.id),
     ...MONSTER_ITEMS.map((item) => item.id),
-  ...SRD_MONSTER_ITEMS.map((item) => item.id)
+    ...SRD_MONSTER_ITEMS.map((item) => item.id)
 ];
 export const PALETTE = Object.fromEntries([...BUILD_ITEMS, ...PROP_ITEMS, ...CHARACTER_ITEMS, ...MONSTER_ITEMS, ...SRD_MONSTER_ITEMS]
     .map((item) => [item.id, item]));

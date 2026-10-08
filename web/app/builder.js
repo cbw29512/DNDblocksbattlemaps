@@ -1,18 +1,18 @@
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=templates1008';
-import { setPartyMembership } from '../domain/party.js?v=templates1008';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=templates1008';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=templates1008';
-import { printBoardMap } from './printMap.js?v=templates1008';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=templates1008';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=templates1008';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=templates1008';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=templates1008';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=templates1008';
-import { roomSummary } from '../domain/room.js?v=templates1008';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=templates1008';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=templates1008';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=templates1008';
-import { createRenderer } from '../render/createRenderer.js?v=templates1008';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=24dfe329c65b';
+import { setPartyMembership } from '../domain/party.js?v=24dfe329c65b';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=24dfe329c65b';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=24dfe329c65b';
+import { printBoardMap } from './printMap.js?v=24dfe329c65b';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=24dfe329c65b';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=24dfe329c65b';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=24dfe329c65b';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=24dfe329c65b';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=24dfe329c65b';
+import { roomSummary } from '../domain/room.js?v=24dfe329c65b';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=24dfe329c65b';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=24dfe329c65b';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=24dfe329c65b';
+import { createRenderer } from '../render/createRenderer.js?v=24dfe329c65b';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -26,7 +26,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     let elevation = 0;
     let pickedCreatureId = null;
     let moveMode = false;
-  let selectedCondition = null;
+    let selectedCondition = null;
     root.innerHTML = `
     <main class="builder-shell" style="--theme-accent:${theme.accentCss}">
       <header class="builder-topbar">
@@ -74,13 +74,13 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           <strong>Drag rings onto creatures</strong>
           <small>Each player color belongs to one character. Red is for monsters.</small>
           <div class="creature-ring-options" id="available-ring-colors">
-            ${PLAYER_RINGS.map(r => `<button type="button" draggable="true" class="ring-token" data-ring-color="${r.color}" title="Drag ${r.name} onto a character"><i style="--ring:#${r.color.toString(16).padStart(6,'0')}"></i>${r.name}</button>`).join('')}
+            ${PLAYER_RINGS.map(r => `<button type="button" draggable="true" class="ring-token" data-ring-color="${r.color}" title="Drag ${r.name} onto a character"><i style="--ring:#${r.color.toString(16).padStart(6, '0')}"></i>${r.name}</button>`).join('')}
           </div>
           </div>
           <strong>Status rings</strong>
           <small>Click a status, then click a character or monster to apply it. Click again to remove. Dragging also works. Exhaustion advances through 6.</small>
           <div class="creature-status-options" role="group" aria-label="Select a status condition">
-            ${CONDITIONS.map(s => `<button type="button" draggable="true" class="status-token" data-condition="${s}" style="--status-ring:#${CONDITION_COLORS[s].toString(16).padStart(6,'0')}">${s}</button>`).join('')}
+            ${CONDITIONS.map(s => `<button type="button" draggable="true" class="status-token" data-condition="${s}" style="--status-ring:#${CONDITION_COLORS[s].toString(16).padStart(6, '0')}">${s}</button>`).join('')}
           </div>
         </section>
         <div class="elevation-control">
@@ -132,10 +132,10 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             button.draggable = available.has(color);
         });
     };
-
     const refreshPartyManager = () => {
         const panel = root.querySelector('#party-members');
-        if (!panel) return;
+        if (!panel)
+            return;
         panel.replaceChildren();
         const characters = state.objects.filter(object => getCatalogItem(object.catalogId).category === 'Characters');
         for (const object of characters) {
@@ -153,9 +153,9 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             label.append(input, document.createTextNode(' Party · ' + getCatalogItem(object.catalogId).name));
             panel.append(label);
         }
-        if (!characters.length) panel.textContent = 'Place a Character block to add a party member.';
+        if (!characters.length)
+            panel.textContent = 'Place a Character block to add a party member.';
     };
-
     const refresh = () => {
         renderer?.render(state);
         saveBoard(state);
@@ -213,20 +213,25 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     };
     renderer = await createRenderer(canvas, {
         onPickCreature(id) {
-      if (selectedCondition) return;
-            if (!moveMode) return;
+            if (selectedCondition)
+                return;
+            if (!moveMode)
+                return;
             const creature = findObject(state, id);
-            if (!creature || !isCreature(creature)) return;
+            if (!creature || !isCreature(creature))
+                return;
             pickedCreatureId = id;
             renderer?.setMovingCreature(id);
             status.textContent = `${getCatalogItem(creature.catalogId).name} picked up. Click a destination square or press Escape.`;
         },
         onMoveCreature(position) {
             const creature = pickedCreatureId ? findObject(state, pickedCreatureId) : null;
-            if (!creature || !isCreature(creature)) return;
+            if (!creature || !isCreature(creature))
+                return;
             const after = { ...creature, x: position.x, z: position.z, elevation: creature.elevation };
             const result = run({ kind: 'update', before: creature, after }, [position]);
-            if (result === null) return;
+            if (result === null)
+                return;
             pickedCreatureId = null;
             renderer?.setMovingCreature(null);
             status.textContent = `${getCatalogItem(creature.catalogId).name} moved. Ring and conditions preserved.`;
@@ -238,9 +243,10 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
                 status.textContent = 'Not enough map space for this monster. Place farther from the edge.';
                 return;
             }
-            if (moveMode) return;
+            if (moveMode)
+                return;
             const object = createWorldObject(makeId(), selected, position);
-      const grew = run(placeCommand(object), [position]);
+            const grew = run(placeCommand(object), [position]);
             if (grew !== null && !grew)
                 status.textContent = `${getCatalogItem(selected).name} placed. Click again to place more.`;
             if (grew) {
@@ -249,7 +255,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             }
         },
         onRoomPlacement(placement) {
-            if (moveMode) return;
+            if (moveMode)
+                return;
             if (!armedRoom)
                 return;
             const wallPositions = roomWallPositions(armedRoom, placement, state.bounds);
@@ -278,15 +285,19 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
                 `Built ${roomSummary(armedRoom)} room.${growthText} Move the gold outline and click again.`;
         },
         onMarkTarget(id) {
-      if (!selectedCondition) return false;
-      const object = findObject(state,id);
-      if (!object || !isCreature(object)) { status.textContent='Choose a Character or Monster.'; return true; }
-      const after = toggleCondition(object,selectedCondition);
-      run({kind:'update',before:object,after},[]);
-      status.textContent = selectedCondition + ' updated on ' + getCatalogItem(object.catalogId).name + '. Click another creature or click the selected status to finish.';
-      return true;
-    },
-    onMarkDrop(id, payload) {
+            if (!selectedCondition)
+                return false;
+            const object = findObject(state, id);
+            if (!object || !isCreature(object)) {
+                status.textContent = 'Choose a Character or Monster.';
+                return true;
+            }
+            const after = toggleCondition(object, selectedCondition);
+            run({ kind: 'update', before: object, after }, []);
+            status.textContent = selectedCondition + ' updated on ' + getCatalogItem(object.catalogId).name + '. Click another creature or click the selected status to finish.';
+            return true;
+        },
+        onMarkDrop(id, payload) {
             const object = findObject(state, id);
             if (!object || !isCreature(object)) {
                 status.textContent = 'Rings can only be attached to characters or monsters.';
@@ -295,12 +306,19 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             let updated = null;
             if (payload.startsWith('ring:')) {
                 updated = assignRing(state, id, Number.parseInt(payload.slice(5), 16));
-                if (!updated) { status.textContent = 'That player ring is unavailable or reserved.'; return; }
-            } else if (payload.startsWith('status:')) {
+                if (!updated) {
+                    status.textContent = 'That player ring is unavailable or reserved.';
+                    return;
+                }
+            }
+            else if (payload.startsWith('status:')) {
                 const condition = payload.slice(7);
-                if (!CONDITIONS.some(c => c === condition)) return;
+                if (!CONDITIONS.some(c => c === condition))
+                    return;
                 updated = toggleCondition(object, condition);
-            } else return;
+            }
+            else
+                return;
             run({ kind: 'update', before: object, after: updated }, []);
             status.textContent = `${getCatalogItem(object.catalogId).name} markers updated.`;
         },
@@ -308,7 +326,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             const object = findObject(state, id);
             if (object) {
                 run(removeCommand(object), []);
-                if (object.partyMember) propagateParty(state, id);
+                if (object.partyMember)
+                    propagateParty(state, id);
             }
         },
         onStatus(message) {
@@ -321,88 +340,95 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     renderer.setElevation(elevation);
     renderer.render(state);
     updateBoardSize();
-  updateRingTokens();
+    updateRingTokens();
+    refreshPartyManager();
     root.querySelectorAll('[data-ring-color], [data-condition]').forEach(token => {
-    token.addEventListener('dragstart', (event) => {
-      const payload = token.dataset.ringColor
-        ? 'ring:' + Number(token.dataset.ringColor).toString(16)
-        : 'status:' + token.dataset.condition;
-      event.dataTransfer?.setData('text/plain', payload);
-      if (event.dataTransfer) event.dataTransfer.effectAllowed = 'copy';
+        token.addEventListener('dragstart', (event) => {
+            const payload = token.dataset.ringColor
+                ? 'ring:' + Number(token.dataset.ringColor).toString(16)
+                : 'status:' + token.dataset.condition;
+            event.dataTransfer?.setData('text/plain', payload);
+            if (event.dataTransfer)
+                event.dataTransfer.effectAllowed = 'copy';
+        });
     });
-  });
-
-  root.querySelectorAll('[data-condition]').forEach(button => {
-    button.addEventListener('click', () => {
-      const next = button.getAttribute('data-condition');
-      selectedCondition = selectedCondition === next ? null : next;
-      root.querySelectorAll('[data-condition]').forEach(element => {
-        const active = element.getAttribute('data-condition') === selectedCondition;
-        element.classList.toggle('selected',active);
-        element.setAttribute('aria-pressed',String(active));
-      });
-      if (selectedCondition) {
+    root.querySelectorAll('[data-condition]').forEach(button => {
+        button.addEventListener('click', () => {
+            const next = button.getAttribute('data-condition');
+            selectedCondition = selectedCondition === next ? null : CONDITIONS.find(condition => condition === next) ?? null;
+            root.querySelectorAll('[data-condition]').forEach(element => {
+                const active = element.getAttribute('data-condition') === selectedCondition;
+                element.classList.toggle('selected', active);
+                element.setAttribute('aria-pressed', String(active));
+            });
+            if (selectedCondition) {
+                pickedCreatureId = null;
+                renderer?.setMovingCreature(null);
+            }
+            status.textContent = selectedCondition ? 'STATUS ' + selectedCondition + ': click a creature to apply/remove.' : 'Status selection cleared.';
+        });
+    });
+    root.querySelector('#creature-mode')?.addEventListener('click', () => {
+        moveMode = !moveMode;
         pickedCreatureId = null;
         renderer?.setMovingCreature(null);
-      }
-      status.textContent = selectedCondition ? 'STATUS ' + selectedCondition + ': click a creature to apply/remove.' : 'Status selection cleared.';
+        if (moveMode && armedRoom)
+            cancelRoomMode();
+        renderer?.setCreatureMoveMode(moveMode);
+        const buildTools = root.querySelector('#build-tools');
+        const identityTools = root.querySelector('#identity-ring-tools');
+        if (buildTools)
+            buildTools.hidden = moveMode;
+        const partyTools = root.querySelector('#party-manager');
+        if (partyTools)
+            partyTools.hidden = moveMode;
+        const starterTools = root.querySelector('#starter-map-panel');
+        if (starterTools)
+            starterTools.hidden = moveMode;
+        if (identityTools)
+            identityTools.hidden = moveMode;
+        const button = root.querySelector('#creature-mode');
+        button?.setAttribute('aria-pressed', String(moveMode));
+        button?.classList.toggle('is-armed', moveMode);
+        if (button)
+            button.textContent = moveMode ? 'Build Mode' : 'Combat Mode';
+        status.textContent = moveMode
+            ? 'Combat Mode: scenery is locked. Select a character or monster, then choose its destination. Status rings remain available.'
+            : 'Build Mode: all blocks, characters, monsters, identity rings and statuses are available.';
     });
-  });
-
-  root.querySelector('#creature-mode')?.addEventListener('click', () => {
-    moveMode = !moveMode;
-    pickedCreatureId = null;
-    renderer?.setMovingCreature(null);
-    if (moveMode && armedRoom) cancelRoomMode();
-    renderer?.setCreatureMoveMode(moveMode);
-    const buildTools = root.querySelector('#build-tools');
-    const identityTools = root.querySelector('#identity-ring-tools');
-    if (buildTools) buildTools.hidden = moveMode;
-    const partyTools = root.querySelector('#party-manager');
-    if (partyTools) partyTools.hidden = moveMode;
-    const starterTools = root.querySelector('#starter-map-panel');
-    if (starterTools) starterTools.hidden = moveMode;
-    if (identityTools) identityTools.hidden = moveMode;
-    const button = root.querySelector('#creature-mode');
-    button?.setAttribute('aria-pressed', String(moveMode));
-    button?.classList.toggle('is-armed', moveMode);
-    if (button) button.textContent = moveMode ? 'Build Mode' : 'Combat Mode';
-    status.textContent = moveMode
-      ? 'Combat Mode: scenery is locked. Select a character or monster, then choose its destination. Status rings remain available.'
-      : 'Build Mode: all blocks, characters, monsters, identity rings and statuses are available.';
-  });
-
-  root.querySelectorAll('[data-map-terrain]').forEach(button => {
-    button.addEventListener('click', () => {
-      const map = button.getAttribute('data-map-terrain');
-      if (!map || map === theme.id) return;
-      saveBoard(state);
-      propagateParty(state);
-      window.location.search = '?view=build&terrain=' + encodeURIComponent(map);
+    root.querySelectorAll('[data-map-terrain]').forEach(button => {
+        button.addEventListener('click', () => {
+            const map = button.getAttribute('data-map-terrain');
+            if (!map || map === theme.id)
+                return;
+            saveBoard(state);
+            propagateParty(state);
+            window.location.search = '?view=build&terrain=' + encodeURIComponent(map);
+        });
     });
-  });
-
-  root.querySelector('#create-starter-map')?.addEventListener('click', () => {
-    const choice = root.querySelector('#starter-template-choice');
-    if (!choice) return;
-    try {
-      const created = createStarterMap(choice.value);
-      window.location.search = '?view=build&terrain=' + encodeURIComponent(created.terrain) + '&map=' + encodeURIComponent(created.id);
-    } catch(error) {
-      status.textContent = 'Could not create starter map. Your current map was not changed.';
-      console.warn('[templates]',error);
-    }
-  });
-  root.querySelectorAll('[data-map-id]').forEach(button => {
-    button.addEventListener('click', () => {
-      const target = listCampaignMaps().find(m => m.id === button.getAttribute('data-map-id'));
-      if(!target) return;
-      saveBoard(state);
-      window.location.search = '?view=build&terrain=' + encodeURIComponent(target.terrain) + '&map=' + encodeURIComponent(target.id);
+    root.querySelector('#create-starter-map')?.addEventListener('click', () => {
+        const choice = root.querySelector('#starter-template-choice');
+        if (!choice)
+            return;
+        try {
+            const created = createStarterMap(choice.value);
+            window.location.search = '?view=build&terrain=' + encodeURIComponent(created.terrain) + '&map=' + encodeURIComponent(created.id);
+        }
+        catch (error) {
+            status.textContent = 'Could not create starter map. Your current map was not changed.';
+            console.warn('[templates]', error);
+        }
     });
-  });
-
-  buildRoomButton.addEventListener('click', () => {
+    root.querySelectorAll('[data-map-id]').forEach(button => {
+        button.addEventListener('click', () => {
+            const target = listCampaignMaps().find(m => m.id === button.getAttribute('data-map-id'));
+            if (!target)
+                return;
+            saveBoard(state);
+            window.location.search = '?view=build&terrain=' + encodeURIComponent(target.terrain) + '&map=' + encodeURIComponent(target.id);
+        });
+    });
+    buildRoomButton.addEventListener('click', () => {
         if (armedRoom) {
             cancelRoomMode();
             return;
@@ -420,13 +446,12 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         });
     });
     root.querySelectorAll('[id="monster-cr-filter"], [id="monster-edition-filter"]').forEach(filter => {
-    filter.addEventListener('change', () => {
-      const query = root.querySelector('#catalog-search')?.value ?? '';
-      filterCatalog(root, 'Monsters', query);
+        filter.addEventListener('change', () => {
+            const query = root.querySelector('#catalog-search')?.value ?? '';
+            filterCatalog(root, 'Monsters', query);
+        });
     });
-  });
-
-  const catalogSearch = root.querySelector('#catalog-search');
+    const catalogSearch = root.querySelector('#catalog-search');
     catalogSearch?.addEventListener('input', () => {
         const activeButton = root.querySelector('[data-category-tab].active');
         const activeCategory = (activeButton?.dataset.categoryTab ?? 'Build');
@@ -436,7 +461,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         button.addEventListener('click', () => {
             if (armedRoom)
                 setRoomMode(null);
-            if (moveMode) return;
+            if (moveMode)
+                return;
             selected = button.dataset.catalog;
             setCatalogCategory(root, getCatalogItem(selected).category);
             root.querySelectorAll('.palette-item').forEach((item) => {
@@ -490,17 +516,18 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     document.getElementById('zoom-in')?.addEventListener('click', () => renderer?.zoom(0.82));
     document.getElementById('zoom-out')?.addEventListener('click', () => renderer?.zoom(1.2));
     const onKeyDown = (event) => {
-        if (event.key !== 'Escape') return;
-    if (selectedCondition) {
-      selectedCondition = null;
-      root.querySelectorAll('[data-condition]').forEach(button => {
-        button.classList.remove('selected');
-        button.setAttribute('aria-pressed','false');
-      });
-      status.textContent = 'Status selection canceled.';
-      event.preventDefault();
-      return;
-    }
+        if (event.key !== 'Escape')
+            return;
+        if (selectedCondition) {
+            selectedCondition = null;
+            root.querySelectorAll('[data-condition]').forEach(button => {
+                button.classList.remove('selected');
+                button.setAttribute('aria-pressed', 'false');
+            });
+            status.textContent = 'Status selection canceled.';
+            event.preventDefault();
+            return;
+        }
         if (pickedCreatureId) {
             pickedCreatureId = null;
             renderer?.setMovingCreature(null);
@@ -508,7 +535,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             event.preventDefault();
             return;
         }
-        if (!armedRoom) return;
+        if (!armedRoom)
+            return;
         event.preventDefault();
         cancelRoomMode();
     };

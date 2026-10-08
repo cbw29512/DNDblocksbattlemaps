@@ -1,9 +1,9 @@
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=00134766f884';
-import { getCatalogItem } from '../domain/catalog.js?v=00134766f884';
-import { stackElevationAt } from '../domain/placement.js?v=00134766f884';
-import { roomOuterSize } from '../domain/room.js?v=00134766f884';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=00134766f884';
-import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=00134766f884';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=24dfe329c65b';
+import { getCatalogItem } from '../domain/catalog.js?v=24dfe329c65b';
+import { stackElevationAt } from '../domain/placement.js?v=24dfe329c65b';
+import { roomOuterSize } from '../domain/room.js?v=24dfe329c65b';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=24dfe329c65b';
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=24dfe329c65b';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';
@@ -68,15 +68,17 @@ export function createFallbackRenderer(container, handlers) {
                         : item.name.slice(0, 1);
                     cell.innerHTML = `<span class="fallback-piece">${visual}</span>${occupants.length > 1 ? `<small>${occupants.length}</small>` : ''}`;
                     if (item.category === 'Characters' || item.category === 'Monsters') {
-                      const marks = [...(top.conditions ?? [])];
-                      if ((top.exhaustion ?? 0) > 0) marks.push('Exhaustion ' + top.exhaustion);
-                      cell.title = item.name + (marks.length ? ' — ' + marks.join(', ') : '');
-                      const caption = document.createElement('span');
-                      caption.className = 'fallback-creature-name';
-                      caption.textContent = item.name + (marks.length ? ' [' + marks.length + ']' : '');
-                      cell.append(caption);
-                      const color = item.category === 'Monsters' ? 0xd83030 : top.ringColor;
-                      if (color !== undefined) cell.style.setProperty('--creature-ring', '#' + color.toString(16).padStart(6,'0'));
+                        const marks = [...(top.conditions ?? [])];
+                        if ((top.exhaustion ?? 0) > 0)
+                            marks.push('Exhaustion ' + top.exhaustion);
+                        cell.title = item.name + (marks.length ? ' — ' + marks.join(', ') : '');
+                        const caption = document.createElement('span');
+                        caption.className = 'fallback-creature-name';
+                        caption.textContent = item.name + (marks.length ? ' [' + marks.length + ']' : '');
+                        cell.append(caption);
+                        const color = item.category === 'Monsters' ? 0xd83030 : top.ringColor;
+                        if (color !== undefined)
+                            cell.style.setProperty('--creature-ring', '#' + color.toString(16).padStart(6, '0'));
                     }
                 }
                 cell.addEventListener('pointerenter', () => {
@@ -87,7 +89,8 @@ export function createFallbackRenderer(container, handlers) {
                     paintRoomPreview(placement ?? previewRoomPlacement(corner), Boolean(placement));
                 });
                 cell.addEventListener('click', () => {
-          if (top && handlers.onMarkTarget(top.id)) return;
+                    if (top && handlers.onMarkTarget(top.id))
+                        return;
                     if (room) {
                         const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects, currentBounds);
                         if (placement)
@@ -97,8 +100,10 @@ export function createFallbackRenderer(container, handlers) {
                         return;
                     }
                     if (creatureMoveMode && !movingCreatureId) {
-                        if (top && ['Characters','Monsters'].includes(getCatalogItem(top.catalogId).category)) handlers.onPickCreature(top.id);
-                        else handlers.onStatus('Move Creatures: select a creature.');
+                        if (top && ['Characters', 'Monsters'].includes(getCatalogItem(top.catalogId).category))
+                            handlers.onPickCreature(top.id);
+                        else
+                            handlers.onStatus('Move Creatures: select a creature.');
                         return;
                     }
                     if (movingCreatureId) {
@@ -120,12 +125,13 @@ export function createFallbackRenderer(container, handlers) {
                 });
                 cell.addEventListener('dragover', event => { event.preventDefault(); });
                 cell.addEventListener('drop', event => {
-                  event.preventDefault();
-                  const payload = event.dataTransfer?.getData('text/plain');
-                  if (top && payload) handlers.onMarkDrop(top.id, payload);
-                  else handlers.onStatus('Drop the ring on an existing creature.');
+                    event.preventDefault();
+                    const payload = event.dataTransfer?.getData('text/plain');
+                    if (top && payload)
+                        handlers.onMarkDrop(top.id, payload);
+                    else
+                        handlers.onStatus('Drop the ring on an existing creature.');
                 });
-
                 cell.addEventListener('contextmenu', (event) => {
                     event.preventDefault();
                     if (top)

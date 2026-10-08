@@ -1,6 +1,6 @@
-import { catalogIdsForArea } from '../domain/catalogOrder.js?v=templates1008';
-import { CATALOG_CATEGORIES, PALETTE, catalogMatches, getCatalogItem } from '../domain/catalog.js?v=srdblocks1008';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=srdblocks1008';
+import { catalogIdsForArea } from '../domain/catalogOrder.js?v=24dfe329c65b';
+import { CATALOG_CATEGORIES, PALETTE, catalogMatches, getCatalogItem } from '../domain/catalog.js?v=24dfe329c65b';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=24dfe329c65b';
 function visual(item) {
     return item.art
         ? '<img class="palette-art" src="' + resolveBrowserAssetUrl(item.art.src) + '" alt="" loading="lazy" decoding="async">'
@@ -25,14 +25,13 @@ export function catalogPanelHtml(selected, terrain, templateId) {
         '<div class="sidebar-heading"><span class="eyebrow">Catalog</span><strong>Pick one. Keep clicking.</strong></div>' +
         '<label class="catalog-search"><span>Find a block</span><input id="catalog-search" type="search" autocomplete="off" placeholder="door, trap, barrel..."></label>' +
         '<div class="catalog-tabs" role="tablist">' + tabs + '</div>' +
-    '<div class="monster-filters" id="monster-filters" hidden>' +
-    '<label>CR <select id="monster-cr-filter" aria-label="Filter monster challenge rating">' +
-    '<option value="">All CRs</option>' +
-    ['0','1/8','1/4','1/2','1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30'].map(cr => '<option value="' + cr + '">' + cr + '</option>').join('') +
-    '</select></label>' +
-    '<label>Edition <select id="monster-edition-filter" aria-label="Filter monster rules edition"><option value="">All</option><option value="2014">2014</option><option value="2024">2024</option></select></label>' +
-    '</div>' +
-    
+        '<div class="monster-filters" id="monster-filters" hidden>' +
+        '<label>CR <select id="monster-cr-filter" aria-label="Filter monster challenge rating">' +
+        '<option value="">All CRs</option>' +
+        ['0', '1/8', '1/4', '1/2', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30'].map(cr => '<option value="' + cr + '">' + cr + '</option>').join('') +
+        '</select></label>' +
+        '<label>Edition <select id="monster-edition-filter" aria-label="Filter monster rules edition"><option value="">All</option><option value="2014">2014</option><option value="2024">2024</option></select></label>' +
+        '</div>' +
         panels + '</section>';
 }
 export function setCatalogCategory(root, category) {
@@ -45,7 +44,8 @@ export function setCatalogCategory(root, category) {
         panel.hidden = panel.dataset.categoryPanel !== category;
     });
     const filters = root.querySelector('#monster-filters');
-    if (filters) filters.hidden = category !== 'Monsters';
+    if (filters)
+        filters.hidden = category !== 'Monsters';
     const input = root.querySelector('#catalog-search');
     if (input)
         filterCatalog(root, category, input.value);

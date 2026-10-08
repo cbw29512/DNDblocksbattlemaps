@@ -1,6 +1,6 @@
-import { CONDITIONS, CONDITION_COLORS } from '../domain/creatureMarks.js?v=srdblocks1008';
-import { getCatalogItem } from '../domain/catalog.js?v=srdblocks1008';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=srdblocks1008';
+import { CONDITIONS, CONDITION_COLORS } from '../domain/creatureMarks.js?v=24dfe329c65b';
+import { getCatalogItem } from '../domain/catalog.js?v=24dfe329c65b';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=24dfe329c65b';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;
@@ -59,7 +59,6 @@ function materialFor(THREE, item) {
 export function geometryFor(THREE, _catalogId) {
     return new THREE.BoxGeometry(1, 1, 1);
 }
-
 const PLAYER_RING_COLORS = new Set([0x2688dc, 0x31b86b, 0xe0be3d, 0xa369d7, 0xf18b35, 0xf4f4f4]);
 const creatureLabelMaterials = new Map();
 const creatureRingMaterials = new Map();
@@ -72,7 +71,8 @@ function configureLabel(sprite) {
 }
 function creatureLabel(THREE, name) {
     const cached = creatureLabelMaterials.get(name);
-    if (cached) return configureLabel(new THREE.Sprite(cached));
+    if (cached)
+        return configureLabel(new THREE.Sprite(cached));
     const canvas = document.createElement('canvas');
     canvas.width = 384;
     canvas.height = 96;
@@ -113,58 +113,65 @@ function creatureRing(THREE, color) {
     ring.renderOrder = 5;
     return ring;
 }
-
-
 // Large creatures are solid n x n x n assemblies of 5-foot cubes.
 // The portrait spans each exterior face, rather than repeating on every cell.
 function monsterExterior(THREE, root, item, n) {
-  if (!item.art) return;
-  const source = new Image();
-  source.crossOrigin = 'anonymous';
-  source.onload = () => {
-    if (!source.naturalWidth || !source.naturalHeight) return;
-    const canvas = document.createElement('canvas');
-    canvas.width = 512; canvas.height = 512;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.fillStyle = '#' + item.color.toString(16).padStart(6, '0');
-    ctx.fillRect(0, 0, 512, 512);
-    const ratio = Math.min(512 / source.naturalWidth, 512 / source.naturalHeight);
-    const w = source.naturalWidth * ratio, h = source.naturalHeight * ratio;
-    ctx.drawImage(source, (512-w)/2, (512-h)/2, w, h);
-    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
-    ctx.lineWidth = 3;
-    for (let cell=1;cell<n;cell++) {
-      const pos=512*cell/n;
-      ctx.beginPath(); ctx.moveTo(pos,0); ctx.lineTo(pos,512); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(0,pos); ctx.lineTo(512,pos); ctx.stroke();
-    }
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
-    const center=(n-1)/2, far=n-0.498, near=-0.502;
-    const sides=[
-      [center,center,far,0,0,0],
-      [center,center,near,0,Math.PI,0],
-      [far,center,center,0,Math.PI/2,0],
-      [near,center,center,0,-Math.PI/2,0],
-      [center,far,center,-Math.PI/2,0,0]
-    ];
-    for (const [x,y,z,rx,ry,rz] of sides) {
-      const panel=new THREE.Mesh(new THREE.PlaneGeometry(n,n),material);
-      panel.position.set(x,y,z);
-      panel.rotation.set(rx,ry,rz);
-      panel.userData.objectId=root.userData.objectId;
-      panel.userData.gridX=root.userData.gridX;
-      panel.userData.gridZ=root.userData.gridZ;
-      panel.userData.elevation=root.userData.elevation;
-      root.add(panel);
-    }
-  };
-  source.onerror=() => {};
-  source.src=resolveBrowserAssetUrl(item.art.src);
+    if (!item.art)
+        return;
+    const source = new Image();
+    source.crossOrigin = 'anonymous';
+    source.onload = () => {
+        if (!source.naturalWidth || !source.naturalHeight)
+            return;
+        const canvas = document.createElement('canvas');
+        canvas.width = 512;
+        canvas.height = 512;
+        const ctx = canvas.getContext('2d');
+        if (!ctx)
+            return;
+        ctx.fillStyle = '#' + item.color.toString(16).padStart(6, '0');
+        ctx.fillRect(0, 0, 512, 512);
+        const ratio = Math.min(512 / source.naturalWidth, 512 / source.naturalHeight);
+        const w = source.naturalWidth * ratio, h = source.naturalHeight * ratio;
+        ctx.drawImage(source, (512 - w) / 2, (512 - h) / 2, w, h);
+        ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+        ctx.lineWidth = 3;
+        for (let cell = 1; cell < n; cell++) {
+            const pos = 512 * cell / n;
+            ctx.beginPath();
+            ctx.moveTo(pos, 0);
+            ctx.lineTo(pos, 512);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, pos);
+            ctx.lineTo(512, pos);
+            ctx.stroke();
+        }
+        const texture = new THREE.CanvasTexture(canvas);
+        texture.colorSpace = THREE.SRGBColorSpace;
+        const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+        const center = (n - 1) / 2, far = n - 0.498, near = -0.502;
+        const sides = [
+            [center, center, far, 0, 0, 0],
+            [center, center, near, 0, Math.PI, 0],
+            [far, center, center, 0, Math.PI / 2, 0],
+            [near, center, center, 0, -Math.PI / 2, 0],
+            [center, far, center, -Math.PI / 2, 0, 0]
+        ];
+        for (const [x, y, z, rx, ry, rz] of sides) {
+            const panel = new THREE.Mesh(new THREE.PlaneGeometry(n, n), material);
+            panel.position.set(x, y, z);
+            panel.rotation.set(rx, ry, rz);
+            panel.userData.objectId = root.userData.objectId;
+            panel.userData.gridX = root.userData.gridX;
+            panel.userData.gridZ = root.userData.gridZ;
+            panel.userData.elevation = root.userData.elevation;
+            root.add(panel);
+        }
+    };
+    source.onerror = () => { };
+    source.src = resolveBrowserAssetUrl(item.art.src);
 }
-
 export function meshFor(THREE, object) {
     const item = getCatalogItem(object.catalogId);
     const mesh = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
@@ -177,49 +184,61 @@ export function meshFor(THREE, object) {
     mesh.userData.elevation = object.elevation;
     const footprint = item.category === 'Monsters' ? (item.footprintCells ?? 1) : 1;
     if (footprint > 1) {
-      monsterExterior(THREE, mesh, item, footprint);
-      for (let dx = 0; dx < footprint; dx += 1) {
-        for (let dz = 0; dz < footprint; dz += 1) {
-          for (let dy = 0; dy < footprint; dy += 1) {
-          if (!dx && !dy && !dz) continue;
-          const segment = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
-          segment.position.set(dx, dy, dz);
-          segment.castShadow = true;
-          segment.receiveShadow = false;
-          segment.userData.objectId = object.id;
-          segment.userData.gridX = object.x + dx;
-          segment.userData.gridZ = object.z + dz;
-          segment.userData.elevation = object.elevation;
-          mesh.add(segment);
-          }
+        monsterExterior(THREE, mesh, item, footprint);
+        for (let dx = 0; dx < footprint; dx += 1) {
+            for (let dz = 0; dz < footprint; dz += 1) {
+                for (let dy = 0; dy < footprint; dy += 1) {
+                    if (dx === 0 && dy === 0 && dz === 0)
+                        continue;
+                    const segment = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
+                    segment.position.set(dx, dy, dz);
+                    segment.castShadow = true;
+                    segment.receiveShadow = false;
+                    segment.userData.objectId = object.id;
+                    segment.userData.gridX = object.x + dx;
+                    segment.userData.gridZ = object.z + dz;
+                    segment.userData.elevation = object.elevation;
+                    mesh.add(segment);
+                }
+            }
         }
-      }
     }
-
-  if (item.category === 'Characters' || item.category === 'Monsters') {
-    const label = creatureLabel(THREE, item.name);
-    if (label) { label.position.x = (footprint - 1) / 2; label.position.z = (footprint - 1) / 2; label.position.y = footprint + 0.04; mesh.add(label); }
-    if (item.category === 'Monsters') { const ring = creatureRing(THREE, 0xd83030); ring.position.x = (footprint - 1)/2; ring.position.z = (footprint - 1)/2; ring.scale.setScalar(footprint); mesh.add(ring); }
-    else if (object.ringColor !== undefined && PLAYER_RING_COLORS.has(object.ringColor))
-      mesh.add(creatureRing(THREE, object.ringColor));
-    const conditions = (object.conditions ?? []).filter(s => CONDITIONS.some(condition => condition === s));
-    if ((object.exhaustion ?? 0) > 0) conditions.push('Exhaustion');
-    conditions.slice(0, 4).forEach((condition, i) => {
-      const ring = creatureRing(THREE, CONDITION_COLORS[condition] ?? 0xe7b94a);
-      ring.scale.setScalar(1.12 + 0.17 * i);
-      ring.position.y = -0.48 + 0.005 * i;
-      mesh.add(ring);
-    });
-    if (conditions.length) {
-      const statusName = conditions.map(s => s === 'Exhaustion' ? 'Exhaustion ' + object.exhaustion : s).join(' • ');
-      const statusLabel = creatureLabel(THREE, statusName);
-      if (statusLabel) {
-        statusLabel.position.y = 1.48;
-        statusLabel.scale.set(1.9, 0.42, 1);
-        mesh.add(statusLabel);
-      }
+    if (item.category === 'Characters' || item.category === 'Monsters') {
+        const label = creatureLabel(THREE, item.name);
+        if (label) {
+            label.position.x = (footprint - 1) / 2;
+            label.position.z = (footprint - 1) / 2;
+            label.position.y = footprint + 0.04;
+            mesh.add(label);
+        }
+        if (item.category === 'Monsters') {
+            const ring = creatureRing(THREE, 0xd83030);
+            ring.position.x = (footprint - 1) / 2;
+            ring.position.z = (footprint - 1) / 2;
+            ring.scale.setScalar(footprint);
+            mesh.add(ring);
+        }
+        else if (object.ringColor !== undefined && PLAYER_RING_COLORS.has(object.ringColor))
+            mesh.add(creatureRing(THREE, object.ringColor));
+        const conditions = (object.conditions ?? []).filter(s => CONDITIONS.some(condition => condition === s));
+        if ((object.exhaustion ?? 0) > 0)
+            conditions.push('Exhaustion');
+        conditions.slice(0, 4).forEach((condition, i) => {
+            const ring = creatureRing(THREE, CONDITION_COLORS[condition] ?? 0xe7b94a);
+            ring.scale.setScalar(1.12 + 0.17 * i);
+            ring.position.y = -0.48 + 0.005 * i;
+            mesh.add(ring);
+        });
+        if (conditions.length) {
+            const statusName = conditions.map(s => s === 'Exhaustion' ? 'Exhaustion ' + object.exhaustion : s).join(' • ');
+            const statusLabel = creatureLabel(THREE, statusName);
+            if (statusLabel) {
+                statusLabel.position.y = 1.48;
+                statusLabel.scale.set(1.9, 0.42, 1);
+                mesh.add(statusLabel);
+            }
+        }
     }
-  }
     return mesh;
 }
 export function setDefaultCamera(camera, controls) {
