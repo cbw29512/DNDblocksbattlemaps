@@ -1,5 +1,5 @@
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
-import { PALETTE } from '../domain/catalog.js';
+import { getCatalogItem } from '../domain/catalog.js';
 import { stackElevationAt } from '../domain/placement.js';
 import { roomOuterSize, type NormalizedRoom } from '../domain/room.js';
 import {
@@ -80,7 +80,7 @@ export function createFallbackRenderer(
         const top = occupants.at(-1);
 
         if (top) {
-          const item = PALETTE[top.catalogId];
+          const item = getCatalogItem(top.catalogId);
           cell.style.setProperty('--piece-color', `#${item.color.toString(16).padStart(6, '0')}`);
           const visual = item.art
             ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`
