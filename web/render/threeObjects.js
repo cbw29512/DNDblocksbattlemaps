@@ -117,7 +117,7 @@ function creatureRing(THREE, color) {
 
 // Large creatures are solid n x n x n assemblies of 5-foot cubes.
 // The portrait spans each exterior face, rather than repeating on every cell.
-function monsterExterior(THREE, root, item, n): void {
+function monsterExterior(THREE, root, item, n) {
   if (!item.art) return;
   const source = new Image();
   source.crossOrigin = 'anonymous';
