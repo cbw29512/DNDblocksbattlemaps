@@ -124,10 +124,28 @@ export function meshFor(THREE, object) {
     mesh.userData.gridX = object.x;
     mesh.userData.gridZ = object.z;
     mesh.userData.elevation = object.elevation;
+    const footprint = item.category === 'Monsters' ? (item.footprintCells ?? 1) : 1;
+    if (footprint > 1) {
+      for (let dx = 0; dx < footprint; dx += 1) {
+        for (let dz = 0; dz < footprint; dz += 1) {
+          if (!dx && !dz) continue;
+          const segment = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
+          segment.position.set(dx, 0, dz);
+          segment.castShadow = true;
+          segment.receiveShadow = false;
+          segment.userData.objectId = object.id;
+          segment.userData.gridX = object.x + dx;
+          segment.userData.gridZ = object.z + dz;
+          segment.userData.elevation = object.elevation;
+          mesh.add(segment);
+        }
+      }
+    }
+
   if (item.category === 'Characters' || item.category === 'Monsters') {
     const label = creatureLabel(THREE, item.name);
-    if (label) mesh.add(label);
-    if (item.category === 'Monsters') mesh.add(creatureRing(THREE, 0xd83030));
+    if (label) { label.position.x = (footprint - 1) / 2; label.position.z = (footprint - 1) / 2; mesh.add(label); }
+    if (item.category === 'Monsters') { const ring = creatureRing(THREE, 0xd83030); ring.position.x = (footprint - 1)/2; ring.position.z = (footprint - 1)/2; ring.scale.setScalar(footprint); mesh.add(ring); }
     else if (object.ringColor !== undefined && PLAYER_RING_COLORS.has(object.ringColor))
       mesh.add(creatureRing(THREE, object.ringColor));
     const conditions = (object.conditions ?? []).filter(s => CONDITIONS.some(condition => condition === s));
