@@ -374,3 +374,11 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Scope:** targeted rendering and cache invalidation; no placement, catalog, or room logic changed.
 - **Verification:** changes committed; browser behavior not yet confirmed; deployment state must be checked. The static site build may regenerate version query strings.
 - **Next:** verify exact deployed page source and that Wood Floor renders a recognizably brown cube with its face art; if not, inspect Console/WebGL errors and actual generated network module URLs rather than iterating blindly.
+
+
+## 2026-10-08 — GitHub Pages test compiler failure
+
+- **Observed:** manual `build-and-deploy` failed at `npm test`: 25 tests passed, test 26 failed with `ERR_MODULE_NOT_FOUND` for `.test-build/src/render/threeObjects.js`.
+- **Cause:** `tsconfig.test.json` included only `src/domain/**/*.ts`, but the new rendering test directly imports `src/render/threeObjects.ts`.
+- **Fix:** extend test compilation to `src/render/threeObjects.ts` and its browser asset URL helper. No runtime cube code changed.
+- **Verification:** rerun GitHub Pages workflow; full test and visual deploy pending.
