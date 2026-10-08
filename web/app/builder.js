@@ -1,23 +1,23 @@
-import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js?v=739ba7b757ab';
-import { areaCells } from '../domain/areaTemplates.js?v=739ba7b757ab';
-import { previewAffectedCreatures, selfAreaOriginCell } from '../domain/areaTargets.js?v=739ba7b757ab';
-import { isInCastingRange } from '../domain/areaTemplates.js?v=739ba7b757ab';
-import { createBrowserBackup } from '../domain/browserBackup.js?v=739ba7b757ab';
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=739ba7b757ab';
-import { setPartyMembership } from '../domain/party.js?v=739ba7b757ab';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=739ba7b757ab';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=739ba7b757ab';
-import { printBoardMap } from './printMap.js?v=739ba7b757ab';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=739ba7b757ab';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=739ba7b757ab';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=739ba7b757ab';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=739ba7b757ab';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=739ba7b757ab';
-import { roomSummary } from '../domain/room.js?v=739ba7b757ab';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=739ba7b757ab';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=739ba7b757ab';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=739ba7b757ab';
-import { createRenderer } from '../render/createRenderer.js?v=739ba7b757ab';
+import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js?v=54e015a1c762';
+import { areaCells } from '../domain/areaTemplates.js?v=54e015a1c762';
+import { previewAffectedCreatures, selfAreaOriginCell } from '../domain/areaTargets.js?v=54e015a1c762';
+import { isInCastingRange } from '../domain/areaTemplates.js?v=54e015a1c762';
+import { createBrowserBackup } from '../domain/browserBackup.js?v=54e015a1c762';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=54e015a1c762';
+import { setPartyMembership } from '../domain/party.js?v=54e015a1c762';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=54e015a1c762';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=54e015a1c762';
+import { printBoardMap } from './printMap.js?v=54e015a1c762';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=54e015a1c762';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=54e015a1c762';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=54e015a1c762';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=54e015a1c762';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=54e015a1c762';
+import { roomSummary } from '../domain/room.js?v=54e015a1c762';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=54e015a1c762';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=54e015a1c762';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=54e015a1c762';
+import { createRenderer } from '../render/createRenderer.js?v=54e015a1c762';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -471,7 +471,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             return true;
         },
         onMarkDrop(id, payload) {
-            if (!moveMode) return;
+            if (!moveMode)
+                return;
             const object = findObject(state, id);
             if (!object || !isCreature(object)) {
                 status.textContent = 'Rings can only be attached to characters or monsters.';
@@ -573,7 +574,10 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         if (identityTools)
             identityTools.hidden = !moveMode;
         const markersPanel = root.querySelector('#combat-markers-panel');
-        if (markersPanel) { markersPanel.hidden = !moveMode; markersPanel.open = moveMode; }
+        if (markersPanel) {
+            markersPanel.hidden = !moveMode;
+            markersPanel.open = moveMode;
+        }
         const button = root.querySelector('#creature-mode');
         button?.setAttribute('aria-pressed', String(moveMode));
         button?.classList.toggle('is-armed', moveMode);
