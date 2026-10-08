@@ -59,11 +59,11 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         <section class="combat-spell-tools" aria-label="Spell measurement and combat log">
           <strong>Spell &amp; Area Preview</strong>
           <label for="spell-choice">Effect</label>
-          <select id="spell-choice">${AREA_ABILITY_REGISTRY.map(record => `<option value="${record.key}">${record.edition} · ${record.area.label} (sample preview — unverified)</option>`).join('')}</select>
+          <select id="spell-choice"><option value="">Choose a spell…</option>${AREA_ABILITY_REGISTRY.map(record => `<option value="${record.key}">${record.edition} · ${record.area.label} (sample preview — unverified)</option>`).join('')}</select>
           <label for="spell-caster">Caster on map</label><select id="spell-caster"><option value="">Choose a creature</option></select>
-          <button id="preview-spell" type="button">Preview Area</button>
+          
           <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
-          <small id="spell-instructions">Select Preview Area, move to aim, then left-click/tap to Cast. Right-click, Escape or Cancel dismisses.</small>
+          <small id="spell-instructions">Choose a spell, aim over the map, left-click to cast or right-click to cancel.</small>
           <strong>Combat Log</strong><ol id="combat-log" aria-live="polite"></ol>
         </section>
         <section id="party-manager" class="party-manager" aria-label="Campaign party">
@@ -219,32 +219,34 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         cancelButton.disabled = true;
         spellInstructions.textContent = 'Affected creatures remain outlined in yellow until another preview starts. Saves/damage pending.';
     };
-    root.querySelector('#preview-spell')?.addEventListener('click', () => {
+    const armArea = () => {
         const id = root.querySelector('#spell-choice')?.value;
         activeSpell = getAreaAbility(id ?? '')?.area ?? null;
-        const casterId = root.querySelector('#spell-caster')?.value;
-        const chosen = state.objects.find(x => x.id === casterId && ['Characters', 'Monsters'].includes(getCatalogItem(x.catalogId).category));
-        if (!chosen) {
-            status.textContent = 'Choose a caster on this map before previewing.';
+        const select = root.querySelector('#spell-caster');
+        const creatures = state.objects.filter(x => ['Characters', 'Monsters'].includes(getCatalogItem(x.catalogId).category));
+        if (!select?.value && creatures.length === 1)
+            select.value = creatures[0].id;
+        const chosen = creatures.find(x => x.id === select?.value);
+        if (!activeSpell || !chosen) {
             activeSpell = null;
+            renderer?.setAreaPreview(null, null);
+            status.textContent = 'Select a caster on the map, then choose the spell to aim.';
             return;
         }
         casterOrigin = { x: chosen.x, z: chosen.z, elevation: chosen.elevation };
         spellCenter = null;
         castButton.disabled = true;
         cancelButton.disabled = false;
-        // Arm the renderer so pointer events can reach onAreaPoint.
-        // The caster-anchored placeholder stays provisional until the pointer moves.
         renderer?.setAreaPreview(activeSpell, { origin: casterOrigin, center: casterOrigin });
         renderer?.setAreaTargets([]);
-        spellInstructions.textContent = 'Move to aim, left-click/tap to cast immediately; right-click, Escape or Cancel dismisses.';
-        status.textContent = 'Area preview armed (unverified sample). Selected creature is the caster origin.';
-    });
+        spellInstructions.textContent = 'Move to aim. Left-click casts; right-click or Escape cancels.';
+        status.textContent = 'Spell armed: move over the map, left-click to cast, right-click to cancel.';
+    };
+    root.querySelector('#spell-choice')?.addEventListener('change', armArea);
+    root.querySelector('#spell-caster')?.addEventListener('change', armArea);
     castButton.addEventListener('click', castArea);
     cancelButton.addEventListener('click', cancelArea);
-    root.querySelector('#spell-caster')?.addEventListener('change', () => { if (activeSpell)
-        cancelArea(); });
-    const onAreaRightClick = (event) => { if (activeSpell) {
+  const onAreaRightClick = (event) => { if (activeSpell) {
         event.preventDefault();
         event.stopImmediatePropagation();
         cancelArea();
