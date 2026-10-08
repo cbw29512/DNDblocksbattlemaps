@@ -563,3 +563,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Explicit area-hit names in combat log
 - User wants a simple report of which creatures each spell hits. Updated cast log and status to say '<spell> hits (area): <creature name> [short ID], ...' or '<spell> hits no creatures.' Short IDs disambiguate multiple monsters of the same kind. The phrase means covered by the area, not a successful damage roll; saves/damage remain pending. Source and checked-in browser JS updated in parity. Await PR exact-head CI and deployment.
+
+## 2026-10-08 — Combat-log sidebar declutter (PR pending)
+- Moved the existing accessible combat log (same #combat-log target and live entries) out of the left tools palette into a collapsible board-side floating panel. Kept the 3D battlefield unobstructed when collapsed; phone/tablet panel constrained in size. Collapsed/expandable Spells & Areas controls in left panel; other tools remain unchanged. TS and checked-in browser JS plus CSS updated. Need CI and manual mobile visual QA before claiming layout certified.
