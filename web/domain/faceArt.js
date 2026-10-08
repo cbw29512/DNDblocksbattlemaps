@@ -149,23 +149,25 @@ function surfaceTexture(id, color) {
     }
 }
 function illustratedBlockFace(id, icon, color, category) {
-  if (id === 'barrel') return '<rect width="128" height="128" fill="#765037"/>' +
-    '<path d="M28 20Q64 10 100 20L94 108Q64 121 34 108Z" fill="#98653c" stroke="#38271d" stroke-width="6"/>' +
-    '<path d="M49 22L46 109M79 22L82 109" stroke="#c28a52" stroke-width="5"/>' +
-    '<path d="M30 40Q64 48 98 40M31 91Q64 98 97 91" fill="none" stroke="#42454a" stroke-width="11"/>' +
-    '<circle cx="64" cy="67" r="6" fill="#d3a46a"/>';
-  if (id === 'crate') return '<rect width="128" height="128" fill="#805734"/>' +
-    '<rect x="12" y="12" width="104" height="104" fill="#b17e47" stroke="#573a21" stroke-width="8"/>' +
-    '<path d="M20 20L108 108M108 20L20 108" stroke="#654125" stroke-width="15"/>' +
-    '<path d="M20 20L108 108M108 20L20 108" stroke="#cf9b5d" stroke-width="5"/>' +
-    '<g fill="#33383a"><circle cx="23" cy="23" r="4"/><circle cx="105" cy="23" r="4"/><circle cx="23" cy="105" r="4"/><circle cx="105" cy="105" r="4"/></g>';
-  if (id === 'chest') return '<rect width="128" height="128" fill="#69442f"/>' +
-    '<path d="M13 49Q15 14 64 14Q113 14 115 49V111H13Z" fill="#a56a35" stroke="#35261d" stroke-width="7"/>' +
-    '<path d="M15 58H113M19 88H109" stroke="#d1a15f" stroke-width="9"/>' +
-    '<path d="M64 52V102" stroke="#423329" stroke-width="10"/>' +
-    '<rect x="51" y="59" width="26" height="28" rx="3" fill="#e2c16b" stroke="#493b2a" stroke-width="5"/>' +
-    '<circle cx="64" cy="72" r="5" fill="#59422a"/>';
-
+    if (id === 'barrel')
+        return '<rect width="128" height="128" fill="#765037"/>' +
+            '<path d="M28 20Q64 10 100 20L94 108Q64 121 34 108Z" fill="#98653c" stroke="#38271d" stroke-width="6"/>' +
+            '<path d="M49 22L46 109M79 22L82 109" stroke="#c28a52" stroke-width="5"/>' +
+            '<path d="M30 40Q64 48 98 40M31 91Q64 98 97 91" fill="none" stroke="#42454a" stroke-width="11"/>' +
+            '<circle cx="64" cy="67" r="6" fill="#d3a46a"/>';
+    if (id === 'crate')
+        return '<rect width="128" height="128" fill="#805734"/>' +
+            '<rect x="12" y="12" width="104" height="104" fill="#b17e47" stroke="#573a21" stroke-width="8"/>' +
+            '<path d="M20 20L108 108M108 20L20 108" stroke="#654125" stroke-width="15"/>' +
+            '<path d="M20 20L108 108M108 20L20 108" stroke="#cf9b5d" stroke-width="5"/>' +
+            '<g fill="#33383a"><circle cx="23" cy="23" r="4"/><circle cx="105" cy="23" r="4"/><circle cx="23" cy="105" r="4"/><circle cx="105" cy="105" r="4"/></g>';
+    if (id === 'chest')
+        return '<rect width="128" height="128" fill="#69442f"/>' +
+            '<path d="M13 49Q15 14 64 14Q113 14 115 49V111H13Z" fill="#a56a35" stroke="#35261d" stroke-width="7"/>' +
+            '<path d="M15 58H113M19 88H109" stroke="#d1a15f" stroke-width="9"/>' +
+            '<path d="M64 52V102" stroke="#423329" stroke-width="10"/>' +
+            '<rect x="51" y="59" width="26" height="28" rx="3" fill="#e2c16b" stroke="#493b2a" stroke-width="5"/>' +
+            '<circle cx="64" cy="72" r="5" fill="#59422a"/>';
     const hash = [...id].reduce((h, c) => ((h * 33) ^ c.charCodeAt(0)) >>> 0, 5381);
     const detail = Array.from({ length: 12 }, (_, i) => {
         const x = 10 + ((hash >>> (i % 16)) + i * 23) % 108;
