@@ -446,3 +446,65 @@ test('all canonical SRD monsters have a visual cube block, CR and footprint', ()
   assert.equal(getCatalogItem('monster-srd-ancient-red-dragon').footprintCells,4);
   assert.equal(getCatalogItem('monster-srd-goblin-warrior').footprintCells,1);
 });
+
+test('starter templates create editable real catalog cubes with unique IDs', async () => {
+  const { STARTER_TEMPLATES, buildStarterTemplate } = await import('../.test-build/src/domain/starterTemplates.js');
+  assert.equal(STARTER_TEMPLATES.length,8);
+  for(const t of STARTER_TEMPLATES) {
+    const state = buildStarterTemplate(t.id,'map-test-'+t.id);
+    assert.equal(state.mapId,'map-test-'+t.id);
+    assert.ok(state.objects.length > 30,t.id);
+    assert.equal(state.objects.length,new Set(state.objects.map(o=>o.id)).size,t.id);
+    for(const o of state.objects) {
+      assert.ok(PALETTE[o.catalogId],o.catalogId);
+      assert.ok(Number.isInteger(o.x)&&Number.isInteger(o.z)&&Number.isInteger(o.elevation));
+    }
+    assert.deepEqual(buildStarterTemplate(t.id,'map-test-'+t.id),state);
+  }
+});
+test('Starter Inn entrance and partition doorways are actually open', async () => {
+  const {buildStarterTemplate} = await import('../.test-build/src/domain/starterTemplates.js');
+  const state=buildStarterTemplate('inn','map-test-inn');
+  for(const [x,z] of [[0,9],[0,-1],[-2,-5],[4,-5]]) {
+    assert.ok(state.objects.some(o=>o.x===x&&o.z===z&&o.catalogId==='open-doorway'));
+    assert.equal(state.objects.filter(o=>o.x===x&&o.z===z&&o.elevation===1&&o.catalogId==='wood-wall').length,0);
+  }
+  assert.ok(state.objects.some(o=>o.catalogId==='table'));
+  assert.ok(state.objects.some(o=>o.catalogId==='bed'));
+  assert.ok(state.objects.some(o=>o.catalogId==='fireplace'));
+});
+test('starter map Party uses canonical character identity and entrance squares', async () => {
+  const {buildStarterTemplate} = await import('../.test-build/src/domain/starterTemplates.js');
+  const hero={...createWorldObject('party-fighter','hero-fighter',{x:2,z:3,elevation:0},1,0x2688dc),partyMember:true,conditions:['Poisoned']};
+  const roster={'party-fighter':{character:hero,origin:'castle'}};
+  const inn=buildStarterTemplate('inn','map-test-party',roster);
+  const found=inn.objects.filter(o=>o.id===hero.id);
+  assert.equal(found.length,1);
+  assert.equal(found[0].ringColor,hero.ringColor);
+  assert.deepEqual(found[0].conditions,hero.conditions);
+  assert.equal(found[0].x,inn.partyStart.x);
+  assert.equal(found[0].z,inn.partyStart.z);
+  assert.equal(inn.objects.some(o=>o.id===hero.id && o.catalogId==='hero-fighter'),true);
+});
+test('multiple saved Starter Inns do not change existing terrain maps or each other', async () => {
+  const {createStarterMap,loadBoard,loadPartyRoster,listCampaignMaps}=await import('../.test-build/src/domain/storage.js');
+  const oldStorage=globalThis.localStorage;
+  const data=new Map();
+  globalThis.localStorage={
+    getItem:k=>data.has(k)?data.get(k):null,
+    setItem:(k,v)=>data.set(k,String(v)),
+    removeItem:k=>data.delete(k)
+  };
+  try {
+    const original=JSON.stringify({terrain:'inn',bounds:{minX:-15,maxX:15,minZ:-15,maxZ:15},objects:[createWorldObject('existing','table',{x:0,z:0,elevation:0},1)],revision:1});
+    data.set('dndblocks:stage1:inn',original);
+    const one=createStarterMap('inn'),two=createStarterMap('inn');
+    assert.notEqual(one.id,two.id);
+    assert.equal(listCampaignMaps().length,2);
+    assert.equal(data.get('dndblocks:stage1:inn'),original);
+    assert.equal(loadBoard('inn',one.id).mapId,one.id);
+    assert.equal(loadBoard('inn',two.id).mapId,two.id);
+    assert.equal(loadBoard('inn').objects[0].id,'existing');
+    assert.ok(loadPartyRoster());
+  } finally {globalThis.localStorage=oldStorage;}
+});
