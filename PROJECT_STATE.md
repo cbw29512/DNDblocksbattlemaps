@@ -602,3 +602,5 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Block visual code audit: critical helper repair
 - Audited full Build/Props texture branch and caught an unreferenced/undefined `surface` variable and missing `illustratedBlockFace` helper in both source and browser bundles: this would break all generated block artwork. Corrected both and retained the 5-ft cube geometry. Visual scope remains Build/Props only, creatures untouched. Test/mock updated for lit Lambert material, full-catalog square SVG checks added. Require actual exact-head CI success before merging and rendered browser screenshots before claiming image quality certified.
+
+- Follow-up visual refinement: added distinct faces for snow, obsidian, cave rock, metal panels, doors/trapdoors and open pits. SVG patterns are full-square, preserving original cube geometry. No character/monster files changed. Branch currently lacks a confirmed passing CI run at the latest head; do not merge or claim browser quality until checks and screenshots have been reviewed.
