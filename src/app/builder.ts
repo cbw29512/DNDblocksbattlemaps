@@ -81,7 +81,7 @@ export async function renderBuilder(
           <select id="spell-choice"><option value="">Choose a spell…</option>${AREA_ABILITY_REGISTRY.map(record=>`<option value="${record.key}">${record.edition} · ${record.area.label} (sample preview — unverified)</option>`).join('')}</select>
           <label for="spell-caster">Caster on map</label><select id="spell-caster"><option value="">Choose a creature</option></select>
           
-          <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
+          <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button><button id="clear-spell-marks" type="button">Clear Hit Markers</button></div>
           <small id="spell-instructions">Choose a spell, aim over the map, left-click to cast or right-click to cancel.</small>
           <strong>Combat Log</strong><ol id="combat-log" aria-live="polite"></ol>
         </section>
@@ -164,7 +164,7 @@ export async function renderBuilder(
   const cancelArea = (): void => {
     activeSpell=null; spellCenter=null; renderer?.setAreaPreview(null,null);
     castButton.disabled=true; cancelButton.disabled=true;
-    spellInstructions.textContent='Preview canceled or complete. Select Preview Area to start again.';
+    spellInstructions.textContent='Preview canceled. Choose a spell again to aim.';
   };
   const refreshCasterOptions = (): void => {
     const select=root.querySelector<HTMLSelectElement>('#spell-caster');
@@ -253,6 +253,11 @@ export async function renderBuilder(
   root.querySelector('#spell-caster')?.addEventListener('change',armArea);
   castButton.addEventListener('click',castArea);
   cancelButton.addEventListener('click',cancelArea);
+  root.querySelector('#clear-spell-marks')?.addEventListener('click',()=>{
+    renderer?.setAreaTargets([]);
+    status.textContent='Spell hit markers cleared. Combat log preserved.';
+    spellInstructions.textContent='Hit markers cleared; choose a spell to aim again.';
+  });
   const onAreaRightClick=(event:MouseEvent):void=>{if(activeSpell){event.preventDefault();event.stopImmediatePropagation();cancelArea();}};
   canvas.addEventListener('contextmenu',onAreaRightClick,true);
 
