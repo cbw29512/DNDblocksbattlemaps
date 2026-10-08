@@ -264,19 +264,32 @@ test('print map uses the top object in an occupied square', () => {
   assert.equal(topObjectAt(objects, 1, 1)?.id, 'top');
 });
 
-test('textured cubes remain colored until art is loaded successfully', async () => {
+test('cube face art is rasterized and solid color remains until loaded', async () => {
   const { meshFor } = await import('../.test-build/src/render/threeObjects.js');
-  let onLoaded;
-  class MeshStandardMaterial { constructor(options) { Object.assign(this, options); this.color = { value: options.color, setHex: (next) => { this.color.value = next; } }; } }
-  class TextureLoader { load(_url, success) { onLoaded = success; } }
-  class Mesh { constructor(geometry, material) { this.geometry = geometry; this.material = material; this.position = { set() {} }; this.userData = {}; } }
-  class BoxGeometry {}
-  const THREE = { MeshStandardMaterial, TextureLoader, Mesh, BoxGeometry, SRGBColorSpace: 'srgb' };
-  const cube = meshFor(THREE, { id: 'a', catalogId: 'barrel', x: 0, z: 0, elevation: 0, createdAt: 1 });
-  assert.equal(cube.material[0].map, undefined);
-  assert.equal(cube.material[0].color.value, PALETTE.barrel.color);
-  assert.equal(cube.material[0].transparent, false);
-  onLoaded?.({ image: {}, colorSpace: null });
-  assert.equal(cube.material[0].color.value, 0xffffff);
-  assert.ok(cube.material[0].map);
+  const originalImage = globalThis.Image;
+  const originalDocument = globalThis.document;
+  let image;
+  let draws = 0;
+  try {
+    globalThis.Image = class { constructor() { image = this; this.naturalWidth = 128; this.naturalHeight = 128; } set src(value) { this.url = value; } };
+    globalThis.document = { baseURI: 'https://example.com/', createElement() {
+      return { width: 0, height: 0, getContext() { return { fillRect() {}, drawImage() { draws += 1; } }; } };
+    } };
+    class MeshStandardMaterial { constructor(options) { Object.assign(this, options); this.color = { value: options.color, setHex: (v) => { this.color.value = v; } }; } }
+    class CanvasTexture { constructor(canvas) { this.image = canvas; } }
+    class Mesh { constructor(geometry, material) { this.geometry = geometry; this.material = material; this.position = { set() {} }; this.userData = {}; } }
+    class BoxGeometry {}
+    const THREE = { MeshStandardMaterial, CanvasTexture, Mesh, BoxGeometry, SRGBColorSpace: 'srgb' };
+    const cube = meshFor(THREE, { id: 'test', catalogId: 'barrel', x: 0, z: 0, elevation: 0, createdAt: 1 });
+    assert.equal(cube.material[0].color.value, PALETTE.barrel.color);
+    assert.equal(cube.material[0].map, undefined);
+    image.onload();
+    assert.equal(draws, 1);
+    assert.equal(cube.material[0].map.image.width, 256);
+    assert.equal(cube.material[0].color.value, 0xffffff);
+    assert.equal(cube.material[0].transparent, false);
+  } finally {
+    globalThis.Image = originalImage;
+    globalThis.document = originalDocument;
+  }
 });
