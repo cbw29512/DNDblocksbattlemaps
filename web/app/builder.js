@@ -1,22 +1,22 @@
-import { areaCells } from '../domain/areaTemplates.js';
-import { previewAffectedCreatures } from '../domain/areaTargets.js';
-import { AREA_PRESETS, isInCastingRange } from '../domain/areaTemplates.js?v=86d8296e3087';
-import { createBrowserBackup } from '../domain/browserBackup.js?v=86d8296e3087';
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=86d8296e3087';
-import { setPartyMembership } from '../domain/party.js?v=86d8296e3087';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=86d8296e3087';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=86d8296e3087';
-import { printBoardMap } from './printMap.js?v=86d8296e3087';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=86d8296e3087';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=86d8296e3087';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=86d8296e3087';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=86d8296e3087';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=86d8296e3087';
-import { roomSummary } from '../domain/room.js?v=86d8296e3087';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=86d8296e3087';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=86d8296e3087';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=86d8296e3087';
-import { createRenderer } from '../render/createRenderer.js?v=86d8296e3087';
+import { areaCells } from '../domain/areaTemplates.js?v=bf4a12ccb7a2';
+import { previewAffectedCreatures } from '../domain/areaTargets.js?v=bf4a12ccb7a2';
+import { AREA_PRESETS, isInCastingRange } from '../domain/areaTemplates.js?v=bf4a12ccb7a2';
+import { createBrowserBackup } from '../domain/browserBackup.js?v=bf4a12ccb7a2';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=bf4a12ccb7a2';
+import { setPartyMembership } from '../domain/party.js?v=bf4a12ccb7a2';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=bf4a12ccb7a2';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=bf4a12ccb7a2';
+import { printBoardMap } from './printMap.js?v=bf4a12ccb7a2';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=bf4a12ccb7a2';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=bf4a12ccb7a2';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=bf4a12ccb7a2';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=bf4a12ccb7a2';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=bf4a12ccb7a2';
+import { roomSummary } from '../domain/room.js?v=bf4a12ccb7a2';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=bf4a12ccb7a2';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=bf4a12ccb7a2';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=bf4a12ccb7a2';
+import { createRenderer } from '../render/createRenderer.js?v=bf4a12ccb7a2';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -148,14 +148,19 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         spellInstructions.textContent = 'Preview canceled or complete. Select Preview Area to start again.';
     };
     const previewTargets = () => {
-        if (!activeSpell || !spellCenter) return [];
-        const r=Math.ceil(activeSpell.sizeFeet/5)+1;
-        const area=areaCells(activeSpell,{origin:casterOrigin,center:spellCenter},{
-          minX:Math.max(state.bounds.minX,spellCenter.x-r),maxX:Math.min(state.bounds.maxX,spellCenter.x+r+1),
-          minZ:Math.max(state.bounds.minZ,spellCenter.z-r),maxZ:Math.min(state.bounds.maxZ,spellCenter.z+r+1),
-          minElevation:Math.max(0,spellCenter.elevation-r),maxElevation:Math.min(8,spellCenter.elevation+r)
+        if (!activeSpell || !spellCenter)
+            return [];
+        const radius = Math.ceil(activeSpell.sizeFeet / 5) + 1;
+        const p = { origin: casterOrigin, center: spellCenter };
+        const area = areaCells(activeSpell, p, {
+            minX: Math.max(state.bounds.minX, spellCenter.x - radius),
+            maxX: Math.min(state.bounds.maxX, spellCenter.x + radius + 1),
+            minZ: Math.max(state.bounds.minZ, spellCenter.z - radius),
+            maxZ: Math.min(state.bounds.maxZ, spellCenter.z + radius + 1),
+            minElevation: Math.max(0, spellCenter.elevation - radius),
+            maxElevation: Math.min(8, spellCenter.elevation + radius)
         });
-        return previewAffectedCreatures(state.objects,area);
+        return previewAffectedCreatures(state.objects, area);
     };
     const choosePoint = (point, commit) => {
         if (!activeSpell)
@@ -167,8 +172,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         }
         spellCenter = point;
         renderer?.setAreaPreview(activeSpell, placement);
-        const targets=previewTargets();
-        status.textContent='Preview intersects '+targets.length+' creature(s): '+(targets.map(o=>getCatalogItem(o.catalogId).name).join(', ')||'none')+'. Provisional geometry.';
+        const targets = previewTargets();
+        status.textContent = 'Preview intersects ' + targets.length + ' creature(s): ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Geometry provisional; not RAW-confirmed.';
         castButton.disabled = false;
         if (commit)
             castArea();
@@ -179,8 +184,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         const caster = root.querySelector('#spell-caster')?.value.trim() || 'Unknown caster';
         const label = activeSpell.label;
         const record = document.createElement('li');
-        const targets=previewTargets();
-        record.textContent = caster + ' casts ' + label + ' at (' + spellCenter.x + ', ' + spellCenter.z + '). Preview intersects '+targets.length+' creature(s); RAW targeting and rolls pending.';
+        const targets = previewTargets();
+        record.textContent = caster + ' casts ' + label + ' at (' + spellCenter.x + ', ' + spellCenter.z + '). Preview intersects ' + targets.length + ' creature(s): ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Target adjudication and rolls pending.';
         root.querySelector('#combat-log')?.prepend(record);
         status.textContent = caster + ' casts ' + label + '.';
         cancelArea();
