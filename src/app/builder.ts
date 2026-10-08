@@ -539,6 +539,16 @@ export async function renderBuilder(
 
   const onKeyDown = (event: KeyboardEvent): void => {
     if (event.key !== 'Escape') return;
+    if (selectedCondition) {
+      selectedCondition = null;
+      root.querySelectorAll('[data-condition]').forEach(button => {
+        button.classList.remove('selected');
+        button.setAttribute('aria-pressed','false');
+      });
+      status.textContent = 'Status selection canceled.';
+      event.preventDefault();
+      return;
+    }
     if (pickedCreatureId) {
       pickedCreatureId = null;
       renderer?.setMovingCreature(null);
