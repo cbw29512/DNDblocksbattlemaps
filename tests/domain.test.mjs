@@ -535,3 +535,43 @@ test('area ordering adapts for harbor and cave without dropping blocks', async (
   }
   assert.notDeepEqual(catalogIdsForArea('Build','inn','inn'),catalogIdsForArea('Build','sea','harbor'));
 });
+
+test('G0a backup includes legacy maps, custom maps, roster and corrupted saves without mutation', async () => {
+  const { createBrowserBackup, validateBrowserBackup } = await import('../.test-build/src/domain/browserBackup.js');
+  const records = new Map([
+    ['dndblocks:stage1:inn', '{"terrain":"inn","objects":[1]}'],
+    ['dndblocks:campaign-party:v1', '{"hero":{"id":"party-1"}}'],
+    ['dndblocks:custom-maps:v1', '[{"id":"map-one"}]'],
+    ['dndblocks:custom-map:v1:map-one', '{"mapId":"map-one"}'],
+    ['dndblocks:custom-map:v1:damaged', '{"incomplete":'],
+    ['unrelated:secret', 'never export this']
+  ]);
+  const before = [...records.entries()];
+  let writes = 0;
+  const storage = {
+    get length() { return records.size; },
+    key: n => [...records.keys()][n] ?? null,
+    getItem: k => records.get(k) ?? null,
+    setItem: () => { writes++; throw new Error('write forbidden'); },
+    removeItem: () => { writes++; throw new Error('delete forbidden'); }
+  };
+  const backup=createBrowserBackup(storage, '2026-10-08T00:00:00.000Z');
+  assert.equal(backup.version,1);
+  assert.equal(backup.entries.length,5);
+  assert.equal(backup.entries.some(x => x.key === 'unrelated:secret'), false);
+  assert.equal(backup.entries.find(x=>x.key.endsWith('damaged')).validJson,false);
+  assert.equal(backup.entries.find(x=>x.key.endsWith('damaged')).raw,'{"incomplete":');
+  assert.equal(writes,0);
+  assert.deepEqual([...records.entries()],before);
+  assert.equal(validateBrowserBackup(JSON.parse(JSON.stringify(backup))),true);
+  assert.equal(validateBrowserBackup({...backup,version:2}),false);
+  assert.equal(validateBrowserBackup({...backup,entries:[backup.entries[0],backup.entries[0]]}),false);
+  assert.equal(validateBrowserBackup({...backup,entries:[{...backup.entries[0],raw:'invalid'}]}),false);
+});
+test('G0a empty storage exports a valid empty backup', async () => {
+  const {createBrowserBackup,validateBrowserBackup}=await import('../.test-build/src/domain/browserBackup.js');
+  const storage={length:0,key:()=>null,getItem:()=>null};
+  const backup=createBrowserBackup(storage,'2026-10-08T00:00:00Z');
+  assert.deepEqual(backup.entries,[]);
+  assert.equal(validateBrowserBackup(backup),true);
+});
