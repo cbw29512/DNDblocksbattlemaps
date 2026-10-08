@@ -19,7 +19,7 @@ import {
 } from './roomPlacementPreview.js';
 import {
   CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE,
-  meshFor, rotateCamera, zoomCamera
+  meshesFor, rotateCamera, zoomCamera
 } from './threeObjects.js';
 import type { BoardHandlers, BoardRenderer } from './types.js';
 
@@ -299,7 +299,7 @@ export async function createThreeRenderer(
 
       currentObjects = state.objects;
       objectGroup.clear();
-      state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
+      state.objects.forEach((item) => objectGroup.add(...meshesFor(THREE, item)));
     },
     rotate(delta) {
       rotateCamera(THREE, camera, controls, delta);
