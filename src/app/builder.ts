@@ -1,3 +1,4 @@
+import { setPartyMembership } from '../domain/party.js';
 import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js';
 import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js';
 import { printBoardMap } from './printMap.js';
@@ -14,7 +15,7 @@ import { roomWallPositions, type RoomPlacement } from '../domain/roomPlacement.j
 import {
   BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth
 } from '../domain/spatial.js';
-import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js';
+import { clearBoard, loadBoard, saveBoard, propagateParty } from '../domain/storage.js';
 import type {
   CatalogCategory, CatalogId, EditCommand, GridPosition, HistoryState, TerrainId
 } from '../domain/types.js';
@@ -61,6 +62,15 @@ export async function renderBuilder(
         </div>
       </header>
       <aside class="builder-sidebar">
+        <section id="party-manager" class="party-manager" aria-label="Campaign party">
+          <strong>Campaign Party</strong>
+          <small>Check Party once. The same character appears on every campaign map.</small>
+          <div id="party-members"></div>
+        </section>
+        <nav class="campaign-map-tabs" aria-label="Campaign maps">
+          <strong>Maps</strong>
+          ${Object.values(TERRAIN_THEMES).map(t => `<button type="button" data-map-terrain="${t.id}" ${t.id === theme.id ? 'aria-current="page"' : ''}>${t.name}</button>`).join('')}
+        </nav>
         <div id="build-tools">
         ${roomPanelHtml()}
         ${catalogPanelHtml(selected)}
@@ -132,9 +142,34 @@ export async function renderBuilder(
     });
   };
 
+  const refreshPartyManager = (): void => {
+    const panel = root.querySelector<HTMLElement>('#party-members');
+    if (!panel) return;
+    panel.replaceChildren();
+    const characters = state.objects.filter(object => getCatalogItem(object.catalogId).category === 'Characters');
+    for (const object of characters) {
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.checked = Boolean(object.partyMember);
+      input.dataset.partyId = object.id;
+      input.addEventListener('change', () => {
+        state = setPartyMembership(state, object.id, input.checked);
+        propagateParty(state, input.checked ? undefined : object.id);
+        refresh();
+        status.textContent = input.checked ? 'Character added to all campaign maps.' : 'Character removed from campaign party.';
+      });
+      label.append(input, document.createTextNode(' Party · ' + getCatalogItem(object.catalogId).name));
+      panel.append(label);
+    }
+    if (!characters.length) panel.textContent = 'Place a Character block to add a party member.';
+  };
+
   const refresh = (): void => {
     renderer?.render(state);
     saveBoard(state);
+    propagateParty(state);
+    refreshPartyManager();
     updateBoardSize();
     updateRingTokens();
   };
@@ -278,7 +313,10 @@ export async function renderBuilder(
     },
     onRemove(id) {
       const object = findObject(state, id);
-      if (object) run(removeCommand(object), []);
+      if (object) {
+        run(removeCommand(object), []);
+        if (object.partyMember) propagateParty(state, id);
+      }
     },
     onStatus(message) {
       status.textContent = message;
@@ -292,6 +330,7 @@ export async function renderBuilder(
   renderer.render(state);
   updateBoardSize();
   updateRingTokens();
+  refreshPartyManager();
 
   root.querySelectorAll<HTMLElement>('[data-ring-color], [data-condition]').forEach(token => {
     token.addEventListener('dragstart', (event: DragEvent) => {
@@ -312,6 +351,8 @@ export async function renderBuilder(
     const buildTools = root.querySelector<HTMLElement>('#build-tools');
     const identityTools = root.querySelector<HTMLElement>('#identity-ring-tools');
     if (buildTools) buildTools.hidden = moveMode;
+    const partyTools = root.querySelector('#party-manager');
+    if (partyTools) partyTools.hidden = moveMode;
     if (identityTools) identityTools.hidden = moveMode;
     const button = root.querySelector<HTMLButtonElement>('#creature-mode');
     button?.setAttribute('aria-pressed', String(moveMode));
@@ -320,6 +361,16 @@ export async function renderBuilder(
     status.textContent = moveMode
       ? 'Combat Mode: scenery is locked. Select a character or monster, then choose its destination. Status rings remain available.'
       : 'Build Mode: all blocks, characters, monsters, identity rings and statuses are available.';
+  });
+
+  root.querySelectorAll('[data-map-terrain]').forEach(button => {
+    button.addEventListener('click', () => {
+      const map = button.getAttribute('data-map-terrain');
+      if (!map || map === theme.id) return;
+      saveBoard(state);
+      propagateParty(state);
+      window.location.search = '?view=build&terrain=' + encodeURIComponent(map);
+    });
   });
 
   buildRoomButton.addEventListener('click', () => {
