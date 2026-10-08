@@ -397,9 +397,9 @@ export async function renderBuilder(
     const buildTools = root.querySelector<HTMLElement>('#build-tools');
     const identityTools = root.querySelector<HTMLElement>('#identity-ring-tools');
     if (buildTools) buildTools.hidden = moveMode;
-    const partyTools = root.querySelector('#party-manager');
+    const partyTools = root.querySelector<HTMLElement>('#party-manager');
     if (partyTools) partyTools.hidden = moveMode;
-    const starterTools = root.querySelector('#starter-map-panel');
+    const starterTools = root.querySelector<HTMLElement>('#starter-map-panel');
     if (starterTools) starterTools.hidden = moveMode;
     if (identityTools) identityTools.hidden = moveMode;
     const button = root.querySelector<HTMLButtonElement>('#creature-mode');
