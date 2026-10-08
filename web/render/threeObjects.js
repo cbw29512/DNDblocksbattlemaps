@@ -23,6 +23,7 @@ function materialFor(THREE, item) {
         // SVG data URLs work in <img>, but direct WebGL upload can produce black faces.
         // Rasterize into a concrete, sized canvas before sending pixels to the GPU.
         const source = new Image();
+    source.crossOrigin = 'anonymous';
         source.onload = () => {
             try {
                 if (!source.naturalWidth || !source.naturalHeight)
