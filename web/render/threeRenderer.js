@@ -3,7 +3,7 @@ import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../do
 import { placementFromSurface } from '../domain/surfacePlacement.js?v=3a6fd8f850b0';
 import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=3a6fd8f850b0';
 import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=3a6fd8f850b0';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=3a6fd8f850b0';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshesFor, rotateCamera, zoomCamera } from './threeObjects.js?v=3a6fd8f850b0';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -227,7 +227,7 @@ export async function createThreeRenderer(container, handlers) {
                 updateBoardGeometry(state.bounds);
             currentObjects = state.objects;
             objectGroup.clear();
-            state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
+            state.objects.forEach((item) => objectGroup.add(...meshesFor(THREE, item)));
         },
         rotate(delta) {
             rotateCamera(THREE, camera, controls, delta);
