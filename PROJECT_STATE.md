@@ -323,3 +323,14 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 3. Implement one logical multi-cube creature renderer/occupancy path.
 4. Add monster search without placing hundreds of buttons onscreen at once.
 5. Preserve Iron Pit's exact creature/art identity mapping.
+
+
+## 2026-10-07 — Placement hotfix (isolated)
+
+- **Starting State:** User repeatedly reports that clicking the map after selecting any cube produces no visible block. Earlier defensive patches live only in unmerged catalog PR #1.
+- **Changes Made:** In an independent branch based on main, empty-grid placement now uses direct Three.js camera-ray intersection with the selected elevation's mathematical plane. Removed dependency on an invisible placement mesh for the empty-grid hit. Added explicit invalid-click feedback and successful-place feedback. Updated authoritative TypeScript and checked-in web JavaScript together.
+- **Decisions Made:** No catalog, monster, lighting, or schema changes. Preserve the command/state workflow. Do not assert browser success without real testing.
+- **Cost Impact:** none; no dependencies or production deployment.
+- **Result:** Isolated hotfix committed on `fix-placement-click-oct07`, verification pending; not live until merged and test site redeployed.
+- **Open Questions / Blockers:** root cause not conclusively reproduced in a browser; check whether success feedback appears and object renders. GitHub Pages manual action still needed for public test.
+- **Exact Next Step:** review and build-test this isolated PR, merge if green, dispatch Pages test deploy, reproduce Stone placement; if placement success is reported but cube invisible, inspect WebGL materials and camera rather than further modifying input.

@@ -99,13 +99,15 @@ export async function createThreeRenderer(container, handlers) {
         pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(pointer, camera);
     }
-    function floorPosition(event) {
+      function floorPosition(event) {
+        // Intersect the camera ray with the target elevation directly.
         setPointer(event);
-        const hit = raycaster.intersectObject(placementPlane, false)[0];
-        if (!hit)
+        const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -elevation);
+        const point = raycaster.ray.intersectPlane(plane, new THREE.Vector3());
+        if (!point)
             return null;
-        const x = Math.floor(hit.point.x);
-        const z = Math.floor(hit.point.z);
+        const x = Math.floor(point.x);
+        const z = Math.floor(point.z);
         return isBoardCell(x, z, currentBounds) ? { x, z, elevation } : null;
     }
     function highestAt(x, z) {
@@ -178,6 +180,8 @@ export async function createThreeRenderer(container, handlers) {
         const position = blockPlacementFor(event);
         if (position)
             handlers.onPlace(position);
+        else
+            handlers.onStatus('Could not place at that point. Use Reset Camera and click inside the grid.');
     });
     renderer.domElement.addEventListener('contextmenu', (event) => {
         event.preventDefault();

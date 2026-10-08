@@ -152,12 +152,14 @@ export async function createThreeRenderer(
   }
 
   function floorPosition(event: PointerEvent | MouseEvent): GridPosition | null {
+    // Intersect the camera ray with the desired elevation directly.
+    // An invisible mesh is not needed for ordinary empty-grid clicks.
     setPointer(event);
-    const hit = raycaster.intersectObject(placementPlane, false)[0];
-    if (!hit) return null;
-
-    const x = Math.floor(hit.point.x);
-    const z = Math.floor(hit.point.z);
+    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -elevation);
+    const point = raycaster.ray.intersectPlane(plane, new THREE.Vector3());
+    if (!point) return null;
+    const x = Math.floor(point.x);
+    const z = Math.floor(point.z);
     return isBoardCell(x, z, currentBounds) ? { x, z, elevation } : null;
   }
 
@@ -244,6 +246,7 @@ export async function createThreeRenderer(
     if (!selected) return;
     const position = blockPlacementFor(event);
     if (position) handlers.onPlace(position);
+    else handlers.onStatus('Could not place at that point. Use Reset Camera and click inside the grid.');
   });
 
   renderer.domElement.addEventListener('contextmenu', (event: MouseEvent) => {
