@@ -116,33 +116,41 @@ function escapeXml(value) {
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;'
     }[char] ?? char));
 }
-
 // Square, seamless-looking material artwork. These are still ordinary cube faces.
-function surfaceTexture(id, color {
-  const base = '<rect width="128" height="128" fill="' + hex(color) + '"/>';
-  const h = (c, d) => '<path d="' + d + '" fill="none" stroke="' + c + '" stroke-width="4"/>';
-  switch (id) {
-    case 'grass': return base + Array.from({length: 9}, (_,i) => '<path d="M' + (9+i*14) + ' ' + (20+(i%3)*31) + 'l-4 -11 5 6 5-12" fill="none" stroke="#b8d88a" stroke-width="3"/>').join('') + h('#426836','M0 49h128M0 105h128');
-    case 'dirt': case 'mud': return base + '<g fill="#392d23"><circle cx="24" cy="21" r="5"/><circle cx="92" cy="39" r="7"/><circle cx="45" cy="89" r="6"/><circle cx="106" cy="107" r="4"/></g>' + h('#9d7753','M4 60l22-8 18 12M70 16l18-7 20 8M76 96l14-6 19 7');
-    case 'stone-block': case 'cobblestone': case 'castle-wall': case 'wall': case 'dungeon-tile': return base + h('#343d3b','M0 42h128M0 85h128M43 0v42M92 42v43M42 85v43') + h('#b2b7aa','M3 46h120M3 89h120');
-    case 'brick-floor': case 'brick-wall': return base + h('#47362e','M0 32h128M0 64h128M0 96h128M32 0v32M96 32v32M32 64v32M96 96v32');
-    case 'wood-block': case 'wood-wall': case 'ship-deck': return base + h('#4a3024','M0 31h128M0 65h128M0 98h128M49 0v31M92 31v34M49 65v33M92 98v30') + h('#b48355','M4 12h36M58 49h25M6 82h30M55 113h30');
-    case 'sand': return base + '<g fill="#e9d6a5"><circle cx="14" cy="25" r="3"/><circle cx="70" cy="13" r="3"/><circle cx="110" cy="66" r="4"/><circle cx="29" cy="103" r="4"/></g>' + h('#90794a','M5 42q23-13 46 0t49 0M0 87q32-12 64 0t64 0');
-    case 'water': case 'ice': return base + h('#a9e4e9','M-5 25q16-13 32 0t32 0t32 0t42 0M-5 67q16-13 32 0t32 0t32 0t42 0M-5 106q16-13 32 0t32 0t32 0t42 0') + h('#22536f','M10 42q19 9 36 0M65 86q23 11 44-1');
-    case 'lava': return base + h('#ffd25e','M-2 14l28 20 25-12 20 29 28-18 31 17M-2 84l25-9 31 26 28-20 46 24') + h('#59251d','M0 55l34 4 15-14M78 115l22-9 28 8');
-    case 'snow': return base + h('#f4faff','M-4 40q22-10 44 0t44 0t48 0M-4 88q28-9 56 0t76 0') + '<g fill="#f9ffff"><circle cx="22" cy="18" r="4"/><circle cx="106" cy="66" r="5"/><circle cx="72" cy="116" r="4"/></g>';
-    case 'obsidian': return base + h('#8b6b9d','M4 7l30 26 26-15 37 32 27-13M8 118l34-40 32 12 40-43') + h('#121019','M0 54l32 8 28-28M68 124l18-22 42-12');
-    case 'cave-wall': return base + h('#302f29','M0 30l28-13 17 24 39-19 44 30M0 95l33-22 29 16 32-23 34 17') + h('#979287','M15 10l18 7M70 58l21-8M38 109l29 6');
-    case 'metal-wall': return base + h('#303941','M0 6h128M0 122h128M8 0v128M120 0v128M0 64h128') + '<g fill="#d2dce1"><circle cx="18" cy="17" r="4"/><circle cx="110" cy="17" r="4"/><circle cx="18" cy="111" r="4"/><circle cx="110" cy="111" r="4"/></g>';
-    case 'door': case 'trapdoor': return base + '<rect x="24" y="7" width="80" height="114" rx="3" fill="#654027" stroke="#c29257" stroke-width="6"/>' + h('#392819','M43 13v105M84 13v105M27 44h74M27 87h74') + '<circle cx="88" cy="65" r="6" fill="#e4c06b"/>';
-    case 'pit': return base + '<rect x="18" y="18" width="92" height="92" fill="#100f0d" stroke="#a6a093" stroke-width="9"/>' + h('#3f3935','M24 21l26 26M105 26L80 51M26 103l28-28M104 103L76 75');
-    default: return null;
-  }
+function surfaceTexture(id, color) {
+    const base = '<rect width="128" height="128" fill="' + hex(color) + '"/>';
+    const h = (c, d) => '<path d="' + d + '" fill="none" stroke="' + c + '" stroke-width="4"/>';
+    switch (id) {
+        case 'grass': return base + Array.from({ length: 9 }, (_, i) => '<path d="M' + (9 + i * 14) + ' ' + (20 + (i % 3) * 31) + 'l-4 -11 5 6 5-12" fill="none" stroke="#b8d88a" stroke-width="3"/>').join('') + h('#426836', 'M0 49h128M0 105h128');
+        case 'dirt':
+        case 'mud': return base + '<g fill="#392d23"><circle cx="24" cy="21" r="5"/><circle cx="92" cy="39" r="7"/><circle cx="45" cy="89" r="6"/><circle cx="106" cy="107" r="4"/></g>' + h('#9d7753', 'M4 60l22-8 18 12M70 16l18-7 20 8M76 96l14-6 19 7');
+        case 'stone-block':
+        case 'cobblestone':
+        case 'castle-wall':
+        case 'wall':
+        case 'dungeon-tile': return base + h('#343d3b', 'M0 42h128M0 85h128M43 0v42M92 42v43M42 85v43') + h('#b2b7aa', 'M3 46h120M3 89h120');
+        case 'brick-floor':
+        case 'brick-wall': return base + h('#47362e', 'M0 32h128M0 64h128M0 96h128M32 0v32M96 32v32M32 64v32M96 96v32');
+        case 'wood-block':
+        case 'wood-wall':
+        case 'ship-deck': return base + h('#4a3024', 'M0 31h128M0 65h128M0 98h128M49 0v31M92 31v34M49 65v33M92 98v30') + h('#b48355', 'M4 12h36M58 49h25M6 82h30M55 113h30');
+        case 'sand': return base + '<g fill="#e9d6a5"><circle cx="14" cy="25" r="3"/><circle cx="70" cy="13" r="3"/><circle cx="110" cy="66" r="4"/><circle cx="29" cy="103" r="4"/></g>' + h('#90794a', 'M5 42q23-13 46 0t49 0M0 87q32-12 64 0t64 0');
+        case 'water':
+        case 'ice': return base + h('#a9e4e9', 'M-5 25q16-13 32 0t32 0t32 0t42 0M-5 67q16-13 32 0t32 0t32 0t42 0M-5 106q16-13 32 0t32 0t32 0t42 0') + h('#22536f', 'M10 42q19 9 36 0M65 86q23 11 44-1');
+        case 'lava': return base + h('#ffd25e', 'M-2 14l28 20 25-12 20 29 28-18 31 17M-2 84l25-9 31 26 28-20 46 24') + h('#59251d', 'M0 55l34 4 15-14M78 115l22-9 28 8');
+        case 'snow': return base + h('#f4faff', 'M-4 40q22-10 44 0t44 0t48 0M-4 88q28-9 56 0t76 0') + '<g fill="#f9ffff"><circle cx="22" cy="18" r="4"/><circle cx="106" cy="66" r="5"/><circle cx="72" cy="116" r="4"/></g>';
+        case 'obsidian': return base + h('#8b6b9d', 'M4 7l30 26 26-15 37 32 27-13M8 118l34-40 32 12 40-43') + h('#121019', 'M0 54l32 8 28-28M68 124l18-22 42-12');
+        case 'cave-wall': return base + h('#302f29', 'M0 30l28-13 17 24 39-19 44 30M0 95l33-22 29 16 32-23 34 17') + h('#979287', 'M15 10l18 7M70 58l21-8M38 109l29 6');
+        case 'metal-wall': return base + h('#303941', 'M0 6h128M0 122h128M8 0v128M120 0v128M0 64h128') + '<g fill="#d2dce1"><circle cx="18" cy="17" r="4"/><circle cx="110" cy="17" r="4"/><circle cx="18" cy="111" r="4"/><circle cx="110" cy="111" r="4"/></g>';
+        case 'door':
+        case 'trapdoor': return base + '<rect x="24" y="7" width="80" height="114" rx="3" fill="#654027" stroke="#c29257" stroke-width="6"/>' + h('#392819', 'M43 13v105M84 13v105M27 44h74M27 87h74') + '<circle cx="88" cy="65" r="6" fill="#e4c06b"/>';
+        case 'pit': return base + '<rect x="18" y="18" width="92" height="92" fill="#100f0d" stroke="#a6a093" stroke-width="9"/>' + h('#3f3935', 'M24 21l26 26M105 26L80 51M26 103l28-28M104 103L76 75');
+        default: return null;
+    }
 }
-
 function illustratedBlockFace(id, icon, color, category) {
     const hash = [...id].reduce((h, c) => ((h * 33) ^ c.charCodeAt(0)) >>> 0, 5381);
-    const detail = Array.from({length: 12}, (_, i) => {
+    const detail = Array.from({ length: 12 }, (_, i) => {
         const x = 10 + ((hash >>> (i % 16)) + i * 23) % 108;
         const y = 10 + ((hash >>> ((i + 5) % 16)) + i * 29) % 108;
         return '<rect x="' + x + '" y="' + y + '" width="4" height="3" fill="#fff" opacity=".13"/>';
@@ -154,12 +162,12 @@ function illustratedBlockFace(id, icon, color, category) {
         '<rect x="9" y="9" width="110" height="110" rx="5" fill="#181b16" fill-opacity=".17" stroke="' + trim + '" stroke-opacity=".45" stroke-width="3"/>' +
         '<g transform="translate(0 -2)">' + iconMarkup(icon) + '</g>';
 }
-
 export function generatedCubeArt(id, name, icon, color, category) {
     const label = escapeXml(name.toUpperCase());
     const surface = surfaceTexture(id, color);
     const face = surface ?? (category === 'Build' || category === 'Props' ? illustratedBlockFace(id, icon, color, category) : null);
-    if (face) return {src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' + face + '</svg>'), alt: name, source: 'generated', sourceId: 'dndblocks:' + id};
+    if (face)
+        return { src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' + face + '</svg>'), alt: name, source: 'generated', sourceId: 'dndblocks:' + id };
     const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' +
         '<rect width="128" height="128" rx="13" fill="' + hex(color) + '"/>' +
         '<rect x="5" y="5" width="118" height="118" rx="10" fill="none" stroke="#f7efd7" stroke-opacity=".42" stroke-width="3"/>' +

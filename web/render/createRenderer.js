@@ -1,5 +1,5 @@
-import { createFallbackRenderer } from './fallbackRenderer.js?v=af5721251871';
-import { createThreeRenderer } from './threeRenderer.js?v=af5721251871';
+import { createFallbackRenderer } from './fallbackRenderer.js?v=8727e55596a9';
+import { createThreeRenderer } from './threeRenderer.js?v=8727e55596a9';
 export async function createRenderer(container, handlers) {
     try {
         return await createThreeRenderer(container, handlers);
