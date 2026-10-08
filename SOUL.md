@@ -493,3 +493,8 @@ See `docs/OPEN_SOURCE_REUSE.md`.
 ## Current Guiding Image
 
 > A digital box of magnetic dungeon blocks that a DM can dump onto a virtual table and immediately start building with.
+
+## Multi-campaign product direction (2026-10-08)
+- DM manages multiple campaigns; each campaign owns its characters, Party, saved maps and active-map choice. No accidental cross-campaign data sharing.
+- My Map Library contains reusable master maps; inserting one into a campaign produces an independent editable copy.
+- Before creating campaign features, follow the idempotent non-destructive legacy save/backup migration and staged completion gates in `docs/CAMPAIGN_MAP_LIBRARY_PLAN.md`. Never destroy existing maps or misrepresent local browser storage as cloud sync.
