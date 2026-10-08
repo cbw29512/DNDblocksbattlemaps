@@ -1,23 +1,23 @@
-import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js';
-import { areaCells } from '../domain/areaTemplates.js?v=e0b1f72628a1';
-import { previewAffectedCreatures } from '../domain/areaTargets.js?v=e0b1f72628a1';
-import { isInCastingRange } from '../domain/areaTemplates.js?v=e0b1f72628a1';
-import { createBrowserBackup } from '../domain/browserBackup.js?v=e0b1f72628a1';
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=e0b1f72628a1';
-import { setPartyMembership } from '../domain/party.js?v=e0b1f72628a1';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=e0b1f72628a1';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=e0b1f72628a1';
-import { printBoardMap } from './printMap.js?v=e0b1f72628a1';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=e0b1f72628a1';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=e0b1f72628a1';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=e0b1f72628a1';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=e0b1f72628a1';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=e0b1f72628a1';
-import { roomSummary } from '../domain/room.js?v=e0b1f72628a1';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=e0b1f72628a1';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=e0b1f72628a1';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=e0b1f72628a1';
-import { createRenderer } from '../render/createRenderer.js?v=e0b1f72628a1';
+import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js?v=af8354d0e85f';
+import { areaCells } from '../domain/areaTemplates.js?v=af8354d0e85f';
+import { previewAffectedCreatures } from '../domain/areaTargets.js?v=af8354d0e85f';
+import { isInCastingRange } from '../domain/areaTemplates.js?v=af8354d0e85f';
+import { createBrowserBackup } from '../domain/browserBackup.js?v=af8354d0e85f';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=af8354d0e85f';
+import { setPartyMembership } from '../domain/party.js?v=af8354d0e85f';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=af8354d0e85f';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=af8354d0e85f';
+import { printBoardMap } from './printMap.js?v=af8354d0e85f';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=af8354d0e85f';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=af8354d0e85f';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=af8354d0e85f';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=af8354d0e85f';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=af8354d0e85f';
+import { roomSummary } from '../domain/room.js?v=af8354d0e85f';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=af8354d0e85f';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=af8354d0e85f';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=af8354d0e85f';
+import { createRenderer } from '../render/createRenderer.js?v=af8354d0e85f';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -59,7 +59,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         <section class="combat-spell-tools" aria-label="Spell measurement and combat log">
           <strong>Spell &amp; Area Preview</strong>
           <label for="spell-choice">Effect</label>
-          <select id="spell-choice">${AREA_ABILITY_REGISTRY.map(record=>`<option value="${record.key}">${record.edition} · ${record.area.label} (sample preview — unverified)</option>`).join('')}</select>
+          <select id="spell-choice">${AREA_ABILITY_REGISTRY.map(record => `<option value="${record.key}">${record.edition} · ${record.area.label} (sample preview — unverified)</option>`).join('')}</select>
           <label for="spell-caster">Caster on map</label><select id="spell-caster"><option value="">Choose a creature</option></select>
           <button id="preview-spell" type="button">Preview Area</button>
           <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
