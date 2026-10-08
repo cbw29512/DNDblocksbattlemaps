@@ -239,6 +239,11 @@ export async function createThreeRenderer(
   });
 
   renderer.domElement.addEventListener('click', (event: MouseEvent) => {
+    setPointer(event);
+    const marked = raycaster.intersectObjects(objectGroup.children, true)
+      .find(hit => hit.object.userData.objectId)?.object?.userData?.objectId;
+    if (marked && handlers.onMarkTarget(String(marked))) return;
+
     if (activeRoom) {
       const placement = roomPlacementFor(event);
       if (placement) handlers.onRoomPlacement(placement);
