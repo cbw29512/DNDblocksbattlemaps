@@ -26,7 +26,7 @@ function cube(id, name, category, color, art, tags = []) {
     };
 }
 function generated(id, name, category, color, icon, tags = []) {
-    return cube(id, name, category, color, generatedCubeArt(id, name, icon, color), tags);
+    return cube(id, name, category, color, generatedCubeArt(id, name, icon, color, category), tags);
 }
 function hero(id, name, color) {
     return cube('hero-' + id, name, 'Characters', color, heroArt('hero-2024-' + id, name), ['player', 'class', id]);
