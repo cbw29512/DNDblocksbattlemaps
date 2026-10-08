@@ -10,6 +10,7 @@ export function createFallbackRenderer(container, handlers) {
     container.replaceChildren(board);
     let selected = null;
     let movingCreatureId = null;
+    let creatureMoveMode = false;
     let room = null;
     let elevation = 0;
     let theme = null;
@@ -94,6 +95,11 @@ export function createFallbackRenderer(container, handlers) {
                             handlers.onStatus('That room would exceed the map limit.');
                         return;
                     }
+                    if (creatureMoveMode && !movingCreatureId) {
+                        if (top && ['Characters','Monsters'].includes(getCatalogItem(top.catalogId).category)) handlers.onPickCreature(top.id);
+                        else handlers.onStatus('Move Creatures: select a creature.');
+                        return;
+                    }
                     if (movingCreatureId) {
                         handlers.onMoveCreature({ x, z, elevation });
                         return;
@@ -143,6 +149,7 @@ export function createFallbackRenderer(container, handlers) {
             draw();
         },
         setMovingCreature(id) { movingCreatureId = id; },
+        setCreatureMoveMode(enabled) { creatureMoveMode = enabled; },
         setElevation(next) {
             elevation = next;
         },
