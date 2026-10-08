@@ -249,6 +249,17 @@ export async function createThreeRenderer(
     else handlers.onStatus('Could not place at that point. Use Reset Camera and click inside the grid.');
   });
 
+  renderer.domElement.addEventListener('dragover', event => { event.preventDefault(); });
+  renderer.domElement.addEventListener('drop', event => {
+    event.preventDefault();
+    setPointer(event);
+    const hit = raycaster.intersectObjects(objectGroup.children, false)[0];
+    const id = hit?.object?.userData?.objectId;
+    const payload = event.dataTransfer?.getData('text/plain');
+    if (id && payload) handlers.onMarkDrop(String(id), payload);
+    else handlers.onStatus('Drop a ring directly onto a character or monster cube.');
+  });
+
   renderer.domElement.addEventListener('contextmenu', (event: MouseEvent) => {
     event.preventDefault();
     setPointer(event);
