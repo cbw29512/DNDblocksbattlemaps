@@ -237,114 +237,89 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The user directed the project to stop treating the catalog as a small prototype and work on **all of the blocks**, while preserving the core rule that every object is a perfect 5-ft cube and the picture on the cube communicates what it represents.
-
-The live catalog before this pass had only:
-
-- 6 Build
-- 7 Props
-- 4 Characters
-- 9 starter Monsters
+The user directed the project to work on the full block catalog rather than keep a tiny prototype palette.
 
 ### Changes Made
 
-#### Universal ordinary-block face art
+- Added a first-party generated face-art system for ordinary Build/Prop cubes.
+- Expanded the live catalog to **108 cube types**:
+  - Build: 36
+  - Props/Hazards/Outdoor: 51
+  - Characters: 12
+  - Monsters: 9 starter monsters
+- Added all 12 2024 player classes using local Iron Pit portrait art.
+- Added Orc silhouette art.
+- Added category-aware **Find a block** search.
+- Identity art now appears on all six cube faces.
+- Added safe unknown-catalog fallback so scalable string IDs do not crash old/stale saves.
+- Updated dependency/provenance, visual language, catalog contract, and browser bundle synchronization rules.
+- Updated Sync Browser Bundle to react to relevant `src/**` and `public/**` changes without retriggering from generated `web/**` commits.
+- Netlify remains untouched.
 
-- Added `src/domain/faceArt.ts`.
-- Created one original DND Blocks SVG face-card generator.
-- Face cards combine:
-  - catalog color
-  - simple high-contrast pictogram
-  - plain-language block name
-  - shared visual frame
-- No third-party art dependency was added.
-- Generated face art is data-driven from the catalog.
-- Three.js now paints identity art on **all six faces** of the cube, including the top.
-- Print/fallback paths continue to use the same catalog art.
+### Verification
 
-#### Catalog expansion
+Catalog source checkpoint:
 
-The live catalog is now **108 cube types**:
+- `a630d5789adcb9d677e1af283a855061aceeb9a3`
 
-- Build: **36**
-- Props/Hazards/Outdoor: **51**
-- Characters: **12**
-- Monsters: **9**
+Strict follow-up corrections:
 
-Major additions include:
+- safe catalog lookup: `b56464fbf372a7197c5ef6126118c71c96aa94fc`
+- builder/panel/print/fallback/preview/renderer lookup corrections through `953b316d548150a032f7e26683681cf11ee4a97c`
+- stale import cleanup: `3a6fd8f850b09b1cc599b8e07abbe77481989da3`
 
-- full terrain basics: dirt, grass, sand, water, lava, snow, mud, ice, obsidian
-- broader construction: brick/castle/cave/metal walls, bars, windows, archways, doors, portcullis, stairs, ladders, bridge, fence, dock, ship deck, pit, trapdoor
-- room furniture: bookshelf, throne, desk, cabinet, shelf, altar, statue, sarcophagus, fountain, well, fireplace, rug
-- utility/camp: campfire, brazier, banner, lantern, cauldron, anvil, forge
-- dungeon/interaction: tombstone, cage, shackles, lever, switch
-- traps/hazards: pressure plate, hidden trigger, spike/snare/spring traps, flame jet, dart trap, falling block, collapsing floor, web, acid, poison cloud, alarm rune
-- outdoor: tree, rock, bush, log, tent, wagon, boat
-- all 12 2024 player classes
+Generated browser bundle:
 
-#### Player art
+- `795c9e103194609791b87e21c85d71ec2217bd48`
 
-Copied local Iron Pit 2024 portrait assets for:
+Connected verification:
 
-- Barbarian
-- Bard
-- Druid
-- Monk
-- Paladin
-- Ranger
-- Sorcerer
-- Warlock
+- Sync Browser Bundle #12: **SUCCESS**
+- GitHub Pages build/deployment #45 on exact generated bundle: **SUCCESS**
+- TypeScript: passed
+- unit tests: passed
+- Vite/static build: passed
+- browser bundle regeneration/cache-bust: passed
 
-Existing Fighter, Cleric, Rogue, and Wizard remain.
+Verified generated browser files contain:
 
-Added the approved Iron Pit Orc silhouette so the old generic Orc color block is replaced by real face art.
-
-Source verified at Iron Pit commit:
-
-- `4f4a5b8e6944531ca795f7bc9d7f426e7719226d`
-
-#### Catalog usability
-
-- Added **Find a block** search.
-- Search filters the active Build / Props / Characters / Monsters tab.
-- Search matches name, ID, and tags.
-- Added a clear no-results state.
-- Existing select-once/place-many interaction remains unchanged.
-
-#### Build/deploy safeguard
-
-- Updated Sync Browser Bundle so relevant `src/**` and `public/**` pushes automatically regenerate/cache-bust the checked-in `web/` browser bundle.
-- Generated bundle commits do not retrigger the workflow because `web/**` is excluded from the source trigger.
+- generated cube-face art
+- Open Pit and expanded Build/Prop catalog
+- all 12 classes
+- Find a block search
 
 ### Decisions Made
 
-**A large block library should still feel simple.**
+**Ordinary object identity is generated face art, not custom geometry.**
 
-Do not add more top-level navigation merely because the catalog grows. Keep four obvious tabs and add search.
+A Barrel, Door, Pit, Table, Tree, Trap, etc. is always a cube. The catalog supplies color/icon/name data; one universal generator creates its face art.
 
-**Basic block art belongs to the product, not to an external asset pack.**
+**Catalog scale must not make the UI complicated.**
 
-Open-source assets remain available when useful, but ordinary Build/Prop identity is cheap and cohesive enough to generate ourselves.
+Keep Build / Props / Characters / Monsters plus search.
 
-**The full monster library is separate from the ordinary-block art lane.**
+**Monster expansion now moves to a manifest, not manual additions.**
 
-Iron Pit remains the monster-art source of truth. The next monster checkpoint should build the searchable monster manifest and multi-cube creature footprints rather than manually adding monsters one by one.
+Iron Pit will be used as the source of truth for monster art identity and creature size. Multi-cube footprints must remain one logical entity.
 
 ### Cost Impact
 
 None.
 
-No new package, paid service, external runtime asset source, or Netlify deployment.
+No new external package, service, hosted asset source, or production Netlify deployment.
 
 ### Result
 
-The 108-type searchable catalog, generated ordinary-block face system, all 12 player classes, and Orc art are prepared for strict verification and browser-bundle synchronization.
+The 108-type ordinary/player catalog checkpoint is green and live on the Pages test surface.
 
 ### Exact Next Step
 
-1. Push this catalog checkpoint.
-2. Require TypeScript, unit tests, Vite build, browser-bundle sync, and Pages deployment to pass.
-3. Browser-test generated Build/Prop cube faces at normal camera distance.
-4. Check search with terms such as door, trap, fire, water, barrel, tree.
-5. Check all 12 character portraits.
-6. Then build the Iron Pit monster manifest/search and generic Large/Huge/Gargantuan multi-cube renderer.
+1. Build an Iron Pit monster manifest instead of hand-entering creatures.
+2. Map RAW size to cube footprint:
+   - Tiny / Small / Medium = 1×1 board footprint under current contracts
+   - Large = 2×2
+   - Huge = 3×3
+   - Gargantuan = 4×4
+3. Implement one logical multi-cube creature renderer/occupancy path.
+4. Add monster search without placing hundreds of buttons onscreen at once.
+5. Preserve Iron Pit's exact creature/art identity mapping.
