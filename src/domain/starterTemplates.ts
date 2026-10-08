@@ -40,7 +40,7 @@ export function buildStarterTemplate(templateId: string, mapId: string, roster: 
   const walls = (id: string, x1: number, z1: number, x2: number, z2: number, doorX?: number, doorZ?: number): void => {
     line(id,x1,z1,x2,z1);line(id,x1,z2,x2,z2);
     line(id,x1,z1,x1,z2);line(id,x2,z1,x2,z2);
-    if (doorX!==undefined) {
+    if (doorX!==undefined && doorZ!==undefined) {
       const index=objects.findIndex(o=>o.catalogId===id&&o.x===doorX&&o.z===doorZ&&o.elevation===1);
       if(index>=0)objects.splice(index,1);
       add('open-doorway',doorX,doorZ);
