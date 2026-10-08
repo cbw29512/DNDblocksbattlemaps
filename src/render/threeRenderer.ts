@@ -249,8 +249,8 @@ export async function createThreeRenderer(
     else handlers.onStatus('Could not place at that point. Use Reset Camera and click inside the grid.');
   });
 
-  renderer.domElement.addEventListener('dragover', event => { event.preventDefault(); });
-  renderer.domElement.addEventListener('drop', event => {
+  renderer.domElement.addEventListener('dragover', (event: DragEvent) => { event.preventDefault(); });
+  renderer.domElement.addEventListener('drop', (event: DragEvent) => {
     event.preventDefault();
     setPointer(event);
     const hit = raycaster.intersectObjects(objectGroup.children, false)[0];
