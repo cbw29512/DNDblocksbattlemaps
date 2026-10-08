@@ -1,3 +1,4 @@
+import { AREA_PRESETS, isInCastingRange } from '../domain/areaTemplates.js';
 import { createBrowserBackup } from '../domain/browserBackup.js';
 import { STARTER_TEMPLATES } from '../domain/starterTemplates.js';
 import { setPartyMembership } from '../domain/party.js';
@@ -45,6 +46,9 @@ export async function renderBuilder(
   let elevation = 0;
   let pickedCreatureId: string | null = null;
   let moveMode = false;
+  let activeSpell: typeof AREA_PRESETS[number] | null = null;
+  let casterOrigin: GridPosition = {x:0,z:0,elevation:0};
+  let spellCenter: GridPosition | null = null;
   let selectedCondition = null as typeof CONDITIONS[number] | null;
 
   root.innerHTML = `
@@ -68,6 +72,16 @@ export async function renderBuilder(
         </div>
       </header>
       <aside class="builder-sidebar">
+        <section class="combat-spell-tools" aria-label="Spell measurement and combat log">
+          <strong>Spell &amp; Area Preview</strong>
+          <label for="spell-choice">Effect</label>
+          <select id="spell-choice"><option value="fireball">Fireball — 20 ft radius</option>${AREA_PRESETS.filter(t=>t.id!=='fireball').map(t=>`<option value="${t.id}">${t.label}</option>`).join('')}</select>
+          <label for="spell-caster">Caster name</label><input id="spell-caster" type="text" placeholder="Player or monster" value="Wizard">
+          <button id="preview-spell" type="button">Preview Area</button>
+          <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
+          <small id="spell-instructions">Select Preview Area, move over the battlefield, then left-click/tap or press Cast to confirm. Escape, right-click, or Cancel dismisses.</small>
+          <strong>Combat Log</strong><ol id="combat-log" aria-live="polite"></ol>
+        </section>
         <section id="party-manager" class="party-manager" aria-label="Campaign party">
           <strong>Campaign Party</strong>
           <small>Check Party once. The same character appears on every campaign map.</small>
@@ -139,6 +153,53 @@ export async function renderBuilder(
   `;
 
   const status = document.getElementById('board-status') as HTMLElement;
+
+  const castButton = root.querySelector<HTMLButtonElement>('#cast-spell')!;
+  const cancelButton = root.querySelector<HTMLButtonElement>('#cancel-spell')!;
+  const spellInstructions = root.querySelector<HTMLElement>('#spell-instructions')!;
+  const cancelArea = (): void => {
+    activeSpell=null; spellCenter=null; renderer?.setAreaPreview(null,null);
+    castButton.disabled=true; cancelButton.disabled=true;
+    spellInstructions.textContent='Preview canceled or complete. Select Preview Area to start again.';
+  };
+  const choosePoint = (point: GridPosition, commit: boolean): void => {
+    if(!activeSpell) return;
+    const placement={origin:casterOrigin,center:point};
+    if(!isInCastingRange(activeSpell,placement)){
+      status.textContent='Outside the listed ability range. Choose a closer point.';
+      return;
+    }
+    spellCenter=point;
+    renderer?.setAreaPreview(activeSpell,placement);
+    castButton.disabled=false;
+    if(commit) castArea();
+  };
+  const castArea = (): void => {
+    if(!activeSpell || !spellCenter)return;
+    const caster=root.querySelector<HTMLInputElement>('#spell-caster')?.value.trim() || 'Unknown caster';
+    const label=activeSpell.label;
+    const record=document.createElement('li');
+    record.textContent=caster+' casts '+label+' at ('+spellCenter.x+', '+spellCenter.z+'). Area preview only; rolls and target adjudication pending.';
+    root.querySelector('#combat-log')?.prepend(record);
+    status.textContent=caster+' casts '+label+'.';
+    cancelArea();
+  };
+  root.querySelector('#preview-spell')?.addEventListener('click',()=>{
+    const id=root.querySelector<HTMLSelectElement>('#spell-choice')?.value;
+    activeSpell=AREA_PRESETS.find(x=>x.id===id) ?? AREA_PRESETS[0];
+    const chosen=state.objects.find(x=>getCatalogItem(x.catalogId).category==='Characters') ??
+      state.objects.find(x=>getCatalogItem(x.catalogId).category==='Monsters');
+    casterOrigin=chosen ? {x:chosen.x,z:chosen.z,elevation:chosen.elevation} : {x:0,z:0,elevation:0};
+    spellCenter=null; castButton.disabled=true; cancelButton.disabled=false;
+    renderer?.setAreaPreview(null,null);
+    spellInstructions.textContent='Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
+    status.textContent='Area preview armed. First creature on map used as origin if present.';
+  });
+  castButton.addEventListener('click',castArea);
+  cancelButton.addEventListener('click',cancelArea);
+  const onAreaRightClick=(event:MouseEvent):void=>{if(activeSpell){event.preventDefault();cancelArea();}};
+  canvas.addEventListener('contextmenu',onAreaRightClick,true);
+
   const canvas = document.getElementById('board-canvas') as HTMLElement;
   const boardSize = document.getElementById('board-size') as HTMLElement;
   const buildRoomButton = document.getElementById('build-room') as HTMLButtonElement;
@@ -246,6 +307,7 @@ export async function renderBuilder(
   };
 
   renderer = await createRenderer(canvas, {
+    onAreaPoint(point, commit) { if(activeSpell)choosePoint(point,commit); },
     onPickCreature(id) {
       if (selectedCondition) return;
       if (!moveMode) return;
@@ -561,6 +623,7 @@ export async function renderBuilder(
 
   const onKeyDown = (event: KeyboardEvent): void => {
     if (event.key !== 'Escape') return;
+    if(activeSpell){event.preventDefault();cancelArea();return;}
     if (selectedCondition) {
       selectedCondition = null;
       root.querySelectorAll('[data-condition]').forEach(button => {
@@ -586,6 +649,7 @@ export async function renderBuilder(
 
   return () => {
     document.removeEventListener('keydown', onKeyDown);
+    canvas.removeEventListener('contextmenu',onAreaRightClick,true);
     document.getElementById('print-map-root')?.remove();
     renderer?.dispose();
   };
