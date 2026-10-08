@@ -41,6 +41,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           <button id="creature-mode" class="button button-ghost" type="button" aria-pressed="false">Combat Mode</button>
           <button id="undo" class="icon-button" type="button" title="Undo">↶</button>
           <button id="redo" class="icon-button" type="button" title="Redo">↷</button>
+          <a class="button button-ghost" href="./how-to-play.html" target="_blank" rel="noopener">How to Play</a>
           <button id="print-map" class="button button-ghost" type="button">Print Map</button>
           <button id="clear" class="button button-ghost" type="button">Clear Map</button>
         </div>
