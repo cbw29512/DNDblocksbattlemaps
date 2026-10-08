@@ -40,6 +40,7 @@ export async function renderBuilder(
   let armedRoom: NormalizedRoom | null = null;
   let elevation = 0;
   let pickedCreatureId: string | null = null;
+  let moveMode = false;
 
   root.innerHTML = `
     <main class="builder-shell" style="--theme-accent:${theme.accentCss}">
@@ -52,6 +53,7 @@ export async function renderBuilder(
           <small id="board-size"></small>
         </div>
         <div class="builder-actions">
+          <button id="creature-mode" class="button button-ghost" type="button" aria-pressed="false">Move Creatures</button>
           <button id="undo" class="icon-button" type="button" title="Undo">↶</button>
           <button id="redo" class="icon-button" type="button" title="Redo">↷</button>
           <button id="print-map" class="button button-ghost" type="button">Print Map</button>
@@ -191,6 +193,7 @@ export async function renderBuilder(
 
   renderer = await createRenderer(canvas, {
     onPickCreature(id) {
+      if (!moveMode) return;
       const creature = findObject(state, id);
       if (!creature || !isCreature(creature)) return;
       pickedCreatureId = id;
@@ -208,6 +211,7 @@ export async function renderBuilder(
       status.textContent = `${getCatalogItem(creature.catalogId).name} moved. Ring and conditions preserved.`;
     },
     onPlace(position) {
+      if (moveMode) return;
       const object = createWorldObject(makeId(), selected, position);
       const grew = run(placeCommand(object), [position]);
       if (grew !== null && !grew) status.textContent = `${getCatalogItem(selected).name} placed. Click again to place more.`;
@@ -217,6 +221,7 @@ export async function renderBuilder(
       }
     },
     onRoomPlacement(placement: RoomPlacement) {
+      if (moveMode) return;
       if (!armedRoom) return;
 
       const wallPositions = roomWallPositions(armedRoom, placement, state.bounds);
@@ -294,6 +299,20 @@ export async function renderBuilder(
     });
   });
 
+  root.querySelector<HTMLButtonElement>('#creature-mode')?.addEventListener('click', () => {
+    moveMode = !moveMode;
+    pickedCreatureId = null;
+    renderer?.setMovingCreature(null);
+    if (moveMode && armedRoom) cancelRoomMode();
+    renderer?.setCreatureMoveMode(moveMode);
+    const button = root.querySelector<HTMLButtonElement>('#creature-mode');
+    button?.setAttribute('aria-pressed', String(moveMode));
+    button?.classList.toggle('is-armed', moveMode);
+    status.textContent = moveMode
+      ? 'Move Creatures active: scenery is locked. Click a character or monster, then click its destination.'
+      : 'Build mode active: choose a block and click the grid.';
+  });
+
   buildRoomButton.addEventListener('click', () => {
     if (armedRoom) {
       cancelRoomMode();
@@ -324,6 +343,7 @@ export async function renderBuilder(
   root.querySelectorAll<HTMLButtonElement>('[data-catalog]').forEach((button) => {
     button.addEventListener('click', () => {
       if (armedRoom) setRoomMode(null);
+      if (moveMode) return;
       selected = button.dataset.catalog as CatalogId;
       setCatalogCategory(root, getCatalogItem(selected).category);
       root.querySelectorAll('.palette-item').forEach((item) => {
