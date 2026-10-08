@@ -146,7 +146,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         renderer?.setAreaPreview(null, null);
         castButton.disabled = true;
         cancelButton.disabled = true;
-        spellInstructions.textContent = 'Preview canceled or complete. Select Preview Area to start again.';
+        spellInstructions.textContent = 'Preview canceled. Select a spell to aim again.';
     };
     const refreshCasterOptions = () => {
         const select = root.querySelector('#spell-caster');
@@ -183,7 +183,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         });
         return previewAffectedCreatures(state.objects, area);
     };
-    const choosePoint = (point, commit) => {
+    const choosePoint = (point, commit, touch = false) => {
         if (!activeSpell)
             return;
         const placement = spellPlacement(point);
@@ -198,8 +198,10 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         status.textContent = 'Preview intersects ' + targets.length + ' creature(s): ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Geometry provisional; not RAW-confirmed.';
         castButton.disabled = false;
         // Left-click commits immediately; pointer movement is preview-only.
-        if (commit)
+        if (commit && !touch)
             castArea();
+        if (commit && touch)
+            spellInstructions.textContent = 'Target positioned. Tap Cast to confirm or Cancel to dismiss.';
     };
     const castArea = () => {
         if (!activeSpell || !spellCenter)
@@ -347,8 +349,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         status.textContent = `Room placement canceled. ${getCatalogItem(selected).name} selected.`;
     };
     renderer = await createRenderer(canvas, {
-        onAreaPoint(point, commit) { if (activeSpell)
-            choosePoint(point, commit); },
+        onAreaPoint(point, commit, touch) { if (activeSpell)
+            choosePoint(point, commit, touch); },
         onPickCreature(id) {
             if (selectedCondition)
                 return;
