@@ -538,3 +538,8 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Eight-direction grouped line preview (IN PROGRESS)
 - Horizontal 5-foot line samples use cardinal + diagonal aim and physical Euclidean distances for diagonal steps; focused 60-foot cardinal-vs-diagonal tests. No smooth shapes or terrain mutation. Eight-direction raster is provisional; official RAW diagonal-area occupancy and 3D/cover rules still require independent certification and browser QA. CI pending.
+
+## 2026-10-08 — Any-overlap 3D sphere checkpoint (IN PROGRESS)
+- Latest user decision: preview geometry extends above/below floors, through walls and beyond visible map; full cube if any positive 3D overlap. This supersedes the earlier stop-at-walls preview interpretation. Spell effect/target adjudication remains independent and not claimed RAW; 2014/2024 total-cover mechanics must be kept distinguishable from the custom display policy.
+- Updated TypeScript + web JavaScript sphere geometry to compare sphere and full cell volumes rather than 50% horizontal slices; added focused 3D/below-floor tests. Caller-provided areaCells limits and camera viewport may still clip displayed cubes; off-map/viewport rendering not yet complete. Other shapes not migrated. No live proof claimed.
+- NEXT: inspect caller preview bounds and render policy so off-map/unseen cubes are preserved without allocating infinite meshes; certify tests and browser preview before merging.
