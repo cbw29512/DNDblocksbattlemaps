@@ -560,3 +560,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Direct dropdown spell casting interaction
 - User finalized UX: choose spell from dropdown => immediately arm area preview, mouse moves projected full-cube template, left click/tap casts at hovered cell, right click/Escape cancels. Removed separate Preview Area activation button. Caster remains necessary for origin/range; if exactly one creature exists it auto-selects, otherwise selecting caster arms the already-selected spell. A blank Choose a spell dropdown option prevents unintended default casting. Keep Cast/Cancel controls as accessibility fallback. Source and web JS aligned. Browser QA and CI still required; no dice/damage execution claimed.
+
+## 2026-10-08 — Friendly fire and clear hit markers
+- All creatures occupying projected spell cubes count for coverage regardless of faction or whether they are the caster; existing previewAffectedCreatures has no ally/enemy exclusion. Added a Clear Hit Markers button to remove post-cast yellow outlines without changing creatures, map, or combat-log records, in source and web JS. New spell already clears previous marks on arming. Right-click/Escape/Cancel cancels active targeting, not a recorded cast. CI/browser validation pending.
