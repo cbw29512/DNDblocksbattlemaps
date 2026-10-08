@@ -610,3 +610,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Combat-only area controls
 - PR #61 light emitting blocks passed exact-head CI and merged. Audited builder and found spell controls always visible in Build Mode. Changed TS/browser JS so spell selector panel is initially hidden, appears on Combat Mode, and is hidden again with targeting canceled when returning to Build Mode. Adds defensive guard against spell arming in Build Mode. Existing cast markers and log semantics unchanged beyond cancellation of active preview. CI pending.
+
+## 2026-10-08 — Combat-only AoE PR #62 audit
+- Exact-head CI initially passed, but manual source/browser parity inspection revealed invalid TypeScript generic syntax in checked-in `web/app/builder.js` (`querySelector<HTMLDetailsElement>`). Corrected it and added `node --check web/app/builder.js` to npm test so future copied TS syntax fails CI. Audited mode switch: area tool section is hidden initially, opened in Combat Mode, and canceled/hidden on return to Build Mode. Revalidate updated head before merge; browser acceptance remains pending.
