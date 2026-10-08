@@ -56,7 +56,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         </div>
       </header>
       <aside class="builder-sidebar">
-        <section class="combat-spell-tools" aria-label="Spell measurement and combat log">
+        <details class="builder-tool-group" open><summary>Spells &amp; Areas</summary><section class="combat-spell-tools" aria-label="Spell measurement">
           <strong>Spell &amp; Area Preview</strong>
           <label for="spell-choice">Effect</label>
           <select id="spell-choice"><option value="">Choose a spell…</option>${AREA_ABILITY_REGISTRY.map(record => `<option value="${record.key}">${record.edition} · ${record.area.label} (sample preview — unverified)</option>`).join('')}</select>
@@ -64,8 +64,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           
           <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
           <small id="spell-instructions">Choose a spell, aim over the map, left-click to cast or right-click to cancel.</small>
-          <strong>Combat Log</strong><ol id="combat-log" aria-live="polite"></ol>
-        </section>
+
+        </section></details>
         <section id="party-manager" class="party-manager" aria-label="Campaign party">
           <strong>Campaign Party</strong>
           <small>Check Party once. The same character appears on every campaign map.</small>
@@ -123,6 +123,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         </div>
       </aside>
       <section class="board-stage">
+        <aside class="combat-log-dock" aria-label="Combat log"><details open><summary>Combat Log</summary><ol id="combat-log" aria-live="polite"></ol></details></aside>
         <div class="board-canvas" id="board-canvas" aria-label="Interactive battle map"></div>
         <div class="camera-dock" aria-label="Camera controls">
           <button id="rotate-left" title="Rotate left">↶</button>
