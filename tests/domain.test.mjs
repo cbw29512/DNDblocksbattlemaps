@@ -281,7 +281,7 @@ test('cube face art is rasterized and solid color remains until loaded', async (
     class CanvasTexture { constructor(canvas) { this.image = canvas; } }
     class Mesh { constructor(geometry, material) { this.geometry = geometry; this.material = material; this.position = { set() {} }; this.userData = {}; } }
     class BoxGeometry {}
-    const THREE = { MeshBasicMaterial, CanvasTexture, Mesh, BoxGeometry, SRGBColorSpace: 'srgb' };
+    const THREE = { MeshBasicMaterial, MeshLambertMaterial: MeshBasicMaterial, CanvasTexture, Mesh, BoxGeometry, SRGBColorSpace: 'srgb' };
     const cube = meshFor(THREE, { id: 'test', catalogId: 'barrel', x: 0, z: 0, elevation: 0, createdAt: 1 });
     assert.equal(cube.material[0].color.value, PALETTE.barrel.color);
     assert.equal(cube.material[0].map, undefined);
