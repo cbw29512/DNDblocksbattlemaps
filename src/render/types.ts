@@ -19,6 +19,7 @@ export interface BoardRenderer {
   setRoomPlacement(room: NormalizedRoom | null): void;
   setElevation(elevation: number): void;
   setMovingCreature(id: string | null): void;
+  setCreatureMoveMode(enabled: boolean): void;
   render(state: BoardState): void;
   rotate(deltaRadians: number): void;
   zoom(multiplier: number): void;
