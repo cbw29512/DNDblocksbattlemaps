@@ -151,6 +151,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         if (spellSelect)
             spellSelect.value = '';
         renderer?.setAreaPreview(null, null);
+        renderer?.setAreaTargets([]); // Cancellation leaves no provisional creature highlights.
         castButton.disabled = true;
         cancelButton.disabled = true;
         mobileActions.hidden = true;

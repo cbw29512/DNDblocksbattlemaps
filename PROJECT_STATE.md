@@ -581,3 +581,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Mobile spell dock post-merge audit and instruction fix
 - Confirmed PR #52 exact-head CI succeeded and merged as `bc84cff504a50a2b47d181bde48dd313c5b4a3a5`. Verified versioned `index.html` CSS/main imports and `web/main.js`/builder imports reference the same 12-character revision token on current main, so there is no source-evident stale asset cache key. Mobile spell dock state is armed-only, Cast disabled until target placement, and hidden after Cast/Cancel in source. Found mouse-only instructions still displayed on phone/tablet; clarified both mouse and touch controls in source/browser JS. Still requires actual mouse/touch browser certification and viewport testing. Avoid claiming deployed website verified from repository state alone.
+
+## 2026-10-08 — Spell cancel highlight cleanup
+- PR #53 instruction correction passed exact-head CI and merged. Audit found cancelArea cleared the area cubes but not renderer areaTargetIds, leaving provisional yellow highlights after right-click/Escape/Cancel. Updated TypeScript and checked-in browser JS to clear provisional targets on cancellation without changing objects or combat log. Await current PR CI and interactive browser tests.

@@ -170,6 +170,7 @@ export async function renderBuilder(
     const spellSelect=root.querySelector<HTMLSelectElement>('#spell-choice');
     if(spellSelect)spellSelect.value='';
     renderer?.setAreaPreview(null,null);
+    renderer?.setAreaTargets([]); // Cancellation leaves no provisional creature highlights.
     castButton.disabled=true; cancelButton.disabled=true; mobileActions.hidden=true; mobileCastButton.disabled=true;
     spellInstructions.textContent='Preview canceled. Choose a spell to aim again.';
   };
