@@ -116,6 +116,9 @@ The DM is the authority. The board must work without automated RPG rules.
 81. **Print Map bridges digital and physical play.** Print a derived top-down map at 1 physical inch per 5-ft square, tiled as 8×10-square Letter pages, using built-content bounds plus one-square padding.
 82. **Browser bundle parity is a release gate.** Because the current Pages test can serve checked-in `web/` files, `web/` must be regenerated from `src/` before a browser-test checkpoint is considered complete. Source-green alone is insufficient.
 83. **Pages browser modules are revision-stamped.** The checked-in browser module graph and CSS entry URLs carry a unique build revision so GitHub Pages/CDN/browser caches cannot keep serving an older module graph after a successful deployment.
+84. **Ordinary block art is generated from catalog data.** Build/Prop cubes use one original face-card generator (color + pictogram + label) rather than custom mesh geometry or one-off image files. The generated art is painted on all six cube faces.
+85. **Large catalogs stay searchable.** The four kid-readable tabs remain, with a simple category-aware Find a block field instead of adding more navigation complexity.
+86. **All 12 2024 player classes are available as one-cube character blocks.** Their face art reuses the local Iron Pit 2024 class portraits.
 
 ## Cost Guardrail
 
@@ -234,49 +237,114 @@ These are intentionally deferred until implementation/testing provides evidence.
 
 ### Starting State
 
-The user still did not see the expected 30×30/Print Map changes after the source and `web/` bundle had been synchronized.
+The user directed the project to stop treating the catalog as a small prototype and work on **all of the blocks**, while preserving the core rule that every object is a perfect 5-ft cube and the picture on the cube communicates what it represents.
 
-Repository inspection showed the synchronized bundle was correct and Pages had deployed it, so the remaining risk was stale browser/CDN module caching on unchanged `web/*.js` URLs.
+The live catalog before this pass had only:
+
+- 6 Build
+- 7 Props
+- 4 Characters
+- 9 starter Monsters
 
 ### Changes Made
 
-- Reworked `.github/workflows/sync-web.yml` into a cache-proof browser-bundle sync.
-- The workflow now installs dependencies, runs `npm run check`, regenerates `web/`, stamps every relative JavaScript import with one revision query, stamps root CSS and `web/main.js`, then commits the synchronized browser surface.
-- Cache-busted generated bundle commit:
-  - `a3ef5530c79983501b19b3d1407760482ed5f3de`
-- Verified current root references:
-  - `./web/main.js?v=1791d49a97ad`
-  - `./src/styles/builder.css?v=1791d49a97ad`
-- Verified current `web/main.js` imports:
-  - `./app/builder.js?v=1791d49a97ad`
-- Verified compiled Builder contains Print Map, dynamic board growth, and live board-size logic.
-- GitHub Pages build/deployment #34 on the exact cache-busted commit: **SUCCESS**.
+#### Universal ordinary-block face art
 
-### Decision
+- Added `src/domain/faceArt.ts`.
+- Created one original DND Blocks SVG face-card generator.
+- Face cards combine:
+  - catalog color
+  - simple high-contrast pictogram
+  - plain-language block name
+  - shared visual frame
+- No third-party art dependency was added.
+- Generated face art is data-driven from the catalog.
+- Three.js now paints identity art on **all six faces** of the cube, including the top.
+- Print/fallback paths continue to use the same catalog art.
 
-**Browser-visible Pages checkpoints must be cache-proof, not merely source-correct.**
+#### Catalog expansion
 
-For the current branch-root Pages test surface:
+The live catalog is now **108 cube types**:
 
-1. synchronize `web/` from `src/`
-2. revision-stamp the browser module graph
-3. deploy the exact stamped commit
-4. then perform browser verification
+- Build: **36**
+- Props/Hazards/Outdoor: **51**
+- Characters: **12**
+- Monsters: **9**
+
+Major additions include:
+
+- full terrain basics: dirt, grass, sand, water, lava, snow, mud, ice, obsidian
+- broader construction: brick/castle/cave/metal walls, bars, windows, archways, doors, portcullis, stairs, ladders, bridge, fence, dock, ship deck, pit, trapdoor
+- room furniture: bookshelf, throne, desk, cabinet, shelf, altar, statue, sarcophagus, fountain, well, fireplace, rug
+- utility/camp: campfire, brazier, banner, lantern, cauldron, anvil, forge
+- dungeon/interaction: tombstone, cage, shackles, lever, switch
+- traps/hazards: pressure plate, hidden trigger, spike/snare/spring traps, flame jet, dart trap, falling block, collapsing floor, web, acid, poison cloud, alarm rune
+- outdoor: tree, rock, bush, log, tent, wagon, boat
+- all 12 2024 player classes
+
+#### Player art
+
+Copied local Iron Pit 2024 portrait assets for:
+
+- Barbarian
+- Bard
+- Druid
+- Monk
+- Paladin
+- Ranger
+- Sorcerer
+- Warlock
+
+Existing Fighter, Cleric, Rogue, and Wizard remain.
+
+Added the approved Iron Pit Orc silhouette so the old generic Orc color block is replaced by real face art.
+
+Source verified at Iron Pit commit:
+
+- `4f4a5b8e6944531ca795f7bc9d7f426e7719226d`
+
+#### Catalog usability
+
+- Added **Find a block** search.
+- Search filters the active Build / Props / Characters / Monsters tab.
+- Search matches name, ID, and tags.
+- Added a clear no-results state.
+- Existing select-once/place-many interaction remains unchanged.
+
+#### Build/deploy safeguard
+
+- Updated Sync Browser Bundle so relevant `src/**` and `public/**` pushes automatically regenerate/cache-bust the checked-in `web/` browser bundle.
+- Generated bundle commits do not retrigger the workflow because `web/**` is excluded from the source trigger.
+
+### Decisions Made
+
+**A large block library should still feel simple.**
+
+Do not add more top-level navigation merely because the catalog grows. Keep four obvious tabs and add search.
+
+**Basic block art belongs to the product, not to an external asset pack.**
+
+Open-source assets remain available when useful, but ordinary Build/Prop identity is cheap and cohesive enough to generate ourselves.
+
+**The full monster library is separate from the ordinary-block art lane.**
+
+Iron Pit remains the monster-art source of truth. The next monster checkpoint should build the searchable monster manifest and multi-cube creature footprints rather than manually adding monsters one by one.
 
 ### Cost Impact
 
 None.
 
-No new dependency, service, or production deploy.
+No new package, paid service, external runtime asset source, or Netlify deployment.
 
 ### Result
 
-The Pages test surface has successfully deployed the exact cache-busted bundle containing the 30×30 board, automatic board growth, Print Map, and current cube-only catalog rendering.
+The 108-type searchable catalog, generated ordinary-block face system, all 12 player classes, and Orc art are prepared for strict verification and browser-bundle synchronization.
 
 ### Exact Next Step
 
-1. Reload the Pages test site once.
-2. Confirm **30 × 30 squares** and **Print Map** appear in the top bar.
-3. Confirm player/monster face art and cube-only pieces.
-4. Test edge growth and Print Map.
-5. Once visually confirmed, continue with multi-cube Large/Huge/Gargantuan creature footprints and Build/Prop face art.
+1. Push this catalog checkpoint.
+2. Require TypeScript, unit tests, Vite build, browser-bundle sync, and Pages deployment to pass.
+3. Browser-test generated Build/Prop cube faces at normal camera distance.
+4. Check search with terms such as door, trap, fire, water, barrel, tree.
+5. Check all 12 character portraits.
+6. Then build the Iron Pit monster manifest/search and generic Large/Huge/Gargantuan multi-cube renderer.

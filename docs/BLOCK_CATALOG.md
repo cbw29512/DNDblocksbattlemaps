@@ -57,27 +57,63 @@ Within those families, use original art and our own data definitions for generic
 
 Theme selection should filter these families to the most relevant blocks rather than exposing hundreds of choices at once.
 
-## Live Starter Catalog
+## Live Searchable Catalog
 
-The first live catalog is deliberately bounded and grouped into four kid-readable tabs.
+The live Stage 1 catalog is now a real working library rather than a tiny starter strip.
 
-**Build:** Stone, Stone Wall, Wood, Wood Wall, Door, Pillar.
+Current total: **108 cube types**.
 
-**Props:** Table, Chair, Bed, Chest, Barrel, Crate, Torch.
+- **Build — 36**
+- **Props — 51**
+- **Characters — 12**
+- **Monsters — 9**
 
-**Characters:** Fighter, Cleric, Rogue, Wizard. These use local copies of the approved Iron Pit 2024 hero portrait art.
+The sidebar stays kid-readable through four top-level tabs plus a simple **Find a block** search field.
 
-**Monsters:** Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit, plus the legacy generic Orc so existing saved prototype maps remain readable.
+### Build — implemented
 
-The catalog schema carries category, cube footprint, color, optional face art reference, and optional tags.
+Stone, Stone Wall, Wood Floor, Wood Wall, Dirt, Grass, Sand, Water, Lava, Snow, Mud, Cobblestone, Dungeon Tile, Brick Floor, Brick Wall, Castle Wall, Cave Wall, Metal Wall, Cell Bars, Pillar, Window, Archway, Closed Door, Open Doorway, Secret Door, Portcullis, Stairs, Ladder, Bridge, Fence, Dock, Ship Deck, Obsidian, Ice, Open Pit, Trapdoor.
 
-**Hard geometry rule:** every board object is rendered from 5-ft cubes. A barrel, door, table, torch, character, and monster all remain cube-based; identity is communicated by face artwork/material.
+### Props / Hazards / Outdoor — implemented
 
-Small/Medium/player pieces use one cube. Large/Huge/Gargantuan creatures use 2×2 / 3×3 / 4×4 cube footprints while remaining one logical entity.
+Table, Chair, Bed, Chest, Barrel, Crate, Torch, Bookshelf, Throne, Desk, Cabinet, Shelf, Altar, Statue, Sarcophagus, Fountain, Well, Fireplace, Rug, Campfire, Brazier, Banner, Lantern, Cauldron, Anvil, Forge, Tombstone, Cage, Shackles, Lever, Switch, Pressure Plate, Hidden Trigger, Spike Trap, Snare Trap, Spring Trap, Flame Jet, Dart Trap, Falling Block, Collapsing Floor, Web Trap, Acid Pool, Poison Cloud, Alarm Rune, Tree, Rock, Bush, Log, Tent, Wagon, Boat.
 
-Rendering remains generic: no FighterRenderer, GoblinRenderer, ChestRenderer, etc.
+### Characters — implemented
 
-The first combatant art is bundled locally in DND Blocks; the browser does not hot-link Iron Pit.
+Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard.
+
+These use local copies of the approved Iron Pit 2024 hero portrait art.
+
+### Monsters — current starter set
+
+Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit, Orc.
+
+These use local copies of approved Iron Pit monster art. The full Iron Pit monster inventory is the next monster-catalog expansion lane.
+
+### Ordinary block face-art system
+
+Build/Prop pieces do **not** require individual mesh code or hand-maintained image files.
+
+Each catalog record supplies:
+
+- name
+- category
+- cube color
+- simple face-icon key
+- search tags
+
+The universal face generator creates one cohesive DND Blocks SVG face card from that data.
+
+That generated picture is used:
+
+- in the sidebar thumbnail
+- on all six faces of the cube
+- in fallback rendering
+- in Print Map output
+
+This means a Barrel is still a perfect cube; the generated barrel picture tells the user it represents a barrel.
+
+The renderer remains generic: no BarrelRenderer, DoorRenderer, TrapRenderer, FighterRenderer, GoblinRenderer, etc.
 
 ## Room Construction Blocks
 
@@ -119,7 +155,7 @@ Possible later objects:
 - fireplace
 - statue
 
-Keep the initial library small.
+Continue catalog growth through the same data-driven/searchable system rather than adding one-off UI or renderers.
 
 ## Trap and Hazard Families
 
@@ -205,9 +241,9 @@ Processed monster assets are already:
 DND Blocks rendering rule:
 
 - monster identity/data remains catalog-driven
-- the monster block/standee references a silhouette asset by creature/art ID
+- the monster cube references a silhouette asset by creature/art ID
 - do not write monster-specific rendering code
-- use the silhouette on the visible face/standee surface
+- use the silhouette on the cube faces
 - preserve distinct artwork for distinct creatures/variants where Iron Pit already does so
 - do not silently substitute a related creature image merely because the name is similar
 - creature footprint comes from size data, not image dimensions

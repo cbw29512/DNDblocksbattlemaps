@@ -29,17 +29,17 @@ function materialFor(THREE: any, item: PaletteItem): any {
     return new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.76 });
   }
 
-  const face = new THREE.MeshBasicMaterial({
+  const face = new THREE.MeshStandardMaterial({
     color: 0xffffff,
     map: textureFor(THREE, item.art.src),
     transparent: true,
-    alphaTest: 0.02
+    alphaTest: 0.02,
+    roughness: 0.82
   });
-  const topBottom = new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.78 });
 
-  // BoxGeometry material order: +X, -X, +Y, -Y, +Z, -Z.
-  // Identity art is printed on all four vertical faces.
-  return [face, face, topBottom, topBottom, face, face];
+  // Every side of a DND Block represents the same object identity.
+  // Use the same face art on all six cube faces so orbiting never hides what the block is.
+  return [face, face, face, face, face, face];
 }
 
 export function geometryFor(THREE: any, _catalogId: CatalogId): any {

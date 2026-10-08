@@ -176,6 +176,30 @@ Rule:
 
 Every non-original asset must have source/license/provenance recorded before inclusion.
 
+### Original Generated Cube Faces
+
+Status: active Stage 1 first-party asset system.
+
+Source:
+
+- `src/domain/faceArt.ts`
+
+Purpose:
+
+- generate consistent pictogram/label face art for ordinary Build and Prop cubes
+- avoid a third-party asset dependency for basic room-building vocabulary
+- make new block types data-driven
+
+License/provenance:
+
+- original DND Blocks project code/art
+- no third-party asset source
+- no runtime service
+
+Cost:
+
+- none
+
 ### Iron Pit Internal Art Reuse
 
 Status: approved for Stage 1 by the owner/user of both repositories.
@@ -183,12 +207,13 @@ Status: approved for Stage 1 by the owner/user of both repositories.
 Pinned source:
 
 - repository: `cbw29512/D20-ironpit`
-- commit: `24810df2a379b01a5dd63fa312dfd58426572efb`
+- original starter source commit: `24810df2a379b01a5dd63fa312dfd58426572efb`
+- expanded class/Orc asset source verified at commit: `4f4a5b8e6944531ca795f7bc9d7f426e7719226d`
 
 Copied assets:
 
-- 2024 Fighter, Cleric, Rogue, Wizard hero portraits
-- Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit monster silhouettes
+- all 12 2024 class portraits: Barbarian, Bard, Cleric, Druid, Fighter, Monk, Paladin, Ranger, Rogue, Sorcerer, Warlock, Wizard
+- Goblin, Skeleton, Zombie, Wolf, Mimic, Ghoul, Kobold, Bandit, Orc monster silhouettes
 
 Destination:
 

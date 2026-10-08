@@ -1,20 +1,12 @@
 export type TerrainId = 'castle' | 'inn' | 'field' | 'sea' | 'volcano';
 export type CatalogCategory = 'Build' | 'Props' | 'Characters' | 'Monsters';
-
-export type CatalogId =
-  | 'stone-block' | 'wall' | 'wood-block' | 'wood-wall' | 'door' | 'pillar'
-  | 'table' | 'chair' | 'bed' | 'chest' | 'barrel' | 'crate' | 'torch'
-  | 'hero-fighter' | 'hero-cleric' | 'hero-rogue' | 'hero-wizard'
-  | 'monster-goblin' | 'monster-skeleton' | 'monster-zombie' | 'monster-wolf'
-  | 'monster-mimic' | 'monster-ghoul' | 'monster-kobold' | 'monster-bandit'
-  | 'orc';
-
+export type CatalogId = string;
 export type BlockShape = 'cube';
 
 export interface CatalogArt {
   src: string;
   alt: string;
-  source: 'iron-pit';
+  source: 'iron-pit' | 'generated';
   sourceId: string;
 }
 

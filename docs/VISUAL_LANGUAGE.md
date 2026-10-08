@@ -58,6 +58,29 @@ All imported or original pieces should be normalized toward the same visual lang
 
 Open-source/CC0 assets are raw material, not the product identity. Imported geometry may be recolored, simplified, rescaled, or selectively used so the set reads as one system.
 
+## Generated Ordinary-Block Faces
+
+Ordinary Build and Prop blocks use an original generated DND Blocks face-card system.
+
+The face card uses:
+
+- the catalog color as the material family
+- a simple high-contrast pictogram
+- a short plain-language object label
+- one consistent border/layout across the catalog
+
+The same face image is painted on **all six cube faces**.
+
+This is deliberate:
+
+- orbiting the camera never hides identity
+- top-down views remain readable
+- new blocks remain cheap to add
+- the catalog stays visually cohesive
+- no arbitrary 3D geometry is needed to explain an object
+
+Generated faces are first-party/original project output and introduce no third-party asset dependency.
+
 ## Block Identity
 
 A block should identify what it is from all useful viewing directions.
@@ -66,7 +89,7 @@ Examples:
 
 - door imagery/shape readable from multiple sides
 - torch/light marker visible from multiple sides
-- creature silhouette/image repeated or represented so orbiting the camera does not make identity disappear
+- creature silhouette/image repeated on the cube faces so orbiting the camera does not make identity disappear
 - material surfaces remain easy to distinguish at normal zoom
 
 Object rotation should not be necessary for identification.

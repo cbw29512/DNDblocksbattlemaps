@@ -163,22 +163,40 @@ test('room stamp rejects placement that would exceed build height', () => {
 });
 
 
-test('starter catalog is grouped and every visible id resolves', () => {
+test('expanded catalog is grouped and every visible id resolves', () => {
   assert.deepEqual(CATALOG_CATEGORIES, ['Build', 'Props', 'Characters', 'Monsters']);
-  assert.ok(DEFAULT_PALETTE.length >= 20);
+  assert.ok(DEFAULT_PALETTE.length >= 100);
+  assert.ok(catalogIdsForCategory('Build').length >= 30);
+  assert.ok(catalogIdsForCategory('Props').length >= 45);
+  assert.equal(catalogIdsForCategory('Characters').length, 12);
+  assert.ok(catalogIdsForCategory('Monsters').length >= 9);
   for (const id of DEFAULT_PALETTE) assert.ok(PALETTE[id], `missing catalog item ${id}`);
-  for (const category of CATALOG_CATEGORIES) {
-    assert.ok(catalogIdsForCategory(category).length >= 4, `category ${category} is too sparse`);
+});
+
+test('ordinary blocks have generated face art and combatants keep local Iron Pit art', () => {
+  for (const category of ['Build', 'Props']) {
+    for (const id of catalogIdsForCategory(category)) {
+      const item = PALETTE[id];
+      assert.equal(item.art?.source, 'generated', `${id} must use generated DND Blocks face art`);
+      assert.match(item.art?.src ?? '', /^data:image\/svg\+xml/);
+    }
+  }
+
+  for (const category of ['Characters', 'Monsters']) {
+    for (const id of catalogIdsForCategory(category)) {
+      const item = PALETTE[id];
+      assert.equal(item.art?.source, 'iron-pit', `${id} must use Iron Pit art`);
+      assert.match(item.art?.src ?? '', /^assets\/catalog\/(heroes|monsters)\/.+\.webp$/);
+    }
   }
 });
 
-test('starter combatant art is local and provenance tagged', () => {
-  const artItems = DEFAULT_PALETTE.map((id) => PALETTE[id]).filter((item) => item.art);
-  assert.ok(artItems.length >= 12);
-  for (const item of artItems) {
-    assert.equal(item.art.source, 'iron-pit');
-    assert.match(item.art.src, /^assets\/catalog\/(heroes|monsters)\/.+\.webp$/);
-  }
+test('all twelve 2024 player classes are present as one-cube character blocks', () => {
+  const names = catalogIdsForCategory('Characters').map((id) => PALETTE[id].name).sort();
+  assert.deepEqual(names, [
+    'Barbarian','Bard','Cleric','Druid','Fighter','Monk',
+    'Paladin','Ranger','Rogue','Sorcerer','Warlock','Wizard'
+  ].sort());
 });
 
 

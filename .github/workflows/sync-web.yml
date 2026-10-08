@@ -5,6 +5,10 @@ on:
     branches:
       - main
     paths:
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'tsconfig*.json'
       - '.github/workflows/sync-web.yml'
   workflow_dispatch:
 

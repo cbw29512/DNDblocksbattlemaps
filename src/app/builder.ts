@@ -1,4 +1,4 @@
-import { catalogPanelHtml, setCatalogCategory } from './catalogPanel.js';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js';
 import { printBoardMap } from './printMap.js';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
 import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js';
@@ -241,6 +241,13 @@ export async function renderBuilder(
     button.addEventListener('click', () => {
       setCatalogCategory(root, button.dataset.categoryTab as CatalogCategory);
     });
+  });
+
+  const catalogSearch = root.querySelector<HTMLInputElement>('#catalog-search');
+  catalogSearch?.addEventListener('input', () => {
+    const activeButton = root.querySelector<HTMLButtonElement>('[data-category-tab].active');
+    const activeCategory = (activeButton?.dataset.categoryTab ?? 'Build') as CatalogCategory;
+    filterCatalog(root, activeCategory, catalogSearch.value);
   });
 
   root.querySelectorAll<HTMLButtonElement>('[data-catalog]').forEach((button) => {
