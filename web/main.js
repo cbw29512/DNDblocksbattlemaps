@@ -1,7 +1,7 @@
-import { listCampaignMaps } from './domain/storage.js?v=startermaps1008';
-import { renderBuilder } from './app/builder.js?v=startfix1008';
-import { renderHome } from './app/home.js?v=startfix1008';
-import { renderJoin } from './app/join.js?v=startfix1008';
+import { listCampaignMaps } from './domain/storage.js?v=templates1008';
+import { renderBuilder } from './app/builder.js?v=templates1008';
+import { renderHome } from './app/home.js?v=templates1008';
+import { renderJoin } from './app/join.js?v=templates1008';
 function requireRoot() {
     const element = document.getElementById('app');
     if (!element)
