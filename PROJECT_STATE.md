@@ -323,3 +323,14 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 3. Implement one logical multi-cube creature renderer/occupancy path.
 4. Add monster search without placing hundreds of buttons onscreen at once.
 5. Preserve Iron Pit's exact creature/art identity mapping.
+
+
+## 2026-10-07 — Cube-face refinement branch
+
+- **Starting State:** 108 catalog entries (36 Build, 51 Props, 12 Characters, 9 Monsters) with one generic SVG face generator. Some prop icons were indistinguishable and long labels used fixed-size text.
+- **Changes Made:** On `catalog-face-art-oct07`, added distinct Lantern versus Torch face art and proportional label sizing in `src/domain/faceArt.ts` and matching checked-in `web/domain/faceArt.js`. Added a regression test for icon distinction and long labels; documented the work in `docs/BLOCK_CATALOG.md`.
+- **Decisions Made:** Preserve cubes, shared art logic, existing IDs, WorldObject state, and 1×1 footprints. Do not add large monsters or pretend missing assets exist without verified rendering and provenance.
+- **Cost Impact:** Zero new packages, hosted services, or asset purchases. No Netlify deployment.
+- **Result:** Source and browser bundle edits committed to a review branch. Build/test and browser appearance not yet verified in this execution environment; do not describe these edits as deployed or tested.
+- **Open Questions / Blockers:** Source checkout/network unavailable in execution container; CI and browser validation are required before merge. The monster expansion needs asset inspection and multi-cube renderer certification.
+- **Exact Next Step:** Run full repository check on this branch, inspect the actual barrel/chest/lantern/map visual at GitHub Pages test surface, merge only if green, then implement and certify coherent 2×2 large-monster cubes from existing art.
