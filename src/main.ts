@@ -1,3 +1,4 @@
+import { listCampaignMaps } from './domain/storage.js';
 import type { TerrainId } from './domain/types.js';
 import { renderBuilder } from './app/builder.js';
 import { renderHome } from './app/home.js';
@@ -29,7 +30,9 @@ async function route(): Promise<void> {
 
   if (view === 'build') {
     const terrain = (params.get('terrain') ?? 'castle') as TerrainId;
-    cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() });
+    const requested = params.get('map');
+    const selectedMap = listCampaignMaps().find(map => map.id === requested && map.terrain === terrain);
+    cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
     return;
   }
   if (view === 'join') {
