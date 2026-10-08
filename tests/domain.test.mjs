@@ -275,3 +275,12 @@ test('generic block faces remain readable and visually distinct', async () => {
   assert.match(longName, /font-size="9"/, 'long labels must shrink to fit the cube face');
   assert.match(longName, /COLLAPSING FLOOR/);
 });
+
+test('light-source visual behavior is catalog driven', () => {
+  for (const id of ['torch', 'lantern', 'campfire', 'brazier', 'fireplace', 'forge']) {
+    assert.ok(PALETTE[id]?.tags?.includes('light-source'), id + ' should glow');
+  }
+  for (const id of ['barrel', 'table', 'chest', 'stone-block']) {
+    assert.ok(!PALETTE[id]?.tags?.includes('light-source'), id + ' should not glow');
+  }
+});
