@@ -525,3 +525,6 @@ When an area preview is canceled by right-click, Escape, or Cancel, clear both t
 
 ## Touch event origin for spell casting (2026-10-08)
 Do not infer the initiating pointer type only from a synthetic `click` event: on touch devices a click may be mouse-compatible. Capture `pointerdown.pointerType` and consume it on the matching board click so a touch positions an AoE without automatic casting, in both Three.js and fallback modes. Cast requires separate explicit confirmation on touch. Verify real-device behavior before certification.
+
+## Full block-face visual requirement — 2026-10-08
+All Build and Props category blocks remain perfect 5-ft cubes with independently recognizable square face art, including terrain, walls, doors, furniture and traps. Improve artwork and lighting, never substitute custom shaped meshes. Character and monster artwork is outside this pass. Verify full catalog coverage, source/browser parity and exact-head CI before merge.

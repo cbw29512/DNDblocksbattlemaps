@@ -281,7 +281,7 @@ test('cube face art is rasterized and solid color remains until loaded', async (
     class CanvasTexture { constructor(canvas) { this.image = canvas; } }
     class Mesh { constructor(geometry, material) { this.geometry = geometry; this.material = material; this.position = { set() {} }; this.userData = {}; } }
     class BoxGeometry {}
-    const THREE = { MeshBasicMaterial, CanvasTexture, Mesh, BoxGeometry, SRGBColorSpace: 'srgb' };
+    const THREE = { MeshBasicMaterial, MeshLambertMaterial: MeshBasicMaterial, CanvasTexture, Mesh, BoxGeometry, SRGBColorSpace: 'srgb' };
     const cube = meshFor(THREE, { id: 'test', catalogId: 'barrel', x: 0, z: 0, elevation: 0, createdAt: 1 });
     assert.equal(cube.material[0].color.value, PALETTE.barrel.color);
     assert.equal(cube.material[0].map, undefined);
@@ -751,4 +751,31 @@ test('Fireball area reports caster, friendly hero and enemy once each, not scene
   assert.deepEqual(previewAffectedCreatures(objects, area).map(o => o.id),
     ['caster','ally','enemy']);
   assert.equal(previewAffectedCreatures(objects, []).length,0);
+});
+
+test('core terrain blocks carry distinct square face patterns without changing cube geometry', async () => {
+  const { generatedCubeArt } = await import('../.test-build/src/domain/faceArt.js');
+  const ids = ['grass','stone-block','wood-block','water','lava','brick-wall','sand'];
+  const svgs = ids.map(id => decodeURIComponent(generatedCubeArt(id,id,'terrain',0x777777).src.split(',')[1]));
+  assert.equal(new Set(svgs).size, ids.length);
+  for (const svg of svgs) {
+    assert.match(svg, /viewBox="0 0 128 128"/);
+    assert.match(svg, /<rect width="128" height="128"/);
+    assert.doesNotMatch(svg, /<text/);
+  }
+  assert.match(decodeURIComponent(generatedCubeArt('barrel','Barrel','barrel',0x777777).src.split(',')[1]), /<text/);
+});
+
+test('every Build and Props block has square, non-placard face artwork', async () => {
+  const { PALETTE } = await import('../.test-build/src/domain/catalog.js');
+  const blocks = Object.values(PALETTE).filter(item => item.category === 'Build' || item.category === 'Props');
+  assert.ok(blocks.length > 70);
+  for (const item of blocks) {
+    assert.equal(item.shape, 'cube', item.id);
+    assert.equal(item.width, 1, item.id);
+    assert.equal(item.depth, 1, item.id);
+    const svg = decodeURIComponent(item.art.src.split(',')[1]);
+    assert.match(svg, /viewBox="0 0 128 128"/, item.id);
+    assert.doesNotMatch(svg, /<text/, item.id);
+  }
 });
