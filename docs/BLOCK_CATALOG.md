@@ -350,3 +350,9 @@ The five existing blocks Secret Door, Open Doorway, Trapdoor, Spike Trap and Dar
 ### Universal footprint groundwork — 2026-10-07
 
 `src/domain/footprint.ts` now supplies deterministic contiguous coordinate expansion for any 1×1, 2×2, 3×3, or 4×4 footprint, without adding separate WorldObject records. Targeted domain regression exercises all four sizes and rejects unsupported sizes. This is **domain groundwork only**: renderer tiling, coherent creature silhouette art, pointer hit mapping and full user-visible Ogre placement have not been implemented or certified. The local Ogre asset was not found in this repository. Do not mark Ogre implemented.
+
+### Multi-cube renderer groundwork (2026-10-07)
+
+Generic renderer now creates N×N **unit BoxGeometry** meshes from a single creature WorldObject, and all child meshes share the same object ID. The domain footprint routine already supports 1/2/3/4 squares. A focused unit regression checks a 2×2 arrangement and identity binding.
+
+**Not finished:** currently the artwork repeats on each subcube. The next renderer change must subdivide one creature face illustration across the outer cube surfaces, verify pointer/placement handling, and only then register an Ogre with provenance-verified local art. Large monster appearance remains uncertified; do not advertise Ogre as implemented.
