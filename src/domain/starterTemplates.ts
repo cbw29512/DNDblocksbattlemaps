@@ -20,7 +20,7 @@ export function buildStarterTemplate(templateId: string, mapId: string, roster: 
   if (!/^[a-z0-9-]{6,80}$/.test(mapId)) throw new Error('Invalid map identifier');
   const state = createBoardState(template.terrain);
   state.mapId = mapId;
-  state.partyStart = { x: 0, z: 11, elevation: 1 };
+  state.partyStart = { x: 0, z: 8, elevation: 1 };
   const objects: BoardState['objects'] = [];
   const seen = new Set();
   let sequence = 0;
