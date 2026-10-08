@@ -151,10 +151,10 @@ function surfaceTexture(id: string, color: number): string | null {
   }
 }
 
-export function generatedCubeArt(id: string, name: string, icon: FaceIcon, color: number): CatalogArt {
+export function generatedCubeArt(id: string, name: string, icon: FaceIcon, color: number, category?: 'Build' | 'Props'): CatalogArt {
   const label = escapeXml(name.toUpperCase());
-  const surface = surfaceTexture(id, color);
-  if (surface) return {src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' + surface + '</svg>'), alt: name, source: 'generated', sourceId: 'dndblocks:' + id};
+  const face = surface ?? (category === 'Build' || category === 'Props' ? illustratedBlockFace(id, icon, color, category) : null);
+  if (face) return {src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' + face + '</svg>'), alt: name, source: 'generated', sourceId: 'dndblocks:' + id};
   const svg =
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' +
     '<rect width="128" height="128" rx="13" fill="' + hex(color) + '"/>' +
