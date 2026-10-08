@@ -285,7 +285,7 @@ export async function createThreeRenderer(
   });
 
   renderer.domElement.addEventListener('click', (event: MouseEvent) => {
-    if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,true); return; }
+    if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,true,(event as PointerEvent).pointerType==='touch'); return; }
     setPointer(event);
     const marked = raycaster.intersectObjects(objectGroup.children, true)
       .find((hit: any) => hit.object.userData.objectId)?.object?.userData?.objectId;
