@@ -60,7 +60,7 @@ export function buildStarterTemplate(templateId: string, mapId: string, roster: 
     line('wood-wall',-9,-1,9,-1); doorway(0,-1);
     line('wood-wall',-2,-8,-2,-2); doorway(-2,-5);
     line('wood-wall',4,-8,4,-2); doorway(4,-5);
-    for (const [x,z] of [[-6,4],[0,4],[6,4]]) {
+    for (const [x,z] of [[-6,4],[0,4],[6,4]] as const) {
       add('table',x,z); add('chair',x-1,z); add('chair',x+1,z);
     }
     line('table',-7,0,-3,0); add('barrel',-8,-6);add('barrel',-7,-6);
@@ -69,17 +69,17 @@ export function buildStarterTemplate(templateId: string, mapId: string, roster: 
   } else if (templateId === 'castle') {
     floor('cobblestone',-11,-10,11,10);walls('castle-wall',-11,-10,11,10,0,10);
     walls('stone-wall',-7,-7,7,-2,0,-2);add('stairs',-5,-3);
-    for (const [x,z] of [[-10,-9],[10,-9],[-10,9],[10,9]])add('pillar',x,z);
+    for (const [x,z] of [[-10,-9],[10,-9],[-10,9],[10,9]] as const)add('pillar',x,z);
     add('chest',3,-5);add('table',0,-5);
   } else if (templateId === 'dungeon') {
     floor('dungeon-tile',-10,-10,10,9);walls('stone-wall',-10,-10,10,9,0,9);
     line('stone-wall',-3,-10,-3,5);line('stone-wall',4,-10,4,5);
     line('stone-wall',-10,2,10,2);
-    for (const [x,z] of [[-3,-4],[4,-4],[-3,2],[4,2]]) doorway(x,z);
+    for (const [x,z] of [[-3,-4],[4,-4],[-3,2],[4,2]] as const) doorway(x,z);
     add('trapdoor',-7,-5);add('chest',7,-7);add('stairs',0,8);add('pillar',-7,5);
   } else if (templateId === 'forest') {
     floor('grass',-11,-10,11,10);
-    for (const [x,z] of [[-10,-8],[-7,-7],[9,-7],[10,4],[-9,6],[-7,9],[6,8],[9,9]]) add('tree',x,z);
+    for (const [x,z] of [[-10,-8],[-7,-7],[9,-7],[10,4],[-9,6],[-7,9],[6,8],[9,9]] as const) add('tree',x,z);
     line('dirt',0,-10,0,10,0);add('campfire',2,-1);add('tent',4,2);add('tent',-3,3);add('wagon',-5,-5);
     state.partyStart={x:0,z:9,elevation:1};
   } else if(templateId==='harbor') {
@@ -102,7 +102,7 @@ export function buildStarterTemplate(templateId: string, mapId: string, roster: 
     floor('grass',-10,-9,10,9);line('stone-wall',-9,-8,9,-8);
     line('stone-wall',-9,-8,-9,7);line('stone-wall',9,-8,9,7);
     line('stone-wall',-9,7,-2,7);line('stone-wall',3,7,9,7);
-    for(const [x,z] of [[-7,-6],[6,-6],[-7,5]])add('rock',x,z);
+    for(const [x,z] of [[-7,-6],[6,-6],[-7,5]] as const)add('rock',x,z);
     add('crate',-3,1);add('barrel',-4,1);
   }
   return reconcilePartyOnMap({ ...state, objects, revision: 1 }, roster);
