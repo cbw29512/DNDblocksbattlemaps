@@ -463,6 +463,7 @@ export async function renderBuilder(
       return true;
     },
     onMarkDrop(id, payload) {
+      if (!moveMode) return;
       const object = findObject(state, id);
       if (!object || !isCreature(object)) {
         status.textContent = 'Rings can only be attached to characters or monsters.';
