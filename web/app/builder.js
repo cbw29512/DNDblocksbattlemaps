@@ -458,7 +458,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
                 `Built ${roomSummary(armedRoom)} room.${growthText} Move the gold outline and click again.`;
         },
         onMarkTarget(id) {
-            if (!selectedCondition)
+            if (!moveMode || !selectedCondition)
                 return false;
             const object = findObject(state, id);
             if (!object || !isCreature(object)) {
@@ -549,8 +549,11 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             aoePanel.hidden = !moveMode;
             aoePanel.open = moveMode;
         }
-        if (!moveMode)
+        if (!moveMode) {
             cancelArea();
+            selectedCondition = null;
+            root.querySelectorAll('[data-condition]').forEach(token => { token.classList.remove('selected'); token.setAttribute('aria-pressed', 'false'); });
+        }
         pickedCreatureId = null;
         renderer?.setMovingCreature(null);
         if (moveMode && armedRoom)
