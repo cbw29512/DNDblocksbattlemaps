@@ -9,6 +9,7 @@ export interface BoardHandlers {
   onRoomPlacement: (placement: RoomPlacement) => void;
   onRemove: (objectId: string) => void;
   onMarkDrop: (objectId: string, payload: string) => void;
+  onMarkTarget: (objectId: string) => boolean;
   onStatus: (message: string) => void;
 }
 
