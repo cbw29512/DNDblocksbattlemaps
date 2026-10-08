@@ -88,7 +88,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         ${roomPanelHtml()}
         ${catalogPanelHtml(selected, theme.id, mapId ? listCampaignMaps().find(m => m.id === mapId)?.templateId : undefined)}
         </div></details>
-        <details class="builder-tool-group"><summary>Creature Markers</summary><section class="creature-ring-tools" aria-label="Creature markers">
+        <details class="builder-tool-group" id="combat-markers-panel" hidden><summary>Creature Markers</summary><section class="creature-ring-tools" aria-label="Creature markers">
           <div id="identity-ring-tools">
           <strong>Drag rings onto creatures</strong>
           <small>Each player color belongs to one character. Red is for monsters.</small>
@@ -567,7 +567,9 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         if (starterTools)
             starterTools.hidden = moveMode;
         if (identityTools)
-            identityTools.hidden = moveMode;
+            identityTools.hidden = !moveMode;
+        const markersPanel = root.querySelector('#combat-markers-panel');
+        if (markersPanel) { markersPanel.hidden = !moveMode; markersPanel.open = moveMode; }
         const button = root.querySelector('#creature-mode');
         button?.setAttribute('aria-pressed', String(moveMode));
         button?.classList.toggle('is-armed', moveMode);
@@ -575,7 +577,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             button.textContent = moveMode ? 'Build Mode' : 'Combat Mode';
         status.textContent = moveMode
             ? 'Combat Mode: scenery is locked. Select a character or monster, then choose its destination. Status rings remain available.'
-            : 'Build Mode: all blocks, characters, monsters, identity rings and statuses are available.';
+            : 'Build Mode: build blocks and place creatures. Creature markers are Combat Mode controls.';
     });
     root.querySelectorAll('[data-map-terrain]').forEach(button => {
         button.addEventListener('click', () => {
