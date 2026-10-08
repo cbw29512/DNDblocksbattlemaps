@@ -63,7 +63,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           <label for="spell-caster">Caster on map</label><select id="spell-caster"><option value="">Choose a creature</option></select>
           <button id="preview-spell" type="button">Preview Area</button>
           <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
-          <small id="spell-instructions">Select Preview Area, move over the battlefield, then left-click/tap or press Cast to confirm. Escape, right-click, or Cancel dismisses.</small>
+          <small id="spell-instructions">Select Preview Area, move to aim, then left-click/tap to Cast. Right-click, Escape or Cancel dismisses.</small>
           <strong>Combat Log</strong><ol id="combat-log" aria-live="polite"></ol>
         </section>
         <section id="party-manager" class="party-manager" aria-label="Campaign party">
@@ -197,9 +197,9 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         renderer?.setAreaTargets(targets.map(o => o.id));
         status.textContent = 'Preview intersects ' + targets.length + ' creature(s): ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Geometry provisional; not RAW-confirmed.';
         castButton.disabled = false;
-        // Clicking selects a center and retains the visible preview; Cast confirms it.
+        // Left-click commits immediately; pointer movement is preview-only.
         if (commit)
-            spellInstructions.textContent = 'Fireball area placed. Inspect the cubes, then press Cast or Cancel.';
+            castArea();
     };
     const castArea = () => {
         if (!activeSpell || !spellCenter)
@@ -237,7 +237,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         // The caster-anchored placeholder stays provisional until the pointer moves.
         renderer?.setAreaPreview(activeSpell, { origin: casterOrigin, center: casterOrigin });
         renderer?.setAreaTargets([]);
-        spellInstructions.textContent = 'Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
+        spellInstructions.textContent = 'Move to aim, left-click/tap to cast immediately; right-click, Escape or Cancel dismisses.';
         status.textContent = 'Area preview armed (unverified sample). Selected creature is the caster origin.';
     });
     castButton.addEventListener('click', castArea);
