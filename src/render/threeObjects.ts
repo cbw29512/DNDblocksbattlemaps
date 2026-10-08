@@ -30,10 +30,11 @@ function materialFor(THREE: any, item: PaletteItem): any {
   }
 
   const face = new THREE.MeshStandardMaterial({
-    color: 0xffffff,
+    // Never make the whole cube transparent when face artwork is absent or broken.
+    color: item.color,
     map: textureFor(THREE, item.art.src),
-    transparent: true,
-    alphaTest: 0.02,
+    transparent: false,
+    alphaTest: 0,
     roughness: 0.82
   });
 
