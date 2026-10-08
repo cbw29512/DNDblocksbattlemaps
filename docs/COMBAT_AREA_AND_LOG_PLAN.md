@@ -65,3 +65,6 @@ Rendering is **all-or-nothing per 5-foot cube**, not partial/smooth shapes. Do n
 
 ## Self-origin invariant — 2026-10-08
 - Added `AreaTemplate.originMode = self|point` with explicit self origins on current Lightning Bolt, Burning Hands, Cone of Cold and provisional dragon line/cone samples. The renderer already passes selected caster as `AreaPlacement.origin`; for self abilities, the aiming cell must only choose facing/direction. A self line begins at the selected caster, never at the pointer cell. Point-targeted Fireball remains independently positionable within its verified range. Regress both behavior classes, including 5-foot multi-cube caster footprints and diagonals in later RAW gate. Samples are still unverified per-edition; no hit adjudication implied.
+
+## Large caster self-origin checkpoint (2026-10-08)
+- New `selfAreaOriginCell` finds the caster's forwardmost **occupied cube** in the aimed cardinal direction for 1×1 through 4×4 actors; preview rendering and candidate targeting use that same origin. No independently positioned Self templates. The origin remains provisional for diagonals, arbitrary angles, 3D elevation and edition-specific rulings; do not claim full RAW certification. Test Large/Huge/Gargantuan forward/left/back orientations.
