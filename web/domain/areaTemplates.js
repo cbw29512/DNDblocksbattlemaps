@@ -23,7 +23,7 @@ export function areaContainsPoint(t, p, point) {
   const perpendicular=Math.sqrt(Math.max(0,ox*ox+oz*oz+oy*oy-forward*forward));
   return perpendicular <= (t.shape==='line'?(t.widthFeet??5)/2:forward/2)+EPSILON;
 }
-export function areaCells(t,p,limits)[] {
+export function areaCells(t,p,limits) {
   const cells=[];
   for(let y=limits.minElevation;y<=limits.maxElevation;y++)
     for(let z=limits.minZ;z<limits.maxZ;z++)
@@ -33,6 +33,6 @@ export function areaCells(t,p,limits)[] {
       }
   return cells;
 }
-export function isInCastingRange(t:AreaTemplate,p:AreaPlacement):boolean {
+export function isInCastingRange(t,p) {
   return t.maxRangeFeet===0 || feetBetween(p.origin,p.center)<=t.maxRangeFeet+EPSILON;
 }
