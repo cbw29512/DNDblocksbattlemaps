@@ -300,3 +300,54 @@ test('character ring color persists in a placed world object', () => {
   const state = applyCommand(createBoardState('castle'), placeCommand(character));
   assert.equal(state.objects[0].ringColor, 0x2688dc);
 });
+
+test('exclusive character rings return to palette on reassignment or removal', async () => {
+  const { PLAYER_RINGS, availableRings, assignRing } = await import('../.test-build/src/domain/creatureMarks.js');
+  const blue = PLAYER_RINGS[0].color, green = PLAYER_RINGS[1].color;
+  const hero = createWorldObject('hero-1', 'hero-fighter', {x:1,z:1,elevation:0}, 1);
+  const other = createWorldObject('hero-2', 'hero-monk', {x:2,z:2,elevation:0}, 2);
+  let state = applyCommand(createBoardState('castle'), placeCommand(hero));
+  state = applyCommand(state, placeCommand(other));
+  const assigned = assignRing(state, hero.id, blue);
+  assert.equal(assigned.ringColor, blue);
+  state = applyCommand(state, {kind:'update', before:hero, after:assigned});
+  assert.ok(!availableRings(state).includes(blue));
+  assert.equal(assignRing(state, other.id, blue), null);
+  const swapped = assignRing(state, hero.id, green);
+  state = applyCommand(state, {kind:'update', before:assigned, after:swapped});
+  assert.ok(availableRings(state).includes(blue));
+  assert.ok(!availableRings(state).includes(green));
+  state = applyCommand(state, removeCommand(swapped));
+  assert.ok(availableRings(state).includes(green));
+  assert.equal(assignRing(state, other.id, 0xd83030), null);
+});
+test('official condition markers toggle independently and exhaustion has six levels', async () => {
+  const { CONDITIONS, toggleCondition } = await import('../.test-build/src/domain/creatureMarks.js');
+  assert.equal(CONDITIONS.length, 15);
+  let creature = createWorldObject('m', 'monster-goblin', {x:1,z:1,elevation:0}, 1);
+  creature = toggleCondition(creature, 'Poisoned');
+  creature = toggleCondition(creature, 'Stunned');
+  assert.deepEqual(creature.conditions, ['Poisoned','Stunned']);
+  creature = toggleCondition(creature, 'Poisoned');
+  assert.deepEqual(creature.conditions, ['Stunned']);
+  for (let i=1;i<=6;i++) {
+    creature = toggleCondition(creature, 'Exhaustion');
+    assert.equal(creature.exhaustion,i);
+  }
+  creature = toggleCondition(creature, 'Exhaustion');
+  assert.equal(creature.exhaustion, 0);
+  const wall = createWorldObject('w','wall',{x:0,z:0,elevation:0},2);
+  assert.equal(toggleCondition(wall,'Stunned'),wall);
+});
+test('marker edits undo and redo without duplicating creatures', async () => {
+  const before = createWorldObject('hero','hero-fighter',{x:0,z:0,elevation:0},1);
+  const after = {...before, ringColor:0x31b86b, conditions:['Prone']};
+  let state = applyCommand(createBoardState('castle'),placeCommand(before));
+  let history = createHistory();
+  const changed = commit(state, history,{kind:'update',before,after});
+  const reverted = undo(changed.state,changed.history);
+  assert.equal(reverted.state.objects.length,1);
+  assert.deepEqual(reverted.state.objects[0],before);
+  const restored = redo(reverted.state,reverted.history);
+  assert.deepEqual(restored.state.objects[0],after);
+});
