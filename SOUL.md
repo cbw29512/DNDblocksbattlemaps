@@ -498,3 +498,6 @@ See `docs/OPEN_SOURCE_REUSE.md`.
 - DM manages multiple campaigns; each campaign owns its characters, Party, saved maps and active-map choice. No accidental cross-campaign data sharing.
 - My Map Library contains reusable master maps; inserting one into a campaign produces an independent editable copy.
 - Before creating campaign features, follow the idempotent non-destructive legacy save/backup migration and staged completion gates in `docs/CAMPAIGN_MAP_LIBRARY_PLAN.md`. Never destroy existing maps or misrepresent local browser storage as cloud sync.
+
+## Mandatory anti-drift rule
+Before every manual or hourly work session, read and obey `docs/ANTI_DRIFT.md`. One checked gate at a time, no duplicate investigations, no silent contract changes, no data destruction, exact-head CI evidence and live proof separately.
