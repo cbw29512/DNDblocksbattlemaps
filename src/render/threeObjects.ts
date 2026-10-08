@@ -15,7 +15,7 @@ function materialFor(THREE: any, item: PaletteItem): any {
   if (cached) return cached;
 
   // Never assign an unloaded texture: that can render black on some GPUs.
-  const face = new THREE.MeshBasicMaterial({
+  const face = new THREE.MeshLambertMaterial({
     color: item.color,
     transparent: false
   });
@@ -39,7 +39,10 @@ function materialFor(THREE: any, item: PaletteItem): any {
         if (!context) throw new Error('Canvas 2D context unavailable');
         context.fillStyle = '#' + item.color.toString(16).padStart(6, '0');
         context.fillRect(0, 0, 256, 256);
-        context.drawImage(source, 0, 0, 256, 256);
+        const fit = Math.min(256 / source.naturalWidth, 256 / source.naturalHeight);
+        const width = source.naturalWidth * fit;
+        const height = source.naturalHeight * fit;
+        context.drawImage(source, (256 - width) / 2, (256 - height) / 2, width, height);
         const texture = new THREE.CanvasTexture(canvas);
         texture.colorSpace = THREE.SRGBColorSpace;
         face.map = texture;
