@@ -220,9 +220,10 @@ export async function renderBuilder(
     const label=activeSpell.label;
     const record=document.createElement('li');
     const targets=previewTargets();
-    record.textContent=caster+' casts '+label+' at ('+spellCenter.x+', '+spellCenter.z+'). Preview intersects '+targets.length+' creature(s): '+(targets.map(o=>getCatalogItem(o.catalogId).name).join(', ')||'none')+'. Target adjudication and rolls pending.';
+    const hitNames=targets.map(o=>getCatalogItem(o.catalogId).name+' ['+o.id.slice(0,8)+']').join(', ');
+    record.textContent=caster+' casts '+label+' at ('+spellCenter.x+', '+spellCenter.z+'). '+(targets.length ? label+' hits (area): '+hitNames+'.' : label+' hits no creatures.')+' Saves and damage pending.';
     root.querySelector('#combat-log')?.prepend(record);
-    status.textContent=caster+' casts '+label+'. Affected creatures: '+(targets.map(o=>getCatalogItem(o.catalogId).name).join(', ')||'none')+'. Saves and damage are not yet resolved.';
+    status.textContent=targets.length ? label+' hits (area): '+hitNames+'. Saves and damage pending.' : label+' hits no creatures.';
     activeSpell=null; spellCenter=null;
     renderer?.setAreaPreview(null,null);
     renderer?.setAreaTargets(targets.map(o=>o.id));
