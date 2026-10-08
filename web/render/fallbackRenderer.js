@@ -1,11 +1,11 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=12bc94ef92aa';
-import { areaCells } from '../domain/areaTemplates.js?v=12bc94ef92aa';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=12bc94ef92aa';
-import { getCatalogItem } from '../domain/catalog.js?v=12bc94ef92aa';
-import { stackElevationAt } from '../domain/placement.js?v=12bc94ef92aa';
-import { roomOuterSize } from '../domain/room.js?v=12bc94ef92aa';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=12bc94ef92aa';
-import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=12bc94ef92aa';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=af5721251871';
+import { areaCells } from '../domain/areaTemplates.js?v=af5721251871';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=af5721251871';
+import { getCatalogItem } from '../domain/catalog.js?v=af5721251871';
+import { stackElevationAt } from '../domain/placement.js?v=af5721251871';
+import { roomOuterSize } from '../domain/room.js?v=af5721251871';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=af5721251871';
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=af5721251871';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';
@@ -105,11 +105,11 @@ export function createFallbackRenderer(container, handlers) {
                     paintRoomPreview(placement ?? previewRoomPlacement(corner), Boolean(placement));
                 });
                 let lastPointerWasTouch = false;
-            cell.addEventListener('pointerdown', (event) => { lastPointerWasTouch = event.pointerType === 'touch'; });
-            cell.addEventListener('click', (event) => {
+                cell.addEventListener('pointerdown', (event) => { lastPointerWasTouch = event.pointerType === 'touch'; });
+                cell.addEventListener('click', (event) => {
                     if (areaTemplate) {
                         handlers.onAreaPoint({ x, z, elevation }, true, lastPointerWasTouch || event.pointerType === 'touch');
-                    lastPointerWasTouch = false;
+                        lastPointerWasTouch = false;
                         return;
                     }
                     if (top && handlers.onMarkTarget(top.id))

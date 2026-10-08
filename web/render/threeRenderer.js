@@ -1,12 +1,12 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=12bc94ef92aa';
-import { areaCells } from '../domain/areaTemplates.js?v=12bc94ef92aa';
-import { getCatalogItem } from '../domain/catalog.js?v=12bc94ef92aa';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=12bc94ef92aa';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=12bc94ef92aa';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=12bc94ef92aa';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=12bc94ef92aa';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=12bc94ef92aa';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=12bc94ef92aa';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=af5721251871';
+import { areaCells } from '../domain/areaTemplates.js?v=af5721251871';
+import { getCatalogItem } from '../domain/catalog.js?v=af5721251871';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=af5721251871';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=af5721251871';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=af5721251871';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=af5721251871';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=af5721251871';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=af5721251871';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -232,7 +232,7 @@ export async function createThreeRenderer(container, handlers) {
             const point = floorPosition(event);
             if (point)
                 handlers.onAreaPoint(point, true, lastPointerWasTouch || event.pointerType === 'touch');
-                lastPointerWasTouch = false;
+            lastPointerWasTouch = false;
             return;
         }
         setPointer(event);
