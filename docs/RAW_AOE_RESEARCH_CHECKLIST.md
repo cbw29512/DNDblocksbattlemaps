@@ -50,3 +50,11 @@
 When closing a checkbox add: **date; edition(s); verified source URL/book/page; reviewed values; code paths; tests; exact PR/head/CI; live browser proof; remaining exceptions**. Update this file as the work progresses, without rescanning the whole roster each time.
 
 **Checkpoint through PR #38:** Cube-only visuals and initial preview/cast controls implemented; ability registry keyed by edition but examples unverified; whole-creature candidate scanning, cardinal and eight-direction line previews are provisional; no full RAW target/damage, occlusion, 3D or live browser certification.
+
+## Approved DND Blocks coverage policy — October 8, 2026
+
+- Any positive overlap between an AoE and a 5-foot cube selects and displays the entire cube. No half blocks and no proportional damage. This is a DND Blocks house rule; do not describe it as the default 2014 or 2024 DMG square-inclusion rule.
+- Solid walls and closed doors block spell propagation unless an individual ability expressly says otherwise. Test line of effect through the actual 3D obstacle map.
+- AoE coverage uses full 3D volume. A sphere with radius 20 feet extends 20 feet from its origin along all three axes; it is not a cylinder. The sphere appears as complete, stepped 5-foot cubes wherever its volume positively overlaps those cubes. Other shapes retain their own source-defined dimensions.
+- Historical half-square and center-point notes above are research, not the accepted gameplay policy. Existing geometry code must be reconciled; no implementation or browser certification is claimed here.
+- Acceptance tests: tiny positive cell intersection, no overlap, elevation, narrowing sphere cross-sections, walls/doors, source-specific exceptions and unique multi-cube creature counting. Update public How to Play when implemented.
