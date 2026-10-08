@@ -210,8 +210,14 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         const targets = previewTargets();
         record.textContent = caster + ' casts ' + label + ' at (' + spellCenter.x + ', ' + spellCenter.z + '). Preview intersects ' + targets.length + ' creature(s): ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Target adjudication and rolls pending.';
         root.querySelector('#combat-log')?.prepend(record);
-        status.textContent = caster + ' casts ' + label + '.';
-        cancelArea();
+        status.textContent = caster + ' casts ' + label + '. Affected creatures: ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Saves and damage are not yet resolved.';
+        activeSpell = null;
+        spellCenter = null;
+        renderer?.setAreaPreview(null, null);
+        renderer?.setAreaTargets(targets.map(o => o.id));
+        castButton.disabled = true;
+        cancelButton.disabled = true;
+        spellInstructions.textContent = 'Affected creatures remain outlined in yellow until another preview starts. Saves/damage pending.';
     };
     root.querySelector('#preview-spell')?.addEventListener('click', () => {
         const id = root.querySelector('#spell-choice')?.value;
