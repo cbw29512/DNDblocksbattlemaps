@@ -32,7 +32,9 @@ function materialFor(THREE: any, item: PaletteItem): any {
     source.onload = () => {
       try {
         if (!source.naturalWidth || !source.naturalHeight) throw new Error('Image has no dimensions');
-        const canvas = document.createElement('canvas');
+        const existing = creatureLabelMaterials.get(name);
+  if (existing) return configureLabel(new THREE.Sprite(existing));
+  const canvas = document.createElement('canvas');
         canvas.width = 256;
         canvas.height = 256;
         const context = canvas.getContext('2d');
@@ -64,6 +66,17 @@ export function geometryFor(THREE: any, _catalogId: CatalogId): any {
 
 const PLAYER_RING_COLORS = new Set([0x2688dc, 0x31b86b, 0xe0be3d, 0xa369d7, 0xf18b35, 0xf4f4f4]);
 
+const creatureLabelMaterials = new Map<string, any>();
+const creatureRingMaterials = new Map<number, any>();
+let creatureRingGeometry: any = null;
+
+function configureLabel(sprite: any): any {
+  sprite.position.set(0, 1.01, 0);
+  sprite.scale.set(1.7, 0.425, 1);
+  sprite.renderOrder = 20;
+  return sprite;
+}
+
 function creatureLabel(THREE: any, name: string): any {
   const canvas = document.createElement('canvas');
   canvas.width = 384;
@@ -83,7 +96,9 @@ function creatureLabel(THREE: any, name: string): any {
   ctx.fillText(label, 192, 48, 356);
   const map = new THREE.CanvasTexture(canvas);
   map.colorSpace = THREE.SRGBColorSpace;
-  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map, transparent: true, depthTest: false }));
+  const material = new THREE.SpriteMaterial({ map, transparent: true, depthTest: false });
+  creatureLabelMaterials.set(name, material);
+  const sprite = new THREE.Sprite(material);
   sprite.position.set(0, 1.01, 0);
   sprite.scale.set(1.7, 0.425, 1);
   sprite.renderOrder = 20;
@@ -91,10 +106,13 @@ function creatureLabel(THREE: any, name: string): any {
 }
 
 function creatureRing(THREE: any, color: number): any {
-  const ring = new THREE.Mesh(
-    new THREE.RingGeometry(0.42, 0.52, 48),
-    new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide, depthWrite: false })
-  );
+  creatureRingGeometry ??= new THREE.RingGeometry(0.42, 0.52, 48);
+  let material = creatureRingMaterials.get(color);
+  if (!material) {
+    material = new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide, depthWrite: false });
+    creatureRingMaterials.set(color, material);
+  }
+  const ring = new THREE.Mesh(creatureRingGeometry, material);
   ring.rotation.x = -Math.PI / 2;
   ring.position.y = -0.492;
   ring.renderOrder = 5;
