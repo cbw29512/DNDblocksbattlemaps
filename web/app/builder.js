@@ -36,7 +36,7 @@ export async function renderBuilder(root, terrainId, handlers) {
           <small id="board-size"></small>
         </div>
         <div class="builder-actions">
-          <button id="creature-mode" class="button button-ghost" type="button" aria-pressed="false">Combat Mode</button>
+          <div class="map-mode-switch" role="group" aria-label="Map editing mode"><button id="build-mode" class="map-mode-choice active" type="button" aria-pressed="true">Build</button><button id="combat-mode" class="map-mode-choice" type="button" aria-pressed="false">Combat</button></div>
           <button id="undo" class="icon-button" type="button" title="Undo">↶</button>
           <button id="redo" class="icon-button" type="button" title="Redo">↷</button>
           <button id="print-map" class="button button-ghost" type="button">Print Map</button>
@@ -310,26 +310,28 @@ export async function renderBuilder(root, terrainId, handlers) {
     });
   });
 
-  root.querySelector('#creature-mode')?.addEventListener('click', () => {
-    moveMode = !moveMode;
+  const setMapMode = combat => {
+    if (moveMode === combat) return;
+    moveMode = combat;
     pickedCreatureId = null;
     renderer?.setMovingCreature(null);
     if (moveMode && armedRoom) cancelRoomMode();
     renderer?.setCreatureMoveMode(moveMode);
-    const buildTools = root.querySelector('#build-tools');
-    const identityTools = root.querySelector('#identity-ring-tools');
-    if (buildTools) buildTools.hidden = moveMode;
-    const partyTools = root.querySelector('#party-manager');
-    if (partyTools) partyTools.hidden = moveMode;
-    if (identityTools) identityTools.hidden = moveMode;
-    const button = root.querySelector('#creature-mode');
-    button?.setAttribute('aria-pressed', String(moveMode));
-    button?.classList.toggle('is-armed', moveMode);
-    if (button) button.textContent = moveMode ? 'Build Mode' : 'Combat Mode';
+    for (const id of ['build-tools','party-manager','identity-ring-tools']) {
+      const section = root.querySelector('#' + id);
+      if (section) section.hidden = moveMode;
+    }
+    for (const [id,active] of [['build-mode',!moveMode],['combat-mode',moveMode]]) {
+      const button = root.querySelector('#' + id);
+      button?.classList.toggle('active',active);
+      button?.setAttribute('aria-pressed',String(active));
+    }
     status.textContent = moveMode
-      ? 'Combat Mode: scenery is locked. Select a character or monster, then choose its destination. Status rings remain available.'
-      : 'Build Mode: all blocks, characters, monsters, identity rings and statuses are available.';
-  });
+      ? 'COMBAT: click a creature, then click the destination. Terrain and props stay locked.'
+      : 'BUILD: all blocks, party tools and status rings are available.';
+  };
+  root.querySelector('#build-mode')?.addEventListener('click', () => setMapMode(false));
+  root.querySelector('#combat-mode')?.addEventListener('click', () => setMapMode(true));
 
   root.querySelectorAll('[data-map-terrain]').forEach(button => {
     button.addEventListener('click', () => {
