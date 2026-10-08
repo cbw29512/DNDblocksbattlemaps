@@ -198,7 +198,7 @@ export async function renderBuilder(
   });
   castButton.addEventListener('click',castArea);
   cancelButton.addEventListener('click',cancelArea);
-  const onAreaRightClick=(event:MouseEvent):void=>{if(activeSpell){event.preventDefault();cancelArea();}};
+  const onAreaRightClick=(event:MouseEvent):void=>{if(activeSpell){event.preventDefault();event.stopImmediatePropagation();cancelArea();}};
   canvas.addEventListener('contextmenu',onAreaRightClick,true);
 
   const boardSize = document.getElementById('board-size') as HTMLElement;
