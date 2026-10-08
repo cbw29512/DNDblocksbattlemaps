@@ -48,7 +48,7 @@ function generated(
   icon: FaceIcon,
   tags: string[] = []
 ): PaletteItem {
-  return cube(id, name, category, color, generatedCubeArt(id, name, icon, color), tags);
+  return cube(id, name, category, color, generatedCubeArt(id, name, icon, color, category), tags);
 }
 
 function hero(id: string, name: string, color: number): PaletteItem {
