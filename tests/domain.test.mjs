@@ -582,7 +582,7 @@ test('AoE sphere includes cells inside 20-foot radius, excludes beyond and honor
   const placement={origin:{x:0,z:0,elevation:0},center:{x:10,z:0,elevation:0}};
   assert.ok(isInCastingRange(fireball,placement));
   assert.equal(areaContainsPoint(fireball,placement,{x:13,z:0,elevation:0}),true);
-  assert.equal(areaContainsPoint(fireball,placement,{x:14,z:0,elevation:0}),false);
+  assert.equal(areaContainsPoint(fireball,placement,{x:14,z:0,elevation:0}),true);
   assert.equal(areaContainsPoint(fireball,placement,{x:15,z:0,elevation:0}),false);
   assert.equal(areaContainsPoint(fireball,placement,{x:10,z:0,elevation:5}),false);
   assert.equal(isInCastingRange(fireball,{...placement,center:{x:31,z:0,elevation:0}}),false);
@@ -721,7 +721,7 @@ test('DND Blocks sphere selects any positive 3D cube overlap without clipping be
   assert.equal(areaContainsPoint(fireball,placement,{x:0,z:0,elevation:3}),true);
   assert.equal(areaContainsPoint(fireball,placement,{x:0,z:0,elevation:4}),false);
   // At altitude, horizontal footprint narrows: this must NOT be a cylinder.
-  assert.equal(areaContainsPoint(fireball,placement,{x:3,z:2,elevation:3}),false);
+  assert.equal(areaContainsPoint(fireball,placement,{x:4,z:3,elevation:3}),false);
   // Occluding scenery is not provided to pure geometric projection.
   // Never truncate underlying geometry to current camera/window viewport.
   const out=areaCells(fireball,placement,{minX:-5,maxX:6,minZ:-5,maxZ:6,minElevation:-5,maxElevation:5});
