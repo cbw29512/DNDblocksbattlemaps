@@ -422,3 +422,11 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Changes Made:** Three.js and fallback renderer now detect clicks on existing Character/Monster cubes, arm a pick-up, and accept next map click as the destination; Escape cancels. Builder commits the move as a reversible single WorldObject `update`, retaining identity/ringColor/conditions/exhaustion. Build/Props continue existing placement behavior. Rendering contracts and checked-in browser JS synchronized, movement regression added.
 - **Limitations:** This move retains existing elevation; DM-authoritative simple pick/place without pathfinding, obstacle rules, turn enforcement or realtime multiplayer. Browser check and CI pending.
 - **Next:** Verify npm test and Pages deployment; click Fighter, click empty grid, check image/rings/conditions moved, Undo returns old location; click wall and ensure it does not arm a move.
+
+
+## 2026-10-08 — Explicit Move Creatures mode
+
+- User reported two-click creature movement is difficult, requested mode that ignores Build/Props scenery.
+- Added toolbar Move Creatures toggle, excludes scenery meshes from selection raycast while move mode active, blocks ordinary placement, preserves one-creature Undo/Redo movement, and cancels movement when switching mode. Both 3D and fallback renderers updated with source/browser parity.
+- Build/Props remain visible but are not selectable for movement; red monster rings, character rings and statuses stay attached.
+- CI and actual browser usability pending; do not claim certified.
