@@ -121,6 +121,57 @@ function creatureRing(THREE: any, color: number): any {
   return ring;
 }
 
+
+// Large creatures are solid n x n x n assemblies of 5-foot cubes.
+// The portrait spans each exterior face, rather than repeating on every cell.
+function monsterExterior(THREE: any, root: any, item: PaletteItem, n: number): void {
+  if (!item.art) return;
+  const source = new Image();
+  source.crossOrigin = 'anonymous';
+  source.onload = () => {
+    if (!source.naturalWidth || !source.naturalHeight) return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 512; canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#' + item.color.toString(16).padStart(6, '0');
+    ctx.fillRect(0, 0, 512, 512);
+    const ratio = Math.min(512 / source.naturalWidth, 512 / source.naturalHeight);
+    const w = source.naturalWidth * ratio, h = source.naturalHeight * ratio;
+    ctx.drawImage(source, (512-w)/2, (512-h)/2, w, h);
+    ctx.strokeStyle = 'rgba(0,0,0,0.5)';
+    ctx.lineWidth = 3;
+    for (let cell=1;cell<n;cell++) {
+      const pos=512*cell/n;
+      ctx.beginPath(); ctx.moveTo(pos,0); ctx.lineTo(pos,512); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,pos); ctx.lineTo(512,pos); ctx.stroke();
+    }
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.colorSpace = THREE.SRGBColorSpace;
+    const material = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
+    const center=(n-1)/2, far=n-0.498, near=-0.502;
+    const sides=[
+      [center,center,far,0,0,0],
+      [center,center,near,0,Math.PI,0],
+      [far,center,center,0,Math.PI/2,0],
+      [near,center,center,0,-Math.PI/2,0],
+      [center,far,center,-Math.PI/2,0,0]
+    ];
+    for (const [x,y,z,rx,ry,rz] of sides) {
+      const panel=new THREE.Mesh(new THREE.PlaneGeometry(n,n),material);
+      panel.position.set(x,y,z);
+      panel.rotation.set(rx,ry,rz);
+      panel.userData.objectId=root.userData.objectId;
+      panel.userData.gridX=root.userData.gridX;
+      panel.userData.gridZ=root.userData.gridZ;
+      panel.userData.elevation=root.userData.elevation;
+      root.add(panel);
+    }
+  };
+  source.onerror=() => {};
+  source.src=resolveBrowserAssetUrl(item.art.src);
+}
+
 export function meshFor(THREE: any, object: WorldObject): any {
   const item = getCatalogItem(object.catalogId);
   const mesh = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
@@ -133,11 +184,13 @@ export function meshFor(THREE: any, object: WorldObject): any {
   mesh.userData.elevation = object.elevation;
   const footprint = item.category === 'Monsters' ? (item.footprintCells ?? 1) : 1;
   if (footprint > 1) {
+    monsterExterior(THREE, mesh, item, footprint);
     for (let dx = 0; dx < footprint; dx += 1) {
       for (let dz = 0; dz < footprint; dz += 1) {
-        if (dx === 0 && dz === 0) continue;
+        for (let dy = 0; dy < footprint; dy += 1) {
+        if (dx === 0 && dy === 0 && dz === 0) continue;
         const segment = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
-        segment.position.set(dx, 0, dz);
+        segment.position.set(dx, dy, dz);
         segment.castShadow = true;
         segment.receiveShadow = false;
         segment.userData.objectId = object.id;
@@ -145,12 +198,13 @@ export function meshFor(THREE: any, object: WorldObject): any {
         segment.userData.gridZ = object.z + dz;
         segment.userData.elevation = object.elevation;
         mesh.add(segment);
+        }
       }
     }
   }
   if (item.category === 'Characters' || item.category === 'Monsters') {
     const label = creatureLabel(THREE, item.name);
-    if (label) { label.position.x = (footprint - 1) / 2; label.position.z = (footprint - 1) / 2; label.position.y = 1.01; mesh.add(label); }
+    if (label) { label.position.x = (footprint - 1) / 2; label.position.z = (footprint - 1) / 2; label.position.y = footprint + 0.04; mesh.add(label); }
     if (item.category === 'Monsters') { const ring = creatureRing(THREE, 0xd83030); ring.position.x = (footprint - 1) / 2; ring.position.z = (footprint - 1) / 2; ring.scale.setScalar(footprint); mesh.add(ring); }
     else if (object.ringColor !== undefined && PLAYER_RING_COLORS.has(object.ringColor))
       mesh.add(creatureRing(THREE, object.ringColor));
