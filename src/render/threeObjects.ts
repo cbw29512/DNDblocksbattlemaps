@@ -6,41 +6,44 @@ export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;
 
-const textureCache = new Map<string, any>();
-
-function textureFor(THREE: any, src: string): any {
-  const resolved = resolveBrowserAssetUrl(src);
-  const cached = textureCache.get(resolved);
-  if (cached) return cached;
-
-  const texture = new THREE.TextureLoader().load(
-    resolved,
-    undefined,
-    undefined,
-    (error: unknown) => console.warn('[render] Catalog face art failed to load.', { resolved, error })
-  );
-  texture.colorSpace = THREE.SRGBColorSpace;
-  textureCache.set(resolved, texture);
-  return texture;
-}
+// One shared face material per catalog ID; all copies update after a valid image loads.
+const faceMaterials = new Map<string, any>();
 
 function materialFor(THREE: any, item: PaletteItem): any {
-  if (!item.art) {
-    return new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.76 });
-  }
+  const cached = faceMaterials.get(item.id);
+  if (cached) return cached;
 
+  // Never assign an unloaded texture: that can render black on some GPUs.
   const face = new THREE.MeshStandardMaterial({
-    // Never make the whole cube transparent when face artwork is absent or broken.
     color: item.color,
-    map: textureFor(THREE, item.art.src),
-    transparent: false,
-    alphaTest: 0,
-    roughness: 0.82
+    roughness: 0.82,
+    transparent: false
   });
+  const material = [face, face, face, face, face, face];
+  faceMaterials.set(item.id, material);
+  if (!item.art) return material;
 
-  // Every side of a DND Block represents the same object identity.
-  // Use the same face art on all six cube faces so orbiting never hides what the block is.
-  return [face, face, face, face, face, face];
+  try {
+    const url = resolveBrowserAssetUrl(item.art.src);
+    new THREE.TextureLoader().load(
+      url,
+      (texture: any) => {
+        try {
+          texture.colorSpace = THREE.SRGBColorSpace;
+          face.map = texture;
+          face.color.setHex(0xffffff);
+          face.needsUpdate = true;
+        } catch (error) {
+          console.warn('[render] Failed to apply block face art.', { id: item.id, error });
+        }
+      },
+      undefined,
+      (error: unknown) => console.warn('[render] Block face art unavailable; keeping visible color.', { id: item.id, error })
+    );
+  } catch (error) {
+    console.warn('[render] Failed to request block face art; keeping visible color.', { id: item.id, error });
+  }
+  return material;
 }
 
 export function geometryFor(THREE: any, _catalogId: CatalogId): any {

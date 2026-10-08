@@ -344,3 +344,13 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Cost Impact:** zero dependencies/services; no Netlify release.
 - **Result:** code committed, pending live visual verification.
 - **Exact Next Step:** run build checks; publish Pages test; place Stone and confirm visibly colored cubes and readable art. If still absent, inspect GPU shader/scene and browser errors rather than changing placement again.
+
+
+## 2026-10-07 — Black cube texture hotfix
+
+- **Starting State:** user confirms cubes now appear and stack, but all look black; placement itself works.
+- **Changes Made:** renderer starts each cube material opaque with catalog color and attaches face texture only after the load-success callback. Failed loads preserve visible color; per-catalog materials share updates. Synchronized source and checked-in JS, added focused fallback test.
+- **Decision:** fix material lifecycle only, no new blocks/placement rewrite; visual/browser verification still needed.
+- **Cost Impact:** zero dependencies or hosting changes.
+- **Result:** isolated black-material fix branch. Full npm/browser tests not yet run.
+- **Next Step:** deploy tested Pages build and visually confirm Stone, Barrel, Fighter; if any stay black after load, inspect SVG GPU upload/texture format before adding features.
