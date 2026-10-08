@@ -599,3 +599,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — PR #59 exact-head CI correction
 - First CI failed TypeScript TS2345: `catalog.ts` passes a general CatalogCategory to generatedCubeArt which accepted only Build/Props. Widened the optional parameter to string while keeping the conditional treatment exclusive to Build/Props; Characters and Monsters continue through their existing portrait/placeholder route. Await rerun on corrected head before merge. Do not treat procedural face decorations as final art acceptance without screenshot review.
+
+## 2026-10-08 — Storage block face details
+- PR #59 passed exact-head CI and merged: all Build and Props cubes use square face textures, with character/monster artwork untouched. Closed older #58 as superseded. Next incremental visual pass adds dedicated detailed barrel, crate and chest face compositions instead of common generic framed symbols. Each remains a perfect 5-ft cube, with updated source and browser JS. Requires exact-head CI and actual browser visual review before merge.
