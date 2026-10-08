@@ -366,6 +366,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             status.textContent = `${getCatalogItem(creature.catalogId).name} moved. Ring and conditions preserved.`;
         },
         onPlace(position) {
+            // Never create terrain while an AoE preview is armed.
+            if (activeSpell) { status.textContent = 'Spell preview active: choose a target, then Cast or Cancel.'; return; }
             const selectedItem = getCatalogItem(selected);
             const span = selectedItem.category === 'Monsters' ? selectedItem.footprintCells ?? 1 : 1;
             if (position.x + span > state.bounds.maxX || position.z + span > state.bounds.maxZ) {
