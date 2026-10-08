@@ -575,3 +575,26 @@ test('G0a empty storage exports a valid empty backup', async () => {
   assert.deepEqual(backup.entries,[]);
   assert.equal(validateBrowserBackup(backup),true);
 });
+
+test('AoE sphere includes cells inside 20-foot radius, excludes beyond and honors height', async () => {
+  const { AREA_PRESETS, areaContainsPoint, isInCastingRange } = await import('../.test-build/src/domain/areaTemplates.js');
+  const fireball=AREA_PRESETS.find(x=>x.id==='fireball');
+  const placement={origin:{x:0,z:0,elevation:0},center:{x:10,z:0,elevation:0}};
+  assert.ok(isInCastingRange(fireball,placement));
+  assert.equal(areaContainsPoint(fireball,placement,{x:14,z:0,elevation:0}),true);
+  assert.equal(areaContainsPoint(fireball,placement,{x:15,z:0,elevation:0}),false);
+  assert.equal(areaContainsPoint(fireball,placement,{x:10,z:0,elevation:5}),false);
+  assert.equal(isInCastingRange(fireball,{...placement,center:{x:31,z:0,elevation:0}}),false);
+});
+test('AoE cones and lines require direction and do not treat breath as cubes', async () => {
+  const {AREA_PRESETS,areaContainsPoint}=await import('../.test-build/src/domain/areaTemplates.js');
+  const cone=AREA_PRESETS.find(x=>x.id==='dragon-fire-cone');
+  const line=AREA_PRESETS.find(x=>x.id==='lightning-bolt');
+  const p={origin:{x:0,z:0,elevation:0},center:{x:5,z:0,elevation:0}};
+  assert.equal(areaContainsPoint(cone,p,{x:4,z:1,elevation:0}),true);
+  assert.equal(areaContainsPoint(cone,p,{x:4,z:3,elevation:0}),false);
+  assert.equal(areaContainsPoint(cone,p,{x:-1,z:0,elevation:0}),false);
+  assert.equal(areaContainsPoint(line,p,{x:5,z:0,elevation:0}),true);
+  assert.equal(areaContainsPoint(line,p,{x:5,z:1,elevation:0}),false);
+  assert.equal(areaContainsPoint(line,{origin:p.origin,center:p.origin},{x:1,z:0,elevation:0}),false);
+});
