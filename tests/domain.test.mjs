@@ -351,3 +351,19 @@ test('marker edits undo and redo without duplicating creatures', async () => {
   const restored = redo(reverted.state,reverted.history);
   assert.deepEqual(restored.state.objects[0],after);
 });
+
+test('legacy duplicate player colors are released safely on map load', async () => {
+  const { normalizeRingAssignments, availableRings } = await import('../.test-build/src/domain/creatureMarks.js');
+  const state = createBoardState('castle');
+  state.objects = [
+    createWorldObject('first', 'hero-fighter', {x:0,z:0,elevation:0}, 1, 0x2688dc),
+    createWorldObject('second', 'hero-wizard', {x:1,z:0,elevation:0}, 2, 0x2688dc),
+    createWorldObject('third', 'hero-rogue', {x:2,z:0,elevation:0}, 3, 0xd83030)
+  ];
+  const updated = normalizeRingAssignments(state);
+  assert.equal(updated.objects[0].ringColor, 0x2688dc);
+  assert.equal(updated.objects[1].ringColor, undefined);
+  assert.equal(updated.objects[2].ringColor, undefined);
+  assert.ok(!availableRings(updated).includes(0x2688dc));
+  assert.equal(updated.objects.length, 3);
+});
