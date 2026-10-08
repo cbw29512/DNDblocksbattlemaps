@@ -1,7 +1,7 @@
-import { PALETTE } from '../domain/catalog.js?v=1791d49a97ad';
-import { geometryFor } from './threeObjects.js?v=1791d49a97ad';
+import { getCatalogItem } from '../domain/catalog.js?v=3a6fd8f850b0';
+import { geometryFor } from './threeObjects.js?v=3a6fd8f850b0';
 export function createPlacementPreview(THREE, catalogId) {
-    const item = PALETTE[catalogId];
+    const item = getCatalogItem(catalogId);
     const group = new THREE.Group();
     const geometry = geometryFor(THREE, catalogId);
     const ghost = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({

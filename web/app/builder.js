@@ -1,15 +1,15 @@
-import { catalogPanelHtml, setCatalogCategory } from './catalogPanel.js?v=1791d49a97ad';
-import { printBoardMap } from './printMap.js?v=1791d49a97ad';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=1791d49a97ad';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=1791d49a97ad';
-import { PALETTE, TERRAIN_THEMES } from '../domain/catalog.js?v=1791d49a97ad';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=1791d49a97ad';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=1791d49a97ad';
-import { roomSummary } from '../domain/room.js?v=1791d49a97ad';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=1791d49a97ad';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=1791d49a97ad';
-import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=1791d49a97ad';
-import { createRenderer } from '../render/createRenderer.js?v=1791d49a97ad';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=3a6fd8f850b0';
+import { printBoardMap } from './printMap.js?v=3a6fd8f850b0';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=3a6fd8f850b0';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=3a6fd8f850b0';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=3a6fd8f850b0';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=3a6fd8f850b0';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=3a6fd8f850b0';
+import { roomSummary } from '../domain/room.js?v=3a6fd8f850b0';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=3a6fd8f850b0';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=3a6fd8f850b0';
+import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=3a6fd8f850b0';
+import { createRenderer } from '../render/createRenderer.js?v=3a6fd8f850b0';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -121,7 +121,7 @@ export async function renderBuilder(root, terrainId, handlers) {
         buildRoomButton.textContent = 'Build Room';
     };
     const restoreSelectedBlock = () => {
-        setCatalogCategory(root, PALETTE[selected].category);
+        setCatalogCategory(root, getCatalogItem(selected).category);
         renderer?.setSelectedCatalog(selected);
         root.querySelectorAll('.palette-item').forEach((item) => {
             item.classList.toggle('active', item.dataset.catalog === selected);
@@ -132,7 +132,7 @@ export async function renderBuilder(root, terrainId, handlers) {
             return;
         setRoomMode(null);
         restoreSelectedBlock();
-        status.textContent = `Room placement canceled. ${PALETTE[selected].name} selected.`;
+        status.textContent = `Room placement canceled. ${getCatalogItem(selected).name} selected.`;
     };
     renderer = await createRenderer(canvas, {
         onPlace(position) {
@@ -203,18 +203,24 @@ export async function renderBuilder(root, terrainId, handlers) {
             setCatalogCategory(root, button.dataset.categoryTab);
         });
     });
+    const catalogSearch = root.querySelector('#catalog-search');
+    catalogSearch?.addEventListener('input', () => {
+        const activeButton = root.querySelector('[data-category-tab].active');
+        const activeCategory = (activeButton?.dataset.categoryTab ?? 'Build');
+        filterCatalog(root, activeCategory, catalogSearch.value);
+    });
     root.querySelectorAll('[data-catalog]').forEach((button) => {
         button.addEventListener('click', () => {
             if (armedRoom)
                 setRoomMode(null);
             selected = button.dataset.catalog;
-            setCatalogCategory(root, PALETTE[selected].category);
+            setCatalogCategory(root, getCatalogItem(selected).category);
             root.querySelectorAll('.palette-item').forEach((item) => {
                 item.classList.toggle('active', item === button);
             });
             renderer?.setSelectedCatalog(selected);
             status.textContent =
-                `${PALETTE[selected].name} selected. Click empty grid, a top face, or a side face.`;
+                `${getCatalogItem(selected).name} selected. Click empty grid, a top face, or a side face.`;
         });
     });
     document.getElementById('builder-home')?.addEventListener('click', handlers.onHome);

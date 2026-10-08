@@ -1,9 +1,9 @@
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=1791d49a97ad';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=1791d49a97ad';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=1791d49a97ad';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=1791d49a97ad';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=1791d49a97ad';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=1791d49a97ad';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=3a6fd8f850b0';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=3a6fd8f850b0';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=3a6fd8f850b0';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=3a6fd8f850b0';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=3a6fd8f850b0';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=3a6fd8f850b0';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');

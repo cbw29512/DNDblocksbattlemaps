@@ -1,5 +1,5 @@
-import { PALETTE } from '../domain/catalog.js?v=1791d49a97ad';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=1791d49a97ad';
+import { getCatalogItem } from '../domain/catalog.js?v=3a6fd8f850b0';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=3a6fd8f850b0';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;
@@ -18,22 +18,22 @@ function materialFor(THREE, item) {
     if (!item.art) {
         return new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.76 });
     }
-    const face = new THREE.MeshBasicMaterial({
+    const face = new THREE.MeshStandardMaterial({
         color: 0xffffff,
         map: textureFor(THREE, item.art.src),
         transparent: true,
-        alphaTest: 0.02
+        alphaTest: 0.02,
+        roughness: 0.82
     });
-    const topBottom = new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.78 });
-    // BoxGeometry material order: +X, -X, +Y, -Y, +Z, -Z.
-    // Identity art is printed on all four vertical faces.
-    return [face, face, topBottom, topBottom, face, face];
+    // Every side of a DND Block represents the same object identity.
+    // Use the same face art on all six cube faces so orbiting never hides what the block is.
+    return [face, face, face, face, face, face];
 }
 export function geometryFor(THREE, _catalogId) {
     return new THREE.BoxGeometry(1, 1, 1);
 }
 export function meshFor(THREE, object) {
-    const item = PALETTE[object.catalogId];
+    const item = getCatalogItem(object.catalogId);
     const mesh = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
     mesh.position.set(object.x + 0.5, object.elevation + 0.5, object.z + 0.5);
     mesh.castShadow = true;

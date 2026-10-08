@@ -1,9 +1,9 @@
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=1791d49a97ad';
-import { PALETTE } from '../domain/catalog.js?v=1791d49a97ad';
-import { stackElevationAt } from '../domain/placement.js?v=1791d49a97ad';
-import { roomOuterSize } from '../domain/room.js?v=1791d49a97ad';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=1791d49a97ad';
-import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=1791d49a97ad';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=3a6fd8f850b0';
+import { getCatalogItem } from '../domain/catalog.js?v=3a6fd8f850b0';
+import { stackElevationAt } from '../domain/placement.js?v=3a6fd8f850b0';
+import { roomOuterSize } from '../domain/room.js?v=3a6fd8f850b0';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=3a6fd8f850b0';
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=3a6fd8f850b0';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';
@@ -59,7 +59,7 @@ export function createFallbackRenderer(container, handlers) {
                     .sort((a, b) => a.elevation - b.elevation);
                 const top = occupants.at(-1);
                 if (top) {
-                    const item = PALETTE[top.catalogId];
+                    const item = getCatalogItem(top.catalogId);
                     cell.style.setProperty('--piece-color', `#${item.color.toString(16).padStart(6, '0')}`);
                     const visual = item.art
                         ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`

@@ -1,6 +1,6 @@
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=1791d49a97ad';
-import { PALETTE } from '../domain/catalog.js?v=1791d49a97ad';
-import { PRINT_PAGE_COLUMNS, PRINT_PAGE_ROWS, printAreaForState, printTilesForArea, topObjectAt } from '../domain/printLayout.js?v=1791d49a97ad';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=3a6fd8f850b0';
+import { getCatalogItem } from '../domain/catalog.js?v=3a6fd8f850b0';
+import { PRINT_PAGE_COLUMNS, PRINT_PAGE_ROWS, printAreaForState, printTilesForArea, topObjectAt } from '../domain/printLayout.js?v=3a6fd8f850b0';
 function colorCss(color) {
     return `#${color.toString(16).padStart(6, '0')}`;
 }
@@ -11,7 +11,7 @@ function cellHtml(state, theme, x, z, inTile) {
     if (!object) {
         return `<div class="print-cell" style="--print-cell-color:${colorCss(theme.groundColor)}"></div>`;
     }
-    const item = PALETTE[object.catalogId];
+    const item = getCatalogItem(object.catalogId);
     const visual = item.art
         ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="">`
         : `<span>${item.name}</span>`;
