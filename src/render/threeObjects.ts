@@ -1,4 +1,4 @@
-import { CONDITIONS } from '../domain/creatureMarks.js';
+import { CONDITIONS, CONDITION_COLORS } from '../domain/creatureMarks.js';
 import { getCatalogItem } from '../domain/catalog.js';
 import type { CatalogId, PaletteItem, WorldObject } from '../domain/types.js';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
@@ -139,9 +139,8 @@ export function meshFor(THREE: any, object: WorldObject): any {
       mesh.add(creatureRing(THREE, object.ringColor));
     const conditions = (object.conditions ?? []).filter(s => CONDITIONS.some(condition => condition === s));
     if ((object.exhaustion ?? 0) > 0) conditions.push('Exhaustion');
-    const palette = [0xe7b94a, 0x55cad1, 0xe37aa9, 0xa8d177];
     conditions.slice(0, 4).forEach((condition, i) => {
-      const ring = creatureRing(THREE, palette[i]);
+      const ring = creatureRing(THREE, CONDITION_COLORS[condition as keyof typeof CONDITION_COLORS] ?? 0xe7b94a);
       ring.scale.setScalar(1.12 + 0.17 * i);
       ring.position.y = -0.48 + 0.005 * i;
       mesh.add(ring);
