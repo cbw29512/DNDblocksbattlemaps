@@ -428,3 +428,21 @@ test('unchecking Party removes copies without deleting the original character', 
   const inn = {...createBoardState('inn'),objects:[{...hero,partyMember:true}]};
   assert.equal(removePartyFromMap(inn,hero.id,'castle').objects.length,0);
 });
+
+test('all canonical SRD monsters have a visual cube block, CR and footprint', () => {
+  const monsters = catalogIdsForCategory('Monsters').filter(id => id.startsWith('monster-srd-'));
+  assert.equal(monsters.length,330);
+  assert.equal(new Set(monsters).size,330);
+  for (const id of monsters) {
+    const item = getCatalogItem(id);
+    assert.ok(item.art?.src, id);
+    assert.ok(['2014','2024'].includes(item.edition),id);
+    assert.ok(item.challengeRating !== undefined,id);
+    assert.ok([1,2,3,4].includes(item.footprintCells),id);
+    assert.equal(item.shape,'cube',id);
+  }
+  assert.equal(getCatalogItem('monster-srd-aboleth').footprintCells,2);
+  assert.equal(getCatalogItem('monster-srd-adult-black-dragon').footprintCells,3);
+  assert.equal(getCatalogItem('monster-srd-ancient-red-dragon').footprintCells,4);
+  assert.equal(getCatalogItem('monster-srd-goblin-warrior').footprintCells,1);
+});
