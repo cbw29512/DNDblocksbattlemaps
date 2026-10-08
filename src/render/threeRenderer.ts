@@ -1,3 +1,4 @@
+import { getCatalogItem } from '../domain/catalog.js';
 import { type NormalizedRoom, type RoomCorner } from '../domain/room.js';
 import {
   chooseRoomPlacement, previewRoomPlacement, type RoomPlacement
@@ -79,6 +80,7 @@ export async function createThreeRenderer(
   const pointer = new THREE.Vector2();
 
   let selected: CatalogId | null = null;
+  let movingCreatureId: string | null = null;
   let activeRoom: NormalizedRoom | null = null;
   let elevation = 0;
   let preview: any = null;
@@ -243,6 +245,18 @@ export async function createThreeRenderer(
       return;
     }
 
+    if (movingCreatureId) {
+      const destination = floorPosition(event);
+      if (destination) handlers.onMoveCreature(destination);
+      else handlers.onStatus('Choose a square inside the map to move this creature.');
+      return;
+    }
+    setPointer(event);
+    const clicked = raycaster.intersectObjects(objectGroup.children, false)[0]?.object?.userData?.objectId;
+    if (clicked && currentObjects.some(o => o.id === clicked && ['Characters', 'Monsters'].includes(getCatalogItem(o.catalogId).category))) {
+      handlers.onPickCreature(String(clicked));
+      return;
+    }
     if (!selected) return;
     const position = blockPlacementFor(event);
     if (position) handlers.onPlace(position);
@@ -298,6 +312,7 @@ export async function createThreeRenderer(
       activeRoom = next;
       rebuildRoomPreview();
     },
+    setMovingCreature(id) { movingCreatureId = id; },
     setElevation(next) {
       elevation = next;
       const center = boardCenter(currentBounds);
