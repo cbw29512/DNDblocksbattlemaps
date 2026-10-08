@@ -412,3 +412,5 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Tests:** Added domain regressions for uniqueness/release, prohibited red, toggle, exhaustion progression, undo/redo, and old duplicate color migration. Full npm check and browser tests not yet run.
 - **Cost:** No new dependencies or hosting costs.
 - **Next:** Run `npm run check`, deploy Pages test build; place two Fighters + a Goblin, drag Blue to the first and Green to the second, confirm colors disappear from palette, Poisoned/Stunned markers can be added/removed on both creatures, and Undo/Redo plus reload preserve state. Verify other palette placement still works.
+
+- **Follow-up design check:** applied an explicit reusable CONDITION_COLORS mapping for the 15 official condition tokens; the status ring color no longer depends on assignment order. Old saved duplicate colors normalize to exclusive assignments at builder startup; test coverage includes this case. No changes to combat mechanics.
