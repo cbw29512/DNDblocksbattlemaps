@@ -229,7 +229,7 @@ export async function createThreeRenderer(container, handlers) {
         if (activeArea) {
             const point = floorPosition(event);
             if (point)
-                handlers.onAreaPoint(point, true);
+                handlers.onAreaPoint(point, true, event.pointerType === 'touch');
             return;
         }
         setPointer(event);
