@@ -33,7 +33,6 @@ export function feetBetween(a: AreaPoint,b: AreaPoint): number {
 export function areaContainsPoint(t: AreaTemplate, p: AreaPlacement, point: AreaPoint): boolean {
   const cx=(point.x-p.center.x)*GRID_FEET, cz=(point.z-p.center.z)*GRID_FEET;
   const cy=(point.elevation-p.center.elevation)*GRID_FEET;
-  const len=Math.hypot(cx,cz,cy);
   if (t.shape==='sphere') {
     const sliceRadius=Math.sqrt(Math.max(0,t.sizeFeet*t.sizeFeet-cy*cy));
     return Math.abs(cy)<t.sizeFeet+EPSILON &&
