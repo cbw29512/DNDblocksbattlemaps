@@ -234,7 +234,7 @@ export async function renderBuilder(
     activeSpell=getAreaAbility(id ?? '')?.area ?? null;
     const select=root.querySelector<HTMLSelectElement>('#spell-caster');
     const creatures=state.objects.filter(x=>['Characters','Monsters'].includes(getCatalogItem(x.catalogId).category));
-    if(!select?.value && creatures.length===1) select!.value=creatures[0].id;
+    if(select && !select.value && creatures.length===1 && creatures[0]) select.value=creatures[0].id;
     const chosen=creatures.find(x=>x.id===select?.value);
     if(!activeSpell || !chosen) {
       activeSpell=null;
