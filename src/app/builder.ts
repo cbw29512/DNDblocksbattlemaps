@@ -348,6 +348,8 @@ export async function renderBuilder(
     const buildTools = root.querySelector<HTMLElement>('#build-tools');
     const identityTools = root.querySelector<HTMLElement>('#identity-ring-tools');
     if (buildTools) buildTools.hidden = moveMode;
+    const partyTools = root.querySelector('#party-manager');
+    if (partyTools) partyTools.hidden = moveMode;
     if (identityTools) identityTools.hidden = moveMode;
     const button = root.querySelector<HTMLButtonElement>('#creature-mode');
     button?.setAttribute('aria-pressed', String(moveMode));
