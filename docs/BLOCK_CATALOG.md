@@ -336,3 +336,9 @@ A calendar/date-display block is a possible future idea only. Do not add it to M
 - Both authoritative TypeScript and checked-in browser JavaScript were updated together; one shared renderer still serves every ordinary catalog cube.
 - Status: implementation committed on branch `catalog-face-art-oct07`; automated/browser checks still need CI verification. No monster asset or creature size/footprint was changed.
 - Next batch: verify asset provenance and 2×2/3×3/4×4 coherent cube footprints before adding large creatures; avoid assigning unavailable silhouettes.
+
+### Shared visual glow (2026-10-07)
+
+The catalog's `light-source` tag enables subtle warm emissive face material on Torch, Lantern, Campfire, Brazier, Fireplace, and Forge. Every block remains a cube. This is self-illumination only, not real-time scene illumination, shadow casting, or rules automation. Reuse the same tag on future light-emitting blocks.
+
+Implementation on branch `catalog-face-art-oct07`; verification and merge pending.
