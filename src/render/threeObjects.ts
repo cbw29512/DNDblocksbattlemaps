@@ -1,3 +1,4 @@
+import { CONDITIONS } from '../domain/creatureMarks.js';
 import { getCatalogItem } from '../domain/catalog.js';
 import type { CatalogId, PaletteItem, WorldObject } from '../domain/types.js';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
@@ -113,9 +114,27 @@ export function meshFor(THREE: any, object: WorldObject): any {
   if (item.category === 'Characters' || item.category === 'Monsters') {
     const label = creatureLabel(THREE, item.name);
     if (label) mesh.add(label);
-    const ringColor = item.category === 'Monsters' ? 0xd83030 :
-      PLAYER_RING_COLORS.has(object.ringColor ?? 0) ? object.ringColor : 0x2688dc;
-    mesh.add(creatureRing(THREE, ringColor));
+    if (item.category === 'Monsters') mesh.add(creatureRing(THREE, 0xd83030));
+    else if (object.ringColor !== undefined && PLAYER_RING_COLORS.has(object.ringColor))
+      mesh.add(creatureRing(THREE, object.ringColor));
+    const conditions = (object.conditions ?? []).filter(s => CONDITIONS.includes(s));
+    if ((object.exhaustion ?? 0) > 0) conditions.push('Exhaustion');
+    const palette = [0xe7b94a, 0x55cad1, 0xe37aa9, 0xa8d177];
+    conditions.slice(0, 4).forEach((condition, i) => {
+      const ring = creatureRing(THREE, palette[i]);
+      ring.scale.setScalar(1.12 + 0.17 * i);
+      ring.position.y = -0.48 + 0.005 * i;
+      mesh.add(ring);
+    });
+    if (conditions.length) {
+      const statusName = conditions.map(s => s === 'Exhaustion' ? 'Exhaustion ' + object.exhaustion : s).join(' • ');
+      const statusLabel = creatureLabel(THREE, statusName);
+      if (statusLabel) {
+        statusLabel.position.y = 1.48;
+        statusLabel.scale.set(1.9, 0.42, 1);
+        mesh.add(statusLabel);
+      }
+    }
   }
   return mesh;
 }
