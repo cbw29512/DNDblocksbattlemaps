@@ -19,10 +19,11 @@ function materialFor(THREE, item) {
         return new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.76 });
     }
     const face = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
+        // Always draw a solid color if face art is unavailable.
+        color: item.color,
         map: textureFor(THREE, item.art.src),
-        transparent: true,
-        alphaTest: 0.02,
+        transparent: false,
+        alphaTest: 0,
         roughness: 0.82
     });
     // Every side of a DND Block represents the same object identity.

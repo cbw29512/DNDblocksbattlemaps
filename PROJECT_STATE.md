@@ -334,3 +334,13 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Result:** Isolated hotfix committed on `fix-placement-click-oct07`, verification pending; not live until merged and test site redeployed.
 - **Open Questions / Blockers:** root cause not conclusively reproduced in a browser; check whether success feedback appears and object renders. GitHub Pages manual action still needed for public test.
 - **Exact Next Step:** review and build-test this isolated PR, merge if green, dispatch Pages test deploy, reproduce Stone placement; if placement success is reported but cube invisible, inspect WebGL materials and camera rather than further modifying input.
+
+
+## 2026-10-07 — Invisible cube material hotfix
+
+- **Starting State:** User confirms clicks stack blocks, so placement state and mesh raycasting work, but cubes are visually invisible.
+- **Changes Made:** On isolated branch `fix-invisible-cube-materials-oct07`, textured cube MeshStandardMaterial now uses opaque rendering with catalog base color instead of transparent mode; source TypeScript and checked-in browser JavaScript synchronized.
+- **Decision:** Fix rendering, not placement; do not add more catalog items. Do not claim root-cause certainty without browser reproduction.
+- **Cost Impact:** zero dependencies/services; no Netlify release.
+- **Result:** code committed, pending live visual verification.
+- **Exact Next Step:** run build checks; publish Pages test; place Stone and confirm visibly colored cubes and readable art. If still absent, inspect GPU shader/scene and browser errors rather than changing placement again.
