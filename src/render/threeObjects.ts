@@ -14,9 +14,8 @@ function materialFor(THREE: any, item: PaletteItem): any {
   if (cached) return cached;
 
   // Never assign an unloaded texture: that can render black on some GPUs.
-  const face = new THREE.MeshStandardMaterial({
+  const face = new THREE.MeshBasicMaterial({
     color: item.color,
-    roughness: 0.82,
     transparent: false
   });
   const material = [face, face, face, face, face, face];
@@ -65,7 +64,7 @@ export function meshFor(THREE: any, object: WorldObject): any {
   const mesh = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
   mesh.position.set(object.x + 0.5, object.elevation + 0.5, object.z + 0.5);
   mesh.castShadow = true;
-  mesh.receiveShadow = true;
+  mesh.receiveShadow = false;
   mesh.userData.objectId = object.id;
   mesh.userData.gridX = object.x;
   mesh.userData.gridZ = object.z;
