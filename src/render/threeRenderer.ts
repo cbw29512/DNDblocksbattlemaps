@@ -119,7 +119,7 @@ export async function createThreeRenderer(
     const n = Math.ceil(activeArea.sizeFeet/5)+1;
     const center=areaPlacement.center;
     const extent=activeArea.shape==='line'?Math.ceil(activeArea.sizeFeet/5)+1:n;
-    const bounds={minX:Math.max(currentBounds.minX,Math.min(center.x,areaPlacement.origin.x)-extent),maxX:Math.min(currentBounds.maxX,Math.max(center.x,areaPlacement.origin.x)+extent+1),minZ:Math.max(currentBounds.minZ,Math.min(center.z,areaPlacement.origin.z)-extent),maxZ:Math.min(currentBounds.maxZ,Math.max(center.z,areaPlacement.origin.z)+extent+1),minElevation:Math.max(0,Math.min(center.elevation,areaPlacement.origin.elevation)-extent),maxElevation:Math.min(8,Math.max(center.elevation,areaPlacement.origin.elevation)+extent)};
+    const bounds={minX:Math.min(center.x,areaPlacement.origin.x)-extent,maxX:Math.max(center.x,areaPlacement.origin.x)+extent+1,minZ:Math.min(center.z,areaPlacement.origin.z)-extent,maxZ:Math.max(center.z,areaPlacement.origin.z)+extent+1,minElevation:Math.min(center.elevation,areaPlacement.origin.elevation)-extent,maxElevation:Math.max(center.elevation,areaPlacement.origin.elevation)+extent};
     const color=activeArea.visual==='fire'?0xff391c:activeArea.visual==='lightning'?0xf6f4e9:0x93979e;
     const cells=areaCells(activeArea,areaPlacement,bounds);
     const geometry=new THREE.BoxGeometry(1,1,1);
