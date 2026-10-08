@@ -278,8 +278,10 @@ export async function renderBuilder(root, terrainId, handlers) {
         },
         onRemove(id) {
             const object = findObject(state, id);
-            if (object)
+            if (object) {
                 run(removeCommand(object), []);
+                if (object.partyMember) propagateParty(state, id);
+            }
         },
         onStatus(message) {
             status.textContent = message;
