@@ -485,3 +485,8 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Limits:** local browser prototype, not multiplayer. Templates are visual blocks; they do not instantiate D&D mechanics or automatically spawn enemies.
 
 - **Area-prioritized catalogs (2026-10-08):** All Build/Props/Characters/Monsters catalog items remain accessible in their categories. For each open map, tags matching its area (Inn, Castle, Field, Sea, Volcano) or named starter template (Dungeon, Cave, Temple, Harbor, Forest, Ruins) come first, alphabetically; all other blocks remain below them alphabetically. No forced filter and no extra heading. Source/browser sorting helper, catalog panel, builder wiring, and regression tests updated. Browser/CI verification pending.
+
+## 2026-10-08 — Multi-campaign architecture and migration plan (documented, NOT implemented)
+- User approved: DM Campaign Manager → per-campaign Map Manager → independent My Map Library. Campaign characters/party/active map isolated per campaign; library originals copied into campaigns. Preserve 5 legacy maps and previously created custom maps.
+- Full source-of-truth gates and explicit completion tracker: `docs/CAMPAIGN_MAP_LIBRARY_PLAN.md`. G0 legacy backup + idempotent Default Campaign migration; G1 campaign isolation; G2 Map Manager; G3 My Map Library; G4 browser certification and block material face improvements; G5 future server multiplayer.
+- **Next concrete task:** G0a read-only legacy save inventory and versioned downloadable backup, with tests, then G0b migration. Do not write campaign records before validating backup/rollback and schema contracts. This is documentation, not a shipped feature.
