@@ -162,11 +162,17 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             select.value = prior;
     };
     refreshCasterOptions();
+    const spellPlacement = (point) => {
+        const id=root.querySelector('#spell-caster')?.value;
+        const creature=state.objects.find(o=>o.id===id);
+        const origin=activeSpell?.originMode==='self' && creature ? selfAreaOriginCell(creature,point) : casterOrigin;
+        return {origin,center:point};
+    };
     const previewTargets = () => {
         if (!activeSpell || !spellCenter)
             return [];
         const radius = Math.ceil(activeSpell.sizeFeet / 5) + 1;
-        const p = { origin: casterOrigin, center: spellCenter };
+        const p = spellPlacement(spellCenter);
         const area = areaCells(activeSpell, p, {
             minX: Math.max(state.bounds.minX, Math.min(spellCenter.x, casterOrigin.x) - radius),
             maxX: Math.min(state.bounds.maxX, Math.max(spellCenter.x, casterOrigin.x) + radius + 1),
@@ -180,7 +186,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     const choosePoint = (point, commit) => {
         if (!activeSpell)
             return;
-        const placement = { origin: casterOrigin, center: point };
+        const placement = spellPlacement(point);
         if (!isInCastingRange(activeSpell, placement)) {
             status.textContent = 'Outside the listed ability range. Choose a closer point.';
             return;
