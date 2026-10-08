@@ -1,3 +1,4 @@
+import { areaCells } from '../domain/areaTemplates.js';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=ebdfcba6160b';
 import { getCatalogItem } from '../domain/catalog.js?v=ebdfcba6160b';
 import { stackElevationAt } from '../domain/placement.js?v=ebdfcba6160b';
@@ -15,6 +16,8 @@ export function createFallbackRenderer(container, handlers) {
     let elevation = 0;
     let theme = null;
     let currentBounds = { ...DEFAULT_BOARD_BOUNDS };
+  let areaTemplate = null;
+  let areaPlacement = null;
     let currentObjects = [];
     function cellAt(x, z) {
         return board.querySelector(`[data-x="${x}"][data-z="${z}"]`);
@@ -49,10 +52,14 @@ export function createFallbackRenderer(container, handlers) {
         board.style.setProperty('--fallback-ground', theme?.accentCss ?? '#879072');
         board.style.gridTemplateColumns = `repeat(${boardWidth(currentBounds)}, 1fr)`;
         board.style.gridTemplateRows = `repeat(${boardDepth(currentBounds)}, 1fr)`;
-        for (let z = currentBounds.minZ; z < currentBounds.maxZ; z += 1) {
+        const affected = new Set(areaTemplate && areaPlacement ?
+      areaCells(areaTemplate,areaPlacement,{...currentBounds,minElevation:elevation,maxElevation:elevation})
+        .map(p=>p.x+','+p.z) : []);
+    for (let z = currentBounds.minZ; z < currentBounds.maxZ; z += 1) {
             for (let x = currentBounds.minX; x < currentBounds.maxX; x += 1) {
                 const cell = document.createElement('button');
                 cell.className = 'fallback-cell';
+        if(affected.has(x+','+z)) cell.classList.add('aoe-affected');
                 cell.type = 'button';
                 cell.dataset.x = String(x);
                 cell.dataset.z = String(z);
@@ -82,6 +89,7 @@ export function createFallbackRenderer(container, handlers) {
                     }
                 }
                 cell.addEventListener('pointerenter', () => {
+          if(areaTemplate){ handlers.onAreaPoint({x,z,elevation},false); return; }
                     if (!room)
                         return;
                     const corner = { x, z, elevation };
@@ -144,7 +152,8 @@ export function createFallbackRenderer(container, handlers) {
     handlers.onStatus('Build toward an edge and the map grows automatically.');
     return {
         mode: 'fallback',
-        setTheme(next) {
+        setAreaPreview(template,placement) {areaTemplate=template;areaPlacement=placement;draw();},
+    setTheme(next) {
             theme = next;
             draw();
         },

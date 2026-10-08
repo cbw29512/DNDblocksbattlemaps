@@ -31,3 +31,6 @@ All previews and active effect markers must render **5-foot cubic cells**, never
 
 ## Whole-cell binary area contract
 Rendering is **all-or-nothing per 5-foot cube**, not partial/smooth shapes. Do not prorate damage for partial cell overlap. Determine cells using edition-correct tabletop grid/template rules and line-of-effect, then display the resulting full cubic cells at ~50% opacity. Do **not** substitute naive any-overlap/any-touched-cell logic without RAW verification. Evaluate Large/Huge/Gargantuan creature volumes, not one anchor cell. The current A0 cell-center approximation is provisional and must be replaced/certified in A4 before claiming RAW-complete.
+
+## A1 initial preview status (2026-10-08)
+- **IN PROGRESS** on dedicated branch: editor selector and 3D full-cube translucent overlay, 2D highlighted full cells, Cast/Cancel/Escape/right click; A2 preliminary local in-memory cast announcement. Preview examples only and first creature used as provisional origin. This is not complete A1 or complete A2; requires exact-head CI, real-browser validation, explicit user caster selection, RAW geometry, target highlighting and persistent campaign-scoped event records. Do not claim RAW-complete.

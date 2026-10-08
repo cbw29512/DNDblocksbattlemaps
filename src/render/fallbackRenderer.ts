@@ -1,3 +1,4 @@
+import { areaCells } from '../domain/areaTemplates.js';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
 import { getCatalogItem } from '../domain/catalog.js';
 import { stackElevationAt } from '../domain/placement.js';
@@ -26,6 +27,8 @@ export function createFallbackRenderer(
   let elevation = 0;
   let theme: TerrainTheme | null = null;
   let currentBounds: BoardBounds = { ...DEFAULT_BOARD_BOUNDS };
+  let areaTemplate: import('../domain/areaTemplates.js').AreaTemplate | null = null;
+  let areaPlacement: import('../domain/areaTemplates.js').AreaPlacement | null = null;
   let currentObjects: Parameters<BoardRenderer['render']>[0]['objects'] = [];
 
   function cellAt(x: number, z: number): HTMLElement | null {
@@ -68,10 +71,14 @@ export function createFallbackRenderer(
     board.style.gridTemplateColumns = `repeat(${boardWidth(currentBounds)}, 1fr)`;
     board.style.gridTemplateRows = `repeat(${boardDepth(currentBounds)}, 1fr)`;
 
+    const affected = new Set(areaTemplate && areaPlacement ?
+      areaCells(areaTemplate,areaPlacement,{...currentBounds,minElevation:elevation,maxElevation:elevation})
+        .map(p=>p.x+','+p.z) : []);
     for (let z = currentBounds.minZ; z < currentBounds.maxZ; z += 1) {
       for (let x = currentBounds.minX; x < currentBounds.maxX; x += 1) {
         const cell = document.createElement('button');
         cell.className = 'fallback-cell';
+        if(affected.has(x+','+z)) cell.classList.add('aoe-affected');
         cell.type = 'button';
         cell.dataset.x = String(x);
         cell.dataset.z = String(z);
@@ -102,6 +109,7 @@ export function createFallbackRenderer(
         }
 
         cell.addEventListener('pointerenter', () => {
+          if(areaTemplate){ handlers.onAreaPoint({x,z,elevation},false); return; }
           if (!room) return;
           const corner = { x, z, elevation };
           const placement = chooseRoomPlacement(room, corner, currentObjects, currentBounds);
@@ -109,6 +117,7 @@ export function createFallbackRenderer(
         });
 
         cell.addEventListener('click', () => {
+          if (areaTemplate) { handlers.onAreaPoint({x,z,elevation},true); return; }
           if (top && handlers.onMarkTarget(top.id)) return;
           if (room) {
             const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects, currentBounds);
@@ -149,6 +158,7 @@ export function createFallbackRenderer(
 
         cell.addEventListener('contextmenu', (event) => {
           event.preventDefault();
+          if(areaTemplate){handlers.onAreaPoint({x,z,elevation},false);return;}
           if (top) handlers.onRemove(top.id);
         });
 
@@ -161,6 +171,7 @@ export function createFallbackRenderer(
 
   return {
     mode: 'fallback',
+    setAreaPreview(template,placement) {areaTemplate=template;areaPlacement=placement;draw();},
     setTheme(next) {
       theme = next;
       draw();
