@@ -308,3 +308,33 @@ test('universal creature footprints cover contiguous squares as one logical enti
   }
   assert.throws(() => cubeFootprint(origin, 5), RangeError);
 });
+
+test('one creature footprint expands to cube meshes with shared entity identity', async () => {
+  const { meshesFor } = await import('../.test-build/src/render/threeObjects.js');
+  // Mock Three primitives: only test positions and identity, not browser rendering.
+  class BoxGeometry { constructor(...args) { this.args = args; } }
+  class MeshStandardMaterial { constructor(options) { this.options = options; } }
+  class Mesh {
+    constructor(geometry, material) {
+      this.geometry = geometry;
+      this.material = material;
+      this.position = { set: (x, y, z) => { this.position.xyz = [x, y, z]; } };
+      this.userData = {};
+    }
+  }
+  const THREE = { BoxGeometry, MeshStandardMaterial, Mesh };
+  const original = PALETTE['monster-goblin'].footprintCells;
+  try {
+    PALETTE['monster-goblin'].footprintCells = 2;
+    // Disable art only within this isolated unit test; avoid texture loading.
+    const art = PALETTE['monster-goblin'].art;
+    try {
+      PALETTE['monster-goblin'].art = undefined;
+      const cells = meshesFor(THREE, { id: 'creature-1', catalogId: 'monster-goblin', x: 3, z: 5, elevation: 1, createdAt: 1 });
+      assert.equal(cells.length, 4);
+      assert.deepEqual(cells.map((part) => part.position.xyz), [[3.5, 1.5, 5.5], [4.5, 1.5, 5.5], [3.5, 1.5, 6.5], [4.5, 1.5, 6.5]]);
+      assert.ok(cells.every((part) => part.userData.objectId === 'creature-1'));
+      assert.ok(cells.every((part) => part.geometry.args.every((dimension) => dimension === 1)));
+    } finally { PALETTE['monster-goblin'].art = art; }
+  } finally { PALETTE['monster-goblin'].footprintCells = original; }
+});
