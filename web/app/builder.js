@@ -1,19 +1,19 @@
-import { createBrowserBackup } from '../domain/browserBackup.js?v=7bf77dede51c';
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=7bf77dede51c';
-import { setPartyMembership } from '../domain/party.js?v=7bf77dede51c';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=7bf77dede51c';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=7bf77dede51c';
-import { printBoardMap } from './printMap.js?v=7bf77dede51c';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=7bf77dede51c';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=7bf77dede51c';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=7bf77dede51c';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=7bf77dede51c';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=7bf77dede51c';
-import { roomSummary } from '../domain/room.js?v=7bf77dede51c';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=7bf77dede51c';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=7bf77dede51c';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=7bf77dede51c';
-import { createRenderer } from '../render/createRenderer.js?v=7bf77dede51c';
+import { createBrowserBackup } from '../domain/browserBackup.js?v=ebdfcba6160b';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=ebdfcba6160b';
+import { setPartyMembership } from '../domain/party.js?v=ebdfcba6160b';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=ebdfcba6160b';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=ebdfcba6160b';
+import { printBoardMap } from './printMap.js?v=ebdfcba6160b';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=ebdfcba6160b';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=ebdfcba6160b';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=ebdfcba6160b';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=ebdfcba6160b';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=ebdfcba6160b';
+import { roomSummary } from '../domain/room.js?v=ebdfcba6160b';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=ebdfcba6160b';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=ebdfcba6160b';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=ebdfcba6160b';
+import { createRenderer } from '../render/createRenderer.js?v=ebdfcba6160b';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
