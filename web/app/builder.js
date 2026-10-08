@@ -63,7 +63,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           <label for="spell-caster">Caster on map</label><select id="spell-caster"><option value="">Choose a creature</option></select>
           
           <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button><button id="clear-spell-marks" type="button">Clear Markers</button></div>
-          <small id="spell-instructions">Choose a spell, aim over the map, left-click to cast or right-click to cancel.</small>
+          <small id="spell-instructions">Choose a spell and caster. Mouse: left-click Cast, right-click Cancel. Touch: tap a location, then Cast or Cancel.</small>
 
         </section></details>
         <details class="builder-tool-group"><summary>Party</summary><section id="party-manager" class="party-manager" aria-label="Campaign party">
@@ -263,8 +263,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         mobileActions.hidden = false;
         renderer?.setAreaPreview(activeSpell, { origin: casterOrigin, center: casterOrigin });
         renderer?.setAreaTargets([]);
-        spellInstructions.textContent = 'Move to aim. Left-click casts; right-click or Escape cancels.';
-        status.textContent = 'Spell armed: move over the map, left-click to cast, right-click to cancel.';
+        spellInstructions.textContent = 'Mouse: move to aim, left-click Cast, right-click or Escape Cancel. Touch: tap to position, then use Cast or Cancel.';
+        status.textContent = 'Spell armed: left-click Cast / right-click Cancel; on touch, tap a target then press Cast.';
     };
     root.querySelector('#spell-choice')?.addEventListener('change', armArea);
     root.querySelector('#spell-caster')?.addEventListener('change', armArea);
