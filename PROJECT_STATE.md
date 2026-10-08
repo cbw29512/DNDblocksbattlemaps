@@ -382,3 +382,14 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Cause:** `tsconfig.test.json` included only `src/domain/**/*.ts`, but the new rendering test directly imports `src/render/threeObjects.ts`.
 - **Fix:** extend test compilation to `src/render/threeObjects.ts` and its browser asset URL helper. No runtime cube code changed.
 - **Verification:** rerun GitHub Pages workflow; full test and visual deploy pending.
+
+
+## 2026-10-08 — Wire existing Iron Pit character/monster art
+
+- **Starting State:** Build/Props face art works, but 12 Characters and 9 Monsters refer to nonexistent `assets/catalog/heroes/` and `assets/catalog/monsters/` local paths in DND Blocks.
+- **Evidence:** Iron Pit inventory explicitly identifies 12 2024 class portraits and matching named monster WebPs; fetched binary portrait files through GitHub API reached binary decoding failure rather than missing-file response (proof the paths exist). Exact variant identity remains important (2014 kobold vs 2024 kobold warrior; Orc art unregistered in runtime but processed).
+- **Changes Made:** point hero/monster catalog image URLs at user's Iron Pit raw asset locations, set image.crossOrigin=anonymous for canvas painting, update tests for external paths and browser import cache versions, record dependency/source rights notes.
+- **Decisions Made:** temporary remote image references for browser test, not a permanent mirrored asset strategy; no geometry, movement, or builder changes. No claim that user has granted third-party redistribution rights. Production should vendor only verified/licensed art.
+- **Cost Impact:** no new package; one public network request per distinct art type; potential GitHub Raw availability dependency.
+- **Result:** source/web changes committed to branch; CI and real-browser character/monster portrait display not yet verified.
+- **Exact Next Step:** verify PR checks, merge and deploy Pages test; place Fighter, Goblin, Orc and confirm art appears (not flat colored cubes). If cross-origin fetch fails, copy verified WebPs through a binary-safe route and update paths.
