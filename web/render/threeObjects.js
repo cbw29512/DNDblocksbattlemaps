@@ -61,7 +61,18 @@ export function geometryFor(THREE, _catalogId) {
 }
 
 const PLAYER_RING_COLORS = new Set([0x2688dc, 0x31b86b, 0xe0be3d, 0xa369d7, 0xf18b35, 0xf4f4f4]);
+const creatureLabelMaterials = new Map();
+const creatureRingMaterials = new Map();
+let creatureRingGeometry = null;
+function configureLabel(sprite) {
+    sprite.position.set(0, 1.01, 0);
+    sprite.scale.set(1.7, 0.425, 1);
+    sprite.renderOrder = 20;
+    return sprite;
+}
 function creatureLabel(THREE, name) {
+    const cached = creatureLabelMaterials.get(name);
+    if (cached) return configureLabel(new THREE.Sprite(cached));
     const canvas = document.createElement('canvas');
     canvas.width = 384;
     canvas.height = 96;
@@ -81,14 +92,22 @@ function creatureLabel(THREE, name) {
     ctx.fillText(label, 192, 48, 356);
     const map = new THREE.CanvasTexture(canvas);
     map.colorSpace = THREE.SRGBColorSpace;
-    const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map, transparent: true, depthTest: false }));
+    const material = new THREE.SpriteMaterial({ map, transparent: true, depthTest: false });
+    creatureLabelMaterials.set(name, material);
+    const sprite = new THREE.Sprite(material);
     sprite.position.set(0, 1.01, 0);
     sprite.scale.set(1.7, 0.425, 1);
     sprite.renderOrder = 20;
     return sprite;
 }
 function creatureRing(THREE, color) {
-    const ring = new THREE.Mesh(new THREE.RingGeometry(0.42, 0.52, 48), new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide, depthWrite: false }));
+    creatureRingGeometry ??= new THREE.RingGeometry(0.42, 0.52, 48);
+    let material = creatureRingMaterials.get(color);
+    if (!material) {
+        material = new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide, depthWrite: false });
+        creatureRingMaterials.set(color, material);
+    }
+    const ring = new THREE.Mesh(creatureRingGeometry, material);
     ring.rotation.x = -Math.PI / 2;
     ring.position.y = -0.492;
     ring.renderOrder = 5;
