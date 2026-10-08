@@ -438,3 +438,11 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - Implementation: rename Move Creatures UI toggle to Combat Mode/Build Mode; wrap Build/catalog and identity-ring sections and hide in Combat; keep status ring toolbox available in both modes. Existing creature movement and marker authority remain DM prototype. No credentials/player ownership, network sync or per-role view yet; do not imply those work.
 - Campaign contract: **Never split the party**: exactly one DM-selected active map for all connected players. On map switch, clients follow DM automatically and player characters retain identities/ownership/colors/statuses; DM prep maps are private. Map Manager and multiplayer sync not implemented yet.
 - Pending full CI and browser checks.
+
+
+## 2026-10-08 — Campaign party across existing maps
+
+- **User goal:** DM adds a Character, checks Party, and character automatically appears on all maps without duplication. One shared party, DM-controlled active map, preserved identity, colors, statuses and ownership when multiplayer arrives.
+- **Implemented current local prototype:** Each Character gets a Party checkbox in Build Mode. Checked characters saved to one browser-local campaign roster by stable UUID and copied to the five existing theme maps (Castle, Inn, Field, Sea, Volcano), preserving per-map x/z/elevation. The same identity is mirrored in all map saves; status and ring changes update roster; unchecking/deleting releases party membership/copies without removing original. Added map tabs to switch among existing maps, and pure-domain regression tests.
+- **Limits:** This is localStorage, not cloud/shared multiplayer and not arbitrary create-new-map infrastructure. Party checkbox belongs to DM-only prototype UI; no secure player ownership or auto-switch synchronization to other browsers. A robust map-manager/session backend and entry-marker placement are still planned.
+- **Cost:** No new npm package, hosting or service costs. GitHub Pages build/browser CI not yet verified.
