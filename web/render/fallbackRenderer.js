@@ -1,9 +1,9 @@
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=3aba2c42c4ac';
-import { getCatalogItem } from '../domain/catalog.js?v=3aba2c42c4ac';
-import { stackElevationAt } from '../domain/placement.js?v=3aba2c42c4ac';
-import { roomOuterSize } from '../domain/room.js?v=3aba2c42c4ac';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=3aba2c42c4ac';
-import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=3aba2c42c4ac';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=00134766f884';
+import { getCatalogItem } from '../domain/catalog.js?v=00134766f884';
+import { stackElevationAt } from '../domain/placement.js?v=00134766f884';
+import { roomOuterSize } from '../domain/room.js?v=00134766f884';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=00134766f884';
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=00134766f884';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';
