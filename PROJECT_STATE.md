@@ -367,3 +367,14 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Result:** committed foundation; **not** a working large-monster renderer. npm/browser verification still pending because GitHub connector cannot invoke build and container cannot reach GitHub.
 - **Open Questions / Blockers:** missing verified Ogre art; coherent tiling and pointer/removal behavior must be implemented next. Existing draft PR unmerged.
 - **Exact Next Step:** check PR on a clone with `npm run check`, correct any regressions, implement mesh tiling and raycast as one creature, copy provenance-verified Ogre art, then manually verify Pages test preview before merging.
+
+
+## 2026-10-07 — Multi-cube renderer progress
+
+- **Starting State:** domain footprint model existed but renderer drew only one cube per WorldObject.
+- **Changes Made:** generic `meshesFor` adapter now expands creature catalog footprint sizes into contiguous unit cubes in Three.js. Every mesh retains the same WorldObject ID for removing the logical creature. Both src and checked-in web modules updated. A mocked renderer unit test checks 2×2 cube positions and identity.
+- **Decisions Made:** retain one logical WorldObject per monster, cube geometry, generic drawing path and no new dependencies.
+- **Cost Impact:** zero. No Netlify deployment.
+- **Result:** 2×2 mesh expansion committed to draft PR #1, tests/browser checks unverified. No Large monster was added to the palette.
+- **Open Questions / Blockers:** individual subcubes currently repeat the full illustration instead of composing a single creature silhouette. Need coherent tiled art, creature footprint state/placement selection verification and verified Ogre asset.
+- **Exact Next Step:** fix coherent multi-cube face textures, run `npm run check`, visually inspect 2×2 Ogre on Pages test deployment, and merge only after green checks.
