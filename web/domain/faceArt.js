@@ -134,10 +134,10 @@ function surfaceTexture(id, color {
   }
 }
 
-export function generatedCubeArt(id, name, icon, color) {
+export function generatedCubeArt(id, name, icon, color, category) {
     const label = escapeXml(name.toUpperCase());
-    const surface = surfaceTexture(id, color);
-    if (surface) return {src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' + surface + '</svg>'), alt: name, source: 'generated', sourceId: 'dndblocks:' + id};
+    const face = surface ?? (category === 'Build' || category === 'Props' ? illustratedBlockFace(id, icon, color, category) : null);
+    if (face) return {src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' + face + '</svg>'), alt: name, source: 'generated', sourceId: 'dndblocks:' + id};
     const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' +
         '<rect width="128" height="128" rx="13" fill="' + hex(color) + '"/>' +
         '<rect x="5" y="5" width="118" height="118" rx="10" fill="none" stroke="#f7efd7" stroke-opacity=".42" stroke-width="3"/>' +
