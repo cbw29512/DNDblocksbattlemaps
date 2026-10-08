@@ -34,3 +34,6 @@ Rendering is **all-or-nothing per 5-foot cube**, not partial/smooth shapes. Do n
 
 ## A1 initial preview status (2026-10-08)
 - **IN PROGRESS** on dedicated branch: editor selector and 3D full-cube translucent overlay, 2D highlighted full cells, Cast/Cancel/Escape/right click; A2 preliminary local in-memory cast announcement. Preview examples only and first creature used as provisional origin. This is not complete A1 or complete A2; requires exact-head CI, real-browser validation, explicit user caster selection, RAW geometry, target highlighting and persistent campaign-scoped event records. Do not claim RAW-complete.
+
+## A4 partial candidate-target footprint helper (IN PROGRESS)
+- New generic `creatureOccupiedCells` and `previewAffectedCreatures` operate on full occupied cubic volumes and report each logical creature once. UI announces provisional intersected creature count/name during preview; cast announcement records count but no save or damage. This **does not** complete A4 RAW geometry or A1 graphical creature highlighting; A0's cell-center approximation remains provisional.
