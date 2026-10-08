@@ -1,6 +1,6 @@
-import { partyRosterFromBoard, reconcilePartyOnMap, removePartyFromMap } from './party.js?v=party1008';
-import { normalizeBoardBounds } from './boardBounds.js?v=party1008';
-import { createBoardState } from './commands.js?v=party1008';
+import { partyRosterFromBoard, reconcilePartyOnMap, removePartyFromMap } from './party.js?v=partymerged1008';
+import { normalizeBoardBounds } from './boardBounds.js?v=partymerged1008';
+import { createBoardState } from './commands.js?v=partymerged1008';
 const STORAGE_PREFIX = 'dndblocks:stage1:';
 function key(terrain) {
     return `${STORAGE_PREFIX}${terrain}`;
