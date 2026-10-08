@@ -356,3 +356,14 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Result:** changes committed to `catalog-face-art-oct07`; not verified in browser or automated tests.
 - **Open Questions / Blockers:** pending npm check and visual check; 2×2 creature logic needs separate coordinated work.
 - **Exact Next Step:** run check; fix any findings and validate browser visuals before merging PR #1, then proceed to monster footprint and approved art inventory.
+
+
+## 2026-10-07 — Multi-cube domain foundation
+
+- **Starting State:** each WorldObject renders as exactly one unit cube; no verified Ogre asset in DND Blocks; distinct icon/glow PR pending.
+- **Changes Made:** added `cubeFootprint` pure domain function for 1×1 through 4×4 contiguous cells and regression coverage; documentation updated.
+- **Decisions Made:** one logical creature must remain one WorldObject; multi-cube rendering must not duplicate creatures, and silhouettes need coherent subdivision instead of cloned faces.
+- **Cost Impact:** no dependencies or deployment.
+- **Result:** committed foundation; **not** a working large-monster renderer. npm/browser verification still pending because GitHub connector cannot invoke build and container cannot reach GitHub.
+- **Open Questions / Blockers:** missing verified Ogre art; coherent tiling and pointer/removal behavior must be implemented next. Existing draft PR unmerged.
+- **Exact Next Step:** check PR on a clone with `npm run check`, correct any regressions, implement mesh tiling and raycast as one creature, copy provenance-verified Ogre art, then manually verify Pages test preview before merging.
