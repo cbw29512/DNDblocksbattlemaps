@@ -375,3 +375,16 @@ test('each official status ring has a stable non-red color', async () => {
     assert.notEqual(CONDITION_COLORS[condition], 0xd83030);
   }
 });
+
+test('moving a creature preserves identity, colored ring and conditions with undo', () => {
+  const before = { ...createWorldObject('fighter-1','hero-fighter',{x:1,z:2,elevation:0},1,0x2688dc), conditions:['Poisoned'], exhaustion:2 };
+  const after = {...before,x:5,z:6};
+  const initial = applyCommand(createBoardState('castle'), placeCommand(before));
+  const changed = commit(initial,createHistory(),{kind:'update',before,after});
+  assert.equal(changed.state.objects.length,1);
+  assert.deepEqual(changed.state.objects[0],after);
+  assert.equal(changed.state.objects[0].ringColor,0x2688dc);
+  assert.deepEqual(changed.state.objects[0].conditions,['Poisoned']);
+  const restored = undo(changed.state,changed.history);
+  assert.deepEqual(restored.state.objects[0],before);
+});

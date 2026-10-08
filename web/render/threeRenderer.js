@@ -1,3 +1,4 @@
+import { getCatalogItem } from '../domain/catalog.js?v=00134766f884';
 import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=creaturerings1008';
 import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=creaturerings1008';
 import { placementFromSurface } from '../domain/surfacePlacement.js?v=creaturerings1008';
@@ -44,6 +45,7 @@ export async function createThreeRenderer(container, handlers) {
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
     let selected = null;
+    let movingCreatureId = null;
     let activeRoom = null;
     let elevation = 0;
     let preview = null;
@@ -176,6 +178,18 @@ export async function createThreeRenderer(container, handlers) {
                 handlers.onStatus('That room would exceed the 100 × 100 map limit or the height cap.');
             return;
         }
+        if (movingCreatureId) {
+            const destination = floorPosition(event);
+            if (destination) handlers.onMoveCreature(destination);
+            else handlers.onStatus('Choose a square inside the map to move this creature.');
+            return;
+        }
+        setPointer(event);
+        const clicked = raycaster.intersectObjects(objectGroup.children, false)[0]?.object?.userData?.objectId;
+        if (clicked && currentObjects.some(o => o.id === clicked && ['Characters', 'Monsters'].includes(getCatalogItem(o.catalogId).category))) {
+            handlers.onPickCreature(String(clicked));
+            return;
+        }
         if (!selected)
             return;
         const position = blockPlacementFor(event);
@@ -229,6 +243,7 @@ export async function createThreeRenderer(container, handlers) {
             activeRoom = next;
             rebuildRoomPreview();
         },
+        setMovingCreature(id) { movingCreatureId = id; },
         setElevation(next) {
             elevation = next;
             const center = boardCenter(currentBounds);

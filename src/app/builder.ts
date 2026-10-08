@@ -39,6 +39,7 @@ export async function renderBuilder(
   let selected: CatalogId = 'stone-block';
   let armedRoom: NormalizedRoom | null = null;
   let elevation = 0;
+  let pickedCreatureId: string | null = null;
 
   root.innerHTML = `
     <main class="builder-shell" style="--theme-accent:${theme.accentCss}">
@@ -189,6 +190,23 @@ export async function renderBuilder(
   };
 
   renderer = await createRenderer(canvas, {
+    onPickCreature(id) {
+      const creature = findObject(state, id);
+      if (!creature || !isCreature(creature)) return;
+      pickedCreatureId = id;
+      renderer?.setMovingCreature(id);
+      status.textContent = `${getCatalogItem(creature.catalogId).name} picked up. Click a destination square or press Escape.`;
+    },
+    onMoveCreature(position) {
+      const creature = pickedCreatureId ? findObject(state, pickedCreatureId) : null;
+      if (!creature || !isCreature(creature)) return;
+      const after = { ...creature, x: position.x, z: position.z, elevation: creature.elevation };
+      const result = run({ kind: 'update', before: creature, after }, [position]);
+      if (result === null) return;
+      pickedCreatureId = null;
+      renderer?.setMovingCreature(null);
+      status.textContent = `${getCatalogItem(creature.catalogId).name} moved. Ring and conditions preserved.`;
+    },
     onPlace(position) {
       const object = createWorldObject(makeId(), selected, position);
       const grew = run(placeCommand(object), [position]);
@@ -366,7 +384,15 @@ export async function renderBuilder(
   document.getElementById('zoom-out')?.addEventListener('click', () => renderer?.zoom(1.2));
 
   const onKeyDown = (event: KeyboardEvent): void => {
-    if (event.key !== 'Escape' || !armedRoom) return;
+    if (event.key !== 'Escape') return;
+    if (pickedCreatureId) {
+      pickedCreatureId = null;
+      renderer?.setMovingCreature(null);
+      status.textContent = 'Creature movement canceled.';
+      event.preventDefault();
+      return;
+    }
+    if (!armedRoom) return;
     event.preventDefault();
     cancelRoomMode();
   };

@@ -347,3 +347,8 @@ Source: D&D Beyond 2024 Basic Rules, https://www.dndbeyond.com/sources/dnd/br-20
 All marker changes edit one WorldObject through the existing Undo/Redo system. The logical creature is never duplicated. HTML drag-and-drop is a desktop interaction; a touch-compatible mode should follow in a later usability pass. Source and checked-in browser modules updated together. Browser validation pending.
 
 Each condition now has a **stable distinct ring color** (the same color in the draggable status token and the outer cube indicator). Red remains reserved for monster identity. Old saved maps with duplicate or disallowed player colors are normalized on load without deleting any creatures.
+
+
+### Click-to-move creatures (2026-10-08)
+
+After placing a Character or Monster, click its cube to pick up the logical piece, then click a grid square to put it down. Escape cancels. This is an undoable coordinate update, not remove/recreate: the creature keeps its identity, name (from catalog), ring color, conditions and exhaustion. Build and Props cannot be picked up via this interaction. Destination is DM-authoritative and uses the current square at the creature's existing elevation; no automatic pathfinding/rules. Works in 3D and fallback board. Verification pending.
