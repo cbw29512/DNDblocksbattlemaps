@@ -520,3 +520,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 ## 2026-10-08 — Fireball half-square grid coverage (IN PROGRESS)
 - Replaced center-point inclusion for sphere AoE cube previews with deterministic circle/square area coverage >= 50% per horizontal slice. Regression: 20-foot-radius Fireball spans 52 squares at a grid intersection on ground-level slice (not a full 8×8 box). Reuses 5-foot full-cube rendering; no save mutations.
 - 2014 DMG p.251 circular AoE and 2024 DMG Miniatures AoE half-square guidance recorded in `docs/COMBAT_AREA_AND_LOG_PLAN.md`. Height slices are provisional and true 3D volume, walls/cover/line of effect, cones/lines/cylinders, caster origin and total edition certification remain incomplete. Tests and browser checks pending.
+
+## 2026-10-08 — Website How to Play grid-spell notice
+- Added explicit guidance that AoE spells with a radius/sphere/cone display as full 5-foot squares/cubes on DND Blocks; RAW measurements, saves and damage remain unchanged. Linked this documentation requirement into the combat plan. Documentation-only; no renderer or rules change.
