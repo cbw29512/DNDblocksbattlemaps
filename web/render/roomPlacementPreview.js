@@ -1,4 +1,4 @@
-import { roomOuterSize } from '../domain/room.js?v=0e9ebf4264dd';
+import { roomOuterSize } from '../domain/room.js?v=9ddabf9ca598';
 export function createRoomPlacementPreview(THREE, room) {
     const outer = roomOuterSize(room);
     const group = new THREE.Group();

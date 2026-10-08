@@ -1,12 +1,12 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=0e9ebf4264dd';
-import { areaCells } from '../domain/areaTemplates.js?v=0e9ebf4264dd';
-import { getCatalogItem } from '../domain/catalog.js?v=0e9ebf4264dd';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=0e9ebf4264dd';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=0e9ebf4264dd';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=0e9ebf4264dd';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=0e9ebf4264dd';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=0e9ebf4264dd';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=0e9ebf4264dd';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=9ddabf9ca598';
+import { areaCells } from '../domain/areaTemplates.js?v=9ddabf9ca598';
+import { getCatalogItem } from '../domain/catalog.js?v=9ddabf9ca598';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=9ddabf9ca598';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=9ddabf9ca598';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=9ddabf9ca598';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=9ddabf9ca598';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=9ddabf9ca598';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=9ddabf9ca598';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -26,7 +26,7 @@ export async function createThreeRenderer(container, handlers) {
     controls.mouseButtons.LEFT = null;
     controls.mouseButtons.MIDDLE = THREE.MOUSE.PAN;
     controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
- 
+    // Non-shadow-casting block lights: nearest sources win, with a strict GPU budget.
     const lightSpecs = {
         torch: [0xffa345, 1.6, 5], lantern: [0xffce74, 1.25, 4],
         campfire: [0xff7b31, 2.1, 7], brazier: [0xff8c3c, 2.0, 6],
@@ -47,7 +47,10 @@ export async function createThreeRenderer(container, handlers) {
             return da - db || a.id.localeCompare(b.id);
         });
         for (const o of sources.slice(0, MAX_BLOCK_LIGHTS)) {
-            const [color, intensity, distance] = lightSpecs[o.catalogId];
+            const spec = lightSpecs[o.catalogId];
+            if (!spec)
+                continue;
+            const [color, intensity, distance] = spec;
             const light = new THREE.PointLight(color, intensity, distance, 2);
             light.position.set(o.x + .5, o.elevation + .8, o.z + .5);
             light.castShadow = false;
@@ -55,7 +58,6 @@ export async function createThreeRenderer(container, handlers) {
             blockLights.push(light);
         }
     }
-
     const objectGroup = new THREE.Group();
     scene.add(objectGroup, new THREE.HemisphereLight(0xfff3d7, 0x26342f, 2.1));
     const sun = new THREE.DirectionalLight(0xfff1ce, 2.5);
@@ -391,7 +393,8 @@ export async function createThreeRenderer(container, handlers) {
         },
         dispose() {
             resize.disconnect();
-            lightGroup.clear(); scene.remove(lightGroup);
+            lightGroup.clear();
+            scene.remove(lightGroup);
             renderer.setAnimationLoop(null);
             for (const mesh of areaGroup.children) {
                 mesh.geometry.dispose();
