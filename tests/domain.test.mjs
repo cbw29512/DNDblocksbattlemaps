@@ -729,3 +729,26 @@ test('DND Blocks sphere selects any positive 3D cube overlap without clipping be
   assert.ok(out.some(c=>c.x<0));
   assert.ok(!out.some(c=>c.elevation===5));
 });
+
+test('Fireball area reports caster, friendly hero and enemy once each, not scenery', async () => {
+  const { AREA_PRESETS, areaCells } = await import('../.test-build/src/domain/areaTemplates.js');
+  const { previewAffectedCreatures } = await import('../.test-build/src/domain/areaTargets.js');
+  const fireball = AREA_PRESETS.find(x => x.id === 'fireball');
+  const origin = {x: 0, z: 0, elevation: 0};
+  const center = {x: 2, z: 0, elevation: 0};
+  const area = areaCells(fireball, {origin, center}, {
+    minX: -5, maxX: 8, minZ: -6, maxZ: 7, minElevation: -5, maxElevation: 6
+  });
+  const creature = (id, catalogId, x, z, elevation = 0) =>
+    ({id, catalogId, x, z, elevation, createdAt: 0});
+  const objects = [
+    creature('caster','hero-fighter',0,0),
+    creature('ally','hero-fighter',1,0),
+    creature('enemy','monster-srd-ogre',5,0),
+    creature('outside','monster-srd-ogre',12,0),
+    creature('wall','wall',2,0)
+  ];
+  assert.deepEqual(previewAffectedCreatures(objects, area).map(o => o.id),
+    ['caster','ally','enemy']);
+  assert.equal(previewAffectedCreatures(objects, []).length,0);
+});
