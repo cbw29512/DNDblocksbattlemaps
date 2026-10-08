@@ -534,3 +534,8 @@ Light is an effect of placed cubes, not a change to cube shape. In Three.js mode
 
 ## AoE belongs only to Combat Mode (2026-10-08)
 Spell and area-effect tools and overlays are Combat Mode controls, not building tools. Build Mode starts without the spells panel; entering Combat Mode reveals it. Returning to Build Mode cancels the current targeting preview and provisional targets, without erasing built blocks or the combat log. Keep universal AoE calculations shared; do not build a second area engine.
+
+## Creature markers are combat-only (2026-10-08)
+Creature status, condition, and player identity marker controls belong on the Combat screen, not in map construction. Build Mode can place creatures but does not display Creature Markers controls; switching modes does not erase existing creature identities or status state.
+
+Combat-only marker behavior includes the interaction handlers, not just the visible UI. Leaving Combat Mode disarms selected status tools and marker click/drag actions are rejected in Build Mode without erasing previously assigned creature state.

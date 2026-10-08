@@ -263,3 +263,6 @@
 
 /* UA [hidden] can be overridden by our sidebar flex layout; never show combat spells in Build Mode. */
 .builder-sidebar #combat-spells-panel[hidden] { display: none !important; }
+
+/* Creature marker controls belong to Combat Mode; sidebar layout must not override hidden. */
+.builder-sidebar #combat-markers-panel[hidden] { display: none !important; }
