@@ -581,7 +581,8 @@ test('AoE sphere includes cells inside 20-foot radius, excludes beyond and honor
   const fireball=AREA_PRESETS.find(x=>x.id==='fireball');
   const placement={origin:{x:0,z:0,elevation:0},center:{x:10,z:0,elevation:0}};
   assert.ok(isInCastingRange(fireball,placement));
-  assert.equal(areaContainsPoint(fireball,placement,{x:14,z:0,elevation:0}),true);
+  assert.equal(areaContainsPoint(fireball,placement,{x:13,z:0,elevation:0}),true);
+  assert.equal(areaContainsPoint(fireball,placement,{x:14,z:0,elevation:0}),false);
   assert.equal(areaContainsPoint(fireball,placement,{x:15,z:0,elevation:0}),false);
   assert.equal(areaContainsPoint(fireball,placement,{x:10,z:0,elevation:5}),false);
   assert.equal(isInCastingRange(fireball,{...placement,center:{x:31,z:0,elevation:0}}),false);
@@ -615,4 +616,15 @@ test('AoE preview ignores non-creature scenery, preserves identity',async()=>{
  const objects=[{id:'wall',catalogId:'wall',x:0,z:0,elevation:0,createdAt:0},
  {id:'pc',catalogId:'hero-fighter',x:0,z:0,elevation:0,createdAt:1}];
  assert.deepEqual(previewAffectedCreatures(objects,[{x:0,z:0,elevation:0}]).map(x=>x.id),['pc']);
+});
+
+test('DMG circular half-square grid: 20-foot Fireball has 52 horizontal squares, not full 8x8 box', async () => {
+  const { circularGridCellAffected, circularSquareCoverage } = await import('../.test-build/src/domain/areaTemplates.js');
+  const selected=[];
+  for(let z=-4;z<4;z++)for(let x=-4;x<4;x++)if(circularGridCellAffected(20,0,0,x,z))selected.push([x,z]);
+  assert.equal(selected.length,52);
+  assert.equal(circularGridCellAffected(20,0,0,-4,-4),false);
+  assert.equal(circularGridCellAffected(20,0,0,-1,-1),true);
+  assert.ok(circularSquareCoverage(20,0,0,-4,-4)<0.5);
+  assert.equal(circularGridCellAffected(10,0,0,0,0),true);
 });
