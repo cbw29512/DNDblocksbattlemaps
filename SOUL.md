@@ -525,3 +525,6 @@ When an area preview is canceled by right-click, Escape, or Cancel, clear both t
 
 ## Cube art legibility and appearance (2026-10-08)
 Preserve every exact 5-foot cube and the current multi-cube creature footprint; visual improvements must be done with face artwork, material response, lighting, and overlays, never non-cube meshes. Keep face art aspect ratio when rasterizing and letterbox it over its catalog color rather than stretching portraits/icons. Cube faces should respond to scene illumination so players can distinguish their visible planes. Do not remove identifying creature labels or status rings. Keep GPU/material caching and image-load fallbacks intact. Actual visual acceptance requires desktop/touch screenshots and a check for overexposure.
+
+## Building block visual scope (2026-10-08)
+All catalog Build and Props cubes must receive square face artwork; do not silently leave generic icon/name placards. Surface materials get distinctive patterned faces; remaining structural and prop blocks get inset themed illustration faces. Use the same exact cube geometry and 5-foot footprint. Keep Characters and Monsters portrait logic untouched. Document exceptions and verify full catalog with automated coverage tests.
