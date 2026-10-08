@@ -52,6 +52,7 @@ export interface PaletteItem {
   depth: number;
   footprintCells?: 1 | 2 | 3 | 4;
   challengeRating?: string;
+  creatureSize?: string;
   edition?: '2014' | '2024';
   art?: CatalogArt;
   tags?: string[];

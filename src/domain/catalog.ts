@@ -1,3 +1,4 @@
+import { SRD_MONSTER_BLOCKS } from './srdMonsterBlocks.js';
 import type {
   CatalogArt, CatalogCategory, CatalogId, PaletteItem, TerrainId, TerrainTheme
 } from './types.js';
@@ -180,16 +181,24 @@ const MONSTER_ITEMS: PaletteItem[] = [
   monster('orc', 'Orc', 0x577a4b)
 ];
 
+const SRD_MONSTER_ITEMS: PaletteItem[] = SRD_MONSTER_BLOCKS.map(([id, name, size, cr, art]) => {
+  const footprint = size === 'Gargantuan' ? 4 : size === 'Huge' ? 3 : size === 'Large' ? 2 : 1;
+  const artwork = art ? monsterArt(art, name) : generatedCubeArt('monster-srd-' + id, name, 'rune', 0x806347);
+  return { ...cube('monster-srd-' + id, name, 'Monsters', 0x806347, artwork, ['monster', 'srd', size.toLowerCase()]),
+    footprintCells: footprint as 1|2|3|4, creatureSize: size, challengeRating: cr ?? undefined, edition: '2024' };
+});
+
 export const CATALOG_CATEGORIES: CatalogCategory[] = ['Build', 'Props', 'Characters', 'Monsters'];
 export const DEFAULT_PALETTE: CatalogId[] = [
   ...BUILD_ITEMS.map((item) => item.id),
   ...PROP_ITEMS.map((item) => item.id),
   ...CHARACTER_ITEMS.map((item) => item.id),
-  ...MONSTER_ITEMS.map((item) => item.id)
+  ...MONSTER_ITEMS.map((item) => item.id),
+  ...SRD_MONSTER_ITEMS.map((item) => item.id)
 ];
 
 export const PALETTE: Record<CatalogId, PaletteItem> = Object.fromEntries(
-  [...BUILD_ITEMS, ...PROP_ITEMS, ...CHARACTER_ITEMS, ...MONSTER_ITEMS]
+  [...BUILD_ITEMS, ...PROP_ITEMS, ...CHARACTER_ITEMS, ...MONSTER_ITEMS, ...SRD_MONSTER_ITEMS]
     .map((item) => [item.id, item])
 );
 

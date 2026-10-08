@@ -376,3 +376,10 @@ Monsters tab now has exact CR and edition selectors. Nine legacy starter monster
 ### Campaign party auto-propagation (local prototype)
 
 DM checks **Party** next to a placed Character on Build Mode. Each checked hero's stable WorldObject ID becomes a campaign roster entry, automatically populated on the five existing terrain maps without requiring the DM to place the hero five times. Each map has independent grid position while shared identity, ring and conditions follow the roster. Unchecking Party or deleting a party character removes propagated copies while retaining the original if unchecked. Map tabs switch the current local DM view. No arbitrary map creation, online players, live network sync, secure ownership or party-start marker yet: these remain separate work.
+
+
+### SRD Monster Block Library (visual-only; Oct 2026)
+
+330 canonical SRD 5.2.1 monster names/CRs/sizes are now included as visual monster blocks. Edition isn't a required user decision; nine legacy starter monsters also remain. Iron Pit's approved art is used where an image name matches its inventory; otherwise generated art clearly identifies the monster until bespoke art is available. Filtering by exact CR remains in Monsters tab.
+
+**Every physical unit is a perfect 5-foot cube.** Small and Medium use one cube (Tiny too for this map); Large uses a 2×2×2 cube assembly, Huge 3×3×3, Gargantuan 4×4×4. A monster is one logical draggable/movable WorldObject, not independent creatures per cube. Exterior portrait/silhouette panels span the joined cubes and include visible grid seams. DM controls movement and statuses. Do not confuse visual availability with combat ability certification.
