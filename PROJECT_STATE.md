@@ -526,3 +526,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — A3 initial edition-keyed ability registry (IN PROGRESS)
 - New source and browser registry keys existing sample effects by `edition:source entity:action` for 2014 and 2024; every sample explicitly labeled `illustrative` and without source verification. Editor lists its edition and unverified label, resolving by stable key. This is *not* a verified 2014/2024 spell library and sample sizes are not certified. Tests ensure keys remain distinct and no sample passes RAW certification. Pending CI/browser QA.
+
+## 2026-10-08 — Cardinal cube line preview checkpoint (IN PROGRESS)
+- Updated the shared line inclusion predicate for horizontal one-square-wide cardinal rows: 60-foot sample = twelve whole 5-foot cubes; 100-foot existing Lightning Bolt sample = twenty. Both 3D rendering and candidate-target scans now take the caster's origin into account when computing bounds. Focused unit tests added; final-head CI/browser QA pending. Diagonal/vertical aiming and complete RAW line rules remain unverified.

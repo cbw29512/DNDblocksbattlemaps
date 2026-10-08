@@ -640,3 +640,24 @@ test('area registry keeps edition identities distinct and samples fail closed',a
  assert.equal(getAreaAbility('2024:sample:missing'),null);
  assert.ok(AREA_ABILITY_REGISTRY.every(x=>!isRawCertified(x)));
 });
+
+test('horizontal 60-foot line is exactly 12 joined translucent-cube cells',async()=>{
+ const {areaCells}=await import('../.test-build/src/domain/areaTemplates.js');
+ const shape={id:'sample-60',label:'60 foot sample',shape:'line',sizeFeet:60,widthFeet:5,maxRangeFeet:0,visual:'lightning'};
+ const limits={minX:-25,maxX:26,minZ:-25,maxZ:26,minElevation:0,maxElevation:1};
+ const east=areaCells(shape,{origin:{x:0,z:0,elevation:0},center:{x:4,z:0,elevation:0}},limits);
+ assert.equal(east.length,12);
+ assert.deepEqual(east.map(p=>p.x),Array.from({length:12},(_,i)=>i+1));
+ assert.ok(east.every(p=>p.z===0 && p.elevation===0));
+ const north=areaCells(shape,{origin:{x:0,z:0,elevation:0},center:{x:0,z:-2,elevation:0}},limits);
+ assert.equal(north.length,12);
+ assert.deepEqual(north.map(p=>p.z),Array.from({length:12},(_,i)=>-12+i));
+});
+test('standard sample 100-foot line is 20 five-foot cubes',async()=>{
+ const {areaCells,AREA_PRESETS}=await import('../.test-build/src/domain/areaTemplates.js');
+ const shape=AREA_PRESETS.find(x=>x.id==='lightning-bolt');
+ const cubes=areaCells(shape,{origin:{x:5,z:2,elevation:0},center:{x:10,z:2,elevation:0}},
+ {minX:0,maxX:35,minZ:0,maxZ:8,minElevation:0,maxElevation:0});
+ assert.equal(cubes.length,20);
+ assert.ok(cubes.every(p=>p.z===2 && p.elevation===0));
+});
