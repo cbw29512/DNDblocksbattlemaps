@@ -414,3 +414,11 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Next:** Run `npm run check`, deploy Pages test build; place two Fighters + a Goblin, drag Blue to the first and Green to the second, confirm colors disappear from palette, Poisoned/Stunned markers can be added/removed on both creatures, and Undo/Redo plus reload preserve state. Verify other palette placement still works.
 
 - **Follow-up design check:** applied an explicit reusable CONDITION_COLORS mapping for the 15 official condition tokens; the status ring color no longer depends on assignment order. Old saved duplicate colors normalize to exclusive assignments at builder startup; test coverage includes this case. No changes to combat mechanics.
+
+
+## 2026-10-08 — Creature click-to-move
+
+- **Starting State:** Characters/Monsters could be placed, named, assigned rings/statuses but not moved after placement; Build/Props must remain immobile by ordinary selection.
+- **Changes Made:** Three.js and fallback renderer now detect clicks on existing Character/Monster cubes, arm a pick-up, and accept next map click as the destination; Escape cancels. Builder commits the move as a reversible single WorldObject `update`, retaining identity/ringColor/conditions/exhaustion. Build/Props continue existing placement behavior. Rendering contracts and checked-in browser JS synchronized, movement regression added.
+- **Limitations:** This move retains existing elevation; DM-authoritative simple pick/place without pathfinding, obstacle rules, turn enforcement or realtime multiplayer. Browser check and CI pending.
+- **Next:** Verify npm test and Pages deployment; click Fighter, click empty grid, check image/rings/conditions moved, Undo returns old location; click wall and ensure it does not arm a move.
