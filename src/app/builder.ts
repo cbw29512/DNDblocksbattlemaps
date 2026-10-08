@@ -154,6 +154,7 @@ export async function renderBuilder(
 
   const status = document.getElementById('board-status') as HTMLElement;
 
+  const canvas = document.getElementById('board-canvas') as HTMLElement;
   const castButton = root.querySelector<HTMLButtonElement>('#cast-spell')!;
   const cancelButton = root.querySelector<HTMLButtonElement>('#cancel-spell')!;
   const spellInstructions = root.querySelector<HTMLElement>('#spell-instructions')!;
@@ -200,7 +201,6 @@ export async function renderBuilder(
   const onAreaRightClick=(event:MouseEvent):void=>{if(activeSpell){event.preventDefault();cancelArea();}};
   canvas.addEventListener('contextmenu',onAreaRightClick,true);
 
-  const canvas = document.getElementById('board-canvas') as HTMLElement;
   const boardSize = document.getElementById('board-size') as HTMLElement;
   const buildRoomButton = document.getElementById('build-room') as HTMLButtonElement;
 
