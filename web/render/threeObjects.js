@@ -178,7 +178,6 @@ export function meshFor(THREE, object) {
     const footprint = item.category === 'Monsters' ? (item.footprintCells ?? 1) : 1;
     if (footprint > 1) {
       monsterExterior(THREE, mesh, item, footprint);
-    monsterExterior(THREE, mesh, item, footprint);
       for (let dx = 0; dx < footprint; dx += 1) {
         for (let dz = 0; dz < footprint; dz += 1) {
           for (let dy = 0; dy < footprint; dy += 1) {
@@ -192,6 +191,7 @@ export function meshFor(THREE, object) {
           segment.userData.gridZ = object.z + dz;
           segment.userData.elevation = object.elevation;
           mesh.add(segment);
+          }
         }
       }
     }
