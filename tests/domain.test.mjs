@@ -272,6 +272,6 @@ test('generic block faces remain readable and visually distinct', async () => {
   const longName = svg('Collapsing Floor', 'pit');
   assert.notEqual(torch, lantern, 'different object identities must show different face drawings');
   assert.match(lantern, /rect x="41" y="43"/, 'lantern must show an enclosed fixture');
-  assert.match(longName, /font-size="6"/, 'long labels must shrink to fit the cube face');
+  assert.match(longName, /font-size="9"/, 'long labels must shrink to fit the cube face');
   assert.match(longName, /COLLAPSING FLOOR/);
 });
