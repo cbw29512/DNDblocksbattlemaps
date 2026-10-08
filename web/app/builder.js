@@ -226,7 +226,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         spellCenter = null;
         castButton.disabled = true;
         cancelButton.disabled = false;
-        renderer?.setAreaPreview(null, null);
+        // Arm the renderer before receiving the first battlefield pointer event.
+        renderer?.setAreaPreview(activeSpell, { origin: casterOrigin, center: casterOrigin });
         renderer?.setAreaTargets([]);
         spellInstructions.textContent = 'Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
         status.textContent = 'Area preview armed (unverified sample). Selected creature is the caster origin.';
