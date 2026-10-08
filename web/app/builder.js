@@ -541,7 +541,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     });
     root.querySelector('#creature-mode')?.addEventListener('click', () => {
         moveMode = !moveMode;
-        const aoePanel = root.querySelector<HTMLDetailsElement>('#combat-spells-panel');
+        const aoePanel = root.querySelector('#combat-spells-panel');
         if (aoePanel) { aoePanel.hidden = !moveMode; aoePanel.open = moveMode; }
         if (!moveMode) cancelArea();
         pickedCreatureId = null;
