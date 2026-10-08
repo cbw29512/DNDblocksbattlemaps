@@ -490,3 +490,7 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - User approved: DM Campaign Manager → per-campaign Map Manager → independent My Map Library. Campaign characters/party/active map isolated per campaign; library originals copied into campaigns. Preserve 5 legacy maps and previously created custom maps.
 - Full source-of-truth gates and explicit completion tracker: `docs/CAMPAIGN_MAP_LIBRARY_PLAN.md`. G0 legacy backup + idempotent Default Campaign migration; G1 campaign isolation; G2 Map Manager; G3 My Map Library; G4 browser certification and block material face improvements; G5 future server multiplayer.
 - **Next concrete task:** G0a read-only legacy save inventory and versioned downloadable backup, with tests, then G0b migration. Do not write campaign records before validating backup/rollback and schema contracts. This is documentation, not a shipped feature.
+
+## 2026-10-08 — Anti-drift governance documented
+- `docs/ANTI_DRIFT.md` now defines source-of-truth precedence, locked 5-foot cube and isolated-campaign invariants, one-work-unit PR scope, non-destructive legacy migration, exact-head CI and live-verification distinction, named status vocabulary, and hourly checkpoint/report requirements.
+- `SOUL.md`, `docs/IMPLEMENTATION_RULES.md`, and the campaign implementation plan reference the same mandatory process. No runtime behavior changed. Next implementation remains G0a legacy inventory + export backup.
