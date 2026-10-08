@@ -383,3 +383,9 @@ DM checks **Party** next to a placed Character on Build Mode. Each checked hero'
 330 canonical SRD 5.2.1 monster names/CRs/sizes are now included as visual monster blocks. Edition isn't a required user decision; nine legacy starter monsters also remain. Iron Pit's approved art is used where an image name matches its inventory; otherwise generated art clearly identifies the monster until bespoke art is available. Filtering by exact CR remains in Monsters tab.
 
 **Every physical unit is a perfect 5-foot cube.** Small and Medium use one cube (Tiny too for this map); Large uses a 2×2×2 cube assembly, Huge 3×3×3, Gargantuan 4×4×4. A monster is one logical draggable/movable WorldObject, not independent creatures per cube. Exterior portrait/silhouette panels span the joined cubes and include visible grid seams. DM controls movement and statuses. Do not confuse visual availability with combat ability certification.
+
+
+### Starter maps and status-click contract (2026-10-08)
+A DM selects a starter template and clicks Create New Map. Eight supplied layouts—Inn, Castle, Dungeon, Forest Camp, Harbor, Goblin Cave, Temple, Ruins—are editable arrangements of existing Build and Props cubes with 5-ft cells. Creating a map writes a NEW unique localStorage key plus a saved map descriptor; it does not overwrite the base terrain map or existing templates. Custom maps appear in map tabs. Campaign Party characters are reconciled by stable ID and introduced near the template's Party Start position; per-map placement coordinates remain independent. Map switching is local; no network synchronization claim.
+
+Status tokens support BOTH (a) native drag/drop onto creature and (b) click-to-select then click creature. Active state is visibly highlighted and aria-pressed, click again or Esc to cancel; status clicks always take precedence over movement or placing blocks. Existing condition and Exhaustion semantics apply unchanged.
