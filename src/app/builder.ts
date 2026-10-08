@@ -1,6 +1,6 @@
 import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js';
 import { areaCells } from '../domain/areaTemplates.js';
-import { previewAffectedCreatures } from '../domain/areaTargets.js';
+import { previewAffectedCreatures, selfAreaOriginCell } from '../domain/areaTargets.js';
 import { isInCastingRange, type AreaTemplate } from '../domain/areaTemplates.js';
 import { createBrowserBackup } from '../domain/browserBackup.js';
 import { STARTER_TEMPLATES } from '../domain/starterTemplates.js';
@@ -178,15 +178,21 @@ export async function renderBuilder(
     if([...select.options].some(o=>o.value===prior))select.value=prior;
   };
   refreshCasterOptions();
+  const spellPlacement = (point: GridPosition) => {
+    const id=root.querySelector<HTMLSelectElement>('#spell-caster')?.value;
+    const creature=state.objects.find(o=>o.id===id);
+    const origin=activeSpell?.originMode==='self' && creature ? selfAreaOriginCell(creature,point) : casterOrigin;
+    return {origin,center:point};
+  };
   const previewTargets = () => {
     if(!activeSpell || !spellCenter)return [];
     const radius=Math.ceil(activeSpell.sizeFeet/5)+1;
-    const p={origin:casterOrigin,center:spellCenter};
+    const p=spellPlacement(spellCenter);
     const area=areaCells(activeSpell,p,{
-      minX:Math.max(state.bounds.minX,Math.min(spellCenter.x,casterOrigin.x)-radius),
-      maxX:Math.min(state.bounds.maxX,Math.max(spellCenter.x,casterOrigin.x)+radius+1),
-      minZ:Math.max(state.bounds.minZ,Math.min(spellCenter.z,casterOrigin.z)-radius),
-      maxZ:Math.min(state.bounds.maxZ,Math.max(spellCenter.z,casterOrigin.z)+radius+1),
+      minX:Math.max(state.bounds.minX,Math.min(spellCenter.x,p.origin.x)-radius),
+      maxX:Math.min(state.bounds.maxX,Math.max(spellCenter.x,p.origin.x)+radius+1),
+      minZ:Math.max(state.bounds.minZ,Math.min(spellCenter.z,p.origin.z)-radius),
+      maxZ:Math.min(state.bounds.maxZ,Math.max(spellCenter.z,p.origin.z)+radius+1),
       minElevation:Math.max(0,spellCenter.elevation-radius),
       maxElevation:Math.min(8,spellCenter.elevation+radius)
     });
@@ -194,7 +200,7 @@ export async function renderBuilder(
   };
   const choosePoint = (point: GridPosition, commit: boolean): void => {
     if(!activeSpell) return;
-    const placement={origin:casterOrigin,center:point};
+    const placement=spellPlacement(point);
     if(!isInCastingRange(activeSpell,placement)){
       status.textContent='Outside the listed ability range. Choose a closer point.';
       return;

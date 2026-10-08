@@ -532,3 +532,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Self-origin area contract implementation (IN PROGRESS)
 - Explicit `originMode` distinguishes Self-starting line/cone samples from point-targeted AoEs. Self examples remain anchored to the selected caster, and pointer position supplies aim only; existing projected cardinal line geometry draws from caster. Focused unit tests added. Large caster footprint origin, unrestricted angles and certified RAW geometry remain future gates. CI/browser verification pending.
+
+## 2026-10-08 — Self-range caster edge origin (IN PROGRESS)
+- Scoped checkpoint: selected 2×2×2, 3×3×3, 4×4×4 caster self-line/cone origin moves to forward occupied cube along dominant cardinal aim; previews and target scans use the same placement. Tests written. Diagonal/3D RAW certification and actual browser verification pending.

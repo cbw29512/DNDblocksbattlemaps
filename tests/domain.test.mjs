@@ -681,3 +681,14 @@ test('Self-origin line and cone stay anchored at caster while pointer changes ai
  assert.notEqual(fireball.originMode,'self');
  assert.equal(isInCastingRange(fireball,{origin,center:{x:100,z:100,elevation:0}}),false);
 });
+
+test('Self line starts at forward occupied edge of larger casters',async()=>{
+ const {selfAreaOriginCell}=await import('../.test-build/src/domain/areaTargets.js');
+ const cases=[['monster-srd-ogre',2],['monster-srd-stone-giant',3],['monster-srd-ancient-red-dragon',4]];
+ for(const [catalogId,size] of cases){
+  const actor={id:catalogId,catalogId,x:10,z:10,elevation:0};
+  assert.deepEqual(selfAreaOriginCell(actor,{x:30,z:10,elevation:0}),{x:10+size-1,z:10,elevation:0});
+  assert.deepEqual(selfAreaOriginCell(actor,{x:0,z:10,elevation:0}),{x:10,z:10,elevation:0});
+  assert.deepEqual(selfAreaOriginCell(actor,{x:10,z:30,elevation:0}),{x:10,z:10+size-1,elevation:0});
+ }
+});
