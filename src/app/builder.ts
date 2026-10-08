@@ -183,10 +183,10 @@ export async function renderBuilder(
     const radius=Math.ceil(activeSpell.sizeFeet/5)+1;
     const p={origin:casterOrigin,center:spellCenter};
     const area=areaCells(activeSpell,p,{
-      minX:Math.max(state.bounds.minX,spellCenter.x-radius),
-      maxX:Math.min(state.bounds.maxX,spellCenter.x+radius+1),
-      minZ:Math.max(state.bounds.minZ,spellCenter.z-radius),
-      maxZ:Math.min(state.bounds.maxZ,spellCenter.z+radius+1),
+      minX:Math.max(state.bounds.minX,Math.min(spellCenter.x,casterOrigin.x)-radius),
+      maxX:Math.min(state.bounds.maxX,Math.max(spellCenter.x,casterOrigin.x)+radius+1),
+      minZ:Math.max(state.bounds.minZ,Math.min(spellCenter.z,casterOrigin.z)-radius),
+      maxZ:Math.min(state.bounds.maxZ,Math.max(spellCenter.z,casterOrigin.z)+radius+1),
       minElevation:Math.max(0,spellCenter.elevation-radius),
       maxElevation:Math.min(8,spellCenter.elevation+radius)
     });
