@@ -91,6 +91,14 @@ export function createFallbackRenderer(container, handlers) {
                     }
                     handlers.onPlace({ x, z, elevation: next });
                 });
+                cell.addEventListener('dragover', event => { event.preventDefault(); });
+                cell.addEventListener('drop', event => {
+                  event.preventDefault();
+                  const payload = event.dataTransfer?.getData('text/plain');
+                  if (top && payload) handlers.onMarkDrop(top.id, payload);
+                  else handlers.onStatus('Drop the ring on an existing creature.');
+                });
+
                 cell.addEventListener('contextmenu', (event) => {
                     event.preventDefault();
                     if (top)
