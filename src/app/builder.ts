@@ -211,7 +211,8 @@ export async function renderBuilder(
     renderer?.setAreaTargets(targets.map(o=>o.id));
     status.textContent='Preview intersects '+targets.length+' creature(s): '+(targets.map(o=>getCatalogItem(o.catalogId).name).join(', ')||'none')+'. Geometry provisional; not RAW-confirmed.';
     castButton.disabled=false;
-    if(commit) castArea();
+    // Clicking selects a center and retains the visible preview; Cast confirms it.
+    if(commit) spellInstructions.textContent='Fireball area placed. Inspect the cubes, then press Cast or Cancel.';
   };
   const castArea = (): void => {
     if(!activeSpell || !spellCenter)return;
