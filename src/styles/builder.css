@@ -193,3 +193,6 @@
 .ring-token i {height:16px;width:16px;border:4px solid var(--ring);border-radius:50%;}
 .status-token {border-color:#bd985a;}
 .ring-token[hidden],.status-token[hidden] {display:none;}
+
+.fallback-cell[style*="--creature-ring"] .fallback-piece {box-shadow:0 0 0 3px var(--creature-ring),inset -6px -5px 0 rgba(0,0,0,.16);}
+.fallback-creature-name {position:absolute;bottom:90%;left:50%;transform:translateX(-50%);z-index:4;max-width:150px;padding:2px 3px;border:1px solid #d3c6aa;border-radius:4px;background:#161816;color:white;font-size:9px;white-space:nowrap;pointer-events:none;}
