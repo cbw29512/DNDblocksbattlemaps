@@ -531,3 +531,6 @@ All Build and Props category blocks remain perfect 5-ft cubes with independently
 
 ## Light-emitting cube blocks (2026-10-08)
 Light is an effect of placed cubes, not a change to cube shape. In Three.js mode, torch, lantern, campfire, brazier, fireplace, forge and lava blocks emit local warm-colored point lights. Use a hard cap of 12 non-shadow-casting lights to avoid runaway GPU cost; every block still renders normally if it exceeds that light budget. Do not alter character or monster artwork. Fallback 2D mode has no physical illumination. Review real-device performance and lighting contrast before public certification.
+
+## AoE belongs only to Combat Mode (2026-10-08)
+Spell and area-effect tools and overlays are Combat Mode controls, not building tools. Build Mode starts without the spells panel; entering Combat Mode reveals it. Returning to Build Mode cancels the current targeting preview and provisional targets, without erasing built blocks or the combat log. Keep universal AoE calculations shared; do not build a second area engine.
