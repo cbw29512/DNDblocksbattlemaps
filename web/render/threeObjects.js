@@ -130,7 +130,7 @@ export function meshFor(THREE, object) {
     if (item.category === 'Monsters') mesh.add(creatureRing(THREE, 0xd83030));
     else if (object.ringColor !== undefined && PLAYER_RING_COLORS.has(object.ringColor))
       mesh.add(creatureRing(THREE, object.ringColor));
-    const conditions = (object.conditions ?? []).filter(s => CONDITIONS.includes(s));
+    const conditions = (object.conditions ?? []).filter(s => CONDITIONS.some(condition => condition === s));
     if ((object.exhaustion ?? 0) > 0) conditions.push('Exhaustion');
     const palette = [0xe7b94a, 0x55cad1, 0xe37aa9, 0xa8d177];
     conditions.slice(0, 4).forEach((condition, i) => {
