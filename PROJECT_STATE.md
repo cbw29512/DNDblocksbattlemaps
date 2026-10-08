@@ -513,3 +513,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 ## 2026-10-08 — A1 candidate creature cube outlines (IN PROGRESS)
 - Adds renderer `setAreaTargets(ids)` to draw yellow visible edge outlines on each 5-foot cube of a provisional AoE-intersecting creature, including 2×2×2, 3×3×3 and 4×4×4 monsters. Fallback grid highlights their occupied cells. Preview changes refresh IDs; cancel/commit clears outlines. AoE is still provisional and not RAW-certified; no saves/damage and no persistent log.
 - Exact-head CI and live browser validation pending. Next: certify RAW area-cell inclusion/edition-specific rules, then actual selected-caster origin and combat log persistence.
+
+## 2026-10-08 — Explicit AoE caster selection (IN PROGRESS)
+- Replaces guessed first-creature spell origin with required caster selection from characters/monsters on current board. Range and origin now use the chosen creature; cast announcement uses the selected creature name. Does not certify RAW area-cell rules. CI pending.
