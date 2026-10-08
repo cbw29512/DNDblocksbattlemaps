@@ -104,7 +104,6 @@ export async function createThreeRenderer(
     const cells=areaCells(activeArea,areaPlacement,bounds);
     const geometry=new THREE.BoxGeometry(1,1,1);
     const material=new THREE.MeshBasicMaterial({color,transparent:true,opacity:.5,depthWrite:false,side:THREE.DoubleSide});
-    const linesMaterial=new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:.38});
     for(const cell of cells){
       const cube=new THREE.Mesh(geometry,material);
       cube.position.set(cell.x+.5,cell.elevation+.5,cell.z+.5);
