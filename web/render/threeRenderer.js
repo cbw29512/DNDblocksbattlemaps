@@ -26,6 +26,36 @@ export async function createThreeRenderer(container, handlers) {
     controls.mouseButtons.LEFT = null;
     controls.mouseButtons.MIDDLE = THREE.MOUSE.PAN;
     controls.mouseButtons.RIGHT = THREE.MOUSE.ROTATE;
+ 
+    const lightSpecs = {
+        torch: [0xffa345, 1.6, 5], lantern: [0xffce74, 1.25, 4],
+        campfire: [0xff7b31, 2.1, 7], brazier: [0xff8c3c, 2.0, 6],
+        fireplace: [0xff8738, 1.8, 6], forge: [0xff5a29, 2.0, 6],
+        lava: [0xff5824, 1.25, 4]
+    };
+    const MAX_BLOCK_LIGHTS = 12;
+    const blockLights = [];
+    const lightGroup = new THREE.Group();
+    scene.add(lightGroup);
+    function updateBlockLights(objects) {
+        lightGroup.clear();
+        blockLights.length = 0;
+        const sources = objects.filter(o => lightSpecs[o.catalogId]);
+        sources.sort((a, b) => {
+            const da = (a.x - camera.position.x) ** 2 + (a.z - camera.position.z) ** 2;
+            const db = (b.x - camera.position.x) ** 2 + (b.z - camera.position.z) ** 2;
+            return da - db || a.id.localeCompare(b.id);
+        });
+        for (const o of sources.slice(0, MAX_BLOCK_LIGHTS)) {
+            const [color, intensity, distance] = lightSpecs[o.catalogId];
+            const light = new THREE.PointLight(color, intensity, distance, 2);
+            light.position.set(o.x + .5, o.elevation + .8, o.z + .5);
+            light.castShadow = false;
+            lightGroup.add(light);
+            blockLights.push(light);
+        }
+    }
+
     const objectGroup = new THREE.Group();
     scene.add(objectGroup, new THREE.HemisphereLight(0xfff3d7, 0x26342f, 2.1));
     const sun = new THREE.DirectionalLight(0xfff1ce, 2.5);
@@ -345,6 +375,7 @@ export async function createThreeRenderer(container, handlers) {
             if (changed)
                 updateBoardGeometry(state.bounds);
             currentObjects = state.objects;
+            updateBlockLights(state.objects);
             objectGroup.clear();
             state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
             rebuildTargetOutlines();
@@ -360,6 +391,7 @@ export async function createThreeRenderer(container, handlers) {
         },
         dispose() {
             resize.disconnect();
+            lightGroup.clear(); scene.remove(lightGroup);
             renderer.setAnimationLoop(null);
             for (const mesh of areaGroup.children) {
                 mesh.geometry.dispose();
