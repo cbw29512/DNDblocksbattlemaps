@@ -311,6 +311,8 @@ export async function renderBuilder(root, terrainId, handlers) {
     const buildTools = root.querySelector('#build-tools');
     const identityTools = root.querySelector('#identity-ring-tools');
     if (buildTools) buildTools.hidden = moveMode;
+    const partyTools = root.querySelector('#party-manager');
+    if (partyTools) partyTools.hidden = moveMode;
     if (identityTools) identityTools.hidden = moveMode;
     const button = root.querySelector('#creature-mode');
     button?.setAttribute('aria-pressed', String(moveMode));
