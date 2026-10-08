@@ -7,6 +7,7 @@ export function createWorldObject(id, catalogId, position, createdAt = Date.now(
 }
 export function applyCommand(state, command) {
     let objects = state.objects;
+    if (command.kind === 'update') objects = objects.map(item => item.id === command.before.id ? command.after : item);
     if (command.kind === 'place')
         objects = [...objects, command.object];
     if (command.kind === 'remove')
