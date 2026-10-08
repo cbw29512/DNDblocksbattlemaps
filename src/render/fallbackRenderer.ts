@@ -20,6 +20,7 @@ export function createFallbackRenderer(
   container.replaceChildren(board);
 
   let selected: CatalogId | null = null;
+  let movingCreatureId: string | null = null;
   let room: NormalizedRoom | null = null;
   let elevation = 0;
   let theme: TerrainTheme | null = null;
@@ -114,6 +115,14 @@ export function createFallbackRenderer(
             return;
           }
 
+          if (movingCreatureId) {
+            handlers.onMoveCreature({ x, z, elevation });
+            return;
+          }
+          if (top && ['Characters', 'Monsters'].includes(getCatalogItem(top.catalogId).category)) {
+            handlers.onPickCreature(top.id);
+            return;
+          }
           if (!selected) return;
           const next = stackElevationAt(currentObjects, x, z, elevation);
           if (next === null) {
@@ -156,6 +165,7 @@ export function createFallbackRenderer(
       room = next;
       draw();
     },
+    setMovingCreature(id) { movingCreatureId = id; },
     setElevation(next) {
       elevation = next;
     },
