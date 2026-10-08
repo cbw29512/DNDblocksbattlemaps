@@ -342,6 +342,13 @@ export async function renderBuilder(
     });
   });
 
+  root.querySelectorAll('[id="monster-cr-filter"], [id="monster-edition-filter"]').forEach(filter => {
+    filter.addEventListener('change', () => {
+      const query = root.querySelector<HTMLInputElement>('#catalog-search')?.value ?? '';
+      filterCatalog(root, 'Monsters', query);
+    });
+  });
+
   const catalogSearch = root.querySelector<HTMLInputElement>('#catalog-search');
   catalogSearch?.addEventListener('input', () => {
     const activeButton = root.querySelector<HTMLButtonElement>('[data-category-tab].active');
