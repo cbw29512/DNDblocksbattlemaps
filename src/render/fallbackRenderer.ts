@@ -86,6 +86,17 @@ export function createFallbackRenderer(
             ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`
             : item.name.slice(0, 1);
           cell.innerHTML = `<span class="fallback-piece">${visual}</span>${occupants.length > 1 ? `<small>${occupants.length}</small>` : ''}`;
+          if (item.category === 'Characters' || item.category === 'Monsters') {
+            const marks = [...(top.conditions ?? [])];
+            if ((top.exhaustion ?? 0) > 0) marks.push('Exhaustion ' + top.exhaustion);
+            cell.title = item.name + (marks.length ? ' — ' + marks.join(', ') : '');
+            const caption = document.createElement('span');
+            caption.className = 'fallback-creature-name';
+            caption.textContent = item.name + (marks.length ? ' [' + marks.length + ']' : '');
+            cell.append(caption);
+            const color = item.category === 'Monsters' ? 0xd83030 : top.ringColor;
+            if (color !== undefined) cell.style.setProperty('--creature-ring', '#' + color.toString(16).padStart(6,'0'));
+          }
         }
 
         cell.addEventListener('pointerenter', () => {
