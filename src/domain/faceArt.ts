@@ -172,7 +172,7 @@ function illustratedBlockFace(id: string, icon: FaceIcon, color: number, categor
     '<g transform="translate(0 -2)">' + iconMarkup(icon) + '</g>';
 }
 
-export function generatedCubeArt(id: string, name: string, icon: FaceIcon, color: number, category?: 'Build' | 'Props'): CatalogArt {
+export function generatedCubeArt(id: string, name: string, icon: FaceIcon, color: number, category?: string): CatalogArt {
   const label = escapeXml(name.toUpperCase());
   const surface = surfaceTexture(id, color);
   const face = surface ?? (category === 'Build' || category === 'Props' ? illustratedBlockFace(id, icon, color, category) : null);
