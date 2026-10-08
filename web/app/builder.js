@@ -219,6 +219,12 @@ export async function renderBuilder(root, terrainId, handlers) {
             status.textContent = `${getCatalogItem(creature.catalogId).name} moved. Ring and conditions preserved.`;
         },
         onPlace(position) {
+            const selectedItem = getCatalogItem(selected);
+            const span = selectedItem.category === 'Monsters' ? selectedItem.footprintCells ?? 1 : 1;
+            if (position.x + span > state.bounds.maxX || position.z + span > state.bounds.maxZ) {
+                status.textContent = 'Not enough map space for this monster. Place farther from the edge.';
+                return;
+            }
             if (moveMode) return;
             const object = createWorldObject(makeId(), selected, position);
       const grew = run(placeCommand(object), [position]);
