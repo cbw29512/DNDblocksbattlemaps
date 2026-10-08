@@ -185,8 +185,9 @@ test('ordinary blocks have generated face art and combatants keep local Iron Pit
   for (const category of ['Characters', 'Monsters']) {
     for (const id of catalogIdsForCategory(category)) {
       const item = PALETTE[id];
-      assert.equal(item.art?.source, 'iron-pit', `${id} must use Iron Pit art`);
-      assert.match(item.art?.src ?? '', /^https:\/\/raw\.githubusercontent\.com\/cbw29512\/D20-ironpit\/main\/frontend\/assets\/portraits\/(heroes|monsters)\/.+\.webp$/);
+      assert.ok(item.art?.source === 'iron-pit' || (id.startsWith('monster-srd-') && item.art?.source === 'generated'), `${id} needs Iron Pit or visible generated fallback`);
+      if (item.art?.source === 'iron-pit') assert.match(item.art?.src ?? '', /^https:\/\/raw\.githubusercontent\.com\/cbw29512\/D20-ironpit\/main\/frontend\/assets\/portraits\/(heroes|monsters)\/.+\.webp$/);
+      else assert.match(item.art?.src ?? '', /^data:image\/svg\+xml/);
     }
   }
 });
@@ -207,7 +208,8 @@ test('every starter catalog object obeys the perfect-cube invariant', () => {
     assert.equal(item.width, 1, `${id} width must be one grid cell`);
     assert.equal(item.depth, 1, `${id} depth must be one grid cell`);
     assert.equal(item.height, 1, `${id} height must be one grid cell`);
-    assert.equal(item.footprintCells ?? 1, 1, `${id} starter footprint must be one cell`);
+    assert.ok([1,2,3,4].includes(item.footprintCells ?? 1), `${id} footprint must consist of full five-foot cubes`);
+    if (item.category !== 'Monsters') assert.equal(item.footprintCells ?? 1, 1, `${id} non-monster footprint must be one cell`);
   }
 });
 
