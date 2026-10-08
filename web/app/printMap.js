@@ -1,6 +1,6 @@
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=cb5dac18a9bb';
-import { getCatalogItem } from '../domain/catalog.js?v=cb5dac18a9bb';
-import { PRINT_PAGE_COLUMNS, PRINT_PAGE_ROWS, printAreaForState, printTilesForArea, topObjectAt } from '../domain/printLayout.js?v=cb5dac18a9bb';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=083312a16c27';
+import { getCatalogItem } from '../domain/catalog.js?v=083312a16c27';
+import { PRINT_PAGE_COLUMNS, PRINT_PAGE_ROWS, printAreaForState, printTilesForArea, topObjectAt } from '../domain/printLayout.js?v=083312a16c27';
 function colorCss(color) {
     return `#${color.toString(16).padStart(6, '0')}`;
 }
