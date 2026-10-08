@@ -463,3 +463,11 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Rendering architecture:** 5-foot **perfect cubes** throughout. Medium/Small/Tiny creatures use 1×1×1. Large: 2×2×2 solid cubes; Huge: 3×3×3; Gargantuan: 4×4×4. One WorldObject/one selection target per monster; every segment carries its parent object identity. Full portrait/silhouette visual spans five exterior panels with grid lines at cube seams, not repeated as a separate monster on each cube. Red ring and label attach to the whole assemblage.
 - **Status:** source TypeScript and checked-in browser JS updated, browser cache chain changed. Catalog test asserts 330 unique monster blocks, CR/size/edition and footprints. Browser screenshot, tests and deployment **not yet verified**. This is block visualization, *not* Iron Pit mechanics.
 - **Known followups:** placement and collision validation for full 3D footprint, pointer selection at various elevations, top face mapping, artwork failures and GPU performance, print/fallback multi-cube parity, art provenance audit and server multiplayer.
+
+
+## 2026-10-08 — Emergency browser startup syntax repair
+
+- User screenshot showed the GitHub Pages builder stuck indefinitely on the initial Loading the battle map screen after PR #17.
+- Root cause isolated: checked-in `web/render/threeObjects.js` accidentally included TypeScript-only `: void` on `function monsterExterior(THREE, root, item, n): void`, preventing the entire browser module graph from parsing.
+- Removed invalid annotation and bumped entrypoint/import cache keys. Syntax parsing checks on affected core browser modules passed. No changes to the monster roster or cube geometry.
+- Browser deployment/reload and full npm gate remain unverified; the DM should hard-refresh after the Pages workflow publishes this fix.
