@@ -569,3 +569,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Toolbar organization
 - After combat log was moved to board-side panel (PR #48 merged), grouped Party, Maps & Themes, Starter Maps, Build & Blocks, and Creature Markers into native HTML details sections. Build & Blocks stays open by default; other groups start collapsed to reduce sidebar crowding. Kept existing element IDs/event listeners; source and browser JS parity; responsive CSS. Pending exact-head CI and manual desktop/touch usability check.
+
+## 2026-10-08 — Close out post-cast markers and mobile confirmation (pending CI)
+- On current main after sidebar/log consolidation, added Clear Markers to the collapsible Spells & Areas group: only the yellow affected-creature outlines clear, while objects and recorded combat log remain. Phone/tablet pointer click positions an AoE and requires explicit Cast; mouse left-click casts directly and right-click cancels. Added optional touch classification through Three and fallback rendering handlers. Corrected outdated Preview Area cancel instruction. Source and compiled browser JavaScript were changed in parity. Need exact-head CI and actual desktop/touch browser QA; damage and saving throws still out of scope.

@@ -11,7 +11,7 @@ export interface BoardHandlers {
   onRemove: (objectId: string) => void;
   onMarkDrop: (objectId: string, payload: string) => void;
   onMarkTarget: (objectId: string) => boolean;
-  onAreaPoint: (position: GridPosition, commit: boolean) => void;
+  onAreaPoint: (position: GridPosition, commit: boolean, touch?: boolean) => void;
   onStatus: (message: string) => void;
 }
 
