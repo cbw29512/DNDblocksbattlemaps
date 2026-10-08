@@ -367,3 +367,11 @@ test('legacy duplicate player colors are released safely on map load', async () 
   assert.ok(!availableRings(updated).includes(0x2688dc));
   assert.equal(updated.objects.length, 3);
 });
+
+test('each official status ring has a stable non-red color', async () => {
+  const { CONDITIONS, CONDITION_COLORS } = await import('../.test-build/src/domain/creatureMarks.js');
+  for (const condition of CONDITIONS) {
+    assert.ok(Number.isInteger(CONDITION_COLORS[condition]), condition);
+    assert.notEqual(CONDITION_COLORS[condition], 0xd83030);
+  }
+});
