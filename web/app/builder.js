@@ -1,19 +1,19 @@
-import { createBrowserBackup } from '../domain/browserBackup.js';
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=24dfe329c65b';
-import { setPartyMembership } from '../domain/party.js?v=24dfe329c65b';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=24dfe329c65b';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=24dfe329c65b';
-import { printBoardMap } from './printMap.js?v=24dfe329c65b';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=24dfe329c65b';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=24dfe329c65b';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=24dfe329c65b';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=24dfe329c65b';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=24dfe329c65b';
-import { roomSummary } from '../domain/room.js?v=24dfe329c65b';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=24dfe329c65b';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=24dfe329c65b';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=24dfe329c65b';
-import { createRenderer } from '../render/createRenderer.js?v=24dfe329c65b';
+import { createBrowserBackup } from '../domain/browserBackup.js?v=7bf77dede51c';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=7bf77dede51c';
+import { setPartyMembership } from '../domain/party.js?v=7bf77dede51c';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=7bf77dede51c';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=7bf77dede51c';
+import { printBoardMap } from './printMap.js?v=7bf77dede51c';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=7bf77dede51c';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=7bf77dede51c';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=7bf77dede51c';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=7bf77dede51c';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=7bf77dede51c';
+import { roomSummary } from '../domain/room.js?v=7bf77dede51c';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=7bf77dede51c';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=7bf77dede51c';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=7bf77dede51c';
+import { createRenderer } from '../render/createRenderer.js?v=7bf77dede51c';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -489,25 +489,25 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         refresh();
     });
     document.getElementById('backup-maps')?.addEventListener('click', () => {
-    try {
-      const backup = createBrowserBackup(localStorage);
-      const contents = JSON.stringify(backup, null, 2);
-      const url = URL.createObjectURL(new Blob([contents], { type: 'application/json' }));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'dnd-blocks-backup-' + backup.createdAt.slice(0,10) + '.json';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-      status.textContent = 'Backup prepared: ' + backup.entries.length + ' saved records. Keep the JSON file safe; no maps were changed.';
-    } catch (error) {
-      console.error('[backup] Failed to export local save data', error);
-      status.textContent = 'Backup failed. Your maps were not changed.';
-    }
-  });
-
-  document.getElementById('print-map')?.addEventListener('click', () => {
+        try {
+            const backup = createBrowserBackup(localStorage);
+            const contents = JSON.stringify(backup, null, 2);
+            const url = URL.createObjectURL(new Blob([contents], { type: 'application/json' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'dnd-blocks-backup-' + backup.createdAt.slice(0, 10) + '.json';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+            status.textContent = 'Backup prepared: ' + backup.entries.length + ' saved records. Keep the JSON file safe; no maps were changed.';
+        }
+        catch (error) {
+            console.error('[backup] Failed to export local save data', error);
+            status.textContent = 'Backup failed. Your maps were not changed.';
+        }
+    });
+    document.getElementById('print-map')?.addEventListener('click', () => {
         status.textContent =
             'Preparing top-down print map. Use Actual Size / 100% for exact 1-inch squares.';
         void printBoardMap(state, theme).catch((error) => {
