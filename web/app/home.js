@@ -1,4 +1,5 @@
 import { TERRAIN_THEMES } from '../domain/catalog.js?v=24dfe329c65b';
+import { downloadLocalBackup } from './exportBackup.js?v=g0a-backup';
 export function renderHome(root, handlers) {
     const terrainCards = Object.values(TERRAIN_THEMES).map((theme) => `
     <button class="terrain-card" data-terrain="${theme.id}" type="button">
@@ -32,7 +33,9 @@ export function renderHome(root, handlers) {
           <div class="hero-actions">
             <button class="button button-primary button-large" id="build-main" type="button">Build a Map <span>→</span></button>
             <button class="button button-secondary button-large" id="join-main" type="button">Join a Game</button>
+            <button class="button button-ghost" id="backup-maps" type="button">Backup My Maps</button>
           </div>
+          <p id="backup-status" role="status" aria-live="polite"></p>
           <div class="trust-row" aria-label="Product highlights">
             <span>✓ Browser-first</span><span>✓ 5-ft grid</span><span>✓ DM stays in control</span>
           </div>
@@ -82,6 +85,21 @@ export function renderHome(root, handlers) {
       </section>
     </main>
   `;
+    document.getElementById('backup-maps')?.addEventListener('click', () => {
+        const status = document.getElementById('backup-status');
+        try {
+            const inventory = downloadLocalBackup();
+            if (status)
+                status.textContent = 'Backup downloaded: ' + inventory.totalKeys +
+                    ' saved entries (' + inventory.customMaps + ' custom maps). Keep this file private.' +
+                    (inventory.malformedJsonKeys.length ? ' Warning: some saved entries contain invalid JSON.' : '');
+        }
+        catch (error) {
+            console.warn('[backup] Local map export failed.', error);
+            if (status)
+                status.textContent = 'Backup unavailable. Your existing maps were not changed.';
+        }
+    });
     const startDefault = () => handlers.onBuild('castle');
     ['build-top', 'build-main', 'build-bottom'].forEach((id) => document.getElementById(id)?.addEventListener('click', startDefault));
     ['join-top', 'join-main'].forEach((id) => document.getElementById(id)?.addEventListener('click', handlers.onJoin));

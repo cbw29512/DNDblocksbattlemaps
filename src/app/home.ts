@@ -1,4 +1,5 @@
 import { TERRAIN_THEMES } from '../domain/catalog.js';
+import { downloadLocalBackup } from './exportBackup.js';
 import type { TerrainId } from '../domain/types.js';
 
 export interface HomeHandlers {
@@ -40,7 +41,9 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
           <div class="hero-actions">
             <button class="button button-primary button-large" id="build-main" type="button">Build a Map <span>→</span></button>
             <button class="button button-secondary button-large" id="join-main" type="button">Join a Game</button>
+            <button class="button button-ghost" id="backup-maps" type="button">Backup My Maps</button>
           </div>
+          <p id="backup-status" role="status" aria-live="polite"></p>
           <div class="trust-row" aria-label="Product highlights">
             <span>✓ Browser-first</span><span>✓ 5-ft grid</span><span>✓ DM stays in control</span>
           </div>
@@ -90,6 +93,19 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
       </section>
     </main>
   `;
+
+  document.getElementById('backup-maps')?.addEventListener('click', () => {
+    const status = document.getElementById('backup-status');
+    try {
+      const inventory = downloadLocalBackup();
+      if (status) status.textContent = 'Backup downloaded: ' + inventory.totalKeys +
+        ' saved entries (' + inventory.customMaps + ' custom maps). Keep this file private.' +
+        (inventory.malformedJsonKeys.length ? ' Warning: some saved entries contain invalid JSON.' : '');
+    } catch (error) {
+      console.warn('[backup] Local map export failed.', error);
+      if (status) status.textContent = 'Backup unavailable. Your existing maps were not changed.';
+    }
+  });
 
   const startDefault = () => handlers.onBuild('castle');
   ['build-top', 'build-main', 'build-bottom'].forEach((id) => document.getElementById(id)?.addEventListener('click', startDefault));
