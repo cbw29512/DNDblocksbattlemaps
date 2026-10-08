@@ -1,5 +1,5 @@
 import {
-  CATALOG_CATEGORIES, PALETTE, catalogIdsForCategory, catalogMatches
+  CATALOG_CATEGORIES, PALETTE, catalogIdsForCategory, catalogMatches, getCatalogItem
 } from '../domain/catalog.js';
 import type { CatalogCategory, CatalogId, PaletteItem } from '../domain/types.js';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
@@ -28,7 +28,7 @@ export function catalogPanelHtml(selected: CatalogId): string {
   const panels = CATALOG_CATEGORIES.map((category) =>
     '<div class="palette-list" data-category-panel="' + category + '"' +
     (category === active ? '' : ' hidden') + '>' +
-    catalogIdsForCategory(category).map((id) => button(PALETTE[id], selected)).join('') +
+    catalogIdsForCategory(category).map((id) => button(getCatalogItem(id), selected)).join('') +
     '<div class="catalog-empty" hidden>No matching blocks.</div></div>'
   ).join('');
 
