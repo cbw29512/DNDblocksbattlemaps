@@ -144,6 +144,7 @@ export async function renderBuilder(
       <section class="board-stage">
         <aside class="combat-log-dock" aria-label="Combat log"><details open><summary>Combat Log</summary><ol id="combat-log" aria-live="polite"></ol></details></aside>
         <div class="board-canvas" id="board-canvas" aria-label="Interactive battle map"></div>
+        <div class="mobile-spell-actions" id="mobile-spell-actions" hidden><button id="mobile-cast-spell" type="button" disabled>Cast Spell</button><button id="mobile-cancel-spell" type="button">Cancel</button></div>
         <div class="camera-dock" aria-label="Camera controls">
           <button id="rotate-left" title="Rotate left">↶</button>
           <button id="camera-home" title="Fit whole map">⌂</button>
@@ -162,12 +163,14 @@ export async function renderBuilder(
   const castButton = root.querySelector<HTMLButtonElement>('#cast-spell')!;
   const cancelButton = root.querySelector<HTMLButtonElement>('#cancel-spell')!;
   const spellInstructions = root.querySelector<HTMLElement>('#spell-instructions')!;
+  const mobileActions = root.querySelector<HTMLElement>('#mobile-spell-actions')!;
+  const mobileCastButton = root.querySelector<HTMLButtonElement>('#mobile-cast-spell')!;
   const cancelArea = (): void => {
     activeSpell=null; spellCenter=null;
     const spellSelect=root.querySelector<HTMLSelectElement>('#spell-choice');
     if(spellSelect)spellSelect.value='';
     renderer?.setAreaPreview(null,null);
-    castButton.disabled=true; cancelButton.disabled=true;
+    castButton.disabled=true; cancelButton.disabled=true; mobileActions.hidden=true; mobileCastButton.disabled=true;
     spellInstructions.textContent='Preview canceled. Choose a spell to aim again.';
   };
   const refreshCasterOptions = (): void => {
@@ -214,7 +217,7 @@ export async function renderBuilder(
     const targets=previewTargets();
     renderer?.setAreaTargets(targets.map(o=>o.id));
     status.textContent='Preview intersects '+targets.length+' creature(s): '+(targets.map(o=>getCatalogItem(o.catalogId).name).join(', ')||'none')+'. Geometry provisional; not RAW-confirmed.';
-    castButton.disabled=false;
+    castButton.disabled=false; mobileCastButton.disabled=false;
     // Left-click commits immediately; pointer movement is preview-only.
     if(commit && !touch) castArea();
     if(commit && touch) spellInstructions.textContent='Area positioned. Tap Cast to confirm or Cancel to dismiss.';
@@ -234,7 +237,7 @@ export async function renderBuilder(
     if(spellSelect)spellSelect.value='';
     renderer?.setAreaPreview(null,null);
     renderer?.setAreaTargets(targets.map(o=>o.id));
-    castButton.disabled=true; cancelButton.disabled=true;
+    castButton.disabled=true; cancelButton.disabled=true; mobileActions.hidden=true; mobileCastButton.disabled=true;
     spellInstructions.textContent='Affected creatures remain outlined in yellow until another preview starts. Saves/damage pending.';
   };
   const armArea = (): void => {
@@ -246,12 +249,13 @@ export async function renderBuilder(
     const chosen=creatures.find(x=>x.id===select?.value);
     if(!activeSpell || !chosen) {
       activeSpell=null;
-      renderer?.setAreaPreview(null,null);
+      renderer?.setAreaPreview(null,null); mobileActions.hidden=true; mobileCastButton.disabled=true;
+      castButton.disabled=true; cancelButton.disabled=true;
       status.textContent='Select a caster on the map, then choose the spell to aim.';
       return;
     }
     casterOrigin={x:chosen.x,z:chosen.z,elevation:chosen.elevation};
-    spellCenter=null; castButton.disabled=true; cancelButton.disabled=false;
+    spellCenter=null; castButton.disabled=true; cancelButton.disabled=false; mobileCastButton.disabled=true; mobileActions.hidden=false;
     renderer?.setAreaPreview(activeSpell,{origin:casterOrigin,center:casterOrigin});
     renderer?.setAreaTargets([]);
     spellInstructions.textContent='Move to aim. Left-click casts; right-click or Escape cancels.';
@@ -260,6 +264,8 @@ export async function renderBuilder(
   root.querySelector('#spell-choice')?.addEventListener('change',armArea);
   root.querySelector('#spell-caster')?.addEventListener('change',armArea);
   castButton.addEventListener('click',castArea);
+  mobileCastButton.addEventListener('click',castArea);
+  root.querySelector('#mobile-cancel-spell')?.addEventListener('click',cancelArea);
   cancelButton.addEventListener('click',cancelArea);
   root.querySelector('#clear-spell-marks')?.addEventListener('click',()=>{renderer?.setAreaTargets([]);status.textContent='Hit markers cleared. Combat log preserved.';});
   const onAreaRightClick=(event:MouseEvent):void=>{if(activeSpell){event.preventDefault();event.stopImmediatePropagation();cancelArea();}};
