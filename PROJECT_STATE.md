@@ -535,3 +535,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Self-range caster edge origin (IN PROGRESS)
 - Scoped checkpoint: selected 2×2×2, 3×3×3, 4×4×4 caster self-line/cone origin moves to forward occupied cube along dominant cardinal aim; previews and target scans use the same placement. Tests written. Diagonal/3D RAW certification and actual browser verification pending.
+
+## 2026-10-08 — Eight-direction grouped line preview (IN PROGRESS)
+- Horizontal 5-foot line samples use cardinal + diagonal aim and physical Euclidean distances for diagonal steps; focused 60-foot cardinal-vs-diagonal tests. No smooth shapes or terrain mutation. Eight-direction raster is provisional; official RAW diagonal-area occupancy and 3D/cover rules still require independent certification and browser QA. CI pending.
