@@ -26,9 +26,9 @@ export function reconcilePartyOnMap(state: BoardState, roster: PartyRoster): Boa
   for (const member of Object.values(roster)) {
     if (existingIds.has(member.character.id)) continue;
     const { character } = member;
-    const x = state.bounds.minX + 2 + index % 4;
-    const z = state.bounds.minZ + 2 + Math.floor(index / 4);
-    additions.push({ ...character, x, z, elevation: 0, partyMember: true });
+    const x = (state.partyStart?.x ?? state.bounds.minX + 2) + index % 4;
+    const z = (state.partyStart?.z ?? state.bounds.minZ + 2) + Math.floor(index / 4);
+    additions.push({ ...character, x, z, elevation: state.partyStart?.elevation ?? 0, partyMember: true });
     existingIds.add(character.id);
     index += 1;
   }
