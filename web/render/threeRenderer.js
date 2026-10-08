@@ -1,12 +1,12 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=ab1289d69893';
-import { areaCells } from '../domain/areaTemplates.js?v=ab1289d69893';
-import { getCatalogItem } from '../domain/catalog.js?v=ab1289d69893';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=ab1289d69893';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=ab1289d69893';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=ab1289d69893';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=ab1289d69893';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=ab1289d69893';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=ab1289d69893';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=81e60cc34a5e';
+import { areaCells } from '../domain/areaTemplates.js?v=81e60cc34a5e';
+import { getCatalogItem } from '../domain/catalog.js?v=81e60cc34a5e';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=81e60cc34a5e';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=81e60cc34a5e';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=81e60cc34a5e';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=81e60cc34a5e';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=81e60cc34a5e';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=81e60cc34a5e';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
