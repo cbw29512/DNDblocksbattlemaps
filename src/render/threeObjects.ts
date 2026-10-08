@@ -78,6 +78,8 @@ function configureLabel(sprite: any): any {
 }
 
 function creatureLabel(THREE: any, name: string): any {
+  const cached = creatureLabelMaterials.get(name);
+  if (cached) return configureLabel(new THREE.Sprite(cached));
   const canvas = document.createElement('canvas');
   canvas.width = 384;
   canvas.height = 96;
