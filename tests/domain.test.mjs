@@ -263,3 +263,20 @@ test('print map uses the top object in an occupied square', () => {
   ];
   assert.equal(topObjectAt(objects, 1, 1)?.id, 'top');
 });
+
+test('textured cubes remain colored until art is loaded successfully', async () => {
+  const { meshFor } = await import('../.test-build/src/render/threeObjects.js');
+  let onLoaded;
+  class MeshStandardMaterial { constructor(options) { Object.assign(this, options); this.color = { value: options.color, setHex: (next) => { this.color.value = next; } }; } }
+  class TextureLoader { load(_url, success) { onLoaded = success; } }
+  class Mesh { constructor(geometry, material) { this.geometry = geometry; this.material = material; this.position = { set() {} }; this.userData = {}; } }
+  class BoxGeometry {}
+  const THREE = { MeshStandardMaterial, TextureLoader, Mesh, BoxGeometry, SRGBColorSpace: 'srgb' };
+  const cube = meshFor(THREE, { id: 'a', catalogId: 'barrel', x: 0, z: 0, elevation: 0, createdAt: 1 });
+  assert.equal(cube.material[0].map, undefined);
+  assert.equal(cube.material[0].color.value, PALETTE.barrel.color);
+  assert.equal(cube.material[0].transparent, false);
+  onLoaded?.({ image: {}, colorSpace: null });
+  assert.equal(cube.material[0].color.value, 0xffffff);
+  assert.ok(cube.material[0].map);
+});
