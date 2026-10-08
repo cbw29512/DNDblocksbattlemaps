@@ -65,3 +65,27 @@ export function areaCells(t: AreaTemplate,p: AreaPlacement,limits:{minX:number;m
 export function isInCastingRange(t:AreaTemplate,p:AreaPlacement):boolean {
   return t.maxRangeFeet===0 || feetBetween(p.origin,p.center)<=t.maxRangeFeet+EPSILON;
 }
+
+/**
+ * Grid-template rule for a circular horizontal cross-section (2014/2024 DMG).
+ * Uses the exact circle/square intersection geometry with Simpson integration;
+ * the 5-foot cell is included when at least half its area lies inside the circle.
+ * The center is a grid intersection. Vertical slices are NOT certified by this helper.
+ */
+export function circularSquareCoverage(radiusFeet: number, originX: number, originZ: number, cellX: number, cellZ: number): number {
+  if (!Number.isFinite(radiusFeet) || radiusFeet <= 0) return 0;
+  const r=radiusFeet/GRID_FEET;
+  const step=1/128;
+  let sum=0;
+  for(let i=0;i<=128;i++){
+    const x=cellX+i*step;
+    const dx=x-originX;
+    const extent=Math.sqrt(Math.max(0,r*r-dx*dx));
+    const clipped=Math.abs(dx)>r ? 0 : Math.max(0,Math.min(cellZ+1,originZ+extent)-Math.max(cellZ,originZ-extent));
+    sum+=(i===0||i===128?1:i%2===0?2:4)*clipped;
+  }
+  return Math.min(1,Math.max(0,sum*step/3));
+}
+export function circularGridCellAffected(radiusFeet: number, originX: number, originZ: number, cellX: number, cellZ: number): boolean {
+  return circularSquareCoverage(radiusFeet,originX,originZ,cellX,cellZ)>=0.5-1e-9;
+}
