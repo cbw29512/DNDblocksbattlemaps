@@ -1,17 +1,17 @@
-import { setPartyMembership } from '../domain/party.js?v=00134766f884';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=creaturerings1008';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=creaturerings1008';
-import { printBoardMap } from './printMap.js?v=creaturerings1008';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=creaturerings1008';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=creaturerings1008';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=creaturerings1008';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=creaturerings1008';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=creaturerings1008';
-import { roomSummary } from '../domain/room.js?v=creaturerings1008';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=creaturerings1008';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=creaturerings1008';
-import { clearBoard, loadBoard, saveBoard, propagateParty } from '../domain/storage.js?v=creaturerings1008';
-import { createRenderer } from '../render/createRenderer.js?v=creaturerings1008';
+import { setPartyMembership } from '../domain/party.js?v=party1008';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=party1008';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=party1008';
+import { printBoardMap } from './printMap.js?v=party1008';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=party1008';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=party1008';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=party1008';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=party1008';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=party1008';
+import { roomSummary } from '../domain/room.js?v=party1008';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=party1008';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=party1008';
+import { clearBoard, loadBoard, saveBoard, propagateParty } from '../domain/storage.js?v=party1008';
+import { createRenderer } from '../render/createRenderer.js?v=party1008';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
