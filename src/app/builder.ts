@@ -2,7 +2,7 @@ import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPa
 import { printBoardMap } from './printMap.js';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
 import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js';
-import { PALETTE, TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js';
 import {
   createBoardState, createWorldObject, findObject,
   placeCommand, placeManyCommand, removeCommand
