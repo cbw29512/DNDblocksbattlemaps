@@ -1,3 +1,5 @@
+import { areaCells } from '../domain/areaTemplates.js';
+import { previewAffectedCreatures } from '../domain/areaTargets.js';
 import { AREA_PRESETS, isInCastingRange } from '../domain/areaTemplates.js?v=86d8296e3087';
 import { createBrowserBackup } from '../domain/browserBackup.js?v=86d8296e3087';
 import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=86d8296e3087';
@@ -145,6 +147,16 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         cancelButton.disabled = true;
         spellInstructions.textContent = 'Preview canceled or complete. Select Preview Area to start again.';
     };
+    const previewTargets = () => {
+        if (!activeSpell || !spellCenter) return [];
+        const r=Math.ceil(activeSpell.sizeFeet/5)+1;
+        const area=areaCells(activeSpell,{origin:casterOrigin,center:spellCenter},{
+          minX:Math.max(state.bounds.minX,spellCenter.x-r),maxX:Math.min(state.bounds.maxX,spellCenter.x+r+1),
+          minZ:Math.max(state.bounds.minZ,spellCenter.z-r),maxZ:Math.min(state.bounds.maxZ,spellCenter.z+r+1),
+          minElevation:Math.max(0,spellCenter.elevation-r),maxElevation:Math.min(8,spellCenter.elevation+r)
+        });
+        return previewAffectedCreatures(state.objects,area);
+    };
     const choosePoint = (point, commit) => {
         if (!activeSpell)
             return;
@@ -155,6 +167,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         }
         spellCenter = point;
         renderer?.setAreaPreview(activeSpell, placement);
+        const targets=previewTargets();
+        status.textContent='Preview intersects '+targets.length+' creature(s): '+(targets.map(o=>getCatalogItem(o.catalogId).name).join(', ')||'none')+'. Provisional geometry.';
         castButton.disabled = false;
         if (commit)
             castArea();
@@ -165,7 +179,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         const caster = root.querySelector('#spell-caster')?.value.trim() || 'Unknown caster';
         const label = activeSpell.label;
         const record = document.createElement('li');
-        record.textContent = caster + ' casts ' + label + ' at (' + spellCenter.x + ', ' + spellCenter.z + '). Area preview only; rolls and target adjudication pending.';
+        const targets=previewTargets();
+        record.textContent = caster + ' casts ' + label + ' at (' + spellCenter.x + ', ' + spellCenter.z + '). Preview intersects '+targets.length+' creature(s); RAW targeting and rolls pending.';
         root.querySelector('#combat-log')?.prepend(record);
         status.textContent = caster + ' casts ' + label + '.';
         cancelArea();
