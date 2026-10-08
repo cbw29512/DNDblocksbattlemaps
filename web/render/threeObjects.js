@@ -1,13 +1,15 @@
-import { getCatalogItem } from '../domain/catalog.js?v=b60b427fbe81';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=b60b427fbe81';
+import { getCatalogItem } from '../domain/catalog.js?v=3aba2c42c4ac';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=3aba2c42c4ac';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;
+// One shared face material per catalog ID; all copies update after a valid image loads.
 const faceMaterials = new Map();
 function materialFor(THREE, item) {
     const cached = faceMaterials.get(item.id);
     if (cached)
         return cached;
+    // Never assign an unloaded texture: that can render black on some GPUs.
     const face = new THREE.MeshBasicMaterial({
         color: item.color,
         transparent: false
@@ -18,6 +20,8 @@ function materialFor(THREE, item) {
         return material;
     try {
         const url = resolveBrowserAssetUrl(item.art.src);
+        // SVG data URLs work in <img>, but direct WebGL upload can produce black faces.
+        // Rasterize into a concrete, sized canvas before sending pixels to the GPU.
         const source = new Image();
         source.onload = () => {
             try {
@@ -50,7 +54,6 @@ function materialFor(THREE, item) {
     }
     return material;
 }
-
 export function geometryFor(THREE, _catalogId) {
     return new THREE.BoxGeometry(1, 1, 1);
 }

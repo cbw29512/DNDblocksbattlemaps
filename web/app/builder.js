@@ -1,15 +1,15 @@
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=blackfacefix1008';
-import { printBoardMap } from './printMap.js?v=blackfacefix1008';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=blackfacefix1008';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=blackfacefix1008';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=blackfacefix1008';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=blackfacefix1008';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=blackfacefix1008';
-import { roomSummary } from '../domain/room.js?v=blackfacefix1008';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=blackfacefix1008';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=blackfacefix1008';
-import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=blackfacefix1008';
-import { createRenderer } from '../render/createRenderer.js?v=blackfacefix1008';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=3aba2c42c4ac';
+import { printBoardMap } from './printMap.js?v=3aba2c42c4ac';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=3aba2c42c4ac';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=3aba2c42c4ac';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=3aba2c42c4ac';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=3aba2c42c4ac';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=3aba2c42c4ac';
+import { roomSummary } from '../domain/room.js?v=3aba2c42c4ac';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=3aba2c42c4ac';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=3aba2c42c4ac';
+import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=3aba2c42c4ac';
+import { createRenderer } from '../render/createRenderer.js?v=3aba2c42c4ac';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
