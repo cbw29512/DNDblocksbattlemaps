@@ -296,3 +296,6 @@ Any change to Build, Combat, map creation, movement, status rings, Party, camera
 
 ## Campaign/storage work gate
 For any Campaign Manager, Map Manager, map templates, localStorage or reusable library work, read `docs/CAMPAIGN_MAP_LIBRARY_PLAN.md` before coding. Work on the first incomplete gate in order, keep stored legacy data intact, add migration/idempotence tests, and update its completion tracker and PROJECT_STATE.md as part of the same PR.
+
+## Anti-drift completion gate
+Follow `docs/ANTI_DRIFT.md` before any implementation. Each PR must identify one gate, affected universal primitives, non-goals, rollback/migration effects, test evidence and next step. Final-head CI and browser deployment are separate verification statuses. Keep trackers and How to Play current; do not repeat prior audits without a new reason.
