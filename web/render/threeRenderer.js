@@ -1,12 +1,12 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=bc4f9b422e47';
-import { areaCells } from '../domain/areaTemplates.js?v=bc4f9b422e47';
-import { getCatalogItem } from '../domain/catalog.js?v=bc4f9b422e47';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=bc4f9b422e47';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=bc4f9b422e47';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=bc4f9b422e47';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=bc4f9b422e47';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=bc4f9b422e47';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=bc4f9b422e47';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=54d57171a3e0';
+import { areaCells } from '../domain/areaTemplates.js?v=54d57171a3e0';
+import { getCatalogItem } from '../domain/catalog.js?v=54d57171a3e0';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=54d57171a3e0';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=54d57171a3e0';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=54d57171a3e0';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=54d57171a3e0';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=54d57171a3e0';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=54d57171a3e0';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -66,7 +66,7 @@ export async function createThreeRenderer(container, handlers) {
             child.geometry.dispose();
             child.material.dispose();
         }
-        // Retain selected target outlines when the temporary preview is removed.
+        // Confirmed cast outlines persist after the temporary AoE disappears.
         for (const o of currentObjects.filter(o => areaTargetIds.has(o.id))) {
             for (const cell of creatureOccupiedCells(o)) {
                 const line = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.025, 1.025, 1.025)), new THREE.LineBasicMaterial({ color: 0xfff08d, depthTest: false, transparent: true, opacity: 1 }));
