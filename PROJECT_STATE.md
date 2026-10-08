@@ -613,3 +613,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Combat-only AoE PR #62 audit
 - Exact-head CI initially passed, but manual source/browser parity inspection revealed invalid TypeScript generic syntax in checked-in `web/app/builder.js` (`querySelector<HTMLDetailsElement>`). Corrected it and added `node --check web/app/builder.js` to npm test so future copied TS syntax fails CI. Audited mode switch: area tool section is hidden initially, opened in Combat Mode, and canceled/hidden on return to Build Mode. Revalidate updated head before merge; browser acceptance remains pending.
+
+## 2026-10-08 — Build Mode spell controls visibly leaking
+- User screenshot from GitHub Pages clearly shows Spells & Areas in Build Mode despite PR #62 merged, CI green and HTML `hidden` attribute. Audited main's builder markup and identified probable CSS conflict: responsive sidebar rules set display:flex on `.builder-tool-group`, overriding UA default `[hidden]`. Added explicit `#combat-spells-panel[hidden] { display: none !important; }` to the CSS. CI and actual published-site refresh verification required; do not claim fixed on the live page until confirmed.
