@@ -36,6 +36,8 @@ export interface WorldObject extends GridPosition {
 
 export interface BoardState {
   terrain: TerrainId;
+  mapId?: string;
+  partyStart?: GridPosition;
   bounds: BoardBounds;
   objects: WorldObject[];
   revision: number;
