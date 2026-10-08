@@ -24,11 +24,16 @@ export function areaContainsPoint(t, p, point) {
         const dx = p.center.x - p.origin.x, dz = p.center.z - p.origin.z;
         if (dx === 0 && dz === 0)
             return false;
-        const horizontal = Math.abs(dx) >= Math.abs(dz);
-        const dir = (horizontal ? dx : dz) >= 0 ? 1 : -1;
-        const step = horizontal ? (point.x - p.origin.x) * dir : (point.z - p.origin.z) * dir;
-        return point.elevation === p.origin.elevation && step >= 1 && step <= t.sizeFeet / GRID_FEET &&
-            (horizontal ? point.z === p.origin.z : point.x === p.origin.x);
+        // Eight-direction cube projection; diagonal steps travel sqrt(2) cells.
+        const diagonal=Math.abs(dx)>0 && Math.abs(dz)>0 &&
+          Math.min(Math.abs(dx),Math.abs(dz))/Math.max(Math.abs(dx),Math.abs(dz))>=Math.SQRT2-1;
+        const sx=dx===0?0:Math.sign(dx), sz=dz===0?0:Math.sign(dz);
+        const ux=diagonal?sx:Math.abs(dx)>=Math.abs(dz)?sx:0;
+        const uz=diagonal?sz:Math.abs(dz)>Math.abs(dx)?sz:0;
+        const step=ux!==0?(point.x-p.origin.x)*ux:(point.z-p.origin.z)*uz;
+        return point.elevation===p.origin.elevation && step>=1 &&
+          step*Math.hypot(ux,uz)*GRID_FEET<=t.sizeFeet+EPSILON &&
+          point.x===p.origin.x+step*ux && point.z===p.origin.z+step*uz;
     }
     if (t.shape === 'sphere') {
         const sliceRadius = Math.sqrt(Math.max(0, t.sizeFeet * t.sizeFeet - cy * cy));
