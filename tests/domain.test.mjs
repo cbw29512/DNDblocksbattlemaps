@@ -598,3 +598,21 @@ test('AoE cones and lines require direction and do not treat breath as cubes', a
   assert.equal(areaContainsPoint(line,p,{x:5,z:1,elevation:0}),false);
   assert.equal(areaContainsPoint(line,{origin:p.origin,center:p.origin},{x:1,z:0,elevation:0}),false);
 });
+
+test('AoE preview intersects full Large, Huge and Gargantuan monster volumes once', async () => {
+ const {creatureOccupiedCells,previewAffectedCreatures}=await import('../.test-build/src/domain/areaTargets.js');
+ const ids=['monster-srd-ogre','monster-srd-stone-giant','monster-srd-ancient-red-dragon'];
+ const actual=ids.map(id=>({id,catalogId:id,x:0,z:0,elevation:0,createdAt:0}));
+ const counts=actual.map(o=>creatureOccupiedCells(o).length);
+ assert.deepEqual(counts,[8,27,64]);
+ const hits=previewAffectedCreatures(actual,[{x:1,z:1,elevation:1},{x:2,z:2,elevation:2},{x:3,z:3,elevation:3}]);
+ assert.equal(hits.length,3);
+ assert.deepEqual(hits.map(x=>x.id),ids);
+ assert.equal(previewAffectedCreatures(actual,[{x:4,z:4,elevation:4}]).length,0);
+});
+test('AoE preview ignores non-creature scenery, preserves identity',async()=>{
+ const {previewAffectedCreatures}=await import('../.test-build/src/domain/areaTargets.js');
+ const objects=[{id:'wall',catalogId:'wall',x:0,z:0,elevation:0,createdAt:0},
+ {id:'pc',catalogId:'hero-fighter',x:0,z:0,elevation:0,createdAt:1}];
+ assert.deepEqual(previewAffectedCreatures(objects,[{x:0,z:0,elevation:0}]).map(x=>x.id),['pc']);
+});
