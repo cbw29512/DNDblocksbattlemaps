@@ -101,7 +101,7 @@ export async function createThreeRenderer(container, handlers) {
     }
     function floorPosition(event) {
         setPointer(event);
-        const hit = raycaster.intersectObject(placementPlane, false)[0];
+        const hit = raycaster.intersectObject(placementPlane, false)[0] ?? raycaster.intersectObject(ground, false)[0];
         if (!hit)
             return null;
         const x = Math.floor(hit.point.x);
@@ -178,6 +178,8 @@ export async function createThreeRenderer(container, handlers) {
         const position = blockPlacementFor(event);
         if (position)
             handlers.onPlace(position);
+        else
+            handlers.onStatus('Could not place here. Click a visible grid square or use Reset Camera.');
     });
     renderer.domElement.addEventListener('contextmenu', (event) => {
         event.preventDefault();
