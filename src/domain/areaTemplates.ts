@@ -34,7 +34,11 @@ export function areaContainsPoint(t: AreaTemplate, p: AreaPlacement, point: Area
   const cx=(point.x-p.center.x)*GRID_FEET, cz=(point.z-p.center.z)*GRID_FEET;
   const cy=(point.elevation-p.center.elevation)*GRID_FEET;
   const len=Math.hypot(cx,cz,cy);
-  if (t.shape==='sphere') return len<=t.sizeFeet+EPSILON;
+  if (t.shape==='sphere') {
+    const sliceRadius=Math.sqrt(Math.max(0,t.sizeFeet*t.sizeFeet-cy*cy));
+    return Math.abs(cy)<t.sizeFeet+EPSILON &&
+      circularGridCellAffected(sliceRadius,p.center.x,p.center.z,point.x,point.z);
+  }
   if (t.shape==='cylinder') return Math.hypot(cx,cz)<=t.sizeFeet+EPSILON &&
     cy>=-EPSILON && cy<=(t.heightFeet ?? 20)+EPSILON;
   if (t.shape==='cube') {
