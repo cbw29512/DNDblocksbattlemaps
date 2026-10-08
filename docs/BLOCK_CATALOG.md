@@ -333,3 +333,17 @@ A calendar/date-display block is a possible future idea only. Do not add it to M
 ## Creature labels and base rings (2026-10-08)
 
 Characters and Monsters display camera-facing name text above their existing perfect cubes. Monsters always have a red ground ring. Players select a non-red ring color before placing a Character: blue, green, yellow, purple, orange or white; the selected ring color is persisted per WorldObject. Existing characters default blue. Build and Props are unaffected. These are visual components and not separate map objects or game effects.
+
+## Creature identity rings and official condition markers — October 2026
+
+**Identity:** Six draggable player rings (blue, green, yellow, purple, orange, white) can be dropped onto an existing Character cube. One color belongs to one character across a map. The assigned color disappears from the available palette; changing colors releases the old one, and removing that character releases the color. Previously saved duplicate/default colors are normalized on map load. Monsters always display a **red** identity ring and cannot receive player rings. Unassigned characters have no identity ring. Build/Props are unaffected.
+
+**Condition rings:** The DM can drag one of the 15 official 5e conditions onto any Character or Monster. Dropping the same non-Exhaustion condition again removes it. Several conditions can coexist; the renderer uses up to four concentric outer status rings and a camera-facing text indicator. The stored record retains **all** applied conditions even if more than four are active. Exhaustion cycles through levels 1–6 and then clears; it is a level, not a Boolean. The 15 conditions, shared by 2014 and 2024, are Blinded, Charmed, Deafened, Exhaustion, Frightened, Grappled, Incapacitated, Invisible, Paralyzed, Petrified, Poisoned, Prone, Restrained, Stunned, and Unconscious.
+
+Source: D&D Beyond 2024 Basic Rules, https://www.dndbeyond.com/sources/dnd/br-2024/playing-the-game and D&D Beyond 2014 Appendix A, https://www.dndbeyond.com/sources/dnd/basic-rules-2014/appendix-a-conditions.
+
+**Rules boundary:** These are **visual, persistent DM markers only**. They do not automatically apply advantage, speed, concentration, saves, etc. Mechanical differences between 2014 and 2024 remain the DM's responsibility, not a hidden shared rules engine.
+
+All marker changes edit one WorldObject through the existing Undo/Redo system. The logical creature is never duplicated. HTML drag-and-drop is a desktop interaction; a touch-compatible mode should follow in a later usability pass. Source and checked-in browser modules updated together. Browser validation pending.
+
+Each condition now has a **stable distinct ring color** (the same color in the draggable status token and the outer cube indicator). Red remains reserved for monster identity. Old saved maps with duplicate or disallowed player colors are normalized on load without deleting any creatures.

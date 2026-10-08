@@ -6,6 +6,7 @@ export interface BoardHandlers {
   onPlace: (position: GridPosition) => void;
   onRoomPlacement: (placement: RoomPlacement) => void;
   onRemove: (objectId: string) => void;
+  onMarkDrop: (objectId: string, payload: string) => void;
   onStatus: (message: string) => void;
 }
 

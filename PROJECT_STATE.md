@@ -402,3 +402,15 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - Player color selector supports blue, green, yellow, purple, orange and white. Color is saved on each newly placed character WorldObject; old characters default blue. Monsters are always rendered red, independent of stored ringColor.
 - Build/Props receive neither label nor ring. Source and checked-in browser code both updated; CSS and persistence regression added.
 - Pending: CI tests, GitHub Pages deployment and browser inspection; labels are catalog class/monster names rather than custom per-character names.
+
+## 2026-10-08 — Drag-and-drop creature rings and D&D status markers
+
+- **User request:** Drag one colored ring onto a character, bind the exclusive color and remove it from available choices; allow status rings on Characters and Monsters.
+- **Contracts read:** current WorldObject, EditCommand/Undo, renderer + fallback handlers, catalog art/creature categories and source/web parity. Official 2014/2024 conditions checked before adding any status vocabulary.
+- **Changes:** Six non-red player ring tokens with exclusive per-map assignment. Red reserved for Monsters. Character assignment/changes persisted per WorldObject; old duplicate ringColor values normalized on load; unused colors return to palette after reassignment/deletion/Undo. Fifteen official condition tokens can be dragged onto either creature category; repeat drop toggles non-Exhaustion, Exhaustion cycles 1–6 then 0. Up to four status rings shown with a status label. Domain update command is undoable; no separate marker objects. Source TS + browser JS and fallback rendering updated.
+- **Scope/decision:** Display-only status tracking. No combat/RAW mechanical automation, no new runtime dependencies, no changes to Build/Props/cube geometry. Ordinary existing clicking still places cubes; ring dragging is separate.
+- **Tests:** Added domain regressions for uniqueness/release, prohibited red, toggle, exhaustion progression, undo/redo, and old duplicate color migration. Full npm check and browser tests not yet run.
+- **Cost:** No new dependencies or hosting costs.
+- **Next:** Run `npm run check`, deploy Pages test build; place two Fighters + a Goblin, drag Blue to the first and Green to the second, confirm colors disappear from palette, Poisoned/Stunned markers can be added/removed on both creatures, and Undo/Redo plus reload preserve state. Verify other palette placement still works.
+
+- **Follow-up design check:** applied an explicit reusable CONDITION_COLORS mapping for the 15 official condition tokens; the status ring color no longer depends on assignment order. Old saved duplicate colors normalize to exclusive assignments at builder startup; test coverage includes this case. No changes to combat mechanics.

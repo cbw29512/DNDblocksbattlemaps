@@ -1,21 +1,22 @@
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=00134766f884';
-import { printBoardMap } from './printMap.js?v=00134766f884';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=00134766f884';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=00134766f884';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=00134766f884';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=00134766f884';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=00134766f884';
-import { roomSummary } from '../domain/room.js?v=00134766f884';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=00134766f884';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=00134766f884';
-import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=00134766f884';
-import { createRenderer } from '../render/createRenderer.js?v=00134766f884';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=creaturerings1008';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=creaturerings1008';
+import { printBoardMap } from './printMap.js?v=creaturerings1008';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=creaturerings1008';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=creaturerings1008';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=creaturerings1008';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=creaturerings1008';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=creaturerings1008';
+import { roomSummary } from '../domain/room.js?v=creaturerings1008';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=creaturerings1008';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=creaturerings1008';
+import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=creaturerings1008';
+import { createRenderer } from '../render/createRenderer.js?v=creaturerings1008';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 export async function renderBuilder(root, terrainId, handlers) {
     const theme = TERRAIN_THEMES[terrainId] ?? TERRAIN_THEMES.castle;
-    let state = loadBoard(theme.id);
+    let state = normalizeRingAssignments(loadBoard(theme.id));
     let history = createHistory();
     let renderer = null;
     let selected = 'stone-block';
@@ -41,17 +42,18 @@ export async function renderBuilder(root, terrainId, handlers) {
       <aside class="builder-sidebar">
         ${roomPanelHtml()}
         ${catalogPanelHtml(selected)}
-        <label class="player-ring-picker">Character Ring Color
-          <select id="player-ring-color" aria-label="Character ring color">
-            <option value="2688dc">Blue</option>
-            <option value="31b86b">Green</option>
-            <option value="e0be3d">Yellow</option>
-            <option value="a369d7">Purple</option>
-            <option value="f18b35">Orange</option>
-            <option value="f4f4f4">White</option>
-          </select>
-          <small>Red is reserved for monsters. Applies to new characters.</small>
-        </label>
+        <section class="creature-ring-tools" aria-label="Creature markers">
+          <strong>Drag rings onto creatures</strong>
+          <small>Each player color belongs to one character. Red is for monsters.</small>
+          <div class="creature-ring-options" id="available-ring-colors">
+            ${PLAYER_RINGS.map(r => `<button type="button" draggable="true" class="ring-token" data-ring-color="${r.color}" title="Drag ${r.name} onto a character"><i style="--ring:#${r.color.toString(16).padStart(6,'0')}"></i>${r.name}</button>`).join('')}
+          </div>
+          <strong>Status rings</strong>
+          <small>Drag a condition onto a character or monster. Drop it again to remove. Exhaustion increases through 6, then clears.</small>
+          <div class="creature-status-options">
+            ${CONDITIONS.map(s => `<button type="button" draggable="true" class="status-token" data-condition="${s}" style="--status-ring:#${CONDITION_COLORS[s].toString(16).padStart(6,'0')}">${s}</button>`).join('')}
+          </div>
+        </section>
         <div class="elevation-control">
           <span>Elevation</span>
           <div>
@@ -93,10 +95,20 @@ export async function renderBuilder(root, terrainId, handlers) {
         boardSize.textContent =
             `${boardWidth(state.bounds)} × ${boardDepth(state.bounds)} squares · saves in this browser`;
     };
+    const updateRingTokens = () => {
+        const available = new Set(availableRings(state));
+        root.querySelectorAll('[data-ring-color]').forEach(button => {
+            const color = Number(button.dataset.ringColor);
+            button.hidden = !available.has(color);
+            button.draggable = available.has(color);
+        });
+    };
+
     const refresh = () => {
         renderer?.render(state);
         saveBoard(state);
         updateBoardSize();
+        updateRingTokens();
     };
     const run = (command, positions) => {
         const grown = growBoardBounds(state.bounds, positions);
@@ -147,11 +159,8 @@ export async function renderBuilder(root, terrainId, handlers) {
     };
     renderer = await createRenderer(canvas, {
         onPlace(position) {
-            const ring = getCatalogItem(selected).category === 'Characters'
-                ? Number.parseInt((root.querySelector('#player-ring-color')?.value ?? '2688dc'), 16)
-                : undefined;
-            const object = createWorldObject(makeId(), selected, position, Date.now(), ring);
-            const grew = run(placeCommand(object), [position]);
+            const object = createWorldObject(makeId(), selected, position);
+      const grew = run(placeCommand(object), [position]);
             if (grew !== null && !grew)
                 status.textContent = `${getCatalogItem(selected).name} placed. Click again to place more.`;
             if (grew) {
@@ -187,6 +196,24 @@ export async function renderBuilder(root, terrainId, handlers) {
             status.textContent =
                 `Built ${roomSummary(armedRoom)} room.${growthText} Move the gold outline and click again.`;
         },
+        onMarkDrop(id, payload) {
+            const object = findObject(state, id);
+            if (!object || !isCreature(object)) {
+                status.textContent = 'Rings can only be attached to characters or monsters.';
+                return;
+            }
+            let updated = null;
+            if (payload.startsWith('ring:')) {
+                updated = assignRing(state, id, Number.parseInt(payload.slice(5), 16));
+                if (!updated) { status.textContent = 'That player ring is unavailable or reserved.'; return; }
+            } else if (payload.startsWith('status:')) {
+                const condition = payload.slice(7);
+                if (!CONDITIONS.some(c => c === condition)) return;
+                updated = toggleCondition(object, condition);
+            } else return;
+            run({ kind: 'update', before: object, after: updated }, []);
+            status.textContent = `${getCatalogItem(object.catalogId).name} markers updated.`;
+        },
         onRemove(id) {
             const object = findObject(state, id);
             if (object)
@@ -202,7 +229,18 @@ export async function renderBuilder(root, terrainId, handlers) {
     renderer.setElevation(elevation);
     renderer.render(state);
     updateBoardSize();
-    buildRoomButton.addEventListener('click', () => {
+  updateRingTokens();
+    root.querySelectorAll('[data-ring-color], [data-condition]').forEach(token => {
+    token.addEventListener('dragstart', (event) => {
+      const payload = token.dataset.ringColor
+        ? 'ring:' + Number(token.dataset.ringColor).toString(16)
+        : 'status:' + token.dataset.condition;
+      event.dataTransfer?.setData('text/plain', payload);
+      if (event.dataTransfer) event.dataTransfer.effectAllowed = 'copy';
+    });
+  });
+
+  buildRoomButton.addEventListener('click', () => {
         if (armedRoom) {
             cancelRoomMode();
             return;
