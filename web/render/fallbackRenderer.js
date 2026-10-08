@@ -1,11 +1,11 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js';
-import { areaCells } from '../domain/areaTemplates.js?v=bf4a12ccb7a2';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=bf4a12ccb7a2';
-import { getCatalogItem } from '../domain/catalog.js?v=bf4a12ccb7a2';
-import { stackElevationAt } from '../domain/placement.js?v=bf4a12ccb7a2';
-import { roomOuterSize } from '../domain/room.js?v=bf4a12ccb7a2';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=bf4a12ccb7a2';
-import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=bf4a12ccb7a2';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=ab1289d69893';
+import { areaCells } from '../domain/areaTemplates.js?v=ab1289d69893';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=ab1289d69893';
+import { getCatalogItem } from '../domain/catalog.js?v=ab1289d69893';
+import { stackElevationAt } from '../domain/placement.js?v=ab1289d69893';
+import { roomOuterSize } from '../domain/room.js?v=ab1289d69893';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=ab1289d69893';
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=ab1289d69893';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';
@@ -18,7 +18,7 @@ export function createFallbackRenderer(container, handlers) {
     let theme = null;
     let currentBounds = { ...DEFAULT_BOARD_BOUNDS };
     let areaTemplate = null;
-  let areaTargetIds = new Set();
+    let areaTargetIds = new Set();
     let areaPlacement = null;
     let currentObjects = [];
     function cellAt(x, z) {
@@ -63,6 +63,8 @@ export function createFallbackRenderer(container, handlers) {
                 cell.className = 'fallback-cell';
                 if (affected.has(x + ',' + z))
                     cell.classList.add('aoe-affected');
+                if (currentObjects.some(o => areaTargetIds.has(o.id) && creatureOccupiedCells(o).some(p => p.x === x && p.z === z && p.elevation === elevation)))
+                    cell.classList.add('aoe-target');
                 cell.type = 'button';
                 cell.dataset.x = String(x);
                 cell.dataset.z = String(z);
@@ -166,6 +168,7 @@ export function createFallbackRenderer(container, handlers) {
     handlers.onStatus('Build toward an edge and the map grows automatically.');
     return {
         mode: 'fallback',
+        setAreaTargets(ids) { areaTargetIds = new Set(ids); draw(); },
         setAreaPreview(template, placement) { areaTemplate = template; areaPlacement = placement; draw(); },
         setTheme(next) {
             theme = next;

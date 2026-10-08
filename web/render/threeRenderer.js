@@ -1,12 +1,12 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js';
-import { areaCells } from '../domain/areaTemplates.js?v=bf4a12ccb7a2';
-import { getCatalogItem } from '../domain/catalog.js?v=bf4a12ccb7a2';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=bf4a12ccb7a2';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=bf4a12ccb7a2';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=bf4a12ccb7a2';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=bf4a12ccb7a2';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=bf4a12ccb7a2';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=bf4a12ccb7a2';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=ab1289d69893';
+import { areaCells } from '../domain/areaTemplates.js?v=ab1289d69893';
+import { getCatalogItem } from '../domain/catalog.js?v=ab1289d69893';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=ab1289d69893';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=ab1289d69893';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=ab1289d69893';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=ab1289d69893';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=ab1289d69893';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=ab1289d69893';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -58,24 +58,26 @@ export async function createThreeRenderer(container, handlers) {
     let activeArea = null;
     let areaPlacement = null;
     let areaTargetIds = new Set();
-  const targetGroup = new THREE.Group();
-  scene.add(targetGroup);
-  function rebuildTargetOutlines() {
-    for(const child of [...targetGroup.children]) {targetGroup.remove(child);child.geometry.dispose();child.material.dispose();}
-    if(!activeArea || !areaPlacement)return;
-    for(const o of currentObjects.filter(o=>areaTargetIds.has(o.id))){
-      for(const cell of creatureOccupiedCells(o)){
-        const line=new THREE.LineSegments(
-          new THREE.EdgesGeometry(new THREE.BoxGeometry(1.025,1.025,1.025)),
-          new THREE.LineBasicMaterial({color:0xfff08d,depthTest:false,transparent:true,opacity:1})
-        );
-        line.position.set(cell.x+.5,cell.elevation+.5,cell.z+.5);
-        line.raycast=()=>{};
-        targetGroup.add(line);
-      }
+    const targetGroup = new THREE.Group();
+    scene.add(targetGroup);
+    function rebuildTargetOutlines() {
+        for (const child of [...targetGroup.children]) {
+            targetGroup.remove(child);
+            child.geometry.dispose();
+            child.material.dispose();
+        }
+        if (!activeArea || !areaPlacement)
+            return;
+        for (const o of currentObjects.filter(o => areaTargetIds.has(o.id))) {
+            for (const cell of creatureOccupiedCells(o)) {
+                const line = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(1.025, 1.025, 1.025)), new THREE.LineBasicMaterial({ color: 0xfff08d, depthTest: false, transparent: true, opacity: 1 }));
+                line.position.set(cell.x + .5, cell.elevation + .5, cell.z + .5);
+                line.raycast = () => { };
+                targetGroup.add(line);
+            }
+        }
     }
-  }
-  const areaGroup = new THREE.Group();
+    const areaGroup = new THREE.Group();
     scene.add(areaGroup);
     function rebuildAreaCubes() {
         for (const mesh of [...areaGroup.children]) {
@@ -122,8 +124,7 @@ export async function createThreeRenderer(container, handlers) {
         const width = boardWidth(bounds);
         const depth = boardDepth(bounds);
         const center = boardCenter(bounds);
-        for(const child of targetGroup.children){child.geometry.dispose();child.material.dispose();}scene.remove(targetGroup);
-      ground.geometry.dispose();
+        ground.geometry.dispose();
         ground.geometry = new THREE.PlaneGeometry(width, depth);
         ground.position.set(center.x, 0, center.z);
         grid.geometry.dispose();
@@ -313,7 +314,8 @@ export async function createThreeRenderer(container, handlers) {
     handlers.onStatus('Build toward an edge and the map grows automatically.');
     return {
         mode: 'three',
-        setAreaPreview(template, placement) { activeArea = template; areaPlacement = placement; rebuildAreaCubes(); },
+        setAreaTargets(ids) { areaTargetIds = new Set(ids); rebuildTargetOutlines(); },
+        setAreaPreview(template, placement) { activeArea = template; areaPlacement = placement; rebuildAreaCubes(); rebuildTargetOutlines(); },
         setTheme(theme) {
             groundMaterial.color.setHex(theme.groundColor);
         },
@@ -342,7 +344,7 @@ export async function createThreeRenderer(container, handlers) {
             currentObjects = state.objects;
             objectGroup.clear();
             state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
-      rebuildTargetOutlines();
+            rebuildTargetOutlines();
         },
         rotate(delta) {
             rotateCamera(THREE, camera, controls, delta);
@@ -361,6 +363,11 @@ export async function createThreeRenderer(container, handlers) {
                 mesh.material.dispose();
             }
             scene.remove(areaGroup);
+            for (const child of targetGroup.children) {
+                child.geometry.dispose();
+                child.material.dispose();
+            }
+            scene.remove(targetGroup);
             ground.geometry.dispose();
             grid.geometry.dispose();
             gridMaterial.dispose();
