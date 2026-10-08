@@ -36,9 +36,14 @@ export function areaContainsPoint(t, p, point) {
             point.x === p.origin.x + step * ux && point.z === p.origin.z + step * uz;
     }
     if (t.shape === 'sphere') {
-        const sliceRadius = Math.sqrt(Math.max(0, t.sizeFeet * t.sizeFeet - cy * cy));
-        return Math.abs(cy) < t.sizeFeet + EPSILON &&
-            circularGridCellAffected(sliceRadius, p.center.x, p.center.z, point.x, point.z);
+        // Exact positive-volume sphere-to-cell intersection, including elevation.
+        // Cell coordinates are lower cube bounds; do not clip geometry to visible map.
+        const r = t.sizeFeet / GRID_FEET;
+        const distanceAxis = (origin, low) => Math.max(low - origin, origin - (low + 1), 0);
+        const ax = distanceAxis(p.center.x, point.x);
+        const az = distanceAxis(p.center.z, point.z);
+        const ay = distanceAxis(p.center.elevation, point.elevation);
+        return ax * ax + az * az + ay * ay < r * r - EPSILON;
     }
     if (t.shape === 'cylinder')
         return Math.hypot(cx, cz) <= t.sizeFeet + EPSILON &&

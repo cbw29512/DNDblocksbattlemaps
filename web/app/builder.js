@@ -174,12 +174,12 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         const radius = Math.ceil(activeSpell.sizeFeet / 5) + 1;
         const p = spellPlacement(spellCenter);
         const area = areaCells(activeSpell, p, {
-            minX: Math.max(state.bounds.minX, Math.min(spellCenter.x, p.origin.x) - radius),
-            maxX: Math.min(state.bounds.maxX, Math.max(spellCenter.x, p.origin.x) + radius + 1),
-            minZ: Math.max(state.bounds.minZ, Math.min(spellCenter.z, p.origin.z) - radius),
-            maxZ: Math.min(state.bounds.maxZ, Math.max(spellCenter.z, p.origin.z) + radius + 1),
-            minElevation: Math.max(0, spellCenter.elevation - radius),
-            maxElevation: Math.min(8, spellCenter.elevation + radius)
+            minX: Math.min(spellCenter.x, p.origin.x) - radius,
+            maxX: Math.max(spellCenter.x, p.origin.x) + radius + 1,
+            minZ: Math.min(spellCenter.z, p.origin.z) - radius,
+            maxZ: Math.max(spellCenter.z, p.origin.z) + radius + 1,
+            minElevation: Math.min(spellCenter.elevation, p.origin.elevation) - radius,
+            maxElevation: Math.max(spellCenter.elevation, p.origin.elevation) + radius
         });
         return previewAffectedCreatures(state.objects, area);
     };
@@ -197,8 +197,9 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         renderer?.setAreaTargets(targets.map(o => o.id));
         status.textContent = 'Preview intersects ' + targets.length + ' creature(s): ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Geometry provisional; not RAW-confirmed.';
         castButton.disabled = false;
+        // Placement must remain visible for inspection until Cast is pressed.
         if (commit)
-            castArea();
+            spellInstructions.textContent = 'Area placed. Inspect the cubes, then press Cast or Cancel.';
     };
     const castArea = () => {
         if (!activeSpell || !spellCenter)
@@ -226,7 +227,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         spellCenter = null;
         castButton.disabled = true;
         cancelButton.disabled = false;
-        renderer?.setAreaPreview(null, null);
+        // Arm the renderer before receiving the first battlefield pointer event.
+        renderer?.setAreaPreview(activeSpell, { origin: casterOrigin, center: casterOrigin });
         renderer?.setAreaTargets([]);
         spellInstructions.textContent = 'Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
         status.textContent = 'Area preview armed (unverified sample). Selected creature is the caster origin.';

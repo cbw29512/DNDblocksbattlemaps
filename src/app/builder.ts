@@ -189,12 +189,12 @@ export async function renderBuilder(
     const radius=Math.ceil(activeSpell.sizeFeet/5)+1;
     const p=spellPlacement(spellCenter);
     const area=areaCells(activeSpell,p,{
-      minX:Math.max(state.bounds.minX,Math.min(spellCenter.x,p.origin.x)-radius),
-      maxX:Math.min(state.bounds.maxX,Math.max(spellCenter.x,p.origin.x)+radius+1),
-      minZ:Math.max(state.bounds.minZ,Math.min(spellCenter.z,p.origin.z)-radius),
-      maxZ:Math.min(state.bounds.maxZ,Math.max(spellCenter.z,p.origin.z)+radius+1),
-      minElevation:Math.max(0,spellCenter.elevation-radius),
-      maxElevation:Math.min(8,spellCenter.elevation+radius)
+      minX:Math.min(spellCenter.x,p.origin.x)-radius,
+      maxX:Math.max(spellCenter.x,p.origin.x)+radius+1,
+      minZ:Math.min(spellCenter.z,p.origin.z)-radius,
+      maxZ:Math.max(spellCenter.z,p.origin.z)+radius+1,
+      minElevation:Math.min(spellCenter.elevation,p.origin.elevation)-radius,
+      maxElevation:Math.max(spellCenter.elevation,p.origin.elevation)+radius
     });
     return previewAffectedCreatures(state.objects,area);
   };
@@ -211,7 +211,8 @@ export async function renderBuilder(
     renderer?.setAreaTargets(targets.map(o=>o.id));
     status.textContent='Preview intersects '+targets.length+' creature(s): '+(targets.map(o=>getCatalogItem(o.catalogId).name).join(', ')||'none')+'. Geometry provisional; not RAW-confirmed.';
     castButton.disabled=false;
-    if(commit) castArea();
+    // Clicking selects a center and retains the visible preview; Cast confirms it.
+    if(commit) spellInstructions.textContent='Fireball area placed. Inspect the cubes, then press Cast or Cancel.';
   };
   const castArea = (): void => {
     if(!activeSpell || !spellCenter)return;
@@ -232,7 +233,9 @@ export async function renderBuilder(
     if(!chosen){status.textContent='Choose a caster on this map before previewing.';activeSpell=null;return;}
     casterOrigin={x:chosen.x,z:chosen.z,elevation:chosen.elevation};
     spellCenter=null; castButton.disabled=true; cancelButton.disabled=false;
-    renderer?.setAreaPreview(null,null);
+    // Arm the renderer so pointer events can reach onAreaPoint.
+    // The caster-anchored placeholder stays provisional until the pointer moves.
+    renderer?.setAreaPreview(activeSpell,{origin:casterOrigin,center:casterOrigin});
     renderer?.setAreaTargets([]);
     spellInstructions.textContent='Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
     status.textContent='Area preview armed (unverified sample). Selected creature is the caster origin.';

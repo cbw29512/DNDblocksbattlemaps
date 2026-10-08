@@ -538,3 +538,16 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Eight-direction grouped line preview (IN PROGRESS)
 - Horizontal 5-foot line samples use cardinal + diagonal aim and physical Euclidean distances for diagonal steps; focused 60-foot cardinal-vs-diagonal tests. No smooth shapes or terrain mutation. Eight-direction raster is provisional; official RAW diagonal-area occupancy and 3D/cover rules still require independent certification and browser QA. CI pending.
+
+## 2026-10-08 — Any-overlap 3D sphere checkpoint (IN PROGRESS)
+- Latest user decision: preview geometry extends above/below floors, through walls and beyond visible map; full cube if any positive 3D overlap. This supersedes the earlier stop-at-walls preview interpretation. Spell effect/target adjudication remains independent and not claimed RAW; 2014/2024 total-cover mechanics must be kept distinguishable from the custom display policy.
+- Updated TypeScript + web JavaScript sphere geometry to compare sphere and full cell volumes rather than 50% horizontal slices; added focused 3D/below-floor tests. Caller-provided areaCells limits and camera viewport may still clip displayed cubes; off-map/viewport rendering not yet complete. Other shapes not migrated. No live proof claimed.
+- NEXT: inspect caller preview bounds and render policy so off-map/unseen cubes are preserved without allocating infinite meshes; certify tests and browser preview before merging.
+
+## 2026-10-08 — Remove finite map/elevation preview clipping (IN PROGRESS)
+- Builder target scan and Three.js 3D overlay bounds now extend to the template's finite geometric bounds regardless of map edges, floor zero or arbitrary elevation eight. Source and browser JS changed together. The 2D fallback intentionally displays only current viewport slice; it is not a complete volumetric viewer. No cover blocking occurs in the pure geometric preview. CI and interactive proof outstanding.
+
+## 2026-10-08 — Fireball blank preview root-cause fix (IN PROGRESS)
+- User reported selecting Fireball but no overlay appears. Traced event gate: renderer sends onAreaPoint only when activeArea is non-null, while Preview Area previously called setAreaPreview(null,null); no pointermove/click could reach choosePoint. Fixed source and browser JS by arming setAreaPreview(activeSpell,{origin:casterOrigin,center:casterOrigin}) on Preview Area, allowing pointer to update area. Cancel still sets null. Exact-head CI/live browser confirmation pending; do not label publicly validated until verified.
+
+- Additional placement UX correction: clicking the target cell leaves Fireball preview visible for inspection; explicit Cast confirms it and Cancel clears it. This prevents the old click -> immediate cast -> clear sequence from appearing as though no spell rendered. Source and web JS updated together. Browser/live verification pending.
