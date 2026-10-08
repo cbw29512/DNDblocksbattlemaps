@@ -4,6 +4,8 @@ import type { BoardState, CatalogId, GridPosition, TerrainTheme } from '../domai
 
 export interface BoardHandlers {
   onPlace: (position: GridPosition) => void;
+  onPickCreature: (id: string) => void;
+  onMoveCreature: (position: GridPosition) => void;
   onRoomPlacement: (placement: RoomPlacement) => void;
   onRemove: (objectId: string) => void;
   onMarkDrop: (objectId: string, payload: string) => void;
@@ -16,6 +18,7 @@ export interface BoardRenderer {
   setSelectedCatalog(catalogId: CatalogId | null): void;
   setRoomPlacement(room: NormalizedRoom | null): void;
   setElevation(elevation: number): void;
+  setMovingCreature(id: string | null): void;
   render(state: BoardState): void;
   rotate(deltaRadians: number): void;
   zoom(multiplier: number): void;
