@@ -1,9 +1,9 @@
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=3a6fd8f850b0';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=3a6fd8f850b0';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=3a6fd8f850b0';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=3a6fd8f850b0';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=3a6fd8f850b0';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=3a6fd8f850b0';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=094a169f6732';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=094a169f6732';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=094a169f6732';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=094a169f6732';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=094a169f6732';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=094a169f6732';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -99,8 +99,9 @@ export async function createThreeRenderer(container, handlers) {
         pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(pointer, camera);
     }
-      function floorPosition(event) {
-        // Intersect the camera ray with the target elevation directly.
+    function floorPosition(event) {
+        // Intersect the camera ray with the desired elevation directly.
+        // An invisible mesh is not needed for ordinary empty-grid clicks.
         setPointer(event);
         const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -elevation);
         const point = raycaster.ray.intersectPlane(plane, new THREE.Vector3());

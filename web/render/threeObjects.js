@@ -1,5 +1,5 @@
-import { getCatalogItem } from '../domain/catalog.js?v=3a6fd8f850b0';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=3a6fd8f850b0';
+import { getCatalogItem } from '../domain/catalog.js?v=094a169f6732';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=094a169f6732';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;

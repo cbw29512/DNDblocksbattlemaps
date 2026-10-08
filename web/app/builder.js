@@ -1,15 +1,15 @@
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=3a6fd8f850b0';
-import { printBoardMap } from './printMap.js?v=3a6fd8f850b0';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=3a6fd8f850b0';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=3a6fd8f850b0';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=3a6fd8f850b0';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=3a6fd8f850b0';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=3a6fd8f850b0';
-import { roomSummary } from '../domain/room.js?v=3a6fd8f850b0';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=3a6fd8f850b0';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=3a6fd8f850b0';
-import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=3a6fd8f850b0';
-import { createRenderer } from '../render/createRenderer.js?v=3a6fd8f850b0';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=094a169f6732';
+import { printBoardMap } from './printMap.js?v=094a169f6732';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=094a169f6732';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=094a169f6732';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=094a169f6732';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=094a169f6732';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=094a169f6732';
+import { roomSummary } from '../domain/room.js?v=094a169f6732';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=094a169f6732';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=094a169f6732';
+import { clearBoard, loadBoard, saveBoard } from '../domain/storage.js?v=094a169f6732';
+import { createRenderer } from '../render/createRenderer.js?v=094a169f6732';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -138,7 +138,8 @@ export async function renderBuilder(root, terrainId, handlers) {
         onPlace(position) {
             const object = createWorldObject(makeId(), selected, position);
             const grew = run(placeCommand(object), [position]);
-      if (grew !== null && !grew) status.textContent = `${getCatalogItem(selected).name} placed. Click again to place more.`;
+            if (grew !== null && !grew)
+                status.textContent = `${getCatalogItem(selected).name} placed. Click again to place more.`;
             if (grew) {
                 status.textContent =
                     `Map grew to ${boardWidth(state.bounds)} × ${boardDepth(state.bounds)} squares. Keep building.`;
