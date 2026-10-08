@@ -1,4 +1,4 @@
-import { createDefaultBoardBounds } from './boardBounds.js?v=5f4f0171250c';
+import { createDefaultBoardBounds } from './boardBounds.js?v=e8bec7409b8c';
 export function createBoardState(terrain) {
     return { terrain, bounds: createDefaultBoardBounds(), objects: [], revision: 0 };
 }
