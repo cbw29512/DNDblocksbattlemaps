@@ -366,3 +366,8 @@ The toolbar toggle **Move Creatures** switches from ordinary Build mode to creat
 **Combat Mode:** lock Build and Props, hide the whole block catalog and player-identity ring tools. Show only condition/status ring controls. The DM can move any creature and apply/remove any status on any character or monster. Each player should be able to move and apply/remove statuses only on their own assigned character, without initiative restrictions. In the current prototype no player login/shared session/ownership enforcement exists; the working UI is DM-side only. Server-validated ownership is required before enabling player edits.
 
 **Map switching policy: never split the party.** One active map per game session, DM-controlled. When DM switches map all connected players automatically follow. Transfer party characters with names, ring colors, statuses and ownership intact. Map library/private prep can contain other maps but no player sees them until DM activates one. Networking and multi-map storage remain future work, not falsely advertised as functional.
+
+
+### Monster CR and edition filtering (2026-10-08)
+
+Monsters tab now has exact CR and edition selectors. Nine legacy starter monster entries have verified 2014 CR tags. A CR 5 filter correctly returns empty until CR 5 creatures are imported. Do not create fake CR 5 results. Every other SRD monster, including Large/Huge creatures, is still outstanding. Size metadata and actual multi-cube creature rendering are separate required milestones. Iron Pit's SRD roster/inventory is the intended source, but edition-specific IDs and artwork variants must be preserved.
