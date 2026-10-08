@@ -62,7 +62,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           <select id="spell-choice"><option value="">Choose a spell…</option>${AREA_ABILITY_REGISTRY.map(record => `<option value="${record.key}">${record.edition} · ${record.area.label} (sample preview — unverified)</option>`).join('')}</select>
           <label for="spell-caster">Caster on map</label><select id="spell-caster"><option value="">Choose a creature</option></select>
           
-          <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
+          <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button><button id="clear-spell-marks" type="button">Clear Markers</button></div>
           <small id="spell-instructions">Choose a spell, aim over the map, left-click to cast or right-click to cancel.</small>
 
         </section></details>
@@ -147,7 +147,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         renderer?.setAreaPreview(null, null);
         castButton.disabled = true;
         cancelButton.disabled = true;
-        spellInstructions.textContent = 'Preview canceled or complete. Select Preview Area to start again.';
+        spellInstructions.textContent = 'Preview canceled. Choose a spell to aim again.';
     };
     const refreshCasterOptions = () => {
         const select = root.querySelector('#spell-caster');
@@ -184,7 +184,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         });
         return previewAffectedCreatures(state.objects, area);
     };
-    const choosePoint = (point, commit) => {
+    const choosePoint = (point, commit, touch = false) => {
         if (!activeSpell)
             return;
         const placement = spellPlacement(point);
@@ -199,8 +199,10 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         status.textContent = 'Preview intersects ' + targets.length + ' creature(s): ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Geometry provisional; not RAW-confirmed.';
         castButton.disabled = false;
         // Left-click commits immediately; pointer movement is preview-only.
-        if (commit)
+        if (commit && !touch)
             castArea();
+        if (commit && touch)
+            spellInstructions.textContent = 'Area positioned. Tap Cast to confirm or Cancel to dismiss.';
     };
     const castArea = () => {
         if (!activeSpell || !spellCenter)
@@ -248,6 +250,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     root.querySelector('#spell-caster')?.addEventListener('change', armArea);
     castButton.addEventListener('click', castArea);
     cancelButton.addEventListener('click', cancelArea);
+    root.querySelector('#clear-spell-marks')?.addEventListener('click', () => { renderer?.setAreaTargets([]); status.textContent = 'Hit markers cleared. Combat log preserved.'; });
     const onAreaRightClick = (event) => { if (activeSpell) {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -349,8 +352,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         status.textContent = `Room placement canceled. ${getCatalogItem(selected).name} selected.`;
     };
     renderer = await createRenderer(canvas, {
-        onAreaPoint(point, commit) { if (activeSpell)
-            choosePoint(point, commit); },
+        onAreaPoint(point, commit, touch) { if (activeSpell)
+            choosePoint(point, commit, touch); },
         onPickCreature(id) {
             if (selectedCondition)
                 return;
