@@ -303,7 +303,14 @@ export async function renderBuilder(root, terrainId, handlers) {
             setCatalogCategory(root, button.dataset.categoryTab);
         });
     });
-    const catalogSearch = root.querySelector('#catalog-search');
+    root.querySelectorAll('[id="monster-cr-filter"], [id="monster-edition-filter"]').forEach(filter => {
+    filter.addEventListener('change', () => {
+      const query = root.querySelector('#catalog-search')?.value ?? '';
+      filterCatalog(root, 'Monsters', query);
+    });
+  });
+
+  const catalogSearch = root.querySelector('#catalog-search');
     catalogSearch?.addEventListener('input', () => {
         const activeButton = root.querySelector('[data-category-tab].active');
         const activeCategory = (activeButton?.dataset.categoryTab ?? 'Build');
