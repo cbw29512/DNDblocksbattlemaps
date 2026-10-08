@@ -345,3 +345,14 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Result:** committed to the existing draft PR branch; runtime/browser checks remain unverified.
 - **Open Questions / Blockers:** confirm visual strength in actual browser, and run npm check before merge.
 - **Exact Next Step:** validate this branch, then continue improving core Build and Props distinct face art before broadening creature footprints.
+
+
+## 2026-10-07 — Distinct door and hazard art continuation
+
+- **Starting State:** many specialized Build/Props blocks re-used identical generic icons despite different purposes.
+- **Changes Made:** universal SVG icon vocabulary extended with open doorway, secret door, trapdoor, spikes, darts and mimic; catalog entries for five existing objects now reference distinct icons. Synced TypeScript and checked-in browser JavaScript. Added cube/identity regression.
+- **Decisions Made:** retain existing IDs, cube footprints and universal renderer; no behavior engines or gameplay changes.
+- **Cost Impact:** none; no dependencies or Netlify deploy.
+- **Result:** changes committed to `catalog-face-art-oct07`; not verified in browser or automated tests.
+- **Open Questions / Blockers:** pending npm check and visual check; 2×2 creature logic needs separate coordinated work.
+- **Exact Next Step:** run check; fix any findings and validate browser visuals before merging PR #1, then proceed to monster footprint and approved art inventory.
