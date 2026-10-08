@@ -1,4 +1,4 @@
-import { MAX_BASE_ELEVATION } from './spatial.js?v=770c6a3e9fd9';
+import { MAX_BASE_ELEVATION } from './spatial.js?v=b5a3632acbe5';
 export function elevationAbove(objectElevation, explicitElevation) {
     const next = Math.max(explicitElevation, objectElevation + 1);
     return next <= MAX_BASE_ELEVATION ? next : null;

@@ -1,5 +1,5 @@
-import { ROOM_MAX_HEIGHT_FEET, ROOM_MAX_LENGTH_FEET, ROOM_MAX_WIDTH_FEET } from '../domain/spatial.js?v=770c6a3e9fd9';
-import { normalizeRoomDimensions } from '../domain/room.js?v=770c6a3e9fd9';
+import { ROOM_MAX_HEIGHT_FEET, ROOM_MAX_LENGTH_FEET, ROOM_MAX_WIDTH_FEET } from '../domain/spatial.js?v=b5a3632acbe5';
+import { normalizeRoomDimensions } from '../domain/room.js?v=b5a3632acbe5';
 export function roomPanelHtml() {
     return `
     <section class="room-builder" aria-labelledby="room-builder-title">
