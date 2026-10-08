@@ -393,3 +393,12 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Cost Impact:** no new package; one public network request per distinct art type; potential GitHub Raw availability dependency.
 - **Result:** source/web changes committed to branch; CI and real-browser character/monster portrait display not yet verified.
 - **Exact Next Step:** verify PR checks, merge and deploy Pages test; place Fighter, Goblin, Orc and confirm art appears (not flat colored cubes). If cross-origin fetch fails, copy verified WebPs through a binary-safe route and update paths.
+
+
+## 2026-10-08 — Creature labels and team rings
+
+- User requested names above Characters and Monsters, universal red rings under Monsters, and player-choice ring colors excluding red.
+- Implemented billboarded name sprites and flat base rings as decoration children of each cube, preserving cube shape and underlying object identity.
+- Player color selector supports blue, green, yellow, purple, orange and white. Color is saved on each newly placed character WorldObject; old characters default blue. Monsters are always rendered red, independent of stored ringColor.
+- Build/Props receive neither label nor ring. Source and checked-in browser code both updated; CSS and persistence regression added.
+- Pending: CI tests, GitHub Pages deployment and browser inspection; labels are catalog class/monster names rather than custom per-character names.
