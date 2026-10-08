@@ -164,7 +164,7 @@ export async function renderBuilder(
   const cancelArea = (): void => {
     activeSpell=null; spellCenter=null; renderer?.setAreaPreview(null,null);
     castButton.disabled=true; cancelButton.disabled=true;
-    spellInstructions.textContent='Preview canceled or complete. Select Preview Area to start again.';
+    spellInstructions.textContent='Preview canceled. Select a spell to aim again.';
   };
   const refreshCasterOptions = (): void => {
     const select=root.querySelector<HTMLSelectElement>('#spell-caster');
@@ -198,7 +198,7 @@ export async function renderBuilder(
     });
     return previewAffectedCreatures(state.objects,area);
   };
-  const choosePoint = (point: GridPosition, commit: boolean): void => {
+  const choosePoint = (point: GridPosition, commit: boolean, touch = false): void => {
     if(!activeSpell) return;
     const placement=spellPlacement(point);
     if(!isInCastingRange(activeSpell,placement)){
@@ -212,7 +212,8 @@ export async function renderBuilder(
     status.textContent='Preview intersects '+targets.length+' creature(s): '+(targets.map(o=>getCatalogItem(o.catalogId).name).join(', ')||'none')+'. Geometry provisional; not RAW-confirmed.';
     castButton.disabled=false;
     // Left-click commits immediately; pointer movement is preview-only.
-    if(commit) castArea();
+    if(commit && !touch) castArea();
+    if(commit && touch) spellInstructions.textContent='Target positioned. Tap Cast to confirm or Cancel to dismiss.';
   };
   const castArea = (): void => {
     if(!activeSpell || !spellCenter)return;
@@ -363,7 +364,7 @@ export async function renderBuilder(
   };
 
   renderer = await createRenderer(canvas, {
-    onAreaPoint(point, commit) { if(activeSpell)choosePoint(point,commit); },
+    onAreaPoint(point, commit, touch) { if(activeSpell)choosePoint(point,commit,touch); },
     onPickCreature(id) {
       if (selectedCondition) return;
       if (!moveMode) return;
