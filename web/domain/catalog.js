@@ -1,3 +1,4 @@
+import { SRD_MONSTER_BLOCKS } from './srdMonsterBlocks.js?v=monsterblocks1008';
 import { generatedCubeArt } from './faceArt.js?v=crfilter1008';
 export const TERRAIN_THEMES = {
     castle: { id: 'castle', name: 'Castle', tagline: 'Stone halls & keeps', groundColor: 0x777b77, accentCss: '#d7b56d', swatchCss: 'linear-gradient(135deg,#454946,#9aa09a)' },
@@ -151,14 +152,22 @@ const MONSTER_ITEMS = [
     monster('bandit', 'Bandit', 0x705d4c),
     monster('orc', 'Orc', 0x577a4b)
 ];
+const SRD_MONSTER_ITEMS = SRD_MONSTER_BLOCKS.map(([id, name, size, cr, art]) => {
+    const footprint = size === 'Gargantuan' ? 4 : size === 'Huge' ? 3 : size === 'Large' ? 2 : 1;
+    const artwork = art ? monsterArt(art, name) : generatedCubeArt('monster-srd-' + id, name, 'rune', 0x806347);
+    return { ...cube('monster-srd-' + id, name, 'Monsters', 0x806347, artwork, ['monster','srd',size.toLowerCase()]),
+        footprintCells: footprint, creatureSize: size, challengeRating: cr ?? undefined, edition: '2024' };
+});
+
 export const CATALOG_CATEGORIES = ['Build', 'Props', 'Characters', 'Monsters'];
 export const DEFAULT_PALETTE = [
     ...BUILD_ITEMS.map((item) => item.id),
     ...PROP_ITEMS.map((item) => item.id),
     ...CHARACTER_ITEMS.map((item) => item.id),
-    ...MONSTER_ITEMS.map((item) => item.id)
+    ...MONSTER_ITEMS.map((item) => item.id),
+  ...SRD_MONSTER_ITEMS.map((item) => item.id)
 ];
-export const PALETTE = Object.fromEntries([...BUILD_ITEMS, ...PROP_ITEMS, ...CHARACTER_ITEMS, ...MONSTER_ITEMS]
+export const PALETTE = Object.fromEntries([...BUILD_ITEMS, ...PROP_ITEMS, ...CHARACTER_ITEMS, ...MONSTER_ITEMS, ...SRD_MONSTER_ITEMS]
     .map((item) => [item.id, item]));
 export function catalogIdsForCategory(category) {
     return DEFAULT_PALETTE.filter((id) => PALETTE[id]?.category === category);
