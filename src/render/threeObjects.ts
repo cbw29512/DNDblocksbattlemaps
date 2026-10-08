@@ -60,6 +60,46 @@ export function geometryFor(THREE: any, _catalogId: CatalogId): any {
   return new THREE.BoxGeometry(1, 1, 1);
 }
 
+
+const PLAYER_RING_COLORS = new Set([0x2688dc, 0x31b86b, 0xe0be3d, 0xa369d7, 0xf18b35, 0xf4f4f4]);
+
+function creatureLabel(THREE: any, name: string): any {
+  const canvas = document.createElement('canvas');
+  canvas.width = 384;
+  canvas.height = 96;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  ctx.fillStyle = 'rgba(15,18,20,0.86)';
+  ctx.fillRect(3, 8, 378, 78);
+  ctx.strokeStyle = '#eee6d0';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(3, 8, 378, 78);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 38px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const label = name.length > 19 ? name.slice(0, 18) + '…' : name;
+  ctx.fillText(label, 192, 48, 356);
+  const map = new THREE.CanvasTexture(canvas);
+  map.colorSpace = THREE.SRGBColorSpace;
+  const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map, transparent: true, depthTest: false }));
+  sprite.position.set(0, 1.01, 0);
+  sprite.scale.set(1.7, 0.425, 1);
+  sprite.renderOrder = 20;
+  return sprite;
+}
+
+function creatureRing(THREE: any, color: number): any {
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.42, 0.52, 48),
+    new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide, depthWrite: false })
+  );
+  ring.rotation.x = -Math.PI / 2;
+  ring.position.y = -0.492;
+  ring.renderOrder = 5;
+  return ring;
+}
+
 export function meshFor(THREE: any, object: WorldObject): any {
   const item = getCatalogItem(object.catalogId);
   const mesh = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
@@ -70,6 +110,13 @@ export function meshFor(THREE: any, object: WorldObject): any {
   mesh.userData.gridX = object.x;
   mesh.userData.gridZ = object.z;
   mesh.userData.elevation = object.elevation;
+  if (item.category === 'Characters' || item.category === 'Monsters') {
+    const label = creatureLabel(THREE, item.name);
+    if (label) mesh.add(label);
+    const ringColor = item.category === 'Monsters' ? 0xd83030 :
+      PLAYER_RING_COLORS.has(object.ringColor ?? 0) ? object.ringColor : 0x2688dc;
+    mesh.add(creatureRing(THREE, ringColor));
+  }
   return mesh;
 }
 
