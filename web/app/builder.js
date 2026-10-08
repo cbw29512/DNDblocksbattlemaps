@@ -1,23 +1,23 @@
-import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js?v=3be6df529800';
-import { areaCells } from '../domain/areaTemplates.js?v=3be6df529800';
-import { previewAffectedCreatures, selfAreaOriginCell } from '../domain/areaTargets.js?v=3be6df529800';
-import { isInCastingRange } from '../domain/areaTemplates.js?v=3be6df529800';
-import { createBrowserBackup } from '../domain/browserBackup.js?v=3be6df529800';
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=3be6df529800';
-import { setPartyMembership } from '../domain/party.js?v=3be6df529800';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=3be6df529800';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=3be6df529800';
-import { printBoardMap } from './printMap.js?v=3be6df529800';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=3be6df529800';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=3be6df529800';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=3be6df529800';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=3be6df529800';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=3be6df529800';
-import { roomSummary } from '../domain/room.js?v=3be6df529800';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=3be6df529800';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=3be6df529800';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=3be6df529800';
-import { createRenderer } from '../render/createRenderer.js?v=3be6df529800';
+import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js?v=12bc94ef92aa';
+import { areaCells } from '../domain/areaTemplates.js?v=12bc94ef92aa';
+import { previewAffectedCreatures, selfAreaOriginCell } from '../domain/areaTargets.js?v=12bc94ef92aa';
+import { isInCastingRange } from '../domain/areaTemplates.js?v=12bc94ef92aa';
+import { createBrowserBackup } from '../domain/browserBackup.js?v=12bc94ef92aa';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=12bc94ef92aa';
+import { setPartyMembership } from '../domain/party.js?v=12bc94ef92aa';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=12bc94ef92aa';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=12bc94ef92aa';
+import { printBoardMap } from './printMap.js?v=12bc94ef92aa';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=12bc94ef92aa';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=12bc94ef92aa';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=12bc94ef92aa';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=12bc94ef92aa';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=12bc94ef92aa';
+import { roomSummary } from '../domain/room.js?v=12bc94ef92aa';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=12bc94ef92aa';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=12bc94ef92aa';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=12bc94ef92aa';
+import { createRenderer } from '../render/createRenderer.js?v=12bc94ef92aa';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -137,7 +137,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
       </section>
     </main>
   `;
-    // Keep the log available but prevent it covering the small-screen map by default.
+    // On narrow touch screens, keep map cells accessible until the log is requested.
     const combatLogDetails = root.querySelector('.combat-log-dock details');
     if (combatLogDetails && window.matchMedia('(max-width: 720px)').matches)
         combatLogDetails.open = false;

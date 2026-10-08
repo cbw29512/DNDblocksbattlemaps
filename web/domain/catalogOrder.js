@@ -1,4 +1,4 @@
-import { catalogIdsForCategory, getCatalogItem } from './catalog.js?v=3be6df529800';
+import { catalogIdsForCategory, getCatalogItem } from './catalog.js?v=12bc94ef92aa';
 const AREA_TAGS = {
     inn: ['inn', 'tavern', 'furniture'],
     castle: ['castle', 'stone', 'dungeon'],
