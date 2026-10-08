@@ -87,6 +87,7 @@ export function createFallbackRenderer(container, handlers) {
                     paintRoomPreview(placement ?? previewRoomPlacement(corner), Boolean(placement));
                 });
                 cell.addEventListener('click', () => {
+          if (top && handlers.onMarkTarget(top.id)) return;
                     if (room) {
                         const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects, currentBounds);
                         if (placement)
