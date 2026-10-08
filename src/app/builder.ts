@@ -44,6 +44,7 @@ export async function renderBuilder(
   let elevation = 0;
   let pickedCreatureId: string | null = null;
   let moveMode = false;
+  let selectedCondition = null as typeof CONDITIONS[number] | null;
 
   root.innerHTML = `
     <main class="builder-shell" style="--theme-accent:${theme.accentCss}">
@@ -95,8 +96,8 @@ export async function renderBuilder(
           </div>
           </div>
           <strong>Status rings</strong>
-          <small>Drag a condition onto a character or monster. Drop it again to remove. Exhaustion increases through 6, then clears.</small>
-          <div class="creature-status-options">
+          <small>Click a status, then click a character or monster to apply it. Click again to remove. Dragging also works. Exhaustion advances through 6.</small>
+          <div class="creature-status-options" role="group" aria-label="Select a status condition">
             ${CONDITIONS.map(s => `<button type="button" draggable="true" class="status-token" data-condition="${s}" style="--status-ring:#${CONDITION_COLORS[s].toString(16).padStart(6,'0')}">${s}</button>`).join('')}
           </div>
         </section>
@@ -243,6 +244,7 @@ export async function renderBuilder(
 
   renderer = await createRenderer(canvas, {
     onPickCreature(id) {
+      if (selectedCondition) return;
       if (!moveMode) return;
       const creature = findObject(state, id);
       if (!creature || !isCreature(creature)) return;
@@ -310,6 +312,15 @@ export async function renderBuilder(
       status.textContent =
         `Built ${roomSummary(armedRoom)} room.${growthText} Move the gold outline and click again.`;
     },
+    onMarkTarget(id) {
+      if (!selectedCondition) return false;
+      const object = findObject(state,id);
+      if (!object || !isCreature(object)) { status.textContent='Choose a Character or Monster.'; return true; }
+      const after = toggleCondition(object,selectedCondition);
+      run({kind:'update',before:object,after},[]);
+      status.textContent = selectedCondition + ' updated on ' + getCatalogItem(object.catalogId).name + '. Click another creature or click the selected status to finish.';
+      return true;
+    },
     onMarkDrop(id, payload) {
       const object = findObject(state, id);
       if (!object || !isCreature(object)) {
@@ -356,6 +367,23 @@ export async function renderBuilder(
         : 'status:' + token.dataset.condition;
       event.dataTransfer?.setData('text/plain', payload);
       if (event.dataTransfer) event.dataTransfer.effectAllowed = 'copy';
+    });
+  });
+
+  root.querySelectorAll('[data-condition]').forEach(button => {
+    button.addEventListener('click', () => {
+      const next = button.getAttribute('data-condition');
+      selectedCondition = selectedCondition === next ? null : next;
+      root.querySelectorAll('[data-condition]').forEach(element => {
+        const active = element.getAttribute('data-condition') === selectedCondition;
+        element.classList.toggle('selected',active);
+        element.setAttribute('aria-pressed',String(active));
+      });
+      if (selectedCondition) {
+        pickedCreatureId = null;
+        renderer?.setMovingCreature(null);
+      }
+      status.textContent = selectedCondition ? 'STATUS ' + selectedCondition + ': click a creature to apply/remove.' : 'Status selection cleared.';
     });
   });
 
