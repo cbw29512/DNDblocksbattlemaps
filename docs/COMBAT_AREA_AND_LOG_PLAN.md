@@ -25,3 +25,9 @@ Status: **foundation in progress**; visual placement and combat log UI are NOT i
 Do not mark A1-A5 done just because A0 is merged. Keep `PROJECT_STATE.md`, `docs/ANTI_DRIFT.md` and `public/how-to-play.html` consistent with what is *actually live*. Status has to distinguish code committed, exact-head CI, and live browser interaction.
 
 **Next:** A1 render previews for A0 geometry; then A2 combat log. G0 migration remains the next campaign-storage task and may proceed independently, but don't combine it with AoE PRs.
+
+## LOCKED visual shape projection
+All previews and active effect markers must render **5-foot cubic cells**, never smooth geometries. Preserve discrete cell outlines and partial transparency (default 50%). RAW area geometry, creature footprint and coverage tests determine cells; the visual is a cube overlay and does not turn the area into a physical terrain object. Fireball remains a 20-foot-radius sphere in the rules, displayed as a voxel/cube approximation based on verified affected spaces; dragon breath uses creature-defined cone/line. Left-click or touch Cast commits the declared spell and adds exactly one caster/action combat-log entry; Escape, right-click and a touch-friendly Cancel control end the preview without casting or logging. Source dimensions require per-edition verification before certification.
+
+## Whole-cell binary area contract
+Rendering is **all-or-nothing per 5-foot cube**, not partial/smooth shapes. Do not prorate damage for partial cell overlap. Determine cells using edition-correct tabletop grid/template rules and line-of-effect, then display the resulting full cubic cells at ~50% opacity. Do **not** substitute naive any-overlap/any-touched-cell logic without RAW verification. Evaluate Large/Huge/Gargantuan creature volumes, not one anchor cell. The current A0 cell-center approximation is provisional and must be replaced/certified in A4 before claiming RAW-complete.

@@ -501,3 +501,9 @@ See `docs/OPEN_SOURCE_REUSE.md`.
 
 ## Mandatory anti-drift rule
 Before every manual or hourly work session, read and obey `docs/ANTI_DRIFT.md`. One checked gate at a time, no duplicate investigations, no silent contract changes, no data destruction, exact-head CI evidence and live proof separately.
+
+## LOCKED: Recognizable cube-first visual identity (2026-10-08)
+**DND Blocks must look like DND Blocks.** All visible battlefield assets and game effects are represented as exact 5-foot cube units or assemblies of those cubes. No smooth-sphere fireball mesh, smooth cone breath weapon, conventional circular spell template or non-cube creature model replaces the cube presentation. Terrain, flooring, walls, furniture, players, monsters, visual status indicators, range previews, and damage areas must preserve visible cube/grid language. Render a RAW 20-foot-radius Fireball as the affected translucent red cube cells (not an eight-cube-wide solid box); cone, line, cylinder and other effects similarly occupy the RAW-affected cells, with visible 5-foot seams and roughly 50% opacity while previewing. Shape math can be continuous internally for RAW resolution, but display always projects to cubes. Every creature is one logical entity; Large=2×2×2, Huge=3×3×3, Gargantuan=4×4×4. This recognizable cube aesthetic is a product invariant; changing it requires explicit user approval.
+
+## LOCKED: whole-cell AoE display and discrete resolution
+A 5-foot grid cell is displayed as either affected (a full translucent cube) or unaffected (no overlay). Never show fractional cubes or prorate spell damage by fractional square coverage. The inclusion predicate must be audited against the selected 2014/2024 grid/area rules; a geometric sliver is not automatically proof of RAW inclusion. Larger creatures are evaluated over their full occupied space. Normal saving throws, damage, resistances and immunity still apply.
