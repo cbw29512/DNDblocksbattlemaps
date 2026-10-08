@@ -133,6 +133,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     </main>
   `;
     const status = document.getElementById('board-status');
+  const canvas = document.getElementById('board-canvas');
   const castButton = root.querySelector('#cast-spell');
   const cancelButton = root.querySelector('#cancel-spell');
   const spellInstructions = root.querySelector('#spell-instructions');
@@ -171,8 +172,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
   const onAreaRightClick=(event)=>{if(activeSpell){event.preventDefault();cancelArea();}};
   canvas.addEventListener('contextmenu',onAreaRightClick,true);
 
-    const canvas = document.getElementById('board-canvas');
-    const boardSize = document.getElementById('board-size');
+      const boardSize = document.getElementById('board-size');
     const buildRoomButton = document.getElementById('build-room');
     const updateBoardSize = () => {
         boardSize.textContent =
