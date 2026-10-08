@@ -328,3 +328,11 @@ The same underlying catalog object can be reused in multiple themes.
 The earlier "date" entry was a typo and is not part of the initial catalog.
 
 A calendar/date-display block is a possible future idea only. Do not add it to MVP unless a concrete use case justifies it.
+
+## Face-art refinement — 2026-10-07
+
+- The universal face-card renderer now scales labels based on name length so multi-word catalog items remain contained within the cube's label strip.
+- Lanterns now have a distinct enclosed-lamp pictogram instead of sharing the open-flame Torch icon.
+- Both authoritative TypeScript and checked-in browser JavaScript were updated together; one shared renderer still serves every ordinary catalog cube.
+- Status: implementation committed on branch `catalog-face-art-oct07`; automated/browser checks still need CI verification. No monster asset or creature size/footprint was changed.
+- Next batch: verify asset provenance and 2×2/3×3/4×4 coherent cube footprints before adding large creatures; avoid assigning unavailable silhouettes.
