@@ -10,7 +10,7 @@ export const CONDITIONS = [
   'Blinded', 'Charmed', 'Deafened', 'Exhaustion', 'Frightened',
   'Grappled', 'Incapacitated', 'Invisible', 'Paralyzed', 'Petrified',
   'Poisoned', 'Prone', 'Restrained', 'Stunned', 'Unconscious'
-] as const;
+];
 
 export function isCreature(object) {
   const category = getCatalogItem(object.catalogId).category;
@@ -22,7 +22,7 @@ export function availableRings(state) {
   return PLAYER_RINGS.map(r => r.color).filter(n => !assigned.has(n));
 }
 
-export function assignRing(state: BoardState, objectId, color) {
+export function assignRing(state, objectId, color) {
   const target = state.objects.find(o => o.id === objectId);
   if (!target || getCatalogItem(target.catalogId).category !== 'Characters' ||
     !PLAYER_RINGS.some(r => r.color === color) ||
@@ -30,7 +30,7 @@ export function assignRing(state: BoardState, objectId, color) {
   return { ...target, ringColor: color };
 }
 
-export function toggleCondition(object: WorldObject, condition) {
+export function toggleCondition(object, condition) {
   if (!CONDITIONS.includes(condition) || !isCreature(object)) return object;
   const conditions = object.conditions ?? [];
   if (condition === 'Exhaustion') {
