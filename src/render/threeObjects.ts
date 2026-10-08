@@ -1,4 +1,4 @@
-import { PALETTE } from '../domain/catalog.js';
+import { getCatalogItem } from '../domain/catalog.js';
 import type { CatalogId, PaletteItem, WorldObject } from '../domain/types.js';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
 
@@ -47,7 +47,7 @@ export function geometryFor(THREE: any, _catalogId: CatalogId): any {
 }
 
 export function meshFor(THREE: any, object: WorldObject): any {
-  const item = PALETTE[object.catalogId];
+  const item = getCatalogItem(object.catalogId);
   const mesh = new THREE.Mesh(geometryFor(THREE, object.catalogId), materialFor(THREE, item));
   mesh.position.set(object.x + 0.5, object.elevation + 0.5, object.z + 0.5);
   mesh.castShadow = true;
