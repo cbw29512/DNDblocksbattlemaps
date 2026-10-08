@@ -1,4 +1,4 @@
-import { PLAYER_RINGS, CONDITIONS, availableRings, assignRing, toggleCondition, isCreature } from '../domain/creatureMarks.js';
+import { PLAYER_RINGS, CONDITIONS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js';
 import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js';
 import { printBoardMap } from './printMap.js';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
@@ -33,7 +33,7 @@ export async function renderBuilder(
   handlers: BuilderHandlers
 ): Promise<() => void> {
   const theme = TERRAIN_THEMES[terrainId] ?? TERRAIN_THEMES.castle;
-  let state = loadBoard(theme.id);
+  let state = normalizeRingAssignments(loadBoard(theme.id));
   let history: HistoryState = createHistory();
   let renderer: BoardRenderer | null = null;
   let selected: CatalogId = 'stone-block';
