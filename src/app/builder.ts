@@ -187,7 +187,7 @@ export async function renderBuilder(
   };
   root.querySelector('#preview-spell')?.addEventListener('click',()=>{
     const id=root.querySelector<HTMLSelectElement>('#spell-choice')?.value;
-    activeSpell=AREA_PRESETS.find(x=>x.id===id) ?? AREA_PRESETS[0];
+    activeSpell=AREA_PRESETS.find(x=>x.id===id) ?? AREA_PRESETS[0] ?? null;
     const chosen=state.objects.find(x=>getCatalogItem(x.catalogId).category==='Characters') ??
       state.objects.find(x=>getCatalogItem(x.catalogId).category==='Monsters');
     casterOrigin=chosen ? {x:chosen.x,z:chosen.z,elevation:chosen.elevation} : {x:0,z:0,elevation:0};
