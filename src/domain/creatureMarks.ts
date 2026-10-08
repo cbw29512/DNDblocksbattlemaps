@@ -42,3 +42,21 @@ export function toggleCondition(object: WorldObject, condition: Condition): Worl
   return { ...object, conditions: conditions.includes(condition) ?
     conditions.filter(c => c !== condition) : [...conditions, condition] };
 }
+
+/** Migrate previously placed character colors to the new one-ring-per-player rule. */
+export function normalizeRingAssignments(state: BoardState): BoardState {
+  const assigned = new Set<number>();
+  let changed = false;
+  const objects = state.objects.map(object => {
+    if (getCatalogItem(object.catalogId).category !== 'Characters' || object.ringColor === undefined) return object;
+    const color = object.ringColor;
+    if (!PLAYER_RINGS.some(r => r.color === color) || assigned.has(color)) {
+      changed = true;
+      const { ringColor: _unused, ...withoutRing } = object;
+      return withoutRing;
+    }
+    assigned.add(color);
+    return object;
+  });
+  return changed ? { ...state, objects } : state;
+}
