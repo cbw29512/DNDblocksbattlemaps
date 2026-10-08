@@ -263,3 +263,15 @@ test('print map uses the top object in an occupied square', () => {
   ];
   assert.equal(topObjectAt(objects, 1, 1)?.id, 'top');
 });
+
+test('generic block faces remain readable and visually distinct', async () => {
+  const { generatedCubeArt } = await import('../.test-build/src/domain/faceArt.js');
+  const svg = (name, icon) => decodeURIComponent(generatedCubeArt(name, name, icon, 0x765432).src.split(',')[1]);
+  const torch = svg('Torch', 'torch');
+  const lantern = svg('Lantern', 'lantern');
+  const longName = svg('Collapsing Floor', 'pit');
+  assert.notEqual(torch, lantern, 'different object identities must show different face drawings');
+  assert.match(lantern, /rect x="41" y="43"/, 'lantern must show an enclosed fixture');
+  assert.match(longName, /font-size="6"/, 'long labels must shrink to fit the cube face');
+  assert.match(longName, /COLLAPSING FLOOR/);
+});
