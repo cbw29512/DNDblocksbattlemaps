@@ -104,9 +104,12 @@ export function createFallbackRenderer(container, handlers) {
                     const placement = chooseRoomPlacement(room, corner, currentObjects, currentBounds);
                     paintRoomPreview(placement ?? previewRoomPlacement(corner), Boolean(placement));
                 });
-                cell.addEventListener('click', (event) => {
+                let lastPointerWasTouch = false;
+            cell.addEventListener('pointerdown', (event) => { lastPointerWasTouch = event.pointerType === 'touch'; });
+            cell.addEventListener('click', (event) => {
                     if (areaTemplate) {
-                        handlers.onAreaPoint({ x, z, elevation }, true, event.pointerType === 'touch');
+                        handlers.onAreaPoint({ x, z, elevation }, true, lastPointerWasTouch || event.pointerType === 'touch');
+                    lastPointerWasTouch = false;
                         return;
                     }
                     if (top && handlers.onMarkTarget(top.id))

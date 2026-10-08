@@ -284,8 +284,10 @@ export async function createThreeRenderer(
     position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
   });
 
+  let lastPointerWasTouch = false;
+  renderer.domElement.addEventListener('pointerdown', (event: PointerEvent) => { lastPointerWasTouch = event.pointerType === 'touch'; });
   renderer.domElement.addEventListener('click', (event: MouseEvent) => {
-    if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,true,(event as PointerEvent).pointerType==='touch'); return; }
+    if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,true,lastPointerWasTouch || (event as PointerEvent).pointerType==='touch'); lastPointerWasTouch=false; return; }
     setPointer(event);
     const marked = raycaster.intersectObjects(objectGroup.children, true)
       .find((hit: any) => hit.object.userData.objectId)?.object?.userData?.objectId;
