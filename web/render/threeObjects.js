@@ -1,5 +1,5 @@
-import { getCatalogItem } from '../domain/catalog.js?v=094a169f6732';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=094a169f6732';
+import { getCatalogItem } from '../domain/catalog.js?v=b60b427fbe81';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=b60b427fbe81';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;
@@ -19,7 +19,7 @@ function materialFor(THREE, item) {
         return new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.76 });
     }
     const face = new THREE.MeshStandardMaterial({
-        // Always draw a solid color if face art is unavailable.
+        // Never make the whole cube transparent when face artwork is absent or broken.
         color: item.color,
         map: textureFor(THREE, item.art.src),
         transparent: false,

@@ -1,5 +1,5 @@
-import { normalizeBoardBounds } from './boardBounds.js?v=094a169f6732';
-import { createBoardState } from './commands.js?v=094a169f6732';
+import { normalizeBoardBounds } from './boardBounds.js?v=b60b427fbe81';
+import { createBoardState } from './commands.js?v=b60b427fbe81';
 const STORAGE_PREFIX = 'dndblocks:stage1:';
 function key(terrain) {
     return `${STORAGE_PREFIX}${terrain}`;

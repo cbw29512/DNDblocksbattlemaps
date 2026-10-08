@@ -1,4 +1,4 @@
-import { GRID_FEET, ROOM_MAX_HEIGHT_FEET, ROOM_MAX_LENGTH_FEET, ROOM_MAX_WIDTH_FEET, ROOM_MIN_FEET } from './spatial.js?v=094a169f6732';
+import { GRID_FEET, ROOM_MAX_HEIGHT_FEET, ROOM_MAX_LENGTH_FEET, ROOM_MAX_WIDTH_FEET, ROOM_MIN_FEET } from './spatial.js?v=b60b427fbe81';
 function snapFeet(value) {
     return Math.round(value / GRID_FEET) * GRID_FEET;
 }

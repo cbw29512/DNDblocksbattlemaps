@@ -1,5 +1,5 @@
-import { CATALOG_CATEGORIES, PALETTE, catalogIdsForCategory, catalogMatches, getCatalogItem } from '../domain/catalog.js?v=094a169f6732';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=094a169f6732';
+import { CATALOG_CATEGORIES, PALETTE, catalogIdsForCategory, catalogMatches, getCatalogItem } from '../domain/catalog.js?v=b60b427fbe81';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=b60b427fbe81';
 function visual(item) {
     return item.art
         ? '<img class="palette-art" src="' + resolveBrowserAssetUrl(item.art.src) + '" alt="" loading="lazy" decoding="async">'
