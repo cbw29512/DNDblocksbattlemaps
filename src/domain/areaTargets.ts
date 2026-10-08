@@ -29,8 +29,10 @@ export function selfAreaOriginCell(creature: WorldObject, aim: AreaPoint): AreaP
   const candidates=cells.filter(c=>c.elevation===creature.elevation);
   const extreme=Math.max(...candidates.map(c=>(horizontal?c.x:c.z)*forward));
   const face=candidates.filter(c=>(horizontal?c.x:c.z)*forward===extreme);
+  const first=face[0];
+  if(!first) return {x:creature.x,z:creature.z,elevation:creature.elevation};
   return face.reduce((best,c)=> {
     const lateral=horizontal?'z':'x';
     return Math.abs(c[lateral]-aim[lateral])<Math.abs(best[lateral]-aim[lateral])?c:best;
-  },face[0]);
+  },first);
 }
