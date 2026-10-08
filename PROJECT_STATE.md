@@ -622,3 +622,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Torch and lantern artwork upgrade
 - User screenshot demonstrated torch cube looked like a sign instead of a torch. Added distinct detailed square artwork for torch and lantern blocks: stone backing, shaft/bands and illustrated flame on torch; framed glass and lit flame on lantern. All six faces remain cube textures; mesh shape unchanged. Existing local PointLight mechanics retained. PR #64 website cache refresh passed CI and merged. CI and published browser screenshot for this artwork still pending. Flame flicker not yet included.
+
+## 2026-10-08 — Creature marker controls restricted to Combat Mode
+- Hid Creature Markers section on initial Build Mode and toggled full section on Combat Mode entry/exit. Corrected child identity-ring-tools visibility in Combat Mode. Added specific hidden CSS to defeat sidebar flex override. TS/checked-in JS parity, no marker state erasure; awaiting CI and real UI validation.
