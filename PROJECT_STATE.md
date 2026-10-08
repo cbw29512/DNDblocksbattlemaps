@@ -549,3 +549,5 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Fireball blank preview root-cause fix (IN PROGRESS)
 - User reported selecting Fireball but no overlay appears. Traced event gate: renderer sends onAreaPoint only when activeArea is non-null, while Preview Area previously called setAreaPreview(null,null); no pointermove/click could reach choosePoint. Fixed source and browser JS by arming setAreaPreview(activeSpell,{origin:casterOrigin,center:casterOrigin}) on Preview Area, allowing pointer to update area. Cancel still sets null. Exact-head CI/live browser confirmation pending; do not label publicly validated until verified.
+
+- Additional placement UX correction: clicking the target cell leaves Fireball preview visible for inspection; explicit Cast confirms it and Cancel clears it. This prevents the old click -> immediate cast -> clear sequence from appearing as though no spell rendered. Source and web JS updated together. Browser/live verification pending.
