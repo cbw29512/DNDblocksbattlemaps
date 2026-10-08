@@ -373,7 +373,7 @@ export async function renderBuilder(
   root.querySelectorAll('[data-condition]').forEach(button => {
     button.addEventListener('click', () => {
       const next = button.getAttribute('data-condition');
-      selectedCondition = selectedCondition === next ? null : next;
+      selectedCondition = selectedCondition === next ? null : CONDITIONS.find(condition => condition === next) ?? null;
       root.querySelectorAll('[data-condition]').forEach(element => {
         const active = element.getAttribute('data-condition') === selectedCondition;
         element.classList.toggle('selected',active);
