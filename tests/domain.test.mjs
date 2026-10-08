@@ -692,3 +692,19 @@ test('Self line starts at forward occupied edge of larger casters',async()=>{
   assert.deepEqual(selfAreaOriginCell(actor,{x:10,z:30,elevation:0}),{x:10,z:10+size-1,elevation:0});
  }
 });
+
+test('eight-direction line preview preserves feet for diagonal steps',async()=>{
+ const {areaCells}=await import('../.test-build/src/domain/areaTemplates.js');
+ const area={id:'diag-sample',label:'Line sample',shape:'line',sizeFeet:60,widthFeet:5,maxRangeFeet:0,originMode:'self',visual:'lightning'};
+ const origin={x:10,z:10,elevation:0};
+ const limits={minX:0,maxX:30,minZ:0,maxZ:30,minElevation:0,maxElevation:0};
+ const cardinal=areaCells(area,{origin,center:{x:20,z:10,elevation:0}},limits);
+ const diagonal=areaCells(area,{origin,center:{x:20,z:20,elevation:0}},limits);
+ assert.equal(cardinal.length,12);
+ assert.equal(diagonal.length,8);
+ assert.deepEqual(diagonal.map(p=>[p.x,p.z]),Array.from({length:8},(_,i)=>[11+i,11+i]));
+ assert.ok(diagonal.every(p=>Math.hypot(p.x-origin.x,p.z-origin.z)*5<=60));
+ const opposite=areaCells(area,{origin,center:{x:0,z:0,elevation:0}},limits);
+ assert.equal(opposite.length,8);
+ assert.deepEqual(opposite[0],{x:2,z:2,elevation:0});
+});
