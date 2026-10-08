@@ -149,6 +149,13 @@ function surfaceTexture(id, color) {
     }
 }
 function illustratedBlockFace(id, icon, color, category) {
+    if (id === 'torch' || id === 'lantern') return '<rect width="128" height="128" fill="#302b25"/>' +
+        '<path d="M0 22h128M0 64h128M0 106h128M40 0v22M92 22v42M40 64v42M92 106v22" stroke="#4d4841" stroke-width="5"/>' +
+        (id === 'torch' ?
+        '<path d="M57 54L51 113 66 117 73 54Z" fill="#90603a" stroke="#241a14" stroke-width="5"/><path d="M58 76l13 7M55 94l14 7" stroke="#c78b50" stroke-width="4"/>' +
+        '<path d="M65 12Q85 35 74 51Q87 37 80 25Q101 59 68 68Q40 60 51 37Q52 48 58 49Q48 31 65 12Z" fill="#f0782a" stroke="#ffd073" stroke-width="4"/><path d="M64 35Q75 48 68 59Q58 60 60 48Z" fill="#fff3ad"/>' :
+        '<path d="M48 43h33v62H48z" fill="#5b4c2b" stroke="#c5a05d" stroke-width="6"/><rect x="54" y="51" width="21" height="45" fill="#f4ae48"/><path d="M64 59Q77 80 65 91Q55 85 64 59Z" fill="#fff0a0"/><path d="M49 41Q49 22 65 22Q81 22 81 41M43 105h43" fill="none" stroke="#c5a05d" stroke-width="7"/>');
+
     if (id === 'barrel')
         return '<rect width="128" height="128" fill="#765037"/>' +
             '<path d="M28 20Q64 10 100 20L94 108Q64 121 34 108Z" fill="#98653c" stroke="#38271d" stroke-width="6"/>' +
