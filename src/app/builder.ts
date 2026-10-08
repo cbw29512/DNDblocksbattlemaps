@@ -1,4 +1,4 @@
-import { PLAYER_RINGS, CONDITIONS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js';
 import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js';
 import { printBoardMap } from './printMap.js';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js';
@@ -69,7 +69,7 @@ export async function renderBuilder(
           <strong>Status rings</strong>
           <small>Drag a condition onto a character or monster. Drop it again to remove. Exhaustion increases through 6, then clears.</small>
           <div class="creature-status-options">
-            ${CONDITIONS.map(s => `<button type="button" draggable="true" class="status-token" data-condition="${s}">${s}</button>`).join('')}
+            ${CONDITIONS.map(s => `<button type="button" draggable="true" class="status-token" data-condition="${s}" style="--status-ring:#${CONDITION_COLORS[s].toString(16).padStart(6,'0')}">${s}</button>`).join('')}
           </div>
         </section>
         <div class="elevation-control">
