@@ -708,3 +708,24 @@ test('eight-direction line preview preserves feet for diagonal steps',async()=>{
  assert.equal(opposite.length,8);
  assert.deepEqual(opposite[0],{x:2,z:2,elevation:0});
 });
+
+test('DND Blocks sphere selects any positive 3D cube overlap without clipping below map or at walls',async()=>{
+  const {AREA_PRESETS,areaContainsPoint,areaCells}=await import('../.test-build/src/domain/areaTemplates.js');
+  const fireball=AREA_PRESETS.find(x=>x.id==='fireball');
+  const origin={x:0,z:0,elevation:0};
+  const placement={origin,center:origin};
+  // A tiny corner of each cube counts as a FULL affected cube.
+  assert.equal(areaContainsPoint(fireball,placement,{x:3,z:2,elevation:0}),true);
+  // Both above and below the floor, even when outside a visible ground-level board.
+  assert.equal(areaContainsPoint(fireball,placement,{x:0,z:0,elevation:-4}),true);
+  assert.equal(areaContainsPoint(fireball,placement,{x:0,z:0,elevation:3}),true);
+  assert.equal(areaContainsPoint(fireball,placement,{x:0,z:0,elevation:4}),false);
+  // At altitude, horizontal footprint narrows: this must NOT be a cylinder.
+  assert.equal(areaContainsPoint(fireball,placement,{x:3,z:2,elevation:3}),false);
+  // Occluding scenery is not provided to pure geometric projection.
+  // Never truncate underlying geometry to current camera/window viewport.
+  const out=areaCells(fireball,placement,{minX:-5,maxX:6,minZ:-5,maxZ:6,minElevation:-5,maxElevation:5});
+  assert.ok(out.some(c=>c.elevation<0));
+  assert.ok(out.some(c=>c.x<0));
+  assert.ok(!out.some(c=>c.elevation===5));
+});
