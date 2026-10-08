@@ -388,3 +388,34 @@ test('moving a creature preserves identity, colored ring and conditions with und
   const restored = undo(changed.state,changed.history);
   assert.deepEqual(restored.state.objects[0],before);
 });
+
+test('campaign party propagates once to every map with stable IDs and local positions', async () => {
+  const { setPartyMembership, partyRosterFromBoard, reconcilePartyOnMap } = await import('../.test-build/src/domain/party.js');
+  const fighter = createWorldObject('campaign-fighter','hero-fighter',{x:3,z:4,elevation:0},1,0x2688dc);
+  const castle = setPartyMembership(applyCommand(createBoardState('castle'),placeCommand(fighter)),fighter.id,true);
+  const roster = partyRosterFromBoard(castle,{});
+  assert.equal(Object.keys(roster).length,1);
+  const inn = reconcilePartyOnMap(createBoardState('inn'),roster);
+  assert.equal(inn.objects.length,1);
+  assert.equal(inn.objects[0].id,fighter.id);
+  assert.equal(inn.objects[0].ringColor,0x2688dc);
+  const relocated = {...inn.objects[0],x:8,z:9,conditions:['Poisoned']};
+  const placedInn = {...inn,objects:[relocated]};
+  const latest = partyRosterFromBoard(placedInn,roster);
+  const revisited = reconcilePartyOnMap(placedInn,latest);
+  assert.equal(revisited.objects.length,1);
+  assert.equal(revisited.objects[0].x,8);
+  assert.deepEqual(revisited.objects[0].conditions,['Poisoned']);
+  assert.equal(reconcilePartyOnMap(revisited,latest).objects.length,1);
+});
+test('unchecking Party removes copies without deleting the original character', async () => {
+  const { setPartyMembership, removePartyFromMap } = await import('../.test-build/src/domain/party.js');
+  const hero = createWorldObject('member','hero-cleric',{x:2,z:2,elevation:0},1);
+  const origin = applyCommand(createBoardState('castle'),placeCommand(hero));
+  const checked = setPartyMembership(origin,hero.id,true);
+  const unchecked = removePartyFromMap(checked,hero.id,'castle');
+  assert.equal(unchecked.objects.length,1);
+  assert.equal(unchecked.objects[0].partyMember,false);
+  const inn = {...createBoardState('inn'),objects:[{...hero,partyMember:true}]};
+  assert.equal(removePartyFromMap(inn,hero.id,'castle').objects.length,0);
+});
