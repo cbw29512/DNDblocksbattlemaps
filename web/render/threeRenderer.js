@@ -1,11 +1,11 @@
-import { areaCells } from '../domain/areaTemplates.js';
-import { getCatalogItem } from '../domain/catalog.js?v=ebdfcba6160b';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=ebdfcba6160b';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=ebdfcba6160b';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=ebdfcba6160b';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=ebdfcba6160b';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=ebdfcba6160b';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=ebdfcba6160b';
+import { areaCells } from '../domain/areaTemplates.js?v=86d8296e3087';
+import { getCatalogItem } from '../domain/catalog.js?v=86d8296e3087';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=86d8296e3087';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=86d8296e3087';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=86d8296e3087';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=86d8296e3087';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=86d8296e3087';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=86d8296e3087';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -54,24 +54,33 @@ export async function createThreeRenderer(container, handlers) {
     let roomPreview = null;
     let currentObjects = [];
     let currentBounds = { ...DEFAULT_BOARD_BOUNDS };
- 
-  let activeArea = null;
-  let areaPlacement = null;
-  const areaGroup = new THREE.Group();
-  scene.add(areaGroup);
-  function rebuildAreaCubes() {
-    for(const mesh of [...areaGroup.children]) { areaGroup.remove(mesh); }
-    if(!activeArea || !areaPlacement) return;
-    const n = Math.ceil(activeArea.sizeFeet/5)+1;
-    const center=areaPlacement.center;
-    const bounds={minX:Math.max(currentBounds.minX,center.x-n),maxX:Math.min(currentBounds.maxX,center.x+n+1),minZ:Math.max(currentBounds.minZ,center.z-n),maxZ:Math.min(currentBounds.maxZ,center.z+n+1),minElevation:Math.max(0,center.elevation-n),maxElevation:Math.min(8,center.elevation+n)};
-    const color=activeArea.visual==='fire'?0xff391c:activeArea.visual==='lightning'?0xf6f4e9:0x93979e;
-    const cells=areaCells(activeArea,areaPlacement,bounds);
-    const geometry=new THREE.BoxGeometry(1,1,1);
-    const material=new THREE.MeshBasicMaterial({color,transparent:true,opacity:.5,depthWrite:false,side:THREE.DoubleSide});
-    for(const cell of cells){const cube=new THREE.Mesh(geometry,material);cube.position.set(cell.x+.5,cell.elevation+.5,cell.z+.5);cube.raycast=()=>{};areaGroup.add(cube);}
-  }
-
+    let activeArea = null;
+    let areaPlacement = null;
+    const areaGroup = new THREE.Group();
+    scene.add(areaGroup);
+    function rebuildAreaCubes() {
+        for (const mesh of [...areaGroup.children]) {
+            areaGroup.remove(mesh);
+            mesh.geometry.dispose();
+            mesh.material.dispose();
+        }
+        if (!activeArea || !areaPlacement)
+            return;
+        const n = Math.ceil(activeArea.sizeFeet / 5) + 1;
+        const center = areaPlacement.center;
+        const bounds = { minX: Math.max(currentBounds.minX, center.x - n), maxX: Math.min(currentBounds.maxX, center.x + n + 1), minZ: Math.max(currentBounds.minZ, center.z - n), maxZ: Math.min(currentBounds.maxZ, center.z + n + 1), minElevation: Math.max(0, center.elevation - n), maxElevation: Math.min(8, center.elevation + n) };
+        const color = activeArea.visual === 'fire' ? 0xff391c : activeArea.visual === 'lightning' ? 0xf6f4e9 : 0x93979e;
+        const cells = areaCells(activeArea, areaPlacement, bounds);
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .5, depthWrite: false, side: THREE.DoubleSide });
+        for (const cell of cells) {
+            const cube = new THREE.Mesh(geometry, material);
+            cube.position.set(cell.x + .5, cell.elevation + .5, cell.z + .5);
+            cube.raycast = () => { };
+            areaGroup.add(cube);
+        }
+        // Cubes form the recognizable voxel silhouette; no smooth sphere or cone mesh.
+    }
     function boardCenter(bounds) {
         return {
             x: (bounds.minX + bounds.maxX) / 2,
@@ -174,7 +183,12 @@ export async function createThreeRenderer(container, handlers) {
             scene.add(roomPreview);
     }
     renderer.domElement.addEventListener('pointermove', (event) => {
-    if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,false); return; }
+        if (activeArea) {
+            const point = floorPosition(event);
+            if (point)
+                handlers.onAreaPoint(point, false);
+            return;
+        }
         if (activeRoom && roomPreview) {
             const corner = floorPosition(event);
             if (!corner) {
@@ -191,7 +205,12 @@ export async function createThreeRenderer(container, handlers) {
         position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
     });
     renderer.domElement.addEventListener('click', (event) => {
-    if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,true); return; }
+        if (activeArea) {
+            const point = floorPosition(event);
+            if (point)
+                handlers.onAreaPoint(point, true);
+            return;
+        }
         setPointer(event);
         const marked = raycaster.intersectObjects(objectGroup.children, true)
             .find((hit) => hit.object.userData.objectId)?.object?.userData?.objectId;
@@ -274,8 +293,8 @@ export async function createThreeRenderer(container, handlers) {
     handlers.onStatus('Build toward an edge and the map grows automatically.');
     return {
         mode: 'three',
-        setAreaPreview(template, placement) { activeArea=template; areaPlacement=placement; rebuildAreaCubes(); },
-    setTheme(theme) {
+        setAreaPreview(template, placement) { activeArea = template; areaPlacement = placement; rebuildAreaCubes(); },
+        setTheme(theme) {
             groundMaterial.color.setHex(theme.groundColor);
         },
         setSelectedCatalog(next) {
@@ -316,7 +335,11 @@ export async function createThreeRenderer(container, handlers) {
         dispose() {
             resize.disconnect();
             renderer.setAnimationLoop(null);
-      for(const mesh of areaGroup.children){mesh.geometry.dispose();mesh.material.dispose();} scene.remove(areaGroup);
+            for (const mesh of areaGroup.children) {
+                mesh.geometry.dispose();
+                mesh.material.dispose();
+            }
+            scene.remove(areaGroup);
             ground.geometry.dispose();
             grid.geometry.dispose();
             gridMaterial.dispose();

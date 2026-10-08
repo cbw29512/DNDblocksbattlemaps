@@ -1,20 +1,20 @@
-import { AREA_PRESETS, isInCastingRange } from '../domain/areaTemplates.js';
-import { createBrowserBackup } from '../domain/browserBackup.js?v=ebdfcba6160b';
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=ebdfcba6160b';
-import { setPartyMembership } from '../domain/party.js?v=ebdfcba6160b';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=ebdfcba6160b';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=ebdfcba6160b';
-import { printBoardMap } from './printMap.js?v=ebdfcba6160b';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=ebdfcba6160b';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=ebdfcba6160b';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=ebdfcba6160b';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=ebdfcba6160b';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=ebdfcba6160b';
-import { roomSummary } from '../domain/room.js?v=ebdfcba6160b';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=ebdfcba6160b';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=ebdfcba6160b';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=ebdfcba6160b';
-import { createRenderer } from '../render/createRenderer.js?v=ebdfcba6160b';
+import { AREA_PRESETS, isInCastingRange } from '../domain/areaTemplates.js?v=86d8296e3087';
+import { createBrowserBackup } from '../domain/browserBackup.js?v=86d8296e3087';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=86d8296e3087';
+import { setPartyMembership } from '../domain/party.js?v=86d8296e3087';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=86d8296e3087';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=86d8296e3087';
+import { printBoardMap } from './printMap.js?v=86d8296e3087';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=86d8296e3087';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=86d8296e3087';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=86d8296e3087';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=86d8296e3087';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=86d8296e3087';
+import { roomSummary } from '../domain/room.js?v=86d8296e3087';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=86d8296e3087';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=86d8296e3087';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=86d8296e3087';
+import { createRenderer } from '../render/createRenderer.js?v=86d8296e3087';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -28,9 +28,9 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     let elevation = 0;
     let pickedCreatureId = null;
     let moveMode = false;
-  let activeSpell = null;
-  let casterOrigin = {x:0,z:0,elevation:0};
-  let spellCenter = null;
+    let activeSpell = null;
+    let casterOrigin = { x: 0, z: 0, elevation: 0 };
+    let spellCenter = null;
     let selectedCondition = null;
     root.innerHTML = `
     <main class="builder-shell" style="--theme-accent:${theme.accentCss}">
@@ -56,7 +56,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         <section class="combat-spell-tools" aria-label="Spell measurement and combat log">
           <strong>Spell &amp; Area Preview</strong>
           <label for="spell-choice">Effect</label>
-          <select id="spell-choice"><option value="fireball">Fireball — 20 ft radius</option>${AREA_PRESETS.filter(t=>t.id!=='fireball').map(t=>`<option value="${t.id}">${t.label}</option>`).join('')}</select>
+          <select id="spell-choice"><option value="fireball">Fireball — 20 ft radius</option>${AREA_PRESETS.filter(t => t.id !== 'fireball').map(t => `<option value="${t.id}">${t.label}</option>`).join('')}</select>
           <label for="spell-caster">Caster name</label><input id="spell-caster" type="text" placeholder="Player or monster" value="Wizard">
           <button id="preview-spell" type="button">Preview Area</button>
           <div class="spell-actions"><button id="cast-spell" type="button" disabled>Cast</button><button id="cancel-spell" type="button" disabled>Cancel</button></div>
@@ -133,46 +133,65 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     </main>
   `;
     const status = document.getElementById('board-status');
-  const canvas = document.getElementById('board-canvas');
-  const castButton = root.querySelector('#cast-spell');
-  const cancelButton = root.querySelector('#cancel-spell');
-  const spellInstructions = root.querySelector('#spell-instructions');
-  const cancelArea = () => {
-    activeSpell=null; spellCenter=null; renderer?.setAreaPreview(null,null);
-    castButton.disabled=true; cancelButton.disabled=true;
-    spellInstructions.textContent='Preview canceled or complete. Select Preview Area to start again.';
-  };
-  const choosePoint = (point,commit) => {
-    if(!activeSpell)return;
-    const placement={origin:casterOrigin,center:point};
-    if(!isInCastingRange(activeSpell,placement)){status.textContent='Outside the listed ability range. Choose a closer point.';return;}
-    spellCenter=point; renderer?.setAreaPreview(activeSpell,placement);castButton.disabled=false;
-    if(commit)castArea();
-  };
-  const castArea=()=>{
-    if(!activeSpell || !spellCenter)return;
-    const caster=root.querySelector('#spell-caster')?.value.trim() || 'Unknown caster';
-    const label=activeSpell.label;
-    const record=document.createElement('li');
-    record.textContent=caster+' casts '+label+' at ('+spellCenter.x+', '+spellCenter.z+'). Area preview only; rolls and target adjudication pending.';
-    root.querySelector('#combat-log')?.prepend(record);status.textContent=caster+' casts '+label+'.';cancelArea();
-  };
-  root.querySelector('#preview-spell')?.addEventListener('click',()=>{
-    const id=root.querySelector('#spell-choice')?.value;
-    activeSpell=AREA_PRESETS.find(x=>x.id===id) ?? AREA_PRESETS[0];
-    const chosen=state.objects.find(x=>getCatalogItem(x.catalogId).category==='Characters') ??
-      state.objects.find(x=>getCatalogItem(x.catalogId).category==='Monsters');
-    casterOrigin=chosen ? {x:chosen.x,z:chosen.z,elevation:chosen.elevation} : {x:0,z:0,elevation:0};
-    spellCenter=null;castButton.disabled=true;cancelButton.disabled=false;renderer?.setAreaPreview(null,null);
-    spellInstructions.textContent='Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
-    status.textContent='Area preview armed. First creature on map used as origin if present.';
-  });
-  castButton.addEventListener('click',castArea);
-  cancelButton.addEventListener('click',cancelArea);
-  const onAreaRightClick=(event)=>{if(activeSpell){event.preventDefault();event.stopImmediatePropagation();cancelArea();}};
-  canvas.addEventListener('contextmenu',onAreaRightClick,true);
-
-      const boardSize = document.getElementById('board-size');
+    const canvas = document.getElementById('board-canvas');
+    const castButton = root.querySelector('#cast-spell');
+    const cancelButton = root.querySelector('#cancel-spell');
+    const spellInstructions = root.querySelector('#spell-instructions');
+    const cancelArea = () => {
+        activeSpell = null;
+        spellCenter = null;
+        renderer?.setAreaPreview(null, null);
+        castButton.disabled = true;
+        cancelButton.disabled = true;
+        spellInstructions.textContent = 'Preview canceled or complete. Select Preview Area to start again.';
+    };
+    const choosePoint = (point, commit) => {
+        if (!activeSpell)
+            return;
+        const placement = { origin: casterOrigin, center: point };
+        if (!isInCastingRange(activeSpell, placement)) {
+            status.textContent = 'Outside the listed ability range. Choose a closer point.';
+            return;
+        }
+        spellCenter = point;
+        renderer?.setAreaPreview(activeSpell, placement);
+        castButton.disabled = false;
+        if (commit)
+            castArea();
+    };
+    const castArea = () => {
+        if (!activeSpell || !spellCenter)
+            return;
+        const caster = root.querySelector('#spell-caster')?.value.trim() || 'Unknown caster';
+        const label = activeSpell.label;
+        const record = document.createElement('li');
+        record.textContent = caster + ' casts ' + label + ' at (' + spellCenter.x + ', ' + spellCenter.z + '). Area preview only; rolls and target adjudication pending.';
+        root.querySelector('#combat-log')?.prepend(record);
+        status.textContent = caster + ' casts ' + label + '.';
+        cancelArea();
+    };
+    root.querySelector('#preview-spell')?.addEventListener('click', () => {
+        const id = root.querySelector('#spell-choice')?.value;
+        activeSpell = AREA_PRESETS.find(x => x.id === id) ?? AREA_PRESETS[0] ?? null;
+        const chosen = state.objects.find(x => getCatalogItem(x.catalogId).category === 'Characters') ??
+            state.objects.find(x => getCatalogItem(x.catalogId).category === 'Monsters');
+        casterOrigin = chosen ? { x: chosen.x, z: chosen.z, elevation: chosen.elevation } : { x: 0, z: 0, elevation: 0 };
+        spellCenter = null;
+        castButton.disabled = true;
+        cancelButton.disabled = false;
+        renderer?.setAreaPreview(null, null);
+        spellInstructions.textContent = 'Move over battlefield then left-click/tap to cast, or press Cast. Right-click, Escape or Cancel dismisses.';
+        status.textContent = 'Area preview armed. First creature on map used as origin if present.';
+    });
+    castButton.addEventListener('click', castArea);
+    cancelButton.addEventListener('click', cancelArea);
+    const onAreaRightClick = (event) => { if (activeSpell) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        cancelArea();
+    } };
+    canvas.addEventListener('contextmenu', onAreaRightClick, true);
+    const boardSize = document.getElementById('board-size');
     const buildRoomButton = document.getElementById('build-room');
     const updateBoardSize = () => {
         boardSize.textContent =
@@ -266,8 +285,9 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         status.textContent = `Room placement canceled. ${getCatalogItem(selected).name} selected.`;
     };
     renderer = await createRenderer(canvas, {
-        onAreaPoint(point, commit) { if(activeSpell)choosePoint(point,commit); },
-    onPickCreature(id) {
+        onAreaPoint(point, commit) { if (activeSpell)
+            choosePoint(point, commit); },
+        onPickCreature(id) {
             if (selectedCondition)
                 return;
             if (!moveMode)
@@ -592,6 +612,11 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     const onKeyDown = (event) => {
         if (event.key !== 'Escape')
             return;
+        if (activeSpell) {
+            event.preventDefault();
+            cancelArea();
+            return;
+        }
         if (selectedCondition) {
             selectedCondition = null;
             root.querySelectorAll('[data-condition]').forEach(button => {
@@ -617,7 +642,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     document.addEventListener('keydown', onKeyDown);
     return () => {
         document.removeEventListener('keydown', onKeyDown);
-    canvas.removeEventListener('contextmenu',onAreaRightClick,true);
+        canvas.removeEventListener('contextmenu', onAreaRightClick, true);
         document.getElementById('print-map-root')?.remove();
         renderer?.dispose();
     };

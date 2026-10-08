@@ -1,7 +1,7 @@
-import { growBoardBounds } from './boardBounds.js?v=ebdfcba6160b';
-import { MAX_BASE_ELEVATION } from './spatial.js?v=ebdfcba6160b';
-import { roomOuterSize } from './room.js?v=ebdfcba6160b';
-import { DEFAULT_BOARD_BOUNDS } from './spatial.js?v=ebdfcba6160b';
+import { growBoardBounds } from './boardBounds.js?v=86d8296e3087';
+import { MAX_BASE_ELEVATION } from './spatial.js?v=86d8296e3087';
+import { roomOuterSize } from './room.js?v=86d8296e3087';
+import { DEFAULT_BOARD_BOUNDS } from './spatial.js?v=86d8296e3087';
 function directionOrder(corner) {
     const x = corner.x > 0 ? -1 : 1;
     const z = corner.z > 0 ? -1 : 1;

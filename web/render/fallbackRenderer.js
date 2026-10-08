@@ -1,10 +1,10 @@
-import { areaCells } from '../domain/areaTemplates.js';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=ebdfcba6160b';
-import { getCatalogItem } from '../domain/catalog.js?v=ebdfcba6160b';
-import { stackElevationAt } from '../domain/placement.js?v=ebdfcba6160b';
-import { roomOuterSize } from '../domain/room.js?v=ebdfcba6160b';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=ebdfcba6160b';
-import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=ebdfcba6160b';
+import { areaCells } from '../domain/areaTemplates.js?v=86d8296e3087';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=86d8296e3087';
+import { getCatalogItem } from '../domain/catalog.js?v=86d8296e3087';
+import { stackElevationAt } from '../domain/placement.js?v=86d8296e3087';
+import { roomOuterSize } from '../domain/room.js?v=86d8296e3087';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=86d8296e3087';
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=86d8296e3087';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';
@@ -16,8 +16,8 @@ export function createFallbackRenderer(container, handlers) {
     let elevation = 0;
     let theme = null;
     let currentBounds = { ...DEFAULT_BOARD_BOUNDS };
-  let areaTemplate = null;
-  let areaPlacement = null;
+    let areaTemplate = null;
+    let areaPlacement = null;
     let currentObjects = [];
     function cellAt(x, z) {
         return board.querySelector(`[data-x="${x}"][data-z="${z}"]`);
@@ -53,13 +53,14 @@ export function createFallbackRenderer(container, handlers) {
         board.style.gridTemplateColumns = `repeat(${boardWidth(currentBounds)}, 1fr)`;
         board.style.gridTemplateRows = `repeat(${boardDepth(currentBounds)}, 1fr)`;
         const affected = new Set(areaTemplate && areaPlacement ?
-      areaCells(areaTemplate,areaPlacement,{...currentBounds,minElevation:elevation,maxElevation:elevation})
-        .map(p=>p.x+','+p.z) : []);
-    for (let z = currentBounds.minZ; z < currentBounds.maxZ; z += 1) {
+            areaCells(areaTemplate, areaPlacement, { ...currentBounds, minElevation: elevation, maxElevation: elevation })
+                .map(p => p.x + ',' + p.z) : []);
+        for (let z = currentBounds.minZ; z < currentBounds.maxZ; z += 1) {
             for (let x = currentBounds.minX; x < currentBounds.maxX; x += 1) {
                 const cell = document.createElement('button');
                 cell.className = 'fallback-cell';
-        if(affected.has(x+','+z)) cell.classList.add('aoe-affected');
+                if (affected.has(x + ',' + z))
+                    cell.classList.add('aoe-affected');
                 cell.type = 'button';
                 cell.dataset.x = String(x);
                 cell.dataset.z = String(z);
@@ -89,7 +90,10 @@ export function createFallbackRenderer(container, handlers) {
                     }
                 }
                 cell.addEventListener('pointerenter', () => {
-          if(areaTemplate){ handlers.onAreaPoint({x,z,elevation},false); return; }
+                    if (areaTemplate) {
+                        handlers.onAreaPoint({ x, z, elevation }, false);
+                        return;
+                    }
                     if (!room)
                         return;
                     const corner = { x, z, elevation };
@@ -97,6 +101,10 @@ export function createFallbackRenderer(container, handlers) {
                     paintRoomPreview(placement ?? previewRoomPlacement(corner), Boolean(placement));
                 });
                 cell.addEventListener('click', () => {
+                    if (areaTemplate) {
+                        handlers.onAreaPoint({ x, z, elevation }, true);
+                        return;
+                    }
                     if (top && handlers.onMarkTarget(top.id))
                         return;
                     if (room) {
@@ -142,6 +150,10 @@ export function createFallbackRenderer(container, handlers) {
                 });
                 cell.addEventListener('contextmenu', (event) => {
                     event.preventDefault();
+                    if (areaTemplate) {
+                        handlers.onAreaPoint({ x, z, elevation }, false);
+                        return;
+                    }
                     if (top)
                         handlers.onRemove(top.id);
                 });
@@ -152,8 +164,8 @@ export function createFallbackRenderer(container, handlers) {
     handlers.onStatus('Build toward an edge and the map grows automatically.');
     return {
         mode: 'fallback',
-        setAreaPreview(template,placement) {areaTemplate=template;areaPlacement=placement;draw();},
-    setTheme(next) {
+        setAreaPreview(template, placement) { areaTemplate = template; areaPlacement = placement; draw(); },
+        setTheme(next) {
             theme = next;
             draw();
         },
