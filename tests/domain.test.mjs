@@ -284,3 +284,14 @@ test('light-source visual behavior is catalog driven', () => {
     assert.ok(!PALETTE[id]?.tags?.includes('light-source'), id + ' should not glow');
   }
 });
+
+test('door and hazard blocks display distinct generated face art', () => {
+  const icons = ['door', 'open-doorway', 'secret-door', 'trapdoor', 'spike-trap', 'dart-trap'];
+  const faceSources = icons.map((id) => PALETTE[id]?.art?.src);
+  assert.ok(faceSources.every((src) => src?.startsWith('data:image/svg+xml')));
+  assert.equal(new Set(faceSources).size, icons.length, 'each should have a distinct face illustration');
+  for (const id of icons) {
+    assert.equal(PALETTE[id].shape, 'cube');
+    assert.equal(PALETTE[id].footprintCells, 1);
+  }
+});
