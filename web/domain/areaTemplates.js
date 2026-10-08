@@ -1,11 +1,11 @@
-import { GRID_FEET } from './spatial.js?v=af8354d0e85f';
+import { GRID_FEET } from './spatial.js?v=770c6a3e9fd9';
 export const AREA_PRESETS = [
     { id: 'fireball', label: 'Fireball', shape: 'sphere', sizeFeet: 20, maxRangeFeet: 150, visual: 'fire' },
-    { id: 'lightning-bolt', label: 'Lightning Bolt', shape: 'line', sizeFeet: 100, widthFeet: 5, maxRangeFeet: 0, originMode:'self', visual: 'lightning' },
-    { id: 'burning-hands', label: 'Burning Hands', shape: 'cone', sizeFeet: 15, maxRangeFeet: 0, originMode:'self', visual: 'fire' },
-    { id: 'cone-of-cold', label: 'Cone of Cold', shape: 'cone', sizeFeet: 60, maxRangeFeet: 0, originMode:'self', visual: 'cold' },
-    { id: 'dragon-fire-cone', label: 'Dragon Fire Breath (cone)', shape: 'cone', sizeFeet: 30, maxRangeFeet: 0, originMode:'self', visual: 'fire' },
-    { id: 'dragon-fire-line', label: 'Dragon Fire Breath (line)', shape: 'line', sizeFeet: 60, widthFeet: 5, maxRangeFeet: 0, originMode:'self', visual: 'fire' },
+    { id: 'lightning-bolt', label: 'Lightning Bolt', shape: 'line', sizeFeet: 100, widthFeet: 5, maxRangeFeet: 0, originMode: 'self', visual: 'lightning' },
+    { id: 'burning-hands', label: 'Burning Hands', shape: 'cone', sizeFeet: 15, maxRangeFeet: 0, originMode: 'self', visual: 'fire' },
+    { id: 'cone-of-cold', label: 'Cone of Cold', shape: 'cone', sizeFeet: 60, maxRangeFeet: 0, originMode: 'self', visual: 'cold' },
+    { id: 'dragon-fire-cone', label: 'Dragon Fire Breath (cone)', shape: 'cone', sizeFeet: 30, maxRangeFeet: 0, originMode: 'self', visual: 'fire' },
+    { id: 'dragon-fire-line', label: 'Dragon Fire Breath (line)', shape: 'line', sizeFeet: 60, widthFeet: 5, maxRangeFeet: 0, originMode: 'self', visual: 'fire' },
     { id: 'cloudkill', label: 'Cloudkill', shape: 'sphere', sizeFeet: 20, maxRangeFeet: 120, visual: 'poison' },
     { id: 'darkness', label: 'Darkness', shape: 'sphere', sizeFeet: 15, maxRangeFeet: 60, visual: 'neutral' }
 ];
@@ -17,16 +17,18 @@ export function feetBetween(a, b) {
 export function areaContainsPoint(t, p, point) {
     const cx = (point.x - p.center.x) * GRID_FEET, cz = (point.z - p.center.z) * GRID_FEET;
     const cy = (point.elevation - p.center.elevation) * GRID_FEET;
-    // Full five-foot cubes in one grid-aligned row, not a thin ray.
+    // A one-cell-wide horizontal line is a single grouped row of whole cubes.
+    // Its direction is chosen by the dominant aim axis. No diagonal approximation is claimed.
     if (t.shape === 'line' && (t.widthFeet ?? 5) === GRID_FEET &&
         p.origin.elevation === p.center.elevation && t.sizeFeet % GRID_FEET === 0) {
-        const dx = p.center.x-p.origin.x, dz=p.center.z-p.origin.z;
-        if (dx===0 && dz===0) return false;
-        const horizontal=Math.abs(dx)>=Math.abs(dz);
-        const dir=(horizontal?dx:dz)>=0?1:-1;
-        const step=horizontal?(point.x-p.origin.x)*dir:(point.z-p.origin.z)*dir;
-        return point.elevation===p.origin.elevation && step>=1 && step<=t.sizeFeet/GRID_FEET &&
-           (horizontal?point.z===p.origin.z:point.x===p.origin.x);
+        const dx = p.center.x - p.origin.x, dz = p.center.z - p.origin.z;
+        if (dx === 0 && dz === 0)
+            return false;
+        const horizontal = Math.abs(dx) >= Math.abs(dz);
+        const dir = (horizontal ? dx : dz) >= 0 ? 1 : -1;
+        const step = horizontal ? (point.x - p.origin.x) * dir : (point.z - p.origin.z) * dir;
+        return point.elevation === p.origin.elevation && step >= 1 && step <= t.sizeFeet / GRID_FEET &&
+            (horizontal ? point.z === p.origin.z : point.x === p.origin.x);
     }
     if (t.shape === 'sphere') {
         const sliceRadius = Math.sqrt(Math.max(0, t.sizeFeet * t.sizeFeet - cy * cy));

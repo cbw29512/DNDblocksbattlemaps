@@ -1,23 +1,23 @@
-import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js?v=af8354d0e85f';
-import { areaCells } from '../domain/areaTemplates.js?v=af8354d0e85f';
-import { previewAffectedCreatures } from '../domain/areaTargets.js?v=af8354d0e85f';
-import { isInCastingRange } from '../domain/areaTemplates.js?v=af8354d0e85f';
-import { createBrowserBackup } from '../domain/browserBackup.js?v=af8354d0e85f';
-import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=af8354d0e85f';
-import { setPartyMembership } from '../domain/party.js?v=af8354d0e85f';
-import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=af8354d0e85f';
-import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=af8354d0e85f';
-import { printBoardMap } from './printMap.js?v=af8354d0e85f';
-import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=af8354d0e85f';
-import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=af8354d0e85f';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=af8354d0e85f';
-import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=af8354d0e85f';
-import { commit, createHistory, redo, undo } from '../domain/history.js?v=af8354d0e85f';
-import { roomSummary } from '../domain/room.js?v=af8354d0e85f';
-import { roomWallPositions } from '../domain/roomPlacement.js?v=af8354d0e85f';
-import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=af8354d0e85f';
-import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=af8354d0e85f';
-import { createRenderer } from '../render/createRenderer.js?v=af8354d0e85f';
+import { AREA_ABILITY_REGISTRY, getAreaAbility } from '../domain/areaAbilityRegistry.js?v=770c6a3e9fd9';
+import { areaCells } from '../domain/areaTemplates.js?v=770c6a3e9fd9';
+import { previewAffectedCreatures } from '../domain/areaTargets.js?v=770c6a3e9fd9';
+import { isInCastingRange } from '../domain/areaTemplates.js?v=770c6a3e9fd9';
+import { createBrowserBackup } from '../domain/browserBackup.js?v=770c6a3e9fd9';
+import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=770c6a3e9fd9';
+import { setPartyMembership } from '../domain/party.js?v=770c6a3e9fd9';
+import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=770c6a3e9fd9';
+import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPanel.js?v=770c6a3e9fd9';
+import { printBoardMap } from './printMap.js?v=770c6a3e9fd9';
+import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=770c6a3e9fd9';
+import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=770c6a3e9fd9';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=770c6a3e9fd9';
+import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=770c6a3e9fd9';
+import { commit, createHistory, redo, undo } from '../domain/history.js?v=770c6a3e9fd9';
+import { roomSummary } from '../domain/room.js?v=770c6a3e9fd9';
+import { roomWallPositions } from '../domain/roomPlacement.js?v=770c6a3e9fd9';
+import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=770c6a3e9fd9';
+import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=770c6a3e9fd9';
+import { createRenderer } from '../render/createRenderer.js?v=770c6a3e9fd9';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -168,10 +168,10 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         const radius = Math.ceil(activeSpell.sizeFeet / 5) + 1;
         const p = { origin: casterOrigin, center: spellCenter };
         const area = areaCells(activeSpell, p, {
-            minX: Math.max(state.bounds.minX, Math.min(spellCenter.x,casterOrigin.x) - radius),
-            maxX: Math.min(state.bounds.maxX, Math.max(spellCenter.x,casterOrigin.x) + radius + 1),
-            minZ: Math.max(state.bounds.minZ, Math.min(spellCenter.z,casterOrigin.z) - radius),
-            maxZ: Math.min(state.bounds.maxZ, Math.max(spellCenter.z,casterOrigin.z) + radius + 1),
+            minX: Math.max(state.bounds.minX, Math.min(spellCenter.x, casterOrigin.x) - radius),
+            maxX: Math.min(state.bounds.maxX, Math.max(spellCenter.x, casterOrigin.x) + radius + 1),
+            minZ: Math.max(state.bounds.minZ, Math.min(spellCenter.z, casterOrigin.z) - radius),
+            maxZ: Math.min(state.bounds.maxZ, Math.max(spellCenter.z, casterOrigin.z) + radius + 1),
             minElevation: Math.max(0, spellCenter.elevation - radius),
             maxElevation: Math.min(8, spellCenter.elevation + radius)
         });

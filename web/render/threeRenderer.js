@@ -1,12 +1,12 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=af8354d0e85f';
-import { areaCells } from '../domain/areaTemplates.js?v=af8354d0e85f';
-import { getCatalogItem } from '../domain/catalog.js?v=af8354d0e85f';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=af8354d0e85f';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=af8354d0e85f';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=af8354d0e85f';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=af8354d0e85f';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=af8354d0e85f';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=af8354d0e85f';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=770c6a3e9fd9';
+import { areaCells } from '../domain/areaTemplates.js?v=770c6a3e9fd9';
+import { getCatalogItem } from '../domain/catalog.js?v=770c6a3e9fd9';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=770c6a3e9fd9';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=770c6a3e9fd9';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=770c6a3e9fd9';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=770c6a3e9fd9';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=770c6a3e9fd9';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=770c6a3e9fd9';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -89,7 +89,8 @@ export async function createThreeRenderer(container, handlers) {
             return;
         const n = Math.ceil(activeArea.sizeFeet / 5) + 1;
         const center = areaPlacement.center;
-        const bounds = { minX: Math.max(currentBounds.minX, center.x - n), maxX: Math.min(currentBounds.maxX, center.x + n + 1), minZ: Math.max(currentBounds.minZ, center.z - n), maxZ: Math.min(currentBounds.maxZ, center.z + n + 1), minElevation: Math.max(0, center.elevation - n), maxElevation: Math.min(8, center.elevation + n) };
+        const extent = activeArea.shape === 'line' ? Math.ceil(activeArea.sizeFeet / 5) + 1 : n;
+        const bounds = { minX: Math.max(currentBounds.minX, Math.min(center.x, areaPlacement.origin.x) - extent), maxX: Math.min(currentBounds.maxX, Math.max(center.x, areaPlacement.origin.x) + extent + 1), minZ: Math.max(currentBounds.minZ, Math.min(center.z, areaPlacement.origin.z) - extent), maxZ: Math.min(currentBounds.maxZ, Math.max(center.z, areaPlacement.origin.z) + extent + 1), minElevation: Math.max(0, Math.min(center.elevation, areaPlacement.origin.elevation) - extent), maxElevation: Math.min(8, Math.max(center.elevation, areaPlacement.origin.elevation) + extent) };
         const color = activeArea.visual === 'fire' ? 0xff391c : activeArea.visual === 'lightning' ? 0xf6f4e9 : 0x93979e;
         const cells = areaCells(activeArea, areaPlacement, bounds);
         const geometry = new THREE.BoxGeometry(1, 1, 1);
