@@ -485,3 +485,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Limits:** local browser prototype, not multiplayer. Templates are visual blocks; they do not instantiate D&D mechanics or automatically spawn enemies.
 
 - **Area-prioritized catalogs (2026-10-08):** All Build/Props/Characters/Monsters catalog items remain accessible in their categories. For each open map, tags matching its area (Inn, Castle, Field, Sea, Volcano) or named starter template (Dungeon, Cave, Temple, Harbor, Forest, Ruins) come first, alphabetically; all other blocks remain below them alphabetically. No forced filter and no extra heading. Source/browser sorting helper, catalog panel, builder wiring, and regression tests updated. Browser/CI verification pending.
+
+## 2026-10-08 — Dedicated map mode controls
+- Separate always-visible Build and Combat buttons replace the misleading label-flipping toggle; active mode has visible and accessible pressed state. Combat still restricts scenery edits and keeps creature/status interaction. Browser QA pending, PR CI required.
