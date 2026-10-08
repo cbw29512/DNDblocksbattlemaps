@@ -202,3 +202,14 @@
 #creature-mode.is-armed {background:#326b6c;color:#fff;border-color:#8ce5dc;box-shadow:0 0 0 2px rgba(95,221,203,.23);}
 
 #build-tools[hidden], #identity-ring-tools[hidden] { display: none !important; }
+
+.party-manager, .campaign-map-tabs {display:grid;gap:.42rem;padding:.7rem;border:1px solid rgba(255,255,255,.2);border-radius:10px;margin:0 0 .7rem;color:#f3eedf;}
+.party-manager strong,.campaign-map-tabs strong {font-size:.85rem;}
+.party-manager small {font-size:.7rem;line-height:1.3;color:#beb6a5;}
+#party-members {display:grid;gap:.3rem;}
+#party-members label {display:flex;gap:.5rem;align-items:center;padding:.35rem .25rem;font-size:.76rem;cursor:pointer;}
+#party-members input {accent-color:#54b4a0;}
+.campaign-map-tabs {grid-template-columns:repeat(2,minmax(0,1fr));}
+.campaign-map-tabs strong {grid-column:1/-1;}
+.campaign-map-tabs button {border:1px solid #686e66;border-radius:6px;background:#252a25;color:#fff;cursor:pointer;padding:.4rem;font-size:.76rem;}
+.campaign-map-tabs button[aria-current="page"] {border-color:#c6a75e;background:#4b402b;}

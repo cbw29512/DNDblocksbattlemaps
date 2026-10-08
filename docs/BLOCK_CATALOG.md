@@ -371,3 +371,8 @@ The toolbar toggle **Move Creatures** switches from ordinary Build mode to creat
 ### Monster CR and edition filtering (2026-10-08)
 
 Monsters tab now has exact CR and edition selectors. Nine legacy starter monster entries have verified 2014 CR tags. A CR 5 filter correctly returns empty until CR 5 creatures are imported. Do not create fake CR 5 results. Every other SRD monster, including Large/Huge creatures, is still outstanding. Size metadata and actual multi-cube creature rendering are separate required milestones. Iron Pit's SRD roster/inventory is the intended source, but edition-specific IDs and artwork variants must be preserved.
+
+
+### Campaign party auto-propagation (local prototype)
+
+DM checks **Party** next to a placed Character on Build Mode. Each checked hero's stable WorldObject ID becomes a campaign roster entry, automatically populated on the five existing terrain maps without requiring the DM to place the hero five times. Each map has independent grid position while shared identity, ring and conditions follow the roster. Unchecking Party or deleting a party character removes propagated copies while retaining the original if unchecked. Map tabs switch the current local DM view. No arbitrary map creation, online players, live network sync, secure ownership or party-start marker yet: these remain separate work.

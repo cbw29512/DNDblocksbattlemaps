@@ -447,3 +447,11 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - Known coverage: Iron Pit 2024 certification manifest enumerates 330 catalog monsters, 141 public-ready and 189 blocked as recorded in that manifest; these counts relate to Iron Pit engine readiness, not DND Blocks visual asset coverage. Art inventory records 294 approved silhouettes. Avoid assuming all monsters have images or mechanical certification.
 - Required next slices: import source-backed full 2014 and 2024 SRD catalogs with CR/size/edition; map source artwork with fallbacks and provenance; build one logical multi-cube creature footprint based on grid squares; certify Large and Huge placement, movement, clicks and render before bulk catalog import; keep Gargantuan in the same generic primitive.
 - CI/browser checks remain pending; this PR does not certify full SRD, large or huge creatures.
+
+
+## 2026-10-08 — Campaign party across existing maps
+
+- **User goal:** DM adds a Character, checks Party, and character automatically appears on all maps without duplication. One shared party, DM-controlled active map, preserved identity, colors, statuses and ownership when multiplayer arrives.
+- **Implemented current local prototype:** Each Character gets a Party checkbox in Build Mode. Checked characters saved to one browser-local campaign roster by stable UUID and copied to the five existing theme maps (Castle, Inn, Field, Sea, Volcano), preserving per-map x/z/elevation. The same identity is mirrored in all map saves; status and ring changes update roster; unchecking/deleting releases party membership/copies without removing original. Added map tabs to switch among existing maps, and pure-domain regression tests.
+- **Limits:** This is localStorage, not cloud/shared multiplayer and not arbitrary create-new-map infrastructure. Party checkbox belongs to DM-only prototype UI; no secure player ownership or auto-switch synchronization to other browsers. A robust map-manager/session backend and entry-marker placement are still planned.
+- **Cost:** No new npm package, hosting or service costs. GitHub Pages build/browser CI not yet verified.
