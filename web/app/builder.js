@@ -67,7 +67,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         </section>
         <div id="build-tools">
         ${roomPanelHtml()}
-        ${catalogPanelHtml(selected)}
+        ${catalogPanelHtml(selected, theme.id, mapId ? listCampaignMaps().find(m => m.id === mapId)?.templateId : undefined)}
         </div>
         <section class="creature-ring-tools" aria-label="Creature markers">
           <div id="identity-ring-tools">
