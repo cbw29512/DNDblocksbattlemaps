@@ -23,7 +23,10 @@ function materialFor(THREE, item) {
         map: textureFor(THREE, item.art.src),
         transparent: true,
         alphaTest: 0.02,
-        roughness: 0.82
+        roughness: 0.82,
+    // Subtle self-illumination; does not add costly dynamic light sources.
+    emissive: item.tags?.includes('light-source') ? 0xffa33e : 0x000000,
+    emissiveIntensity: item.tags?.includes('light-source') ? 0.48 : 0
     });
     // Every side of a DND Block represents the same object identity.
     // Use the same face art on all six cube faces so orbiting never hides what the block is.
@@ -44,6 +47,29 @@ export function meshFor(THREE, object) {
     mesh.userData.elevation = object.elevation;
     return mesh;
 }
+
+export function meshesFor(THREE, object) {
+    const item = getCatalogItem(object.catalogId);
+    const size = item.footprintCells ?? 1;
+    if (size === 1)
+        return [meshFor(THREE, object)];
+    if (item.category !== 'Monsters' && item.category !== 'Characters') {
+        console.warn('[render] Ignoring noncreature footprint.', { catalogId: object.catalogId, size });
+        return [meshFor(THREE, object)];
+    }
+    const meshes = [];
+    for (let z = 0; z < size; z += 1) {
+        for (let x = 0; x < size; x += 1) {
+            const part = meshFor(THREE, { ...object, x: object.x + x, z: object.z + z });
+            part.userData.objectId = object.id;
+            part.userData.footprintX = x;
+            part.userData.footprintZ = z;
+            meshes.push(part);
+        }
+    }
+    return meshes;
+}
+
 export function setDefaultCamera(camera, controls) {
     const horizontal = Math.cos(Math.PI / 6) * CAMERA_DISTANCE;
     camera.position.set(horizontal / Math.sqrt(2), CAMERA_DISTANCE / 2, horizontal / Math.sqrt(2));

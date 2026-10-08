@@ -328,3 +328,35 @@ The same underlying catalog object can be reused in multiple themes.
 The earlier "date" entry was a typo and is not part of the initial catalog.
 
 A calendar/date-display block is a possible future idea only. Do not add it to MVP unless a concrete use case justifies it.
+
+## Face-art refinement — 2026-10-07
+
+- The universal face-card renderer now scales labels based on name length so multi-word catalog items remain contained within the cube's label strip.
+- Lanterns now have a distinct enclosed-lamp pictogram instead of sharing the open-flame Torch icon.
+- Both authoritative TypeScript and checked-in browser JavaScript were updated together; one shared renderer still serves every ordinary catalog cube.
+- Status: implementation committed on branch `catalog-face-art-oct07`; automated/browser checks still need CI verification. No monster asset or creature size/footprint was changed.
+- Next batch: verify asset provenance and 2×2/3×3/4×4 coherent cube footprints before adding large creatures; avoid assigning unavailable silhouettes.
+
+### Shared visual glow (2026-10-07)
+
+The catalog's `light-source` tag enables subtle warm emissive face material on Torch, Lantern, Campfire, Brazier, Fireplace, and Forge. Every block remains a cube. This is self-illumination only, not real-time scene illumination, shadow casting, or rules automation. Reuse the same tag on future light-emitting blocks.
+
+Implementation on branch `catalog-face-art-oct07`; verification and merge pending.
+
+### Additional face art — doors and hazards (2026-10-07)
+
+The five existing blocks Secret Door, Open Doorway, Trapdoor, Spike Trap and Dart Trap now have their own pictograms instead of borrowing ordinary wall, arch, door, or generic trap artwork. A reusable Mimic pictogram is also available for later catalog records. Geometry is unchanged: all six cube faces show their own catalog art; no per-object renderer was introduced. A regression checks unique art sources and 1×1 cube footprints. Source and checked-in browser JavaScript were both changed on the draft PR branch; runtime verification remains pending.
+
+### Universal footprint groundwork — 2026-10-07
+
+`src/domain/footprint.ts` now supplies deterministic contiguous coordinate expansion for any 1×1, 2×2, 3×3, or 4×4 footprint, without adding separate WorldObject records. Targeted domain regression exercises all four sizes and rejects unsupported sizes. This is **domain groundwork only**: renderer tiling, coherent creature silhouette art, pointer hit mapping and full user-visible Ogre placement have not been implemented or certified. The local Ogre asset was not found in this repository. Do not mark Ogre implemented.
+
+### Multi-cube renderer groundwork (2026-10-07)
+
+Generic renderer now creates N×N **unit BoxGeometry** meshes from a single creature WorldObject, and all child meshes share the same object ID. The domain footprint routine already supports 1/2/3/4 squares. A focused unit regression checks a 2×2 arrangement and identity binding.
+
+**Not finished:** currently the artwork repeats on each subcube. The next renderer change must subdivide one creature face illustration across the outer cube surfaces, verify pointer/placement handling, and only then register an Ogre with provenance-verified local art. Large monster appearance remains uncertified; do not advertise Ogre as implemented.
+
+### Placement reliability patch (2026-10-07)
+
+A defensive 3D input patch makes empty-grid placement test both the invisible placement plane and the rendered ground, and reports an invalid click through the board status rather than ignoring it silently. This does not establish an observed root cause or a verified deployment; browser reproduction and validation remain mandatory.

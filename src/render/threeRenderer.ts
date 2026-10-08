@@ -19,7 +19,7 @@ import {
 } from './roomPlacementPreview.js';
 import {
   CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE,
-  meshFor, rotateCamera, zoomCamera
+  meshesFor, rotateCamera, zoomCamera
 } from './threeObjects.js';
 import type { BoardHandlers, BoardRenderer } from './types.js';
 
@@ -153,7 +153,8 @@ export async function createThreeRenderer(
 
   function floorPosition(event: PointerEvent | MouseEvent): GridPosition | null {
     setPointer(event);
-    const hit = raycaster.intersectObject(placementPlane, false)[0];
+    const hit = raycaster.intersectObject(placementPlane, false)[0]
+      ?? raycaster.intersectObject(ground, false)[0];
     if (!hit) return null;
 
     const x = Math.floor(hit.point.x);
@@ -244,6 +245,7 @@ export async function createThreeRenderer(
     if (!selected) return;
     const position = blockPlacementFor(event);
     if (position) handlers.onPlace(position);
+    else handlers.onStatus('Could not place here. Click a visible grid square or use Reset Camera.');
   });
 
   renderer.domElement.addEventListener('contextmenu', (event: MouseEvent) => {
@@ -299,7 +301,7 @@ export async function createThreeRenderer(
 
       currentObjects = state.objects;
       objectGroup.clear();
-      state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
+      state.objects.forEach((item) => objectGroup.add(...meshesFor(THREE, item)));
     },
     rotate(delta) {
       rotateCamera(THREE, camera, controls, delta);

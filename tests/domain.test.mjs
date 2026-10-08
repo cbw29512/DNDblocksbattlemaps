@@ -263,3 +263,78 @@ test('print map uses the top object in an occupied square', () => {
   ];
   assert.equal(topObjectAt(objects, 1, 1)?.id, 'top');
 });
+
+test('generic block faces remain readable and visually distinct', async () => {
+  const { generatedCubeArt } = await import('../.test-build/src/domain/faceArt.js');
+  const svg = (name, icon) => decodeURIComponent(generatedCubeArt(name, name, icon, 0x765432).src.split(',')[1]);
+  const torch = svg('Torch', 'torch');
+  const lantern = svg('Lantern', 'lantern');
+  const longName = svg('Collapsing Floor', 'pit');
+  assert.notEqual(torch, lantern, 'different object identities must show different face drawings');
+  assert.match(lantern, /rect x="41" y="43"/, 'lantern must show an enclosed fixture');
+  assert.match(longName, /font-size="9"/, 'long labels must shrink to fit the cube face');
+  assert.match(longName, /COLLAPSING FLOOR/);
+});
+
+test('light-source visual behavior is catalog driven', () => {
+  for (const id of ['torch', 'lantern', 'campfire', 'brazier', 'fireplace', 'forge']) {
+    assert.ok(PALETTE[id]?.tags?.includes('light-source'), id + ' should glow');
+  }
+  for (const id of ['barrel', 'table', 'chest', 'stone-block']) {
+    assert.ok(!PALETTE[id]?.tags?.includes('light-source'), id + ' should not glow');
+  }
+});
+
+test('door and hazard blocks display distinct generated face art', () => {
+  const icons = ['door', 'open-doorway', 'secret-door', 'trapdoor', 'spike-trap', 'dart-trap'];
+  const faceSources = icons.map((id) => PALETTE[id]?.art?.src);
+  assert.ok(faceSources.every((src) => src?.startsWith('data:image/svg+xml')));
+  assert.equal(new Set(faceSources).size, icons.length, 'each should have a distinct face illustration');
+  for (const id of icons) {
+    assert.equal(PALETTE[id].shape, 'cube');
+    assert.equal(PALETTE[id].footprintCells, 1);
+  }
+});
+
+test('universal creature footprints cover contiguous squares as one logical entity', async () => {
+  const { cubeFootprint } = await import('../.test-build/src/domain/footprint.js');
+  const origin = { x: 7, z: -3, elevation: 2 };
+  for (const size of [1, 2, 3, 4]) {
+    const occupied = cubeFootprint(origin, size);
+    assert.equal(occupied.length, size * size);
+    assert.equal(new Set(occupied.map((cell) => cell.x + ',' + cell.z)).size, size * size);
+    assert.deepEqual(occupied[0], origin);
+    assert.deepEqual(occupied.at(-1), { x: 7 + size - 1, z: -3 + size - 1, elevation: 2 });
+  }
+  assert.throws(() => cubeFootprint(origin, 5), RangeError);
+});
+
+test('one creature footprint expands to cube meshes with shared entity identity', async () => {
+  const { meshesFor } = await import('../.test-build/src/render/threeObjects.js');
+  // Mock Three primitives: only test positions and identity, not browser rendering.
+  class BoxGeometry { constructor(...args) { this.args = args; } }
+  class MeshStandardMaterial { constructor(options) { this.options = options; } }
+  class Mesh {
+    constructor(geometry, material) {
+      this.geometry = geometry;
+      this.material = material;
+      this.position = { set: (x, y, z) => { this.position.xyz = [x, y, z]; } };
+      this.userData = {};
+    }
+  }
+  const THREE = { BoxGeometry, MeshStandardMaterial, Mesh };
+  const original = PALETTE['monster-goblin'].footprintCells;
+  try {
+    PALETTE['monster-goblin'].footprintCells = 2;
+    // Disable art only within this isolated unit test; avoid texture loading.
+    const art = PALETTE['monster-goblin'].art;
+    try {
+      PALETTE['monster-goblin'].art = undefined;
+      const cells = meshesFor(THREE, { id: 'creature-1', catalogId: 'monster-goblin', x: 3, z: 5, elevation: 1, createdAt: 1 });
+      assert.equal(cells.length, 4);
+      assert.deepEqual(cells.map((part) => part.position.xyz), [[3.5, 1.5, 5.5], [4.5, 1.5, 5.5], [3.5, 1.5, 6.5], [4.5, 1.5, 6.5]]);
+      assert.ok(cells.every((part) => part.userData.objectId === 'creature-1'));
+      assert.ok(cells.every((part) => part.geometry.args.every((dimension) => dimension === 1)));
+    } finally { PALETTE['monster-goblin'].art = art; }
+  } finally { PALETTE['monster-goblin'].footprintCells = original; }
+});

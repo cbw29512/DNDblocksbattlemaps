@@ -323,3 +323,80 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 3. Implement one logical multi-cube creature renderer/occupancy path.
 4. Add monster search without placing hundreds of buttons onscreen at once.
 5. Preserve Iron Pit's exact creature/art identity mapping.
+
+
+## 2026-10-07 — Cube-face refinement branch
+
+- **Starting State:** 108 catalog entries (36 Build, 51 Props, 12 Characters, 9 Monsters) with one generic SVG face generator. Some prop icons were indistinguishable and long labels used fixed-size text.
+- **Changes Made:** On `catalog-face-art-oct07`, added distinct Lantern versus Torch face art and proportional label sizing in `src/domain/faceArt.ts` and matching checked-in `web/domain/faceArt.js`. Added a regression test for icon distinction and long labels; documented the work in `docs/BLOCK_CATALOG.md`.
+- **Decisions Made:** Preserve cubes, shared art logic, existing IDs, WorldObject state, and 1×1 footprints. Do not add large monsters or pretend missing assets exist without verified rendering and provenance.
+- **Cost Impact:** Zero new packages, hosted services, or asset purchases. No Netlify deployment.
+- **Result:** Source and browser bundle edits committed to a review branch. Build/test and browser appearance not yet verified in this execution environment; do not describe these edits as deployed or tested.
+- **Open Questions / Blockers:** Source checkout/network unavailable in execution container; CI and browser validation are required before merge. The monster expansion needs asset inspection and multi-cube renderer certification.
+- **Exact Next Step:** Run full repository check on this branch, inspect the actual barrel/chest/lantern/map visual at GitHub Pages test surface, merge only if green, then implement and certify coherent 2×2 large-monster cubes from existing art.
+
+
+## 2026-10-07 follow-up — Tagged light-block glow
+
+- **Starting State:** ordinary cubes used non-emissive textured materials.
+- **Changes Made:** six existing catalog entries now carry `light-source` tag; universal Three.js cube material enables subtle warm emissive appearance for tagged blocks. Source and checked-in browser JavaScript updated together; catalog tags regression added.
+- **Decisions Made:** purely visual glow, no dynamic point lights or real-time light/shadow calculations, no new mesh shapes and no effects engine.
+- **Cost Impact:** zero dependencies or service costs; no production deployment.
+- **Result:** committed to the existing draft PR branch; runtime/browser checks remain unverified.
+- **Open Questions / Blockers:** confirm visual strength in actual browser, and run npm check before merge.
+- **Exact Next Step:** validate this branch, then continue improving core Build and Props distinct face art before broadening creature footprints.
+
+
+## 2026-10-07 — Distinct door and hazard art continuation
+
+- **Starting State:** many specialized Build/Props blocks re-used identical generic icons despite different purposes.
+- **Changes Made:** universal SVG icon vocabulary extended with open doorway, secret door, trapdoor, spikes, darts and mimic; catalog entries for five existing objects now reference distinct icons. Synced TypeScript and checked-in browser JavaScript. Added cube/identity regression.
+- **Decisions Made:** retain existing IDs, cube footprints and universal renderer; no behavior engines or gameplay changes.
+- **Cost Impact:** none; no dependencies or Netlify deploy.
+- **Result:** changes committed to `catalog-face-art-oct07`; not verified in browser or automated tests.
+- **Open Questions / Blockers:** pending npm check and visual check; 2×2 creature logic needs separate coordinated work.
+- **Exact Next Step:** run check; fix any findings and validate browser visuals before merging PR #1, then proceed to monster footprint and approved art inventory.
+
+
+## 2026-10-07 — Multi-cube domain foundation
+
+- **Starting State:** each WorldObject renders as exactly one unit cube; no verified Ogre asset in DND Blocks; distinct icon/glow PR pending.
+- **Changes Made:** added `cubeFootprint` pure domain function for 1×1 through 4×4 contiguous cells and regression coverage; documentation updated.
+- **Decisions Made:** one logical creature must remain one WorldObject; multi-cube rendering must not duplicate creatures, and silhouettes need coherent subdivision instead of cloned faces.
+- **Cost Impact:** no dependencies or deployment.
+- **Result:** committed foundation; **not** a working large-monster renderer. npm/browser verification still pending because GitHub connector cannot invoke build and container cannot reach GitHub.
+- **Open Questions / Blockers:** missing verified Ogre art; coherent tiling and pointer/removal behavior must be implemented next. Existing draft PR unmerged.
+- **Exact Next Step:** check PR on a clone with `npm run check`, correct any regressions, implement mesh tiling and raycast as one creature, copy provenance-verified Ogre art, then manually verify Pages test preview before merging.
+
+
+## 2026-10-07 — Multi-cube renderer progress
+
+- **Starting State:** domain footprint model existed but renderer drew only one cube per WorldObject.
+- **Changes Made:** generic `meshesFor` adapter now expands creature catalog footprint sizes into contiguous unit cubes in Three.js. Every mesh retains the same WorldObject ID for removing the logical creature. Both src and checked-in web modules updated. A mocked renderer unit test checks 2×2 cube positions and identity.
+- **Decisions Made:** retain one logical WorldObject per monster, cube geometry, generic drawing path and no new dependencies.
+- **Cost Impact:** zero. No Netlify deployment.
+- **Result:** 2×2 mesh expansion committed to draft PR #1, tests/browser checks unverified. No Large monster was added to the palette.
+- **Open Questions / Blockers:** individual subcubes currently repeat the full illustration instead of composing a single creature silhouette. Need coherent tiled art, creature footprint state/placement selection verification and verified Ogre asset.
+- **Exact Next Step:** fix coherent multi-cube face textures, run `npm run check`, visually inspect 2×2 Ogre on Pages test deployment, and merge only after green checks.
+
+
+## 2026-10-07 — Placement click defect report
+
+- **Starting State:** user reports choosing a catalog block and clicking the map does nothing.
+- **Changes Made:** Three.js placement ray now retries the visible ground mesh when invisible placement-plane raycasting misses; if no valid placement is found, a clear board-status message replaces silent failure. Authoritative source and checked-in browser module updated in the draft PR branch.
+- **Decisions Made:** no changes to WorldObject, command pipeline, cube geometry, or room placement rules. This is a defensive fix and diagnostic; root cause has not been reproduced in a real browser.
+- **Cost Impact:** zero new packages, services or deploys.
+- **Result:** fix pushed to PR #1, not merged/deployed/tested. Current production and Pages may still contain old code.
+- **Blockers:** run browser reproduction, validate palette click activates tool and hover ghost, inspect console and click status. Review CSS overlays and script caching if it persists.
+- **Exact Next Step:** reproduce on Pages test, run npm check and compare served browser revision to source before merging/releasing.
+
+
+## 2026-10-07 — Continued user blocker: no visible blocks
+
+- **Starting State:** User confirms no blocks appear after clicking, despite earlier defensive placement patch; fixes remain on unmerged draft PR and therefore cannot affect deployed site.
+- **Changes Made:** Updated source and checked-in browser builder to explicitly report successful placement coordinates instead of only reporting board growth. This separates input/command success from invisible rendering. Prior ground-raycast fallback remains on branch.
+- **Decisions:** Do not assert bug fixed without browser reproduction. Do not confuse pushed PR with GitHub Pages/Netlify deployment.
+- **Cost Impact:** none.
+- **Result:** debug-status improvement committed to PR branch, unmerged/unpublished, unverified.
+- **Blocker:** GitHub Pages workflow requires manual dispatch and PR must first be reviewed/merged. GitHub integration does not expose workflow dispatch. Real deployment/browser reproduction needed to localize rendering vs input.
+- **Exact Next Step:** run npm check on review branch; release test build through manually dispatched GitHub Pages workflow; select Stone and click grid, note status feedback and whether block appears; investigate rendering if success text appears without cube.
