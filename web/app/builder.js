@@ -125,6 +125,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
       <section class="board-stage">
         <aside class="combat-log-dock" aria-label="Combat log"><details open><summary>Combat Log</summary><ol id="combat-log" aria-live="polite"></ol></details></aside>
         <div class="board-canvas" id="board-canvas" aria-label="Interactive battle map"></div>
+        <div class="mobile-spell-actions" id="mobile-spell-actions" hidden><button id="mobile-cast-spell" type="button" disabled>Cast Spell</button><button id="mobile-cancel-spell" type="button">Cancel</button></div>
         <div class="camera-dock" aria-label="Camera controls">
           <button id="rotate-left" title="Rotate left">↶</button>
           <button id="camera-home" title="Fit whole map">⌂</button>
@@ -141,6 +142,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     const castButton = root.querySelector('#cast-spell');
     const cancelButton = root.querySelector('#cancel-spell');
     const spellInstructions = root.querySelector('#spell-instructions');
+    const mobileActions = root.querySelector('#mobile-spell-actions');
+    const mobileCastButton = root.querySelector('#mobile-cast-spell');
     const cancelArea = () => {
         activeSpell = null;
         spellCenter = null;
@@ -150,6 +153,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         renderer?.setAreaPreview(null, null);
         castButton.disabled = true;
         cancelButton.disabled = true;
+        mobileActions.hidden = true;
+        mobileCastButton.disabled = true;
         spellInstructions.textContent = 'Preview canceled. Choose a spell to aim again.';
     };
     const refreshCasterOptions = () => {
@@ -201,6 +206,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         renderer?.setAreaTargets(targets.map(o => o.id));
         status.textContent = 'Preview intersects ' + targets.length + ' creature(s): ' + (targets.map(o => getCatalogItem(o.catalogId).name).join(', ') || 'none') + '. Geometry provisional; not RAW-confirmed.';
         castButton.disabled = false;
+        mobileCastButton.disabled = false;
         // Left-click commits immediately; pointer movement is preview-only.
         if (commit && !touch)
             castArea();
@@ -227,6 +233,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         renderer?.setAreaTargets(targets.map(o => o.id));
         castButton.disabled = true;
         cancelButton.disabled = true;
+        mobileActions.hidden = true;
+        mobileCastButton.disabled = true;
         spellInstructions.textContent = 'Affected creatures remain outlined in yellow until another preview starts. Saves/damage pending.';
     };
     const armArea = () => {
@@ -240,6 +248,10 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         if (!activeSpell || !chosen) {
             activeSpell = null;
             renderer?.setAreaPreview(null, null);
+            mobileActions.hidden = true;
+            mobileCastButton.disabled = true;
+            castButton.disabled = true;
+            cancelButton.disabled = true;
             status.textContent = 'Select a caster on the map, then choose the spell to aim.';
             return;
         }
@@ -247,6 +259,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         spellCenter = null;
         castButton.disabled = true;
         cancelButton.disabled = false;
+        mobileCastButton.disabled = true;
+        mobileActions.hidden = false;
         renderer?.setAreaPreview(activeSpell, { origin: casterOrigin, center: casterOrigin });
         renderer?.setAreaTargets([]);
         spellInstructions.textContent = 'Move to aim. Left-click casts; right-click or Escape cancels.';
@@ -255,6 +269,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     root.querySelector('#spell-choice')?.addEventListener('change', armArea);
     root.querySelector('#spell-caster')?.addEventListener('change', armArea);
     castButton.addEventListener('click', castArea);
+    mobileCastButton.addEventListener('click', castArea);
+    root.querySelector('#mobile-cancel-spell')?.addEventListener('click', cancelArea);
     cancelButton.addEventListener('click', cancelArea);
     root.querySelector('#clear-spell-marks')?.addEventListener('click', () => { renderer?.setAreaTargets([]); status.textContent = 'Hit markers cleared. Combat log preserved.'; });
     const onAreaRightClick = (event) => { if (activeSpell) {

@@ -252,3 +252,11 @@
   .builder-sidebar>.builder-tool-group[open]{min-width:290px}
   .builder-sidebar>.builder-tool-group:not([open]){min-width:140px}
 }
+
+/* Touch-only action dock: remains within the battlefield while bottom tools scroll. */
+.mobile-spell-actions{display:none}
+@media(max-width:900px){
+  .mobile-spell-actions:not([hidden]){position:absolute;z-index:14;left:50%;bottom:64px;transform:translateX(-50%);display:flex;gap:12px;padding:8px;background:#20251ff2;border:1px solid #b9a17b;border-radius:12px;box-shadow:0 5px 20px #0009}
+  .mobile-spell-actions button{min-width:100px;min-height:48px;padding:10px 14px;border-radius:9px;border:1px solid #d1b78d;background:#755a3c;color:white;font-weight:700}
+  .mobile-spell-actions button:disabled{opacity:.5}
+}
