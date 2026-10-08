@@ -389,3 +389,7 @@ DM checks **Party** next to a placed Character on Build Mode. Each checked hero'
 A DM selects a starter template and clicks Create New Map. Eight supplied layouts—Inn, Castle, Dungeon, Forest Camp, Harbor, Goblin Cave, Temple, Ruins—are editable arrangements of existing Build and Props cubes with 5-ft cells. Creating a map writes a NEW unique localStorage key plus a saved map descriptor; it does not overwrite the base terrain map or existing templates. Custom maps appear in map tabs. Campaign Party characters are reconciled by stable ID and introduced near the template's Party Start position; per-map placement coordinates remain independent. Map switching is local; no network synchronization claim.
 
 Status tokens support BOTH (a) native drag/drop onto creature and (b) click-to-select then click creature. Active state is visibly highlighted and aria-pressed, click again or Esc to cancel; status clicks always take precedence over movement or placing blocks. Existing condition and Exhaustion semantics apply unchanged.
+
+### Map-specific catalog ordering
+
+Without excluding any entries, each category's block list sorts theme-tagged items first in **alphabetical order**, then all unrelated items in **alphabetical order**. The active saved starter template can refine the theme (e.g., Cave and Dungeon differ from Castle). Inn priority uses Inn, tavern, and furniture tags. Search and exact monster CR filters continue to work across the full list. No separate label or heading is added to the palette.
