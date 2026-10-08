@@ -1,3 +1,4 @@
+import { createBrowserBackup } from '../domain/browserBackup.js';
 import { STARTER_TEMPLATES } from '../domain/starterTemplates.js?v=24dfe329c65b';
 import { setPartyMembership } from '../domain/party.js?v=24dfe329c65b';
 import { PLAYER_RINGS, CONDITIONS, CONDITION_COLORS, availableRings, assignRing, toggleCondition, isCreature, normalizeRingAssignments } from '../domain/creatureMarks.js?v=24dfe329c65b';
@@ -42,6 +43,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           <button id="undo" class="icon-button" type="button" title="Undo">↶</button>
           <button id="redo" class="icon-button" type="button" title="Redo">↷</button>
           <a class="button button-ghost" href="./how-to-play.html" target="_blank" rel="noopener">How to Play</a>
+          <button id="backup-maps" class="button button-ghost" type="button">Backup Maps</button>
           <button id="print-map" class="button button-ghost" type="button">Print Map</button>
           <button id="clear" class="button button-ghost" type="button">Clear Map</button>
         </div>
@@ -486,7 +488,26 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         history = next.history;
         refresh();
     });
-    document.getElementById('print-map')?.addEventListener('click', () => {
+    document.getElementById('backup-maps')?.addEventListener('click', () => {
+    try {
+      const backup = createBrowserBackup(localStorage);
+      const contents = JSON.stringify(backup, null, 2);
+      const url = URL.createObjectURL(new Blob([contents], { type: 'application/json' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'dnd-blocks-backup-' + backup.createdAt.slice(0,10) + '.json';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      status.textContent = 'Backup prepared: ' + backup.entries.length + ' saved records. Keep the JSON file safe; no maps were changed.';
+    } catch (error) {
+      console.error('[backup] Failed to export local save data', error);
+      status.textContent = 'Backup failed. Your maps were not changed.';
+    }
+  });
+
+  document.getElementById('print-map')?.addEventListener('click', () => {
         status.textContent =
             'Preparing top-down print map. Use Actual Size / 100% for exact 1-inch squares.';
         void printBoardMap(state, theme).catch((error) => {
