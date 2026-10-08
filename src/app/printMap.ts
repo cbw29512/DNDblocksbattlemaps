@@ -1,5 +1,5 @@
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
-import { PALETTE } from '../domain/catalog.js';
+import { getCatalogItem } from '../domain/catalog.js';
 import {
   PRINT_PAGE_COLUMNS, PRINT_PAGE_ROWS,
   printAreaForState, printTilesForArea, topObjectAt
@@ -24,7 +24,7 @@ function cellHtml(
     return `<div class="print-cell" style="--print-cell-color:${colorCss(theme.groundColor)}"></div>`;
   }
 
-  const item = PALETTE[object.catalogId];
+  const item = getCatalogItem(object.catalogId);
   const visual = item.art
     ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="">`
     : `<span>${item.name}</span>`;
