@@ -48,8 +48,9 @@ export function buildStarterTemplate(templateId: string, mapId: string, roster: 
   };
   const doorway = (x: number, z: number): void => {
     for(let i=objects.length-1;i>=0;i--){
-      if(objects[i].x===x && objects[i].z===z && objects[i].elevation===1 &&
-        ['wood-wall','stone-wall','cave-wall','castle-wall'].includes(objects[i].catalogId)) objects.splice(i,1);
+      const block = objects[i];
+      if(block && block.x===x && block.z===z && block.elevation===1 &&
+        ['wood-wall','stone-wall','cave-wall','castle-wall'].includes(block.catalogId)) objects.splice(i,1);
     }
     add('open-doorway',x,z);
   };
