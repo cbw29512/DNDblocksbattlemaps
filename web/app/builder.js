@@ -137,6 +137,10 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
       </section>
     </main>
   `;
+    // Keep the log available but prevent it covering the small-screen map by default.
+    const combatLogDetails = root.querySelector('.combat-log-dock details');
+    if (combatLogDetails && window.matchMedia('(max-width: 720px)').matches)
+        combatLogDetails.open = false;
     const status = document.getElementById('board-status');
     const canvas = document.getElementById('board-canvas');
     const castButton = root.querySelector('#cast-spell');
