@@ -217,6 +217,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     });
     castButton.addEventListener('click', castArea);
     cancelButton.addEventListener('click', cancelArea);
+    root.querySelector('#spell-caster')?.addEventListener('change',()=>{if(activeSpell)cancelArea();});
     const onAreaRightClick = (event) => { if (activeSpell) {
         event.preventDefault();
         event.stopImmediatePropagation();
@@ -266,6 +267,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         saveBoard(state);
         propagateParty(state);
         refreshPartyManager();
+        refreshCasterOptions();
         updateBoardSize();
         updateRingTokens();
     };
