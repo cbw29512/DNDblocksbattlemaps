@@ -765,3 +765,17 @@ test('core terrain blocks carry distinct square face patterns without changing c
   }
   assert.match(decodeURIComponent(generatedCubeArt('barrel','Barrel','barrel',0x777777).src.split(',')[1]), /<text/);
 });
+
+test('every Build and Props block has square, non-placard face artwork', async () => {
+  const { PALETTE } = await import('../.test-build/src/domain/catalog.js');
+  const blocks = Object.values(PALETTE).filter(item => item.category === 'Build' || item.category === 'Props');
+  assert.ok(blocks.length > 70);
+  for (const item of blocks) {
+    assert.equal(item.shape, 'cube', item.id);
+    assert.equal(item.width, 1, item.id);
+    assert.equal(item.depth, 1, item.id);
+    const svg = decodeURIComponent(item.art.src.split(',')[1]);
+    assert.match(svg, /viewBox="0 0 128 128"/, item.id);
+    assert.doesNotMatch(svg, /<text/, item.id);
+  }
+});
