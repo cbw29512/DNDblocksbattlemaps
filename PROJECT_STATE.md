@@ -587,3 +587,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — AoE friendly-fire regression
 - Verified PR #54 succeeded and merged; cancellation clears projected red area and provisional yellow target highlights without mutating combat log/world state. Added domain regression that Fireball's geometric affected creature list includes the selected caster, an allied player, and an enemy monster, excludes scenery/out-of-area creatures, and counts a Large monster once. No saves/damage or RAW line-of-effect adjudication added. Focused test PR pending CI.
+
+## 2026-10-08 — Mobile combat log visibility audit
+- Verified PR #55 exact-head CI success and merge; friendly-fire and footprint regression tests now part of main. Identified mobile log overlay was open on every load and covered the right side of the usable map on <=720px devices. Keep the right-side log accessible via its summary but initialize it collapsed on phone-sized viewports. Leave desktop expanded by default. Source/browser JavaScript parity; real-device QA still outstanding. CI pending on this fix.
