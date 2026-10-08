@@ -1,9 +1,9 @@
-import { PALETTE } from '../domain/catalog.js';
+import { getCatalogItem } from '../domain/catalog.js';
 import type { CatalogId, GridPosition } from '../domain/types.js';
 import { geometryFor } from './threeObjects.js';
 
 export function createPlacementPreview(THREE: any, catalogId: CatalogId): any {
-  const item = PALETTE[catalogId];
+  const item = getCatalogItem(catalogId);
   const group = new THREE.Group();
   const geometry = geometryFor(THREE, catalogId);
 
