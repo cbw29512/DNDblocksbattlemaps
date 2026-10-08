@@ -222,3 +222,12 @@
 .status-token {cursor:pointer;}
 .status-token.selected {background:#4c492d;border:2px solid #ffe28c;box-shadow:0 0 0 2px rgba(255,226,140,.2);font-weight:800;}
 .status-token:focus-visible {outline:3px solid #f6da7a;outline-offset:2px;}
+
+.combat-spell-tools{display:grid;gap:.45rem;padding:.8rem;background:#242b28;border:1px solid #8e8676;border-radius:10px}
+.combat-spell-tools select,.combat-spell-tools input{min-width:0;width:100%;padding:.55rem;border-radius:6px;background:#141918;color:#f4f1df;border:1px solid #969b91}
+.combat-spell-tools button{padding:.65rem;background:#775b40;color:#fff;border:1px solid #c9b28d;border-radius:8px;cursor:pointer;min-height:44px}
+.combat-spell-tools button:disabled{opacity:.45;cursor:default}
+.spell-actions{display:flex;gap:.5rem}.spell-actions button{flex:1}
+#combat-log{margin:0;padding-left:1.6rem;max-height:170px;overflow:auto;font-size:.85rem}
+#spell-instructions{color:#c9ceca}
+.fallback-cell.aoe-affected{background:rgba(255,56,23,.50)!important;outline:1px solid #ffd7b4;outline-offset:-1px}
