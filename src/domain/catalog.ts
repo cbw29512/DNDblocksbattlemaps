@@ -82,8 +82,8 @@ const BUILD_ITEMS: PaletteItem[] = [
   generated('window', 'Window', 'Build', 0x607b8b, 'window', ['window','wall']),
   generated('archway', 'Archway', 'Build', 0x807d72, 'arch', ['arch','doorway','castle']),
   generated('door', 'Closed Door', 'Build', 0x70472d, 'door', ['door','closed','entry']),
-  generated('open-doorway', 'Open Doorway', 'Build', 0x7e715e, 'arch', ['door','open','entry']),
-  generated('secret-door', 'Secret Door', 'Build', 0x696b65, 'wall', ['door','secret','hidden']),
+  generated('open-doorway', 'Open Doorway', 'Build', 0x7e715e, 'open-door', ['door','open','entry']),
+  generated('secret-door', 'Secret Door', 'Build', 0x696b65, 'secret-door', ['door','secret','hidden']),
   generated('portcullis', 'Portcullis', 'Build', 0x5c6265, 'bars', ['gate','castle','bars']),
   generated('stairs', 'Stairs', 'Build', 0x837e71, 'stairs', ['stairs','vertical']),
   generated('ladder', 'Ladder', 'Build', 0x8d613f, 'ladder', ['ladder','vertical']),
@@ -94,7 +94,7 @@ const BUILD_ITEMS: PaletteItem[] = [
   generated('obsidian', 'Obsidian', 'Build', 0x29252e, 'stone', ['volcano','stone']),
   generated('ice', 'Ice', 'Build', 0x83b5c7, 'water', ['ice','snow']),
   generated('pit', 'Open Pit', 'Build', 0x292724, 'pit', ['pit','hole','hazard']),
-  generated('trapdoor', 'Trapdoor', 'Build', 0x6e4c35, 'door', ['door','trap','floor'])
+  generated('trapdoor', 'Trapdoor', 'Build', 0x6e4c35, 'trapdoor', ['door','trap','floor'])
 ];
 
 const PROP_ITEMS: PaletteItem[] = [
@@ -131,11 +131,11 @@ const PROP_ITEMS: PaletteItem[] = [
   generated('switch', 'Switch', 'Props', 0x5f6670, 'switch', ['switch','trigger']),
   generated('pressure-plate', 'Pressure Plate', 'Props', 0x6c675c, 'plate', ['trap','trigger']),
   generated('hidden-trigger', 'Hidden Trigger', 'Props', 0x4f504b, 'switch', ['hidden','trap','trigger']),
-  generated('spike-trap', 'Spike Trap', 'Props', 0x6a5c52, 'trap', ['trap','spike','hazard']),
+  generated('spike-trap', 'Spike Trap', 'Props', 0x6a5c52, 'spike', ['trap','spike','hazard']),
   generated('snare-trap', 'Snare Trap', 'Props', 0x6f5b42, 'trap', ['trap','snare','restraint']),
   generated('spring-trap', 'Spring Trap', 'Props', 0x6f6049, 'trap', ['trap','spring','restraint']),
   generated('flame-jet', 'Flame Jet', 'Props', 0xb85a2c, 'fire', ['trap','fire','hazard']),
-  generated('dart-trap', 'Dart Trap', 'Props', 0x6b6358, 'trap', ['trap','dart','hazard']),
+  generated('dart-trap', 'Dart Trap', 'Props', 0x6b6358, 'dart', ['trap','dart','hazard']),
   generated('falling-block', 'Falling Block', 'Props', 0x6d6960, 'stone', ['trap','falling','hazard']),
   generated('collapsing-floor', 'Collapsing Floor', 'Props', 0x5a5148, 'pit', ['trap','floor','hazard']),
   generated('web-trap', 'Web Trap', 'Props', 0x6c7073, 'web', ['trap','web','restraint']),
