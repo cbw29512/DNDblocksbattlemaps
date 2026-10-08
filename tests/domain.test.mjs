@@ -5,7 +5,7 @@ import {
   placeCommand, placeManyCommand, removeCommand
 } from '../.test-build/src/domain/commands.js';
 import {
-  CATALOG_CATEGORIES, DEFAULT_PALETTE, PALETTE, catalogIdsForCategory
+  CATALOG_CATEGORIES, DEFAULT_PALETTE, PALETTE, catalogIdsForCategory, getCatalogItem
 } from '../.test-build/src/domain/catalog.js';
 import {
   createDefaultBoardBounds, growBoardBounds
