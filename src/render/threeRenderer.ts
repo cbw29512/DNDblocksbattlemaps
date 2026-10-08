@@ -74,7 +74,9 @@ export async function createThreeRenderer(
       return da-db || a.id.localeCompare(b.id);
     });
     for (const o of sources.slice(0, MAX_BLOCK_LIGHTS)) {
-      const [color, intensity, distance] = lightSpecs[o.catalogId];
+      const spec = lightSpecs[o.catalogId];
+      if (!spec) continue;
+      const [color, intensity, distance] = spec;
       const light = new THREE.PointLight(color, intensity, distance, 2);
       light.position.set(o.x + .5, o.elevation + .8, o.z + .5);
       light.castShadow = false;
