@@ -342,3 +342,7 @@ A calendar/date-display block is a possible future idea only. Do not add it to M
 The catalog's `light-source` tag enables subtle warm emissive face material on Torch, Lantern, Campfire, Brazier, Fireplace, and Forge. Every block remains a cube. This is self-illumination only, not real-time scene illumination, shadow casting, or rules automation. Reuse the same tag on future light-emitting blocks.
 
 Implementation on branch `catalog-face-art-oct07`; verification and merge pending.
+
+### Additional face art — doors and hazards (2026-10-07)
+
+The five existing blocks Secret Door, Open Doorway, Trapdoor, Spike Trap and Dart Trap now have their own pictograms instead of borrowing ordinary wall, arch, door, or generic trap artwork. A reusable Mimic pictogram is also available for later catalog records. Geometry is unchanged: all six cube faces show their own catalog art; no per-object renderer was introduced. A regression checks unique art sources and 1×1 cube footprints. Source and checked-in browser JavaScript were both changed on the draft PR branch; runtime verification remains pending.
