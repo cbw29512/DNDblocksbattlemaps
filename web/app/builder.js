@@ -35,7 +35,7 @@ export async function renderBuilder(root, terrainId, handlers) {
           <small id="board-size"></small>
         </div>
         <div class="builder-actions">
-          <button id="creature-mode" class="button button-ghost" type="button" aria-pressed="false">Move Creatures</button>
+          <button id="creature-mode" class="button button-ghost" type="button" aria-pressed="false">Combat Mode</button>
           <button id="undo" class="icon-button" type="button" title="Undo">↶</button>
           <button id="redo" class="icon-button" type="button" title="Redo">↷</button>
           <button id="print-map" class="button button-ghost" type="button">Print Map</button>
@@ -43,13 +43,17 @@ export async function renderBuilder(root, terrainId, handlers) {
         </div>
       </header>
       <aside class="builder-sidebar">
+        <div id="build-tools">
         ${roomPanelHtml()}
         ${catalogPanelHtml(selected)}
+        </div>
         <section class="creature-ring-tools" aria-label="Creature markers">
+          <div id="identity-ring-tools">
           <strong>Drag rings onto creatures</strong>
           <small>Each player color belongs to one character. Red is for monsters.</small>
           <div class="creature-ring-options" id="available-ring-colors">
             ${PLAYER_RINGS.map(r => `<button type="button" draggable="true" class="ring-token" data-ring-color="${r.color}" title="Drag ${r.name} onto a character"><i style="--ring:#${r.color.toString(16).padStart(6,'0')}"></i>${r.name}</button>`).join('')}
+          </div>
           </div>
           <strong>Status rings</strong>
           <small>Drag a condition onto a character or monster. Drop it again to remove. Exhaustion increases through 6, then clears.</small>
@@ -269,12 +273,17 @@ export async function renderBuilder(root, terrainId, handlers) {
     renderer?.setMovingCreature(null);
     if (moveMode && armedRoom) cancelRoomMode();
     renderer?.setCreatureMoveMode(moveMode);
+    const buildTools = root.querySelector('#build-tools');
+    const identityTools = root.querySelector('#identity-ring-tools');
+    if (buildTools) buildTools.hidden = moveMode;
+    if (identityTools) identityTools.hidden = moveMode;
     const button = root.querySelector('#creature-mode');
     button?.setAttribute('aria-pressed', String(moveMode));
     button?.classList.toggle('is-armed', moveMode);
+    if (button) button.textContent = moveMode ? 'Build Mode' : 'Combat Mode';
     status.textContent = moveMode
-      ? 'Move Creatures active: scenery is locked. Click a character or monster, then click its destination.'
-      : 'Build mode active: choose a block and click the grid.';
+      ? 'Combat Mode: scenery is locked. Select a character or monster, then choose its destination. Status rings remain available.'
+      : 'Build Mode: all blocks, characters, monsters, identity rings and statuses are available.';
   });
 
   buildRoomButton.addEventListener('click', () => {
