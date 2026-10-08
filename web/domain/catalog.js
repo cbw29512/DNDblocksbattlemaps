@@ -7,13 +7,13 @@ export const TERRAIN_THEMES = {
     volcano: { id: 'volcano', name: 'Volcano', tagline: 'Lava, rock & danger', groundColor: 0x3b302c, accentCss: '#ff7a3d', swatchCss: 'linear-gradient(135deg,#241e1c,#b94a24)' }
 };
 const heroArt = (id, name) => ({
-    src: 'assets/catalog/heroes/' + id + '.webp',
+    src: 'https://raw.githubusercontent.com/cbw29512/D20-ironpit/main/frontend/assets/portraits/heroes/' + id + '.webp',
     alt: name,
     source: 'iron-pit',
     sourceId: id
 });
 const monsterArt = (id, name) => ({
-    src: 'assets/catalog/monsters/' + id + '.webp',
+    src: 'https://raw.githubusercontent.com/cbw29512/D20-ironpit/main/frontend/assets/portraits/monsters/' + id + '.webp',
     alt: name,
     source: 'iron-pit',
     sourceId: id
