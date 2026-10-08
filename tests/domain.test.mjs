@@ -275,11 +275,11 @@ test('cube face art is rasterized and solid color remains until loaded', async (
     globalThis.document = { baseURI: 'https://example.com/', createElement() {
       return { width: 0, height: 0, getContext() { return { fillRect() {}, drawImage() { draws += 1; } }; } };
     } };
-    class MeshStandardMaterial { constructor(options) { Object.assign(this, options); this.color = { value: options.color, setHex: (v) => { this.color.value = v; } }; } }
+    class MeshBasicMaterial { constructor(options) { Object.assign(this, options); this.color = { value: options.color, setHex: (v) => { this.color.value = v; } }; } }
     class CanvasTexture { constructor(canvas) { this.image = canvas; } }
     class Mesh { constructor(geometry, material) { this.geometry = geometry; this.material = material; this.position = { set() {} }; this.userData = {}; } }
     class BoxGeometry {}
-    const THREE = { MeshStandardMaterial, CanvasTexture, Mesh, BoxGeometry, SRGBColorSpace: 'srgb' };
+    const THREE = { MeshBasicMaterial, CanvasTexture, Mesh, BoxGeometry, SRGBColorSpace: 'srgb' };
     const cube = meshFor(THREE, { id: 'test', catalogId: 'barrel', x: 0, z: 0, elevation: 0, createdAt: 1 });
     assert.equal(cube.material[0].color.value, PALETTE.barrel.color);
     assert.equal(cube.material[0].map, undefined);
