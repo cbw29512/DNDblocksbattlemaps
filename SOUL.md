@@ -537,3 +537,5 @@ Spell and area-effect tools and overlays are Combat Mode controls, not building 
 
 ## Creature markers are combat-only (2026-10-08)
 Creature status, condition, and player identity marker controls belong on the Combat screen, not in map construction. Build Mode can place creatures but does not display Creature Markers controls; switching modes does not erase existing creature identities or status state.
+
+Combat-only marker behavior includes the interaction handlers, not just the visible UI. Leaving Combat Mode disarms selected status tools and marker click/drag actions are rejected in Build Mode without erasing previously assigned creature state.
