@@ -1,7 +1,7 @@
-import { STARTER_TEMPLATES, buildStarterTemplate } from './starterTemplates.js?v=e8bec7409b8c';
-import { partyRosterFromBoard, reconcilePartyOnMap, removePartyFromMap } from './party.js?v=e8bec7409b8c';
-import { normalizeBoardBounds } from './boardBounds.js?v=e8bec7409b8c';
-import { createBoardState } from './commands.js?v=e8bec7409b8c';
+import { STARTER_TEMPLATES, buildStarterTemplate } from './starterTemplates.js?v=cb5dac18a9bb';
+import { partyRosterFromBoard, reconcilePartyOnMap, removePartyFromMap } from './party.js?v=cb5dac18a9bb';
+import { normalizeBoardBounds } from './boardBounds.js?v=cb5dac18a9bb';
+import { createBoardState } from './commands.js?v=cb5dac18a9bb';
 const STORAGE_PREFIX = 'dndblocks:stage1:';
 function key(terrain) {
     return `${STORAGE_PREFIX}${terrain}`;
