@@ -501,3 +501,7 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - Detailed phased source-of-truth: `docs/COMBAT_AREA_AND_LOG_PLAN.md`. A0 domain-only universal sphere/cone/line/cube/cylinder grid predicates + illustrative Fireball, Lightning Bolt and dragon breath presets, with unit tests. This is a **center-point geometry approximation**, not RAW overlap/cover or live visual effects.
 - A1 clickable overlays, A2 combat log, A3 edition-checked spell/monster registry, A4 target intersection/RAW, A5 multiplayer remain NOT STARTED; do not call them completed. No map storage changes.
 - Next A1 once A0 CI verified; G0b remains separate campaign migration work.
+
+## 2026-10-08 — A1 initial voxel overlay + A2 cast announcement (IN PROGRESS)
+- Wires AREA_PRESETS into editor via spell selector, caster input, Preview Area, touch-friendly Cast/Cancel controls. Renderer displays 50%-opacity whole 5-foot cube previews; fallback grid highlights affected cells. First character/monster in current map is provisional caster origin. Cast logs one announcement; Escape/right-click/Cancel produces no entry. Does not change persisted map or resolve dice/targets.
+- **Not RAW certified**: preview uses A0 center-point inclusion, line of effect/partial squares/2014-vs-2024 spell dimensions not verified, Large+ footprint intersection not implemented. Log ephemeral per editor session. Browser/live verification pending; next focused gate enforce correct origin/geometry, proper fallback touch positioning and target highlights.
