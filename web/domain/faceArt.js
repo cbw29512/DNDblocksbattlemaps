@@ -118,12 +118,14 @@ function escapeXml(value) {
 }
 export function generatedCubeArt(id, name, icon, color) {
     const label = escapeXml(name.toUpperCase());
+    // Fit longer names inside the cube label area.
+    const fontSize = Math.max(6, Math.min(10, Math.floor(105 / (name.length * 0.66))));
     const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' +
         '<rect width="128" height="128" rx="13" fill="' + hex(color) + '"/>' +
         '<rect x="5" y="5" width="118" height="118" rx="10" fill="none" stroke="#f7efd7" stroke-opacity=".42" stroke-width="3"/>' +
         '<g transform="translate(0 -7)">' + iconMarkup(icon) + '</g>' +
         '<rect x="8" y="101" width="112" height="20" rx="6" fill="#11120f" fill-opacity=".83"/>' +
-        '<text x="64" y="115" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" font-weight="800" fill="#fff8e6">' + label + '</text>' +
+        '<text x="64" y="115" text-anchor="middle" font-family="Arial,sans-serif" font-size="' + fontSize + '" font-weight="800" fill="#fff8e6">' + label + '</text>' +
         '</svg>';
     return {
         src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
