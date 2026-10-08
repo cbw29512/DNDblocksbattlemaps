@@ -75,7 +75,7 @@ export async function renderBuilder(
         </div>
       </header>
       <aside class="builder-sidebar">
-        <details class="builder-tool-group" open><summary>Spells &amp; Areas</summary><section class="combat-spell-tools" aria-label="Spell measurement">
+        <details class="builder-tool-group" id="combat-spells-panel" hidden><summary>Spells &amp; Areas</summary><section class="combat-spell-tools" aria-label="Spell measurement">
           <strong>Spell &amp; Area Preview</strong>
           <label for="spell-choice">Effect</label>
           <select id="spell-choice"><option value="">Choose a spell…</option>${AREA_ABILITY_REGISTRY.map(record=>`<option value="${record.key}">${record.edition} · ${record.area.label} (sample preview — unverified)</option>`).join('')}</select>
@@ -245,6 +245,7 @@ export async function renderBuilder(
     spellInstructions.textContent='Affected creatures remain outlined in yellow until another preview starts. Saves/damage pending.';
   };
   const armArea = (): void => {
+    if (!moveMode) { cancelArea(); return; }
     const id=root.querySelector<HTMLSelectElement>('#spell-choice')?.value;
     activeSpell=getAreaAbility(id ?? '')?.area ?? null;
     const select=root.querySelector<HTMLSelectElement>('#spell-caster');
@@ -530,6 +531,9 @@ export async function renderBuilder(
 
   root.querySelector<HTMLButtonElement>('#creature-mode')?.addEventListener('click', () => {
     moveMode = !moveMode;
+    const aoePanel = root.querySelector<HTMLDetailsElement>('#combat-spells-panel');
+    if (aoePanel) { aoePanel.hidden = !moveMode; aoePanel.open = moveMode; }
+    if (!moveMode) cancelArea();
     pickedCreatureId = null;
     renderer?.setMovingCreature(null);
     if (moveMode && armedRoom) cancelRoomMode();

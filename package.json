@@ -10,7 +10,7 @@
     "dev": "vite",
     "build": "npm run compile:web && vite build --base=./",
     "typecheck": "tsc --noEmit",
-    "test": "tsc -p tsconfig.test.json && node --test tests/*.test.mjs",
+    "test": "tsc -p tsconfig.test.json && node --check web/app/builder.js && node --test tests/*.test.mjs",
     "check": "npm run typecheck && npm run test && npm run build",
     "compile:web": "tsc -p tsconfig.web.json"
   },
