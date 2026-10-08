@@ -293,3 +293,10 @@ test('cube face art is rasterized and solid color remains until loaded', async (
     globalThis.document = originalDocument;
   }
 });
+
+test('character ring color persists in a placed world object', () => {
+  const character = createWorldObject('ring-test', 'hero-fighter', { x: 0, z: 0, elevation: 0 }, 1, 0x2688dc);
+  assert.equal(character.ringColor, 0x2688dc);
+  const state = applyCommand(createBoardState('castle'), placeCommand(character));
+  assert.equal(state.objects[0].ringColor, 0x2688dc);
+});
