@@ -334,3 +334,14 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 - **Result:** Source and browser bundle edits committed to a review branch. Build/test and browser appearance not yet verified in this execution environment; do not describe these edits as deployed or tested.
 - **Open Questions / Blockers:** Source checkout/network unavailable in execution container; CI and browser validation are required before merge. The monster expansion needs asset inspection and multi-cube renderer certification.
 - **Exact Next Step:** Run full repository check on this branch, inspect the actual barrel/chest/lantern/map visual at GitHub Pages test surface, merge only if green, then implement and certify coherent 2×2 large-monster cubes from existing art.
+
+
+## 2026-10-07 follow-up — Tagged light-block glow
+
+- **Starting State:** ordinary cubes used non-emissive textured materials.
+- **Changes Made:** six existing catalog entries now carry `light-source` tag; universal Three.js cube material enables subtle warm emissive appearance for tagged blocks. Source and checked-in browser JavaScript updated together; catalog tags regression added.
+- **Decisions Made:** purely visual glow, no dynamic point lights or real-time light/shadow calculations, no new mesh shapes and no effects engine.
+- **Cost Impact:** zero dependencies or service costs; no production deployment.
+- **Result:** committed to the existing draft PR branch; runtime/browser checks remain unverified.
+- **Open Questions / Blockers:** confirm visual strength in actual browser, and run npm check before merge.
+- **Exact Next Step:** validate this branch, then continue improving core Build and Props distinct face art before broadening creature footprints.
