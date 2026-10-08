@@ -388,3 +388,12 @@ test('moving a creature preserves identity, colored ring and conditions with und
   const restored = undo(changed.state,changed.history);
   assert.deepEqual(restored.state.objects[0],before);
 });
+
+test('starter monster challenge ratings are edition-tagged for exact encounter filtering', () => {
+  const expected = { goblin:'1/4', skeleton:'1/4', zombie:'1/4', wolf:'1/4', mimic:'2', ghoul:'1', kobold:'1/8', bandit:'1/8', orc:'1/2' };
+  for (const [id,cr] of Object.entries(expected)) {
+    const item = getCatalogItem('monster-' + id);
+    assert.equal(item.challengeRating, cr, id);
+    assert.equal(item.edition,'2014',id);
+  }
+});
