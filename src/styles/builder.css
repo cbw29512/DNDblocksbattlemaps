@@ -184,3 +184,12 @@
 .player-ring-picker { display:grid;gap:.4rem;margin:.7rem 0;padding:.65rem;border:1px solid rgba(255,255,255,.14);border-radius:10px;color:#e7e1d2;font-size:.78rem;font-weight:800; }
 .player-ring-picker select { width:100%;padding:.55rem;border:1px solid rgba(255,255,255,.24);border-radius:7px;background:#292c27;color:#fff;font:inherit;cursor:pointer; }
 .player-ring-picker small { color:#b8b0a0;font-size:.69rem;font-weight:500;line-height:1.35; }
+
+.creature-ring-tools { display:grid;gap:.55rem;margin:.7rem 0;padding:.7rem;border:1px solid rgba(255,255,255,.16);border-radius:11px;color:#f4eee1; }
+.creature-ring-tools strong {font-size:.82rem;}
+.creature-ring-tools small {font-size:.7rem;line-height:1.3;color:#c4bdad;}
+.creature-ring-options,.creature-status-options {display:flex;flex-wrap:wrap;gap:.4rem;}
+.ring-token,.status-token {display:flex;align-items:center;gap:.35rem;padding:.37rem .5rem;border:1px solid #666;border-radius:7px;background:#292b25;color:#fff;cursor:grab;font-size:.72rem;}
+.ring-token i {height:16px;width:16px;border:4px solid var(--ring);border-radius:50%;}
+.status-token {border-color:#bd985a;}
+.ring-token[hidden],.status-token[hidden] {display:none;}
