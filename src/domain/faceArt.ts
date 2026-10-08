@@ -151,8 +151,24 @@ function surfaceTexture(id: string, color: number): string | null {
   }
 }
 
+function illustratedBlockFace(id: string, icon: FaceIcon, color: number, category: 'Build' | 'Props'): string {
+  const hash = [...id].reduce((h, c) => ((h * 33) ^ c.charCodeAt(0)) >>> 0, 5381);
+  const detail = Array.from({length: 12}, (_, i) => {
+    const x = 10 + ((hash >>> (i % 16)) + i * 23) % 108;
+    const y = 10 + ((hash >>> ((i + 5) % 16)) + i * 29) % 108;
+    return '<rect x="' + x + '" y="' + y + '" width="4" height="3" fill="#fff" opacity=".13"/>';
+  }).join('');
+  const trim = category === 'Build' ? '#d6c9ac' : '#f4dfb1';
+  return '<rect width="128" height="128" fill="' + hex(color) + '"/>' +
+    '<path d="M0 28h128M0 100h128M28 0v128M100 0v128" stroke="#101710" stroke-opacity=".18" stroke-width="4"/>' +
+    detail +
+    '<rect x="9" y="9" width="110" height="110" rx="5" fill="#181b16" fill-opacity=".17" stroke="' + trim + '" stroke-opacity=".45" stroke-width="3"/>' +
+    '<g transform="translate(0 -2)">' + iconMarkup(icon) + '</g>';
+}
+
 export function generatedCubeArt(id: string, name: string, icon: FaceIcon, color: number, category?: 'Build' | 'Props'): CatalogArt {
   const label = escapeXml(name.toUpperCase());
+  const surface = surfaceTexture(id, color);
   const face = surface ?? (category === 'Build' || category === 'Props' ? illustratedBlockFace(id, icon, color, category) : null);
   if (face) return {src: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">' + face + '</svg>'), alt: name, source: 'generated', sourceId: 'dndblocks:' + id};
   const svg =
