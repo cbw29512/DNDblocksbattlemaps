@@ -1,3 +1,4 @@
+import { creatureOccupiedCells } from '../domain/areaTargets.js';
 import { areaCells } from '../domain/areaTemplates.js?v=bf4a12ccb7a2';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=bf4a12ccb7a2';
 import { getCatalogItem } from '../domain/catalog.js?v=bf4a12ccb7a2';
@@ -17,6 +18,7 @@ export function createFallbackRenderer(container, handlers) {
     let theme = null;
     let currentBounds = { ...DEFAULT_BOARD_BOUNDS };
     let areaTemplate = null;
+  let areaTargetIds = new Set();
     let areaPlacement = null;
     let currentObjects = [];
     function cellAt(x, z) {

@@ -1,3 +1,4 @@
+import { creatureOccupiedCells } from '../domain/areaTargets.js';
 import { areaCells } from '../domain/areaTemplates.js';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js';
 import { getCatalogItem } from '../domain/catalog.js';
@@ -28,6 +29,7 @@ export function createFallbackRenderer(
   let theme: TerrainTheme | null = null;
   let currentBounds: BoardBounds = { ...DEFAULT_BOARD_BOUNDS };
   let areaTemplate: import('../domain/areaTemplates.js').AreaTemplate | null = null;
+  let areaTargetIds = new Set<string>();
   let areaPlacement: import('../domain/areaTemplates.js').AreaPlacement | null = null;
   let currentObjects: Parameters<BoardRenderer['render']>[0]['objects'] = [];
 
@@ -79,6 +81,7 @@ export function createFallbackRenderer(
         const cell = document.createElement('button');
         cell.className = 'fallback-cell';
         if(affected.has(x+','+z)) cell.classList.add('aoe-affected');
+        if(currentObjects.some(o=>areaTargetIds.has(o.id) && creatureOccupiedCells(o).some(p=>p.x===x && p.z===z && p.elevation===elevation))) cell.classList.add('aoe-target');
         cell.type = 'button';
         cell.dataset.x = String(x);
         cell.dataset.z = String(z);
@@ -171,6 +174,7 @@ export function createFallbackRenderer(
 
   return {
     mode: 'fallback',
+    setAreaTargets(ids) {areaTargetIds=new Set(ids);draw();},
     setAreaPreview(template,placement) {areaTemplate=template;areaPlacement=placement;draw();},
     setTheme(next) {
       theme = next;

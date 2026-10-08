@@ -37,3 +37,6 @@ Rendering is **all-or-nothing per 5-foot cube**, not partial/smooth shapes. Do n
 
 ## A4 partial candidate-target footprint helper (IN PROGRESS)
 - New generic `creatureOccupiedCells` and `previewAffectedCreatures` operate on full occupied cubic volumes and report each logical creature once. UI announces provisional intersected creature count/name during preview; cast announcement records count but no save or damage. This **does not** complete A4 RAW geometry or A1 graphical creature highlighting; A0's cell-center approximation remains provisional.
+
+## A1 provisional target visualization (2026-10-08)
+- IN PROGRESS: `setAreaTargets` renderer method highlights each cube of candidate targets as a visible yellow outline in 3D and affected occupied cells in fallback mode; clears on cancel/cast. This is a **preview only**, not guaranteed RAW hit adjudication. Do not mark A1/A4 complete without browser and edition-specific rule certification.

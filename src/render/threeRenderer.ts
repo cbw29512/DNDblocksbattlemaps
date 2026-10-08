@@ -1,3 +1,4 @@
+import { creatureOccupiedCells } from '../domain/areaTargets.js';
 import { areaCells } from '../domain/areaTemplates.js';
 import { getCatalogItem } from '../domain/catalog.js';
 import { type NormalizedRoom, type RoomCorner } from '../domain/room.js';
@@ -92,6 +93,24 @@ export async function createThreeRenderer(
 
   let activeArea: import('../domain/areaTemplates.js').AreaTemplate | null = null;
   let areaPlacement: import('../domain/areaTemplates.js').AreaPlacement | null = null;
+  let areaTargetIds = new Set();
+  const targetGroup = new THREE.Group();
+  scene.add(targetGroup);
+  function rebuildTargetOutlines() {
+    for(const child of [...targetGroup.children]) {targetGroup.remove(child);child.geometry.dispose();child.material.dispose();}
+    if(!activeArea || !areaPlacement)return;
+    for(const o of currentObjects.filter(o=>areaTargetIds.has(o.id))){
+      for(const cell of creatureOccupiedCells(o)){
+        const line=new THREE.LineSegments(
+          new THREE.EdgesGeometry(new THREE.BoxGeometry(1.025,1.025,1.025)),
+          new THREE.LineBasicMaterial({color:0xfff08d,depthTest:false,transparent:true,opacity:1})
+        );
+        line.position.set(cell.x+.5,cell.elevation+.5,cell.z+.5);
+        line.raycast=()=>{};
+        targetGroup.add(line);
+      }
+    }
+  }
   const areaGroup = new THREE.Group();
   scene.add(areaGroup);
   function rebuildAreaCubes(): void {
@@ -343,7 +362,8 @@ export async function createThreeRenderer(
 
   return {
     mode: 'three',
-    setAreaPreview(template, placement) { activeArea=template; areaPlacement=placement; rebuildAreaCubes(); },
+    setAreaTargets(ids) {areaTargetIds=new Set(ids);rebuildTargetOutlines();},
+    setAreaPreview(template, placement) { activeArea=template; areaPlacement=placement; rebuildAreaCubes(); rebuildTargetOutlines(); },
     setTheme(theme: TerrainTheme) {
       groundMaterial.color.setHex(theme.groundColor);
     },
@@ -373,6 +393,7 @@ export async function createThreeRenderer(
       currentObjects = state.objects;
       objectGroup.clear();
       state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
+      rebuildTargetOutlines();
     },
     rotate(delta) {
       rotateCamera(THREE, camera, controls, delta);
@@ -387,6 +408,7 @@ export async function createThreeRenderer(
       resize.disconnect();
       renderer.setAnimationLoop(null);
       for(const mesh of areaGroup.children){mesh.geometry.dispose();mesh.material.dispose();} scene.remove(areaGroup);
+      for(const child of targetGroup.children){child.geometry.dispose();child.material.dispose();}scene.remove(targetGroup);
       ground.geometry.dispose();
       grid.geometry.dispose();
       gridMaterial.dispose();

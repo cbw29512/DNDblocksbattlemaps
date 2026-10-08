@@ -1,3 +1,4 @@
+import { creatureOccupiedCells } from '../domain/areaTargets.js';
 import { areaCells } from '../domain/areaTemplates.js?v=bf4a12ccb7a2';
 import { getCatalogItem } from '../domain/catalog.js?v=bf4a12ccb7a2';
 import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=bf4a12ccb7a2';
@@ -56,7 +57,25 @@ export async function createThreeRenderer(container, handlers) {
     let currentBounds = { ...DEFAULT_BOARD_BOUNDS };
     let activeArea = null;
     let areaPlacement = null;
-    const areaGroup = new THREE.Group();
+    let areaTargetIds = new Set();
+  const targetGroup = new THREE.Group();
+  scene.add(targetGroup);
+  function rebuildTargetOutlines() {
+    for(const child of [...targetGroup.children]) {targetGroup.remove(child);child.geometry.dispose();child.material.dispose();}
+    if(!activeArea || !areaPlacement)return;
+    for(const o of currentObjects.filter(o=>areaTargetIds.has(o.id))){
+      for(const cell of creatureOccupiedCells(o)){
+        const line=new THREE.LineSegments(
+          new THREE.EdgesGeometry(new THREE.BoxGeometry(1.025,1.025,1.025)),
+          new THREE.LineBasicMaterial({color:0xfff08d,depthTest:false,transparent:true,opacity:1})
+        );
+        line.position.set(cell.x+.5,cell.elevation+.5,cell.z+.5);
+        line.raycast=()=>{};
+        targetGroup.add(line);
+      }
+    }
+  }
+  const areaGroup = new THREE.Group();
     scene.add(areaGroup);
     function rebuildAreaCubes() {
         for (const mesh of [...areaGroup.children]) {
@@ -103,7 +122,8 @@ export async function createThreeRenderer(container, handlers) {
         const width = boardWidth(bounds);
         const depth = boardDepth(bounds);
         const center = boardCenter(bounds);
-        ground.geometry.dispose();
+        for(const child of targetGroup.children){child.geometry.dispose();child.material.dispose();}scene.remove(targetGroup);
+      ground.geometry.dispose();
         ground.geometry = new THREE.PlaneGeometry(width, depth);
         ground.position.set(center.x, 0, center.z);
         grid.geometry.dispose();
@@ -322,6 +342,7 @@ export async function createThreeRenderer(container, handlers) {
             currentObjects = state.objects;
             objectGroup.clear();
             state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
+      rebuildTargetOutlines();
         },
         rotate(delta) {
             rotateCamera(THREE, camera, controls, delta);
