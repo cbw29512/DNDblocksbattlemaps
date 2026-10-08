@@ -41,6 +41,17 @@ export async function renderBuilder(root, terrainId, handlers) {
       <aside class="builder-sidebar">
         ${roomPanelHtml()}
         ${catalogPanelHtml(selected)}
+        <label class="player-ring-picker">Character Ring Color
+          <select id="player-ring-color" aria-label="Character ring color">
+            <option value="2688dc">Blue</option>
+            <option value="31b86b">Green</option>
+            <option value="e0be3d">Yellow</option>
+            <option value="a369d7">Purple</option>
+            <option value="f18b35">Orange</option>
+            <option value="f4f4f4">White</option>
+          </select>
+          <small>Red is reserved for monsters. Applies to new characters.</small>
+        </label>
         <div class="elevation-control">
           <span>Elevation</span>
           <div>
@@ -136,7 +147,10 @@ export async function renderBuilder(root, terrainId, handlers) {
     };
     renderer = await createRenderer(canvas, {
         onPlace(position) {
-            const object = createWorldObject(makeId(), selected, position);
+            const ring = getCatalogItem(selected).category === 'Characters'
+                ? Number.parseInt((root.querySelector('#player-ring-color')?.value ?? '2688dc'), 16)
+                : undefined;
+            const object = createWorldObject(makeId(), selected, position, Date.now(), ring);
             const grew = run(placeCommand(object), [position]);
             if (grew !== null && !grew)
                 status.textContent = `${getCatalogItem(selected).name} placed. Click again to place more.`;

@@ -9,9 +9,10 @@ export function createWorldObject(
   id: string,
   catalogId: CatalogId,
   position: GridPosition,
-  createdAt = Date.now()
+  createdAt = Date.now(),
+  ringColor?: number
 ): WorldObject {
-  return { id, catalogId, ...position, createdAt };
+  return { id, catalogId, ...position, createdAt, ...(ringColor === undefined ? {} : { ringColor }) };
 }
 
 export function applyCommand(state: BoardState, command: EditCommand): BoardState {

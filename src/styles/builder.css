@@ -180,3 +180,7 @@
 @media(max-width:720px){
   .catalog-search { min-width:170px;margin:0; }
 }
+
+.player-ring-picker { display:grid;gap:.4rem;margin:.7rem 0;padding:.65rem;border:1px solid rgba(255,255,255,.14);border-radius:10px;color:#e7e1d2;font-size:.78rem;font-weight:800; }
+.player-ring-picker select { width:100%;padding:.55rem;border:1px solid rgba(255,255,255,.24);border-radius:7px;background:#292c27;color:#fff;font:inherit;cursor:pointer; }
+.player-ring-picker small { color:#b8b0a0;font-size:.69rem;font-weight:500;line-height:1.35; }

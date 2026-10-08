@@ -328,3 +328,8 @@ The same underlying catalog object can be reused in multiple themes.
 The earlier "date" entry was a typo and is not part of the initial catalog.
 
 A calendar/date-display block is a possible future idea only. Do not add it to MVP unless a concrete use case justifies it.
+
+
+## Creature labels and base rings (2026-10-08)
+
+Characters and Monsters display camera-facing name text above their existing perfect cubes. Monsters always have a red ground ring. Players select a non-red ring color before placing a Character: blue, green, yellow, purple, orange or white; the selected ring color is persisted per WorldObject. Existing characters default blue. Build and Props are unaffected. These are visual components and not separate map objects or game effects.

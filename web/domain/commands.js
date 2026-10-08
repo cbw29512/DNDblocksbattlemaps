@@ -2,8 +2,8 @@ import { createDefaultBoardBounds } from './boardBounds.js?v=00134766f884';
 export function createBoardState(terrain) {
     return { terrain, bounds: createDefaultBoardBounds(), objects: [], revision: 0 };
 }
-export function createWorldObject(id, catalogId, position, createdAt = Date.now()) {
-    return { id, catalogId, ...position, createdAt };
+export function createWorldObject(id, catalogId, position, createdAt = Date.now(), ringColor) {
+    return { id, catalogId, ...position, createdAt, ...(ringColor === undefined ? {} : { ringColor }) };
 }
 export function applyCommand(state, command) {
     let objects = state.objects;
