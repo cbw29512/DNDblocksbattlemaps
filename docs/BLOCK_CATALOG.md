@@ -352,3 +352,8 @@ Each condition now has a **stable distinct ring color** (the same color in the d
 ### Click-to-move creatures (2026-10-08)
 
 After placing a Character or Monster, click its cube to pick up the logical piece, then click a grid square to put it down. Escape cancels. This is an undoable coordinate update, not remove/recreate: the creature keeps its identity, name (from catalog), ring color, conditions and exhaustion. Build and Props cannot be picked up via this interaction. Destination is DM-authoritative and uses the current square at the creature's existing elevation; no automatic pathfinding/rules. Works in 3D and fallback board. Verification pending.
+
+
+### Move Creatures mode (2026-10-08)
+
+The toolbar toggle **Move Creatures** switches from ordinary Build mode to creature-only interaction. While active, Build and Props remain visible and non-movable; the 3D hit test excludes scenery when picking a creature, and map clicks cannot place new Build blocks. Click a Character or Monster and then click its destination. The moved object preserves its ID, status, rings, and undo history. Switch mode off to resume building. Browser verification remains pending.
