@@ -356,3 +356,7 @@ The five existing blocks Secret Door, Open Doorway, Trapdoor, Spike Trap and Dar
 Generic renderer now creates N×N **unit BoxGeometry** meshes from a single creature WorldObject, and all child meshes share the same object ID. The domain footprint routine already supports 1/2/3/4 squares. A focused unit regression checks a 2×2 arrangement and identity binding.
 
 **Not finished:** currently the artwork repeats on each subcube. The next renderer change must subdivide one creature face illustration across the outer cube surfaces, verify pointer/placement handling, and only then register an Ogre with provenance-verified local art. Large monster appearance remains uncertified; do not advertise Ogre as implemented.
+
+### Placement reliability patch (2026-10-07)
+
+A defensive 3D input patch makes empty-grid placement test both the invisible placement plane and the rendered ground, and reports an invalid click through the board status rather than ignoring it silently. This does not establish an observed root cause or a verified deployment; browser reproduction and validation remain mandatory.
