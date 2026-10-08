@@ -9,6 +9,8 @@
     "rootDir": "."
   },
   "include": [
-    "src/domain/**/*.ts"
+    "src/domain/**/*.ts",
+    "src/render/threeObjects.ts",
+    "src/browserAssetUrl.ts"
   ]
 }
