@@ -1,6 +1,6 @@
-import { renderBuilder } from './app/builder.js?v=creaturerings1008';
-import { renderHome } from './app/home.js?v=creaturerings1008';
-import { renderJoin } from './app/join.js?v=creaturerings1008';
+import { renderBuilder } from './app/builder.js?v=crfilter1008';
+import { renderHome } from './app/home.js?v=crfilter1008';
+import { renderJoin } from './app/join.js?v=crfilter1008';
 function requireRoot() {
     const element = document.getElementById('app');
     if (!element)
