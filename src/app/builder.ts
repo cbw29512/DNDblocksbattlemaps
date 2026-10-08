@@ -232,6 +232,7 @@ export async function renderBuilder(
   });
   castButton.addEventListener('click',castArea);
   cancelButton.addEventListener('click',cancelArea);
+  root.querySelector('#spell-caster')?.addEventListener('change',()=>{if(activeSpell)cancelArea();});
   const onAreaRightClick=(event:MouseEvent):void=>{if(activeSpell){event.preventDefault();event.stopImmediatePropagation();cancelArea();}};
   canvas.addEventListener('contextmenu',onAreaRightClick,true);
 
@@ -280,6 +281,7 @@ export async function renderBuilder(
     saveBoard(state);
     propagateParty(state);
     refreshPartyManager();
+    refreshCasterOptions();
     updateBoardSize();
     updateRingTokens();
   };
