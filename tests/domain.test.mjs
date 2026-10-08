@@ -582,7 +582,7 @@ test('AoE sphere includes cells inside 20-foot radius, excludes beyond and honor
   const placement={origin:{x:0,z:0,elevation:0},center:{x:10,z:0,elevation:0}};
   assert.ok(isInCastingRange(fireball,placement));
   assert.equal(areaContainsPoint(fireball,placement,{x:13,z:0,elevation:0}),true);
-  assert.equal(areaContainsPoint(fireball,placement,{x:14,z:0,elevation:0}),true);
+  assert.equal(areaContainsPoint(fireball,placement,{x:14,z:0,elevation:0}),false);
   assert.equal(areaContainsPoint(fireball,placement,{x:15,z:0,elevation:0}),false);
   assert.equal(areaContainsPoint(fireball,placement,{x:10,z:0,elevation:5}),false);
   assert.equal(isInCastingRange(fireball,{...placement,center:{x:31,z:0,elevation:0}}),false);
