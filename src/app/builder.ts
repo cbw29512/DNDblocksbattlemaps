@@ -374,6 +374,8 @@ export async function renderBuilder(
       status.textContent = `${getCatalogItem(creature.catalogId).name} moved. Ring and conditions preserved.`;
     },
     onPlace(position) {
+      // A spell preview must never mutate terrain, even if a renderer routes the click here.
+      if (activeSpell) { status.textContent='Spell preview active: choose a target, then Cast or Cancel.'; return; }
       const selectedItem = getCatalogItem(selected);
       const span = selectedItem.category === 'Monsters' ? selectedItem.footprintCells ?? 1 : 1;
       if (position.x + span > state.bounds.maxX || position.z + span > state.bounds.maxZ) {
