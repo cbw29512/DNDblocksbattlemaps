@@ -519,3 +519,6 @@ For any spell or monster ability with a rules-defined range/origin of **Self**, 
 
 ## Mobile cast control availability (2026-10-08)
 The touch workflow must never depend on horizontal scrolling to locate Cast/Cancel while aiming. Show reachable map-side Cast and Cancel actions only while a spell is armed, using the same underlying cast/cancel handlers; enable Cast only after valid positioning. Desktop left-click casts and right-click cancels. Verify on real touch devices before declaring certified.
+
+## Spell cancellation must clear provisional targeting (2026-10-08)
+When an area preview is canceled by right-click, Escape, or Cancel, clear both the projected area cubes and provisional creature target outlines, while preserving existing combat-log entries and world objects. Cast is the only action that records a new area-hit log entry or retains the confirmed cast markers. Re-arming another spell clears old markers.
