@@ -528,3 +528,6 @@ Do not infer the initiating pointer type only from a synthetic `click` event: on
 
 ## Full block-face visual requirement — 2026-10-08
 All Build and Props category blocks remain perfect 5-ft cubes with independently recognizable square face art, including terrain, walls, doors, furniture and traps. Improve artwork and lighting, never substitute custom shaped meshes. Character and monster artwork is outside this pass. Verify full catalog coverage, source/browser parity and exact-head CI before merge.
+
+## Light-emitting cube blocks (2026-10-08)
+Light is an effect of placed cubes, not a change to cube shape. In Three.js mode, torch, lantern, campfire, brazier, fireplace, forge and lava blocks emit local warm-colored point lights. Use a hard cap of 12 non-shadow-casting lights to avoid runaway GPU cost; every block still renders normally if it exceeds that light budget. Do not alter character or monster artwork. Fallback 2D mode has no physical illumination. Review real-device performance and lighting contrast before public certification.

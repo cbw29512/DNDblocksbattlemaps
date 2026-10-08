@@ -602,3 +602,8 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Storage block face details
 - PR #59 passed exact-head CI and merged: all Build and Props cubes use square face textures, with character/monster artwork untouched. Closed older #58 as superseded. Next incremental visual pass adds dedicated detailed barrel, crate and chest face compositions instead of common generic framed symbols. Each remains a perfect 5-ft cube, with updated source and browser JS. Requires exact-head CI and actual browser visual review before merge.
+
+## 2026-10-08 — Placeable local light sources
+- Previous storage-face PR #60 passed CI and merged. Implemented local point lights for torch, lantern, campfire, brazier, fireplace, forge and lava cubes in the Three.js arena; 12 maximum, no per-light shadows, deterministic closest-to-camera selection during board render. Removes light group on dispose; both source and web JS updated. No geometry change or character/monster art change. Note: fallback 2D intentionally does not simulate physical lighting; camera movements do not yet rebalance light source selection until board rerender; flicker not included in this initial pass. Exact-head CI and real-device visual/performance checks pending.
+
+- PR #61 first CI failed TS2488 because strict indexed lookup of `lightSpecs` may be undefined. Guarded lookup before destructuring; rerun required. No feature broadening while validation is red.
