@@ -508,3 +508,28 @@ test('multiple saved Starter Inns do not change existing terrain maps or each ot
     assert.ok(loadPartyRoster());
   } finally {globalThis.localStorage=oldStorage;}
 });
+
+test('Inn palette lists area-relevant blocks first in alphabetical order, then all others alphabetically', async () => {
+  const { catalogIdsForArea } = await import('../.test-build/src/domain/catalogOrder.js');
+  const sorted = catalogIdsForArea('Props','inn','inn');
+  const relevant = id => (getCatalogItem(id).tags ?? []).some(t => ['inn','tavern','furniture'].includes(t));
+  const firstUnrelated = sorted.findIndex(id => !relevant(id));
+  assert.ok(firstUnrelated > 0);
+  assert.ok(sorted.slice(0,firstUnrelated).every(relevant));
+  assert.ok(sorted.slice(firstUnrelated).every(id => !relevant(id)));
+  for(const group of [sorted.slice(0,firstUnrelated),sorted.slice(firstUnrelated)]) {
+    const names=group.map(id=>getCatalogItem(id).name);
+    assert.deepEqual(names,[...names].sort((a,b)=>a.localeCompare(b,'en',{sensitivity:'base'})));
+  }
+  assert.deepEqual(new Set(sorted),new Set(catalogIdsForCategory('Props')));
+  assert.equal(sorted.length,catalogIdsForCategory('Props').length);
+});
+test('area ordering adapts for harbor and cave without dropping blocks', async () => {
+  const { catalogIdsForArea } = await import('../.test-build/src/domain/catalogOrder.js');
+  for (const [terrain,template] of [['sea','harbor'],['castle','cave'],['castle','dungeon'],['field','forest']]) {
+    const result=catalogIdsForArea('Build',terrain,template);
+    assert.equal(result.length,catalogIdsForCategory('Build').length);
+    assert.deepEqual(new Set(result),new Set(catalogIdsForCategory('Build')));
+  }
+  assert.notDeepEqual(catalogIdsForArea('Build','inn','inn'),catalogIdsForArea('Build','sea','harbor'));
+});
