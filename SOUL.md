@@ -522,3 +522,6 @@ The touch workflow must never depend on horizontal scrolling to locate Cast/Canc
 
 ## Spell cancellation must clear provisional targeting (2026-10-08)
 When an area preview is canceled by right-click, Escape, or Cancel, clear both the projected area cubes and provisional creature target outlines, while preserving existing combat-log entries and world objects. Cast is the only action that records a new area-hit log entry or retains the confirmed cast markers. Re-arming another spell clears old markers.
+
+## Touch event origin for spell casting (2026-10-08)
+Do not infer the initiating pointer type only from a synthetic `click` event: on touch devices a click may be mouse-compatible. Capture `pointerdown.pointerType` and consume it on the matching board click so a touch positions an AoE without automatic casting, in both Three.js and fallback modes. Cast requires separate explicit confirmation on touch. Verify real-device behavior before certification.
