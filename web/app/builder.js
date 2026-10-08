@@ -169,7 +169,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
   });
   castButton.addEventListener('click',castArea);
   cancelButton.addEventListener('click',cancelArea);
-  const onAreaRightClick=(event)=>{if(activeSpell){event.preventDefault();cancelArea();}};
+  const onAreaRightClick=(event)=>{if(activeSpell){event.preventDefault();event.stopImmediatePropagation();cancelArea();}};
   canvas.addEventListener('contextmenu',onAreaRightClick,true);
 
       const boardSize = document.getElementById('board-size');
