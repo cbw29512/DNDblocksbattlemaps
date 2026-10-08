@@ -560,3 +560,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Direct dropdown spell casting interaction
 - User finalized UX: choose spell from dropdown => immediately arm area preview, mouse moves projected full-cube template, left click/tap casts at hovered cell, right click/Escape cancels. Removed separate Preview Area activation button. Caster remains necessary for origin/range; if exactly one creature exists it auto-selects, otherwise selecting caster arms the already-selected spell. A blank Choose a spell dropdown option prevents unintended default casting. Keep Cast/Cancel controls as accessibility fallback. Source and web JS aligned. Browser QA and CI still required; no dice/damage execution claimed.
+
+## 2026-10-08 — Fireball mobile touch confirmation gate (IN PROGRESS)
+- Audit found touch click used desktop immediate-cast event and canceled instructions still referred to deleted Preview Area button. Source/browser renderer sends touch pointer type with area click. Desktop left click casts directly; touch tap positions target and requires explicit Cast button, Cancel dismisses. Corrected cancel instructions. Need CI, actual touch browser tests, and a review of persistent outlines and stale dropdown selection. No RAW damage/saves claimed.
