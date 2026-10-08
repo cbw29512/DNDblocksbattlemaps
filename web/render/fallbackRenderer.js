@@ -1,11 +1,11 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=32b0f453931a';
-import { areaCells } from '../domain/areaTemplates.js?v=32b0f453931a';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=32b0f453931a';
-import { getCatalogItem } from '../domain/catalog.js?v=32b0f453931a';
-import { stackElevationAt } from '../domain/placement.js?v=32b0f453931a';
-import { roomOuterSize } from '../domain/room.js?v=32b0f453931a';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=32b0f453931a';
-import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=32b0f453931a';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=739ba7b757ab';
+import { areaCells } from '../domain/areaTemplates.js?v=739ba7b757ab';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=739ba7b757ab';
+import { getCatalogItem } from '../domain/catalog.js?v=739ba7b757ab';
+import { stackElevationAt } from '../domain/placement.js?v=739ba7b757ab';
+import { roomOuterSize } from '../domain/room.js?v=739ba7b757ab';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=739ba7b757ab';
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=739ba7b757ab';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';

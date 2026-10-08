@@ -1,4 +1,4 @@
-import { getCatalogItem } from './catalog.js?v=32b0f453931a';
+import { getCatalogItem } from './catalog.js?v=739ba7b757ab';
 export const PLAYER_RINGS = [
     { color: 0x2688dc, name: 'Blue' }, { color: 0x31b86b, name: 'Green' },
     { color: 0xe0be3d, name: 'Yellow' }, { color: 0xa369d7, name: 'Purple' },
