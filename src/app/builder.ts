@@ -163,7 +163,10 @@ export async function renderBuilder(
   const cancelButton = root.querySelector<HTMLButtonElement>('#cancel-spell')!;
   const spellInstructions = root.querySelector<HTMLElement>('#spell-instructions')!;
   const cancelArea = (): void => {
-    activeSpell=null; spellCenter=null; renderer?.setAreaPreview(null,null);
+    activeSpell=null; spellCenter=null;
+    const spellSelect=root.querySelector<HTMLSelectElement>('#spell-choice');
+    if(spellSelect)spellSelect.value='';
+    renderer?.setAreaPreview(null,null);
     castButton.disabled=true; cancelButton.disabled=true;
     spellInstructions.textContent='Preview canceled. Choose a spell to aim again.';
   };
@@ -227,6 +230,8 @@ export async function renderBuilder(
     root.querySelector('#combat-log')?.prepend(record);
     status.textContent=targets.length ? label+' hits (area): '+hitNames+'. Saves and damage pending.' : label+' hits no creatures.';
     activeSpell=null; spellCenter=null;
+    const spellSelect=root.querySelector<HTMLSelectElement>('#spell-choice');
+    if(spellSelect)spellSelect.value='';
     renderer?.setAreaPreview(null,null);
     renderer?.setAreaTargets(targets.map(o=>o.id));
     castButton.disabled=true; cancelButton.disabled=true;

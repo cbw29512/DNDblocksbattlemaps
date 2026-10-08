@@ -144,6 +144,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     const cancelArea = () => {
         activeSpell = null;
         spellCenter = null;
+        const spellSelect = root.querySelector('#spell-choice');
+        if (spellSelect) spellSelect.value = '';
         renderer?.setAreaPreview(null, null);
         castButton.disabled = true;
         cancelButton.disabled = true;
@@ -217,6 +219,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         status.textContent = targets.length ? label + ' hits (area): ' + hitNames + '. Saves and damage pending.' : label + ' hits no creatures.';
         activeSpell = null;
         spellCenter = null;
+        const spellSelect = root.querySelector('#spell-choice');
+        if (spellSelect) spellSelect.value = '';
         renderer?.setAreaPreview(null, null);
         renderer?.setAreaTargets(targets.map(o => o.id));
         castButton.disabled = true;
