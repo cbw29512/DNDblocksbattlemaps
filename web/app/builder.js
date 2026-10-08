@@ -138,6 +138,7 @@ export async function renderBuilder(root, terrainId, handlers) {
         onPlace(position) {
             const object = createWorldObject(makeId(), selected, position);
             const grew = run(placeCommand(object), [position]);
+      if (grew !== null && !grew) status.textContent = `${getCatalogItem(selected).name} placed at (${position.x}, ${position.z}). Click again to place another.`;
             if (grew) {
                 status.textContent =
                     `Map grew to ${boardWidth(state.bounds)} × ${boardDepth(state.bounds)} squares. Keep building.`;
