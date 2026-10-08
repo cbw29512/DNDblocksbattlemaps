@@ -68,3 +68,6 @@ New user requirements go into the appropriate contract and tracker before implem
 
 ## Combat overlay work lane (2026-10-08)
 See `docs/COMBAT_AREA_AND_LOG_PLAN.md` for the separate A0-A5 source-of-truth gates. Do not represent a generic dimension/geometry primitive as an implemented per-spell visualization, certified RAW adjudication or combat log. Bind 2014/2024 spell dimensions from verified sources before claiming full coverage.
+
+## Visual identity fail-closed gate (2026-10-08)
+Any future new block, monster, template, spell preview, ranged-weapon display or area-effect rendering must keep **perfect visible 5-foot cubes** as the graphical vocabulary, including translucent spell cube clusters. Never substitute smooth circles/spheres/cones even if their internal RAW math is continuous. Check SOUL.md for the locked cube identity before renderer changes; add a targeted regression or visual QA step to prove this invariant.
