@@ -28,6 +28,7 @@ export interface WorldObject extends GridPosition {
   catalogId: CatalogId;
   /** Character-only ring color; red is reserved for monsters. */
   ringColor?: number;
+  partyMember?: boolean;
   conditions?: string[];
   exhaustion?: number;
   createdAt: number;
