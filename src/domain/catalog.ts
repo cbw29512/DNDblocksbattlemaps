@@ -206,3 +206,20 @@ export function catalogMatches(item: PaletteItem, query: string): boolean {
   ].join(' ').toLowerCase();
   return haystack.includes(normalized);
 }
+
+
+const UNKNOWN_CATALOG_ITEM: PaletteItem = generated(
+  '__unknown__',
+  'Unknown',
+  'Props',
+  0x555555,
+  'rune',
+  ['unknown', 'missing']
+);
+
+export function getCatalogItem(id: CatalogId): PaletteItem {
+  const item = PALETTE[id];
+  if (item) return item;
+  console.warn('[catalog] Unknown catalog id; using safe fallback.', { id });
+  return UNKNOWN_CATALOG_ITEM;
+}
