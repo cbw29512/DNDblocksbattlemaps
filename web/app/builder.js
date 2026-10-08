@@ -144,6 +144,8 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     const cancelArea = () => {
         activeSpell = null;
         spellCenter = null;
+        const spellSelect = root.querySelector('#spell-choice');
+        if (spellSelect) spellSelect.value = '';
         renderer?.setAreaPreview(null, null);
         castButton.disabled = true;
         cancelButton.disabled = true;
