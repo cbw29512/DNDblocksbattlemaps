@@ -48,7 +48,7 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
 
         <div class="hero-visual">
           <figure class="real-map-preview">
-            <img src="./assets/home-dungeon.webp" alt="Actual DND Blocks dungeon map built from 5-foot cubes, featuring stone walls, rooms, monsters, doors and treasure chests." width="760" height="371" decoding="async" fetchpriority="high" />
+            <img src="./assets/home-dungeon.svg" alt="Actual DND Blocks dungeon map built from 5-foot cubes, featuring stone walls, rooms, monsters, doors and treasure chests." width="760" height="371" decoding="async" fetchpriority="high" />
             <figcaption>Actual battle map built in DND Blocks</figcaption>
           </figure>
         </div>
