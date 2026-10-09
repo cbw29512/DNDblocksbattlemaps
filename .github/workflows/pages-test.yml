@@ -7,6 +7,7 @@ on:
     paths:
       - 'index.html'
       - 'public/**'
+      - 'how-to-play.html'
       - 'src/**'
       - 'web/**'
       - 'assets/**'
@@ -48,6 +49,7 @@ jobs:
         run: |
           test -s dist/how-to-play.html
           grep -q 'How to Play' dist/how-to-play.html
+          cmp how-to-play.html public/how-to-play.html
           test -s dist/assets/home-dungeon.svg
           for terrain in castle inn field sea volcano; do test -s "dist/assets/terrain-$terrain.svg"; done
           test -s dist/index.html
