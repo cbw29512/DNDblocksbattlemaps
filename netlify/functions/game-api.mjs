@@ -2,6 +2,7 @@
 import { getUser } from '@netlify/identity';
 import { getDatabase } from '@netlify/database';
 import {getBoardForRequest} from './game-board-access.mjs';
+import {moveForRequest} from './game-move-access.mjs';
 import { newGameCode,cleanCode,cleanName,digest,newGuestToken,cookieForGuest,readGuestCookie,allowedOrigin,validUuid,validAction } from './game-security.mjs';
 
 const reply=(data,status=200,headers={})=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}});
@@ -24,6 +25,11 @@ export default async function handler(req, context) {
     if(action==='get-board') {
       const result=await getBoardForRequest(req,db,dm,signingKey());
       return reply(result.board?{board:result.board}:{error:result.error},result.status);
+    }
+    if(action==='move-piece') {
+      const command=await payload(req);
+      const result=await moveForRequest(req,db,dm,signingKey(),command);
+      return reply(result,result.status);
     }
     if(action==='my-games') {
       const user=await dm();if(!user)return fail(401,'DM sign-in required');
