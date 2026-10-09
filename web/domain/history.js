@@ -1,4 +1,4 @@
-import { applyCommand, invertCommand } from './commands.js?v=2693d6ceb233';
+import { applyCommand, invertCommand } from './commands.js?v=a79f5b79744f';
 export function createHistory() {
     return { past: [], future: [] };
 }
