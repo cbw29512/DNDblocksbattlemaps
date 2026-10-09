@@ -73,6 +73,20 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
         <span>Build fast.</span><span>Nothing to install.</span><span>DM decides what happens.</span>
       </section>
 
+      <footer class="site-footer">
+        <div class="footer-content">
+          <div class="footer-main">
+            <div class="footer-brand"><strong>DND Blocks Battle Maps</strong><span>Build your world. One block at a time.</span></div>
+            <nav class="footer-links" aria-label="Footer navigation">
+              <a href="?">Home</a>
+              <a href="#terrain-start">Choose Terrain</a>
+              <a href="https://github.com/cbw29512/DNDblocksbattlemaps" target="_blank" rel="noopener noreferrer">GitHub</a>
+              <a href="https://buymeacoffee.com/divclass016" target="_blank" rel="noopener noreferrer">☕ Support</a>
+            </nav>
+          </div>
+          <div class="footer-bottom"><span>© 2026 DND Blocks Battle Maps</span><span>Made for Dungeon Masters and their players.</span></div>
+        </div>
+      </footer>
     </main>
   `;
 
