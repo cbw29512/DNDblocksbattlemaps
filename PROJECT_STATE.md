@@ -628,3 +628,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-08 — Follow-up Creature Markers PR #66 audit
 - Exact-head initial CI passed, but behavioral audit found an armed status selection persisted after returning to Build Mode. Fixed by clearing the transient status selection and visual pressed state on exit. Added `moveMode` guards to condition click and marker drag/drop handlers to prevent Build Mode mutations through hidden controls. Existing condition/ring data stays intact; browser JS parity updated. New CI required before merge.
+
+## 2026-10-08 — Homepage conversion and visual preview
+- Removed duplicate header Build a Map button (hero CTA remains), replaced duplicate bottom Build button with a link to terrain choices, added optional Buy Me a Coffee support link based on existing verified portfolio URL https://buymeacoffee.com/divclass016. Replaced abstract floating cubes / O and H placeholder preview with a recognizable SVG medieval inn showing an assembled structure (roof, walls, doors, windows, stone foundation) in a block-built style. Desktop/mobile sizing and asset cache refresh included. No art or source on the actual editable battlefield touched. Browser acceptance pending.
