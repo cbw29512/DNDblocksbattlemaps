@@ -13,7 +13,7 @@ async function payload(req) {
   return JSON.parse(input||'{}');
 }
 const dm=async()=>{const user=await getUser();return user?.id ? user : null;};
-export default async function handler(req) {
+export default async function handler(req, context) {
   const action=new URL(req.url).searchParams.get('action');
   if(!validAction(req.method,action))return fail(404,'Unknown action');
   if(req.method==='POST'&&!allowedOrigin(req))return fail(403,'Invalid request origin');
@@ -45,6 +45,19 @@ export default async function handler(req) {
       return fail(503,'Could not issue an invitation');
     }
     if(action==='join-game'){
+      // Check an atomic, database-backed 15-minute window before looking up a code.
+      // Never rely on caller-supplied forwarding headers for client IP.
+      const remoteAddress=context?.ip;
+      if(typeof remoteAddress!=='string'||remoteAddress.length<3)return fail(503,'Join service temporarily unavailable');
+      const actorHash=digest('join-ip:'+remoteAddress,signingKey());
+      const attempts=await db.sql`
+        INSERT INTO dnd_join_attempts(actor_hash,window_started,attempts)
+        VALUES (${actorHash},now(),1)
+        ON CONFLICT(actor_hash) DO UPDATE SET
+          attempts=CASE WHEN dnd_join_attempts.window_started<now()-interval '15 minutes' THEN 1 ELSE dnd_join_attempts.attempts+1 END,
+          window_started=CASE WHEN dnd_join_attempts.window_started<now()-interval '15 minutes' THEN now() ELSE dnd_join_attempts.window_started END
+        RETURNING attempts`;
+      if(Number(attempts[0]?.attempts)>8)return reply({error:'Too many join attempts. Try again in 15 minutes.'},429,{'Retry-After':'900'});
       const data=await payload(req),code=cleanCode(data.code),name=cleanName(data.name);
       if(!code||!name)return fail(400,'Invalid game code or name');
       const hash=digest('invite:'+code,signingKey());
