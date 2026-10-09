@@ -99,6 +99,13 @@ This policy supersedes any older wording implying that every push should publish
 - Existing mock does not model real PostgreSQL rollback semantics or concurrent connections. Tests added, NOT executed or CI VERIFIED on final head. Real database concurrency/rollback test remains required.
 - No production deployment, migration execution, or Netlify credentials touched. Next: run final-head CI, verify database adapter and migration behavior, complete real Postgres concurrency tests and player-side sync.
 
+## 2026-10-09 — Predeploy board access test expansion (PR #89; IN PROGRESS)
+- Starting state: transaction/move API written, final-head CI absent, dependency lockfile unresolved, player sync not ready. Reviewed package manifest and confirmed `package-lock.json` is absent at the expected path on the development branch.
+- Added positive mock tests for verified DM seeing the full board, signed-cookie guest seeing only the allowlisted visible object projection, and valid token without game membership being denied without a board read. Existing negative tests retained.
+- Decision: do not fabricate dependency integrity metadata or deploy Netlify to test; regenerate and commit lockfile with npm on an environment with npm registry access, then run `npm ci && npm run check`. Container GitHub/network resolution unavailable and tests not run; no final-head CI verified.
+- Cost: no production Netlify deployment, migrations, secrets or intentional credits. Remaining blockers: missing npm lockfile, actual Netlify Identity/DB integration, concurrent Postgres verification, browser sync.
+- Next: obtain npm-generated lockfile, run exact-head checks, then fix failures before single approved Netlify release.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
