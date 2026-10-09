@@ -48,10 +48,21 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
         </div>
 
         <div class="hero-visual">
-          <figure class="real-map-preview">
-            <img src="./assets/home-dungeon.svg" alt="Actual DND Blocks dungeon map built from 5-foot cubes, featuring stone walls, rooms, monsters, doors and treasure chests." width="760" height="371" decoding="async" fetchpriority="high" />
-            <figcaption>Actual battle map built in DND Blocks</figcaption>
-          </figure>
+          <div class="showdown-panel" role="img" aria-label="Conceptual combat layout: four single-cube character blocks, Barbarian, Fighter, Mage, and Cleric, facing a larger dragon monster block on a square cave floor grid.">
+            <div class="showdown-heading"><span>BLOCKS IN BATTLE</span><strong>Party vs. Dragon</strong></div>
+            <div class="showdown-arena">
+              <div class="showdown-cave" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="showdown-party">
+                <div class="showdown-cube barbarian"><span>⚔</span><small>Barbarian</small></div>
+                <div class="showdown-cube fighter"><span>🛡</span><small>Fighter</small></div>
+                <div class="showdown-cube mage"><span>✦</span><small>Mage</small></div>
+                <div class="showdown-cube cleric"><span>✚</span><small>Cleric</small></div>
+              </div>
+              <span class="showdown-versus">VS</span>
+              <div class="showdown-dragon"><span class="dragon-mark">◆</span><strong>DRAGON</strong><small>Monster block</small></div>
+            </div>
+            <div class="showdown-footer"><span>5-FT SQUARES</span><span>ONE CHARACTER · ONE CUBE</span></div>
+          </div>
         </div>
       </section>
 
