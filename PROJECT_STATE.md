@@ -637,3 +637,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-09 — Actual screenshot homepage hero
 - Replaced temporary feature panel with user-supplied screenshot of a real dungeon built in editor, cropped to omit the Combat Log and major empty space, optimized and bundled as SVG-embedded WebP (`assets/home-dungeon.svg`) to preserve pixel content in a text-commit-capable GitHub workflow. Updated header copy to describe 5-foot cubes and Build/Combat mode. Maintains CTA and BMC link, source/JS parity, responsive styling, and cache-busting. Note screenshot is compressed for page weight and remains subject to user visual acceptance after deploy.
+
+## 2026-10-09 — Homepage duplicate-content cleanup
+- Removed duplicated hero Join a Game button (kept header Join), redundant final terrain CTA (kept functional terrain cards), and stale style rules from unused illustrated mockups. Kept main Build a Map hero CTA, BMC header link, actual dungeon screenshot, terrain cards, and how-it-works section. Source and checked-in browser JS matched. Requires exact-head CI and deployed visual review.
