@@ -45,6 +45,18 @@ jobs:
         run: npm test
       - name: Build static site
         run: npm run build
+      - name: Install browser smoke dependencies
+        run: |
+          npm install --no-save --no-package-lock playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Smoke test built site in Chromium
+        run: |
+          npx vite preview --host 127.0.0.1 --port 4173 > /tmp/dnd-blocks-preview.log 2>&1 &
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:4173/ >/dev/null; then break; fi
+            sleep 1
+          done
+          node scripts/browser-smoke.mjs
       - name: Verify published help page
         run: |
           test -s dist/how-to-play.html
