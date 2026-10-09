@@ -652,3 +652,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-09 — How to Play 404 / publishing gate
 - User reported builder's How to Play button returns 404 on GitHub Pages. Verified source link `./how-to-play.html` and source document `public/how-to-play.html` both exist. Pages publishes `dist` using a workflow that previously ran only on manual dispatch; changed it to auto-publish when site files are merged to main, retained manual run, and added a required check that `dist/how-to-play.html` exists and contains How to Play before deploy. Live site route requires verification after first deploy; do not claim verified from CI alone.
+
+## 2026-10-09 — Homepage How to Play
+- Added a secondary How to Play link directly beside Build a Map in the homepage hero, pointing to the shared `./how-to-play.html` help route. Main source and checked-in browser JS parity. PR #73 added a Pages deployment check for the help route and was merged before this change; live route still requires verification.
