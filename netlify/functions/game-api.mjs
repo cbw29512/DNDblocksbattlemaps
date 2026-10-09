@@ -1,6 +1,7 @@
 /** Netlify-only backend. No credentials or authoritative game state in the browser. */
 import { getUser } from '@netlify/identity';
 import { getDatabase } from '@netlify/database';
+import {getBoardForRequest} from './game-board-access.mjs';
 import { newGameCode,cleanCode,cleanName,digest,newGuestToken,cookieForGuest,readGuestCookie,allowedOrigin,validUuid,validAction } from './game-security.mjs';
 
 const reply=(data,status=200,headers={})=>Response.json(data,{status,headers:{'Cache-Control':'no-store','X-Content-Type-Options':'nosniff',...headers}});
@@ -20,6 +21,10 @@ export default async function handler(req, context) {
   if(!signingKey()||signingKey().length<32)return fail(503,'Game service is not configured');
   try {
     const db=getDatabase();
+    if(action==='get-board') {
+      const result=await getBoardForRequest(req,db,dm,signingKey());
+      return reply(result.board?{board:result.board}:{error:result.error},result.status);
+    }
     if(action==='my-games') {
       const user=await dm();if(!user)return fail(401,'DM sign-in required');
       const games=await db.sql`SELECT id,name,revision,status,created_at FROM dnd_games WHERE owner_identity_id=${user.id} ORDER BY created_at DESC LIMIT 100`;
