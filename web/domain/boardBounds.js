@@ -1,4 +1,4 @@
-import { BOARD_EDGE_GROW_TRIGGER_CELLS, BOARD_GROWTH_CELLS, BOARD_MAX_CELLS, DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth } from './spatial.js?v=e134a49474a5';
+import { BOARD_EDGE_GROW_TRIGGER_CELLS, BOARD_GROWTH_CELLS, BOARD_MAX_CELLS, DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth } from './spatial.js?v=15044aedae67';
 export function createDefaultBoardBounds() {
     return { ...DEFAULT_BOARD_BOUNDS };
 }
