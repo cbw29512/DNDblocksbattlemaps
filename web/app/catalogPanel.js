@@ -1,6 +1,6 @@
-import { catalogIdsForArea } from '../domain/catalogOrder.js?v=b16971c42230';
-import { CATALOG_CATEGORIES, PALETTE, catalogMatches, getCatalogItem } from '../domain/catalog.js?v=b16971c42230';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=b16971c42230';
+import { catalogIdsForArea } from '../domain/catalogOrder.js?v=487aa2e55593';
+import { CATALOG_CATEGORIES, PALETTE, catalogMatches, getCatalogItem } from '../domain/catalog.js?v=487aa2e55593';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=487aa2e55593';
 function visual(item) {
     return item.art
         ? '<img class="palette-art" src="' + resolveBrowserAssetUrl(item.art.src) + '" alt="" loading="lazy" decoding="async">'
