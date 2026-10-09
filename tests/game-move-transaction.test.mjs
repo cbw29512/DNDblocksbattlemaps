@@ -10,20 +10,20 @@ function setup(){
  const state={schemaVersion:1,terrain:'castle',revision:0,bounds:{minX:0,maxX:20,minZ:0,maxZ:20},
  objects:[{id:'hero',catalogId:'fighter',x:1,z:1,elevation:0,visibility:'visible',
  locked:false,movementLocked:false,capabilities:['player_controllable']}]};
- let revision=0,action=null,released=false;
+ let revision=0,action=null,released=false,failInsert=false;
  const client={async query(sql,params=[]){
   queries.push(sql);
   if(sql==='BEGIN'||sql==='COMMIT'||sql==='ROLLBACK')return {rows:[]};
   if(sql.includes('FROM dnd_games WHERE id='))return {rows:[{id:gameId,owner_identity_id:'dm1',status:'open'}]};
   if(sql.includes('FROM dnd_actions'))return {rows:action?[action]:[]};
   if(sql.includes('FROM dnd_board_snapshots'))return {rows:[{state,revision}]};
-  if(sql.startsWith('UPDATE dnd_board_snapshots')){revision=params[1];return {rows:[{revision}]};}
+  if(sql.startsWith('UPDATE dnd_board_snapshots')){revision=params[1];state.revision=params[1];return {rows:[{revision}]};}
   if(sql.startsWith('UPDATE dnd_games'))return {rows:[{revision:params[0]}]};
-  if(sql.startsWith('INSERT INTO dnd_actions')){action={actor_identity:params[2],
+  if(sql.startsWith('INSERT INTO dnd_actions')){if(failInsert)throw Error('Simulated write failure');action={actor_identity:params[2],
    expected_revision:params[3],payload:JSON.parse(params[4])};return {rows:[]};}
   throw Error('Unexpected SQL');
  },release(){released=true;}};
- return {db:{pool:{connect:async()=>client}},queries,isReleased:()=>released};
+ return {db:{pool:{connect:async()=>client}},queries,isReleased:()=>released,failNextInsert:()=>{failInsert=true;}};
 }
 test('movement commits board and action in one transaction',async()=>{
  const mock=setup();const outcome=await commitMove(mock.db,command,actor);
@@ -41,4 +41,30 @@ test('wrong DM is rejected without writing',async()=>{
 test('invalid actor never opens a database connection',async()=>{
  const mock=setup();const outcome=await commitMove(mock.db,command,{...actor,verified:false});
  assert.equal(outcome.status,400);assert.equal(mock.queries.length,0);
+});
+
+test('retry of the same move does not write a second movement',async()=>{
+ const mock=setup();
+ assert.equal((await commitMove(mock.db,command,actor)).status,200);
+ const writesBefore=mock.queries.filter(q=>q.startsWith('UPDATE dnd_board_snapshots')).length;
+ const retry=await commitMove(mock.db,command,actor);
+ assert.equal(retry.status,200);
+ assert.equal(retry.duplicate,true);
+ assert.equal(retry.revision,1);
+ assert.equal(mock.queries.filter(q=>q.startsWith('UPDATE dnd_board_snapshots')).length,writesBefore);
+});
+test('reusing an action ID for a different destination is rejected',async()=>{
+ const mock=setup();
+ assert.equal((await commitMove(mock.db,command,actor)).status,200);
+ const altered={...command,destination:{x:8,z:4,elevation:0}};
+ const result=await commitMove(mock.db,altered,actor);
+ assert.equal(result.status,409);
+ assert.ok(mock.queries.includes('ROLLBACK'));
+});
+test('failed action insert requests transaction rollback and releases client',async()=>{
+ const mock=setup();mock.failNextInsert();
+ const result=await commitMove(mock.db,command,actor);
+ assert.equal(result.status,503);
+ assert.ok(mock.queries.includes('ROLLBACK'));
+ assert.equal(mock.isReleased(),true);
 });
