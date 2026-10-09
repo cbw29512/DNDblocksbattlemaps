@@ -17,6 +17,16 @@ export function renderDM(root: HTMLElement,handlers: DMHandlers): void {
       <span class="eyebrow">Dungeon Master</span>
       <h1>Your Games</h1>
       <p>Create a private game and invite players with a code. DM authentication and persistence require Netlify integration.</p>
+      <form id="dm-auth-form" autocomplete="on">
+        <h2>DM account</h2>
+        <label for="dm-email">Email</label><input id="dm-email" type="email" required autocomplete="email" />
+        <label for="dm-password">Password</label><input id="dm-password" type="password" required minlength="8" autocomplete="current-password" />
+        <div class="hero-actions">
+          <button id="dm-login" type="submit" class="button button-primary">Sign in</button>
+          <button id="dm-signup" type="button" class="button button-secondary">Create account</button>
+          <button id="dm-logout" type="button" class="button button-ghost" hidden>Sign out</button>
+        </div>
+      </form>
       <div id="dm-feedback" role="status" aria-live="polite">Checking your session…</div>
       <form id="dm-create-form">
         <label for="dm-game-name">Game name</label>
@@ -60,5 +70,48 @@ export function renderDM(root: HTMLElement,handlers: DMHandlers): void {
     try{await call('create-game',{name:input.value.trim()});input.value='';await refresh();}
     catch(error){feedback.textContent=error instanceof Error?error.message:'Could not create game.';}
   });
-  void refresh();
+  const loginForm=root.querySelector<HTMLFormElement>('#dm-auth-form')!;
+  const email=root.querySelector<HTMLInputElement>('#dm-email')!;
+  const password=root.querySelector<HTMLInputElement>('#dm-password')!;
+  const logoutButton=root.querySelector<HTMLButtonElement>('#dm-logout')!;
+  const createForm=root.querySelector<HTMLFormElement>('#dm-create-form')!;
+  createForm.hidden=true;
+  async function identity() {
+    // Load only in Netlify-hosted builds; GitHub Pages retains a clear disabled state.
+    if(!window.location.hostname.endsWith('.netlify.app') && !window.location.hostname.endsWith('.netlify.dev')){
+      feedback.textContent='DM accounts become available after Netlify integration.';
+      return null;
+    }
+    return import('@netlify/identity');
+  }
+  async function checkSession(){
+    try {
+      const auth=await identity();if(!auth)return;
+      await auth.handleAuthCallback();
+      const user=await auth.getUser();
+      createForm.hidden=!user;
+      logoutButton.hidden=!user;
+      if(user){feedback.textContent='Signed in as '+user.email;await refresh();}
+      else feedback.textContent='Sign in or create your DM account.';
+    }catch(error){feedback.textContent=error instanceof Error?error.message:'DM sign-in service unavailable.';}
+  }
+  loginForm.addEventListener('submit',async event=>{
+    event.preventDefault();
+    try {const auth=await identity();if(!auth)return;
+      await auth.login(email.value,password.value);password.value='';await checkSession();
+    }catch(error){feedback.textContent=error instanceof Error?error.message:'Sign-in unsuccessful.';}
+  });
+  root.querySelector('#dm-signup')?.addEventListener('click',async()=>{
+    try{const auth=await identity();if(!auth)return;
+      await auth.signup(email.value,password.value);password.value='';
+      feedback.textContent='Check your email to confirm your DM account before signing in.';
+    }catch(error){feedback.textContent=error instanceof Error?error.message:'Could not create account.';}
+  });
+  logoutButton.addEventListener('click',async()=>{
+    try{const auth=await identity();if(!auth)return;
+      await auth.logout();createForm.hidden=true;logoutButton.hidden=true;games.replaceChildren();
+      feedback.textContent='Signed out.';
+    }catch(error){feedback.textContent=error instanceof Error?error.message:'Unable to sign out.';}
+  });
+  void checkSession();
 }
