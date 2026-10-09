@@ -1,4 +1,4 @@
-import { GRID_FEET } from './spatial.js?v=d768dd0e81a2';
+import { GRID_FEET } from './spatial.js?v=1f6bf03e447c';
 export const AREA_PRESETS = [
     { id: 'fireball', label: 'Fireball', shape: 'sphere', sizeFeet: 20, maxRangeFeet: 150, visual: 'fire' },
     { id: 'lightning-bolt', label: 'Lightning Bolt', shape: 'line', sizeFeet: 100, widthFeet: 5, maxRangeFeet: 0, originMode: 'self', visual: 'lightning' },
