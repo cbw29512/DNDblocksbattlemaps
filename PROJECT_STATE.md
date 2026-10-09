@@ -667,3 +667,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-09 — Campfire not visibly lighting the terrain
 - Screenshot shows placed campfire cube with no discernible light around it. Raised campfire warm point-light intensity/range and added a soft transparent orange radial pool on the base ground grid, avoiding dependence on high ambient sunlight obscuring point-light shading. Glow geometry is a noninteractive flat visual effect only, not a building block; it never intercepts raycasts, and is disposed on redraw/reset. Existing cube-only catalog/building unchanged. Source/checked-in browser JS parity. Visual verification in deployed 3D renderer required, especially the campfire and nearby lit raised floors.
+
+## 2026-10-09 — Homepage hero image 404 fix
+- User screenshot confirmed broken real dungeon image while terrain previews loaded. Root cause: homepage referenced `./assets/home-dungeon.svg` but asset existed only in repository-root `assets/`, not `public/assets/` and hence not copied to `dist/assets/` during Vite publish. Copied existing hero asset into `public/assets/`; added Pages deployment checks for hero and all terrain image files. Existing screenshot is low-quality due to previous overcompression and still needs separate resolution improvement. Require live deployed check after merging.
