@@ -16,3 +16,18 @@ test('join limiter stores hashes, not raw IP addresses',()=>{
  assert.doesNotMatch(migration,/ip_address|remote_address/i);
  assert.match(source,/digest\('join-ip:'\+remoteAddress,signingKey\(\)\)/);
 });
+
+test('guest recovery restores only the cookie-authenticated member assignments',()=>{
+ const start=source.indexOf("if(action==='my-player-session'||action==='leave-game')");
+ const end=source.indexOf("if(action==='players'||action==='assign-piece')",start);
+ const block=source.slice(start,end);
+ assert.match(block,/readGuestCookie\(req\)/);
+ assert.match(block,/p\.session_hash=\$\{hash\}/);
+ assert.match(block,/p\.revoked_at IS NULL/);
+ assert.match(block,/g\.status='open'/);
+ assert.match(block,/game_id=\$\{member\.game_id\} AND player_id=\$\{member\.id\}/);
+ assert.match(block,/assignedEntityIds:assignments\.map/);
+ assert.match(block,/last_seen_at=now\(\)/);
+ assert.ok(block.indexOf("if(action==='leave-game')") < block.indexOf('const assignments='),'revoked session must not be returned');
+ assert.doesNotMatch(block,/SELECT \*/);
+});
