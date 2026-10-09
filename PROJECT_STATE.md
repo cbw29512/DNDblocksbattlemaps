@@ -20,7 +20,8 @@
 
 This policy supersedes any older wording implying that every push should publish to Netlify. GitHub source checkpoints and GitHub Pages tests may continue independently.
 
-## Current Status
+## 2026-10-09 — DM/Player implementation started (development only)
+- Selected supported Netlify Identity for DM, secure guest player session for joining with game code, Netlify Functions and Database for authoritative game state. Read docs/DM_PLAYER_IMPLEMENTATION.md. Added typed game-code/name/role primitives and unit tests. These primitives are not a live authentication backend; no Netlify deployment or resource provisioning occurred. Next implement authenticated DM API and Postgres migration, then join/reconnect API and interface. Preserve locked release policy.\n\n## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
 **Application code:** Yes. Stage 1 began after explicit user authorization on 2026-10-07.  
