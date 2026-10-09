@@ -1,12 +1,12 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=b795f59aba70';
-import { areaCells } from '../domain/areaTemplates.js?v=b795f59aba70';
-import { getCatalogItem } from '../domain/catalog.js?v=b795f59aba70';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=b795f59aba70';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=b795f59aba70';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=b795f59aba70';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=b795f59aba70';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=b795f59aba70';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=b795f59aba70';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=0edcfa1641e0';
+import { areaCells } from '../domain/areaTemplates.js?v=0edcfa1641e0';
+import { getCatalogItem } from '../domain/catalog.js?v=0edcfa1641e0';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=0edcfa1641e0';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=0edcfa1641e0';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=0edcfa1641e0';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=0edcfa1641e0';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=0edcfa1641e0';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=0edcfa1641e0';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -35,6 +35,8 @@ export async function createThreeRenderer(container, handlers) {
     };
     const MAX_BLOCK_LIGHTS = 12;
     const blockLights = [];
+    // A soft additive ground pool makes fire visible even on brightly lit maps.
+    // Point lights still illuminate nearby cube faces; the pool does not alter cube geometry.
     const glowCanvas = document.createElement('canvas');
     glowCanvas.width = glowCanvas.height = 128;
     const glowContext = glowCanvas.getContext('2d');
@@ -52,7 +54,10 @@ export async function createThreeRenderer(container, handlers) {
     const lightGroup = new THREE.Group();
     scene.add(lightGroup);
     function updateBlockLights(objects) {
-        glowGroup.traverse(node => { if (node.isMesh) { node.geometry.dispose(); node.material.dispose(); } });
+        glowGroup.traverse((node) => { if (node.isMesh) {
+            node.geometry.dispose();
+            node.material.dispose();
+        } });
         glowGroup.clear();
         lightGroup.clear();
         blockLights.length = 0;
@@ -73,17 +78,14 @@ export async function createThreeRenderer(container, handlers) {
             lightGroup.add(light);
             blockLights.push(light);
             if (o.catalogId === 'campfire' && o.elevation === 0) {
-                const pool = new THREE.Mesh(
-                    new THREE.PlaneGeometry(7, 7),
-                    new THREE.MeshBasicMaterial({
-                        map: glowTexture, transparent: true, opacity: .72,
-                        depthWrite: false, blending: THREE.AdditiveBlending,
-                        polygonOffset: true, polygonOffsetFactor: -1
-                    })
-                );
+                const pool = new THREE.Mesh(new THREE.PlaneGeometry(7, 7), new THREE.MeshBasicMaterial({
+                    map: glowTexture, transparent: true, opacity: .72,
+                    depthWrite: false, blending: THREE.AdditiveBlending,
+                    polygonOffset: true, polygonOffsetFactor: -1
+                }));
                 pool.rotation.x = -Math.PI / 2;
                 pool.position.set(o.x + .5, .023, o.z + .5);
-                pool.raycast = () => {};
+                pool.raycast = () => { };
                 glowGroup.add(pool);
             }
         }
@@ -425,7 +427,10 @@ export async function createThreeRenderer(container, handlers) {
             resize.disconnect();
             lightGroup.clear();
             scene.remove(lightGroup);
-            glowGroup.traverse(node => { if (node.isMesh) { node.geometry.dispose(); node.material.dispose(); } });
+            glowGroup.traverse((node) => { if (node.isMesh) {
+                node.geometry.dispose();
+                node.material.dispose();
+            } });
             scene.remove(glowGroup);
             glowTexture.dispose();
             renderer.setAnimationLoop(null);

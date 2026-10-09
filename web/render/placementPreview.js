@@ -1,5 +1,5 @@
-import { getCatalogItem } from '../domain/catalog.js?v=b795f59aba70';
-import { geometryFor } from './threeObjects.js?v=b795f59aba70';
+import { getCatalogItem } from '../domain/catalog.js?v=0edcfa1641e0';
+import { geometryFor } from './threeObjects.js?v=0edcfa1641e0';
 export function createPlacementPreview(THREE, catalogId) {
     const item = getCatalogItem(catalogId);
     const group = new THREE.Group();
