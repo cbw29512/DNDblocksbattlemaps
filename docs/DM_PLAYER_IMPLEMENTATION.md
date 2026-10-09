@@ -38,6 +38,13 @@ Before implementing an authoritative move or player board-read endpoint, define 
 
 The pure `game-permissions.mjs` helper rejects missing player permission fields. It is not yet called by `game-api.mjs`, and its top-level visibility filter cannot safely serialize arbitrary nested snapshots, history, trigger data, or metadata. A player snapshot endpoint must use an explicit allowlist schema and server-derived membership before network output. DM override applies only after server verification of ownership.
 
+## Versioned server snapshot boundary — 2026-10-09
+- Added `netlify/functions/game-board-schema.mjs` with strict `schemaVersion: 1` validator and player projection, plus `tests/game-board-schema.test.mjs`.
+- Shape: `{schemaVersion:1, terrain, revision, bounds, objects}`. Entity requires `id,catalogId,x,z,elevation,visibility,locked,movementLocked,capabilities`; visibility is `visible|dm_only`; capabilities are constrained universal identifiers.
+- A player projection includes only `schemaVersion,terrain,revision,bounds` and visible entities' `id,catalogId,x,z,elevation`, never arbitrary metadata, history, hidden entities or server-side permissions. Invalid snapshots return null instead of guessing.
+- **NOT wired to an authenticated API endpoint or actual database snapshot writes.** No old browser saves are changed. Future rich player fields require explicit per-field review. This does not establish correct visibility for nested, non-entity board records; those must remain excluded.
+- Rollback is removal of the standalone module/tests before adoption. Revisioned writes, DM snapshot import, ownership checks and deployed Netlify certification remain next gates.
+
 ## Release sequence
 1. Create typed API contracts and validation tests for game codes, roles, and state mutation authorization.
 2. Implement Netlify Function authentication and Postgres migrations without provisioning production resources.
