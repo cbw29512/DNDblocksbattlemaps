@@ -42,6 +42,6 @@ export function allowedOrigin(req) {
 }
 export const validUuid = input => typeof input === 'string' && /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(input);
 export function validAction(method,action) {
-  return (method==='GET'&&['my-games','my-player-session','players'].includes(action)) ||
+  return (method==='GET'&&['my-games','my-player-session','players','get-board'].includes(action)) ||
     (method==='POST'&&['create-game','new-invite','join-game','assign-piece','leave-game'].includes(action));
 }
