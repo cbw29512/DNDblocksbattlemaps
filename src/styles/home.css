@@ -54,3 +54,20 @@
 .terrain-card:hover .terrain-art img,.terrain-card:focus-visible .terrain-art img{transform:scale(1.035)}
 .terrain-card:focus-visible{border-color:#e0bd76;outline:3px solid #d7b56d;outline-offset:3px}
 @media(prefers-reduced-motion:reduce){.terrain-art img{transition:none}.terrain-card:hover .terrain-art img{transform:none}}
+
+/* Accurate block-scale combat concept in place of a blurry, misleading screenshot. */
+.showdown-panel{width:100%;max-width:620px;border:1px solid rgba(215,181,109,.3);border-radius:20px;background:#171b18;overflow:hidden;box-shadow:0 24px 65px rgba(0,0,0,.36)}
+.showdown-heading,.showdown-footer{display:flex;justify-content:space-between;align-items:center;gap:.75rem;padding:1rem 1.25rem}
+.showdown-heading span,.showdown-footer{font-size:.7rem;letter-spacing:.11em;color:#d7b56d;font-weight:750}
+.showdown-heading strong{font-size:.96rem;color:#f1ecdd}
+.showdown-arena{min-height:300px;position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,.72fr);align-items:center;gap:1rem;padding:2.5rem 1.2rem;background:linear-gradient(135deg,rgba(215,181,109,.07),transparent),repeating-linear-gradient(0deg,transparent 0 39px,rgba(201,201,173,.12) 40px 41px),repeating-linear-gradient(90deg,transparent 0 39px,rgba(201,201,173,.12) 40px 41px),#272a25}
+.showdown-cave{position:absolute;inset:0 0 auto;height:22px;display:flex;overflow:hidden}.showdown-cave span{background:#55534b;border:1px solid #292923;flex:1}.showdown-cave span:nth-child(even){background:#484b43}
+.showdown-party{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;z-index:1}
+.showdown-cube{aspect-ratio:1;max-width:105px;width:100%;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;border:2px solid rgba(255,255,255,.26);box-shadow:inset -10px -12px 0 rgba(0,0,0,.24),0 10px 18px rgba(0,0,0,.28);border-radius:4px;color:#fff;font-weight:800;text-align:center}
+.showdown-cube span{font-size:clamp(1.5rem,3vw,2.25rem);line-height:1}.showdown-cube small{font-size:clamp(.55rem,1.1vw,.72rem)}
+.showdown-cube.barbarian{background:#9d4b29}.showdown-cube.fighter{background:#315f87}.showdown-cube.mage{background:#67429b}.showdown-cube.cleric{background:#ae9767;color:#191810}
+.showdown-versus{color:#f5d184;font-size:1.1rem;font-weight:900;z-index:1}
+.showdown-dragon{z-index:1;min-height:176px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.35rem;background:#842b28;border:3px solid #d46042;box-shadow:inset -15px -18px 0 rgba(0,0,0,.3),0 16px 25px rgba(0,0,0,.3);color:#fff;font-size:clamp(.9rem,2vw,1.1rem);text-align:center}
+.dragon-mark{font-size:3rem;color:#ffbd71}.showdown-dragon small{font-size:.66rem;color:#f3d7c7}
+.showdown-footer{border-top:1px solid rgba(255,255,255,.08);color:#aaa89c;font-size:.6rem;flex-wrap:wrap}
+@media(max-width:620px){.hero-visual{min-height:0}.showdown-arena{min-height:215px;gap:.55rem;padding:2rem .65rem}.showdown-party{gap:.5rem}.showdown-dragon{min-height:120px}.dragon-mark{font-size:2rem}.showdown-heading,.showdown-footer{padding:.8rem}.showdown-cube{min-height:65px}.showdown-cube small{font-size:.55rem}}
