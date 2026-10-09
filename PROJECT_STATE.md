@@ -655,3 +655,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-09 — Homepage How to Play
 - Added a secondary How to Play link directly beside Build a Map in the homepage hero, pointing to the shared `./how-to-play.html` help route. Main source and checked-in browser JS parity. PR #73 added a Pages deployment check for the help route and was merged before this change; live route still requires verification.
+
+## 2026-10-09 — Cross-page visual consistency
+- PR #74 (homepage How to Play) exact-head CI succeeded and merged. Compared homepage, How to Play and builder. Help page used independent colors, header and button/link styles; aligned shared dark/gold theme, brand mark, accessible navigation, responsive spacing and 44px tappable primary action. Help page stays a self-contained static HTML file because Vite does not guarantee `src/styles/base.css` on the copied static route. Corrected outdated prose placing identity rings in Build Mode; Creature Markers and Spells & Areas are Combat Mode only. Builder retains its deliberately dense workspace toolbar. Live browser desktop/tablet/phone verification remains pending.
