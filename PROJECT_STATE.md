@@ -6,6 +6,20 @@
 > Any AI or human continuing this project must read this file, `SOUL.md`, and the current relevant design documents before making changes.
 > This file must be updated and pushed to GitHub at the end of every meaningful work session.
 
+## Locked Deployment and Credit Policy — 2026-10-09
+
+**User decision: Netlify is production; avoid consuming Netlify build credits through frequent development pushes.**
+
+1. Build DM login, player joining, backend persistence, permissions, reconnection, and the supporting frontend in a development branch. Validate as much as possible locally and in CI.
+2. Use GitHub Pages for frontend/browser integration testing. A Pages deployment does **not** prove Netlify services work: mock or locally test backend dependencies and identify what still requires production validation.
+3. **Do not trigger Netlify production deployments for ordinary GitHub pushes or intermediate PRs.** Before wiring any repo, confirm the actual Netlify site's Git auto-build and deploy settings; don't assume pushes are free or don't publish.
+4. Netlify production should receive **one consolidated, intentionally authorized release candidate**, only after typechecks, unit tests, Playwright smoke tests, security/config review, and documented acceptance checks pass.
+5. Test Netlify-specific authentication, functions, database, game-code joining, permissions, and reconnection together on that release. Fix issues locally and batch changes; deploy another build only if needed and after notifying the user.
+6. Never claim an end-to-end authentication/backend test passed when only static GitHub Pages tests ran. Do not expose production credentials, change production Netlify settings, or initiate deployment without express release approval.
+7. Record release gate status, deployed version, remaining blockers, and test results in PROJECT_STATE.md.
+
+This policy supersedes any older wording implying that every push should publish to Netlify. GitHub source checkpoints and GitHub Pages tests may continue independently.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
