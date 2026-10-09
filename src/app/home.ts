@@ -9,10 +9,8 @@ export interface HomeHandlers {
 export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
   const terrainCards = Object.values(TERRAIN_THEMES).map((theme) => `
     <button class="terrain-card" data-terrain="${theme.id}" type="button">
-      <span class="terrain-swatch" style="--terrain-swatch:${theme.swatchCss}">
-        <span class="swatch-block swatch-block-a"></span>
-        <span class="swatch-block swatch-block-b"></span>
-        <span class="swatch-block swatch-block-c"></span>
+      <span class="terrain-swatch terrain-art" style="--terrain-swatch:${theme.swatchCss}">
+        <img src="./assets/terrain-${theme.id}.svg" alt="" loading="lazy" decoding="async" width="360" height="203" />
       </span>
       <span class="terrain-copy"><strong>${theme.name}</strong><small>${theme.tagline}</small></span>
       <span class="terrain-arrow" aria-hidden="true">→</span>
