@@ -4,7 +4,7 @@ export interface JoinHandlers {
 
 export function renderJoin(root: HTMLElement, handlers: JoinHandlers): void {
   root.innerHTML = `
-    <main class="simple-page">
+    <main id="main-content" tabindex="-1" class="simple-page">
       <button class="text-back" id="join-back" type="button">← Back home</button>
       <section class="join-card">
         <span class="eyebrow">Player entry</span>
