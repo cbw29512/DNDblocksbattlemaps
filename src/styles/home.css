@@ -31,3 +31,9 @@
 .difference-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem 2rem; padding: 22px 18px; border-block: 1px solid rgba(255,255,255,.07); background: #181a16; color: #a9a59a; }.difference-strip strong { color: #f0eadc; }.final-cta { width: min(860px,calc(100% - 36px)); margin: 0 auto; padding: 92px 0 110px; text-align: center; }.final-cta .button { margin-top: 1.2rem; }
 @media (max-width:900px) { .hero-section { grid-template-columns: 1fr; padding-top: 42px; }.hero-visual { min-height: 360px; }.terrain-grid { grid-template-columns: repeat(2,1fr); }.terrain-card:last-child { grid-column: span 2; }.three-steps { grid-template-columns: 1fr; } }
 @media (max-width:620px) { .site-header { height: 66px; }.header-actions .button-ghost { display:none; }.brand b { display:none; }.hero-section { min-height:auto; padding-bottom:55px; }.hero-copy h1 { font-size: clamp(2.7rem,14vw,4.3rem); }.hero-actions .button { width:100%; }.hero-visual { min-height:300px; }.mini-board { height:280px; }.floating-note { display:none; }.terrain-grid { grid-template-columns:1fr 1fr; }.terrain-swatch { height:90px; }.quick-start { padding-top:52px; } }
+
+/* Homepage shows a recognizable block-built inn rather than loose, unexplained cubes. */
+.home-building-preview { display: grid; place-items: center; background: radial-gradient(ellipse at 55% 45%,#55594d,#252c29); }
+.home-building-art { display: block; width: 100%; max-height: 365px; height: auto; }
+.header-actions a[href*="buymeacoffee"] { white-space: nowrap; text-decoration: none; }
+@media (max-width:620px) { .header-actions a[href*="buymeacoffee"].button-ghost { display: inline-flex; padding: .5rem .65rem; font-size: .75rem; } }
