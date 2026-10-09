@@ -676,3 +676,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-09 — Replace blurry homepage room preview
 - Removed the unreadable compressed dungeon screenshot from homepage hero. Replaced with a crisp CSS/HTML illustrative block-combat concept showing four one-cube party members (Barbarian, Fighter, Mage, Cleric) opposite a larger dragon monster block on a square cave grid. This is explicitly a conceptual visual rather than a real-editor screenshot; no image asset requests or fake in-game captures. Kept real terrain choices below and existing Build/How to Play actions. Includes mobile sizing and accessibility label; actual editor monster art and behavior untouched. Await exact-head CI plus browser QA before claiming deployed visual acceptance.
+
+## 2026-10-09 — How to Play persistent 404
+- User still receives 404 at `./how-to-play.html` despite the existing public source and previous build checks. Added an identical root-level `how-to-play.html` alongside `public/how-to-play.html` so both branch-root and dist-based GitHub Pages publishing include the help route. Pages workflow now watches root help file edits and checks root/public parity plus dist output. Links remain consistent. Need confirm live Pages deployment source and direct HTTP 200 after publish; previous live endpoint inaccessible from web checker.
