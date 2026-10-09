@@ -29,15 +29,31 @@ export async function createThreeRenderer(container, handlers) {
     // Non-shadow-casting block lights: nearest sources win, with a strict GPU budget.
     const lightSpecs = {
         torch: [0xffa345, 1.6, 5], lantern: [0xffce74, 1.25, 4],
-        campfire: [0xff7b31, 2.1, 7], brazier: [0xff8c3c, 2.0, 6],
+        campfire: [0xffa247, 8, 9], brazier: [0xff8c3c, 2.0, 6],
         fireplace: [0xff8738, 1.8, 6], forge: [0xff5a29, 2.0, 6],
         lava: [0xff5824, 1.25, 4]
     };
     const MAX_BLOCK_LIGHTS = 12;
     const blockLights = [];
+    const glowCanvas = document.createElement('canvas');
+    glowCanvas.width = glowCanvas.height = 128;
+    const glowContext = glowCanvas.getContext('2d');
+    if (glowContext) {
+        const gradient = glowContext.createRadialGradient(64, 64, 5, 64, 64, 64);
+        gradient.addColorStop(0, 'rgba(255,177,70,.62)');
+        gradient.addColorStop(.35, 'rgba(255,123,28,.31)');
+        gradient.addColorStop(1, 'rgba(255,105,10,0)');
+        glowContext.fillStyle = gradient;
+        glowContext.fillRect(0, 0, 128, 128);
+    }
+    const glowTexture = new THREE.CanvasTexture(glowCanvas);
+    const glowGroup = new THREE.Group();
+    scene.add(glowGroup);
     const lightGroup = new THREE.Group();
     scene.add(lightGroup);
     function updateBlockLights(objects) {
+        glowGroup.traverse(node => { if (node.isMesh) { node.geometry.dispose(); node.material.dispose(); } });
+        glowGroup.clear();
         lightGroup.clear();
         blockLights.length = 0;
         const sources = objects.filter(o => lightSpecs[o.catalogId]);
@@ -56,6 +72,20 @@ export async function createThreeRenderer(container, handlers) {
             light.castShadow = false;
             lightGroup.add(light);
             blockLights.push(light);
+            if (o.catalogId === 'campfire' && o.elevation === 0) {
+                const pool = new THREE.Mesh(
+                    new THREE.PlaneGeometry(7, 7),
+                    new THREE.MeshBasicMaterial({
+                        map: glowTexture, transparent: true, opacity: .72,
+                        depthWrite: false, blending: THREE.AdditiveBlending,
+                        polygonOffset: true, polygonOffsetFactor: -1
+                    })
+                );
+                pool.rotation.x = -Math.PI / 2;
+                pool.position.set(o.x + .5, .023, o.z + .5);
+                pool.raycast = () => {};
+                glowGroup.add(pool);
+            }
         }
     }
     const objectGroup = new THREE.Group();
@@ -395,6 +425,9 @@ export async function createThreeRenderer(container, handlers) {
             resize.disconnect();
             lightGroup.clear();
             scene.remove(lightGroup);
+            glowGroup.traverse(node => { if (node.isMesh) { node.geometry.dispose(); node.material.dispose(); } });
+            scene.remove(glowGroup);
+            glowTexture.dispose();
             renderer.setAnimationLoop(null);
             for (const mesh of areaGroup.children) {
                 mesh.geometry.dispose();
