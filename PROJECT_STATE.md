@@ -61,6 +61,12 @@ This policy supersedes any older wording implying that every push should publish
 - Tests committed but not yet locally executed or CI verified on the final head. No migrations executed, no Netlify deployment, no live access or credit expenditure.
 - Next: run/check schema tests and fix issues, establish transactional server snapshot storage and authenticated read, then revisioned action writes and browser integration. Preserve the one-release Netlify lock.
 
+## 2026-10-09 — Read-only board API integration attempt (PR #89; BLOCKED)
+- Work gate: game-scoped authenticated GET board with verified DM ownership or server-cookie guest membership, v1 snapshot validation, revision consistency, and player-only allowlist projection.
+- Existing schema and API were inspected. An attempted API change was blocked before commit; no board endpoint was added. A temporary GET action registration was immediately reverted to avoid an exposed or dangling route.
+- Result: source behavior remains unchanged; standalone board validation/projection helpers are still not wired. No tests or CI claims, no Netlify deployment or backend resource modification.
+- Next: complete the authorization/board-read API integration through an approved development path, then add negative authorization tests and verify exact-head CI. Do not deploy until complete.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
