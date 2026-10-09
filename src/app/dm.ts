@@ -78,7 +78,7 @@ export function renderDM(root: HTMLElement,handlers: DMHandlers): void {
   createForm.hidden=true;
   async function identity() {
     // Load only in Netlify-hosted builds; GitHub Pages retains a clear disabled state.
-    if(!window.location.hostname.endsWith('.netlify.app') && !window.location.hostname.endsWith('.netlify.dev')){
+    if(window.location.hostname.endsWith('.github.io') || window.location.hostname==='localhost' || window.location.hostname==='127.0.0.1'){
       feedback.textContent='DM accounts become available after Netlify integration.';
       return null;
     }
