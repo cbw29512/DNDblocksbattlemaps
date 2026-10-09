@@ -2,10 +2,8 @@ import { TERRAIN_THEMES } from '../domain/catalog.js?v=810291e46184';
 export function renderHome(root, handlers) {
     const terrainCards = Object.values(TERRAIN_THEMES).map((theme) => `
     <button class="terrain-card" data-terrain="${theme.id}" type="button">
-      <span class="terrain-swatch" style="--terrain-swatch:${theme.swatchCss}">
-        <span class="swatch-block swatch-block-a"></span>
-        <span class="swatch-block swatch-block-b"></span>
-        <span class="swatch-block swatch-block-c"></span>
+      <span class="terrain-swatch terrain-art" style="--terrain-swatch:${theme.swatchCss}">
+        <img src="./assets/terrain-${theme.id}.svg" alt="" loading="lazy" decoding="async" width="256" height="144" />
       </span>
       <span class="terrain-copy"><strong>${theme.name}</strong><small>${theme.tagline}</small></span>
       <span class="terrain-arrow" aria-hidden="true">→</span>

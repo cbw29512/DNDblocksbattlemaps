@@ -47,3 +47,10 @@
 }
 @media(min-width:901px) and (max-width:1150px){.hero-copy h1{font-size:clamp(2.6rem,4vw,3.5rem)}}
 @media(max-width:900px){.hero-section{grid-template-columns:minmax(0,1fr)}.hero-copy,.hero-visual{min-width:0}.hero-copy h1{max-width:16ch}}
+
+/* Distinct terrain artwork with accessible focus and responsive 16:9 crops. */
+.terrain-art{height:auto;aspect-ratio:16/9;background:#161b1c}
+.terrain-art img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .25s ease}
+.terrain-card:hover .terrain-art img,.terrain-card:focus-visible .terrain-art img{transform:scale(1.035)}
+.terrain-card:focus-visible{border-color:#e0bd76;outline:3px solid #d7b56d;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.terrain-art img{transition:none}.terrain-card:hover .terrain-art img{transform:none}}
