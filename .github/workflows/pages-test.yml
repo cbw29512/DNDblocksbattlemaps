@@ -49,6 +49,8 @@ jobs:
           test -s dist/how-to-play.html
           grep -q 'How to Play' dist/how-to-play.html
           test -s dist/index.html
+          grep -Eq 'assets/[^" ]+\.css' dist/index.html
+          test -n "$(find dist/assets -maxdepth 1 -name '*.css' -size +0c -print -quit)"
       - name: Configure Pages
         uses: actions/configure-pages@v5
       - name: Upload Pages artifact
