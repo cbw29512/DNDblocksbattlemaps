@@ -47,3 +47,9 @@
 .preview-feature-grid b { font-size:1.4rem;color:#d7b56d; }.preview-feature-grid small,.preview-note { color:#aaa79d; }
 .builder-preview-card .button { width:100%; }.preview-note { display:block;margin-top:.8rem;text-align:center; }
 @media(max-width:620px){.hero-visual {min-height:0}.builder-preview-card{width:100%;box-sizing:border-box}.preview-feature-grid{gap:.3rem}.preview-feature-grid span{padding:.65rem .3rem}}
+
+/* Real in-editor dungeon screenshot: preserve aspect ratio and show the actual cube-based product. */
+.real-map-preview { margin:0;width:min(100%,590px);overflow:hidden;border:1px solid rgba(215,181,109,.24);border-radius:18px;background:#11120f;box-shadow:0 24px 70px rgba(0,0,0,.48); }
+.real-map-preview img { display:block;width:100%;height:auto;aspect-ratio:760/371;object-fit:contain; }
+.real-map-preview figcaption { padding:.75rem 1rem;font-size:.85rem;color:#c0bbaa;text-align:center;background:#1c1e19; }
+@media(max-width:620px){.hero-visual{min-height:0}.real-map-preview{width:100%}}
