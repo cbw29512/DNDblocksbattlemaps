@@ -71,3 +71,8 @@
 .dragon-mark{font-size:3rem;color:#ffbd71}.showdown-dragon small{font-size:.66rem;color:#f3d7c7}
 .showdown-footer{border-top:1px solid rgba(255,255,255,.08);color:#aaa89c;font-size:.6rem;flex-wrap:wrap}
 @media(max-width:620px){.hero-visual{min-height:0}.showdown-arena{min-height:215px;gap:.55rem;padding:2rem .65rem}.showdown-party{gap:.5rem}.showdown-dragon{min-height:120px}.dragon-mark{font-size:2rem}.showdown-heading,.showdown-footer{padding:.8rem}.showdown-cube{min-height:65px}.showdown-cube small{font-size:.55rem}}
+
+/* DM dashboard and three-action header mobile support */
+.dm-game{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 0;border-top:1px solid rgba(255,255,255,.1)}
+.dm-game strong{overflow-wrap:anywhere}
+@media(max-width:680px){.site-header{height:auto;min-height:76px;padding:12px 0;gap:12px;flex-wrap:wrap}.header-actions{flex-wrap:wrap;justify-content:flex-start}.header-actions .button{min-height:44px}}
