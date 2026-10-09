@@ -3,6 +3,7 @@ import type { TerrainId } from './domain/types.js';
 import { renderBuilder } from './app/builder.js';
 import { renderHome } from './app/home.js';
 import { renderJoin } from './app/join.js';
+import { renderDM } from './app/dm.js';
 
 function requireRoot(): HTMLElement {
   const element = document.getElementById('app');
@@ -14,7 +15,7 @@ const root = requireRoot();
 
 let cleanup: (() => void) | null = null;
 
-function navigate(view?: 'build' | 'join', terrain?: TerrainId): void {
+function navigate(view?: 'build' | 'join' | 'dm', terrain?: TerrainId): void {
   const url = new URL(window.location.href);
   url.search = '';
   if (view) url.searchParams.set('view', view);
@@ -35,11 +36,15 @@ async function route(): Promise<void> {
     cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
     return;
   }
+  if (view === 'dm') {
+    renderDM(root, { onBack: () => navigate() });
+    return;
+  }
   if (view === 'join') {
     renderJoin(root, { onBack: () => navigate() });
     return;
   }
-  renderHome(root, { onBuild: (terrain) => navigate('build', terrain), onJoin: () => navigate('join') });
+  renderHome(root, { onBuild: (terrain) => navigate('build', terrain), onJoin: () => navigate('join'), onDM: () => navigate('dm') });
 }
 
 function showStartupFailure(error: unknown) {
