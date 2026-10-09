@@ -93,6 +93,12 @@ This policy supersedes any older wording implying that every push should publish
 - No Netlify deployment, database migration execution, production data modification or intentional credit use. This branch remains pre-integration only.
 - Next: verify full CI; add real Postgres concurrency and duplicate action tests; review action payload canonicalization, movement policy on existing object locks, and replace incomplete mock coverage. Preserve release lock.
 
+## 2026-10-09 — Transaction retry hardening (PR #89; IN PROGRESS)
+- Checked existing game move transaction and mock tests. Fixed duplicate-action matching to compare stored JSONB semantic fields rather than JSON string property order; successful retry returns its original committed revision. Canonical action payload now explicitly includes only type, entityId, and x/z/elevation.
+- Added tests for a duplicate retry producing no second snapshot update, action ID reuse with changed destination returning conflict, and failed action insert triggering rollback/release.
+- Existing mock does not model real PostgreSQL rollback semantics or concurrent connections. Tests added, NOT executed or CI VERIFIED on final head. Real database concurrency/rollback test remains required.
+- No production deployment, migration execution, or Netlify credentials touched. Next: run final-head CI, verify database adapter and migration behavior, complete real Postgres concurrency tests and player-side sync.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
