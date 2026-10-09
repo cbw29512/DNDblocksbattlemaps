@@ -73,6 +73,12 @@ This policy supersedes any older wording implying that every push should publish
 - No schema migration or legacy data mutation; no Netlify deployment or production cost. CI not yet verified on exact head.
 - Next: test valid DM/player projections and verified game membership, connect authorized API route, then atomic revision-checked writes.
 
+## 2026-10-09 — Authenticated board-read endpoint wired (PR #89; IN PROGRESS)
+- Added `game-board-access.mjs`, integrated `GET game-api?action=get-board&gameId=...`, and registered the GET action. The server verifies DM owner identity against the requested open game, otherwise validates the guest cookie against a non-revoked player record for that same open game before calling the v1 snapshot read service.
+- The read service checks stored revision and schema. Player results use the explicit visible-entity allowlist; DM owners receive validated full state. Unauthenticated and cross-game access fail without returning a board.
+- Added negative tests for missing credentials, non-owner, malformed ID. Positive membership/DB, deployed Identity, HTTP integration, lockfile and end-to-end tests remain pending; source commits are **not** certified CI or LIVE VERIFIED.
+- No write endpoints, migrations, deployment or Netlify production changes. Next: run exact-head CI, positive mock integration tests, validate DB response serialization, then implement revisioned movement writes and player board UI. Preserve consolidated Netlify release policy.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
