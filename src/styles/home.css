@@ -28,3 +28,12 @@
 .real-map-preview img { display:block;width:100%;height:auto;aspect-ratio:760/371;object-fit:contain; }
 .real-map-preview figcaption { padding:.75rem 1rem;font-size:.85rem;color:#c0bbaa;text-align:center;background:#1c1e19; }
 @media(max-width:620px){.hero-visual{min-height:0}.real-map-preview{width:100%}}
+
+/* Quiet, functional homepage footer. */
+.site-footer{border-top:1px solid rgba(255,255,255,.09);background:#171914;color:#c6c2b6}
+.footer-content{width:min(1180px,calc(100% - 36px));margin:auto;padding:2rem 0 1rem}
+.footer-main,.footer-bottom{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.footer-brand{display:grid;gap:.3rem}.footer-brand strong{color:#f0eadc}.footer-brand span{font-size:.83rem;color:#99968d}
+.footer-links{display:flex;align-items:center;flex-wrap:wrap;gap:.8rem 1.3rem}.footer-links a{color:#c6c2b6;text-decoration:none;font-size:.87rem}.footer-links a:hover,.footer-links a:focus-visible{color:#d7b56d;text-decoration:underline}
+.footer-bottom{margin-top:1.6rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,.07);font-size:.75rem;color:#8c8a80}
+@media(max-width:620px){.footer-content{padding:1.5rem 0 1rem}.footer-main{align-items:flex-start}.footer-links{gap:.7rem 1rem}}
