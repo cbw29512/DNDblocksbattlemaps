@@ -640,3 +640,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-09 — Homepage duplicate-content cleanup
 - Removed duplicated hero Join a Game button (kept header Join), redundant final terrain CTA (kept functional terrain cards), and stale style rules from unused illustrated mockups. Kept main Build a Map hero CTA, BMC header link, actual dungeon screenshot, terrain cards, and how-it-works section. Source and checked-in browser JS matched. Requires exact-head CI and deployed visual review.
+
+## 2026-10-09 — Compact homepage footer
+- Added a restrained footer with brand/tagline, Home, Choose Terrain, repository GitHub and verified Buy Me a Coffee URLs, and 2026 attribution. No additional oversized primary CTA. Responsive wrapping, keyboard hover/focus styling, TS/JS parity and new asset cache key. PR #69 homepage duplicate cleanup passed exact-head CI and merged before this branch.
