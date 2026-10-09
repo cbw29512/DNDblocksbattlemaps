@@ -95,13 +95,13 @@ The current execution sandbox cannot access npm or navigate a browser to localho
 
 GitHub Pages is a temporary static **test surface only**. Netlify remains production.
 
-The workflow `.github/workflows/pages-test.yml` runs only when manually dispatched; normal pushes do not publish the test site.
+The workflow `.github/workflows/pages-test.yml` deploys GitHub Pages when published site files change on `main`, and can also be run manually. It checks that `dist/how-to-play.html` exists before deployment. GitHub Pages remains the test surface; Netlify remains the production host.
 
 One-time repository setup before the first test:
 
 1. GitHub repository **Settings → Pages**
 2. Set **Source** to **GitHub Actions**
 3. Open **Actions → Deploy GitHub Pages Test**
-4. Choose **Run workflow**
+4. Choose **Run workflow** for an initial deployment (later site changes on `main` publish automatically)
 
 Do not connect production user data or treat Pages as the commercial host.
