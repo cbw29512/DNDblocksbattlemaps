@@ -643,3 +643,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-09 — Compact homepage footer
 - Added a restrained footer with brand/tagline, Home, Choose Terrain, repository GitHub and verified Buy Me a Coffee URLs, and 2026 attribution. No additional oversized primary CTA. Responsive wrapping, keyboard hover/focus styling, TS/JS parity and new asset cache key. PR #69 homepage duplicate cleanup passed exact-head CI and merged before this branch.
+
+## 2026-10-09 — Broken published homepage layout
+- User screenshot showed narrow near-one-word-per-line headline and blurry screenshot. Corrected desktop hero grid with constrained `minmax(0,...)` tracks, explicitly min-width:0 for both children, reduced responsive headline size, gave screenshot full allocated width. Asset remains a severely downsampled screenshot (`assets/home-dungeon.svg` with a small embedded WebP) and requires separate replacement using full source bytes. New CSS cache key; verify the published page in desktop and mobile screenshots; do not claim image sharpness fixed by CSS.
