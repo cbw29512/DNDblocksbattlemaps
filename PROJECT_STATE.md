@@ -670,3 +670,6 @@ The 108-type ordinary/player catalog checkpoint is green and live on the Pages t
 
 ## 2026-10-09 — Homepage hero image 404 fix
 - User screenshot confirmed broken real dungeon image while terrain previews loaded. Root cause: homepage referenced `./assets/home-dungeon.svg` but asset existed only in repository-root `assets/`, not `public/assets/` and hence not copied to `dist/assets/` during Vite publish. Copied existing hero asset into `public/assets/`; added Pages deployment checks for hero and all terrain image files. Existing screenshot is low-quality due to previous overcompression and still needs separate resolution improvement. Require live deployed check after merging.
+
+## 2026-10-09 — Broken terrain thumbnails
+- Screenshot showed five broken image icons while CSS layout rendered normally. Each terrain used a stand-alone SVG wrapper around a minified base64 WebP. To avoid image decoding/serving issues, extracted the original WebP bytes and embedded them directly as `data:image/webp;base64,...` source URLs in the homepage TS and browser JS; this avoids external asset paths and SVG nested raster decoding. Cards remain functional, no art changes, not real-game screenshots. Pending exact-head CI and live verification. Note: hero still blurry pending high-res replacement.
