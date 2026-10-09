@@ -76,7 +76,11 @@ export default async function handler(req, context) {
         await db.sql`UPDATE dnd_players SET revoked_at=now() WHERE session_hash=${hash}`;
         return reply({ok:true},200,{'Set-Cookie':'dnd_guest=; Path=/.netlify/functions/; Max-Age=0; Secure; HttpOnly; SameSite=Strict'});
       }
-      return reply({player:matches[0]});
+      // Restore only the authenticated guest's own assignments. Never expose board state here.
+      const member=matches[0];
+      const assignments=await db.sql`SELECT entity_id FROM dnd_assignments WHERE game_id=${member.game_id} AND player_id=${member.id} ORDER BY entity_id`;
+      await db.sql`UPDATE dnd_players SET last_seen_at=now() WHERE id=${member.id} AND revoked_at IS NULL`;
+      return reply({player:member,assignedEntityIds:assignments.map(row=>row.entity_id)});
     }
     if(action==='players'||action==='assign-piece') {
       const user=await dm();if(!user)return fail(401,'DM sign-in required');
