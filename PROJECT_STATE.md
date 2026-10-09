@@ -48,6 +48,13 @@ This policy supersedes any older wording implying that every push should publish
 - No migration, hosted resources, deployment, or Netlify credits used. Source tests added but not yet executed in this environment; final-head CI and integration remain unverified.
 - Next: inspect and standardize persisted board snapshot shape, define nested redaction/permission boundaries, implement atomic revisioned write and wire verified server identity to authorization in the API, then integration-test and verify CI.
 
+## 2026-10-09 — Permission hardening / schema mismatch gate (PR #89; IN PROGRESS)
+- Read the actual browser `src/domain/types.ts` board schema and backend permissions helper; confirmed browser `WorldObject` lacks persisted visibility, locked, movementLocked, and capabilities properties expected by the planned multiplayer authorization model.
+- Hardened universal helpers to fail closed on unverified actors, incomplete entity visibility, missing movement flags or malformed capabilities. Added negative tests for missing fields and malformed input. No API movement endpoint wired: cannot claim server-enforced permissions yet.
+- Updated `docs/DM_PLAYER_IMPLEMENTATION.md` with explicit server schema, allowlist snapshot and migration prerequisites. Scope excluded production changes, direct map migrations, and speculative realtime architecture.
+- No Netlify deployment, database migration execution or production cost. Tests committed but latest exact-head CI and live integration remain unverified.
+- Next: implement validated/versioned server snapshot schema with migration safety and server-derived membership; only then wire the API authorization and revisioned mutation transaction.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
