@@ -42,5 +42,15 @@ async function route(): Promise<void> {
   renderHome(root, { onBuild: (terrain) => navigate('build', terrain), onJoin: () => navigate('join') });
 }
 
-window.addEventListener('popstate', () => void route());
-void route();
+function showStartupFailure(error: unknown) {
+  console.error('DND Blocks failed to load:', error);
+  root.innerHTML = `<main id="main-content" tabindex="-1" style="max-width:620px;margin:10vh auto;padding:2rem;color:#f2efe6;font-family:system-ui"><h1>Unable to load DND Blocks</h1><p>The map builder could not start. Please reload this page. Your saved maps have not been intentionally changed.</p><button id="retry-startup" style="padding:.85rem 1.3rem;border:0;border-radius:10px;background:#d7b56d;color:#171611;font:inherit;cursor:pointer">Try again</button></main>`;
+  root.querySelector<HTMLButtonElement>('#retry-startup')?.addEventListener('click', () => window.location.reload());
+}
+function runRoute() {
+  void route().catch(showStartupFailure);
+}
+window.addEventListener('popstate', runRoute);
+window.addEventListener('error', event => showStartupFailure(event.error || event.message));
+window.addEventListener('unhandledrejection', event => showStartupFailure(event.reason));
+runRoute();
