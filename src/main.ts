@@ -1,6 +1,3 @@
-import '../src/styles/base.css';
-import '../src/styles/home.css';
-import '../src/styles/builder.css';
 import { listCampaignMaps } from './domain/storage.js';
 import type { TerrainId } from './domain/types.js';
 import { renderBuilder } from './app/builder.js';
