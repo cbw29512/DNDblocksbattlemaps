@@ -39,6 +39,7 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
           <p>Build dungeons, castles and taverns from 5-foot cubes. Add doors, furniture, traps and creatures, then switch to Combat Mode when you are ready to play.</p>
           <div class="hero-actions">
             <button class="button button-primary button-large" id="build-main" type="button">Build a Map <span>→</span></button>
+            <a class="button button-secondary button-large" href="./how-to-play.html">How to Play</a>
             </div>
           <div class="trust-row" aria-label="Product highlights">
             <span>✓ Browser-first</span><span>✓ 5-ft grid</span><span>✓ DM stays in control</span>
