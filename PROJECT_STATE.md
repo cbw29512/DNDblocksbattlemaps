@@ -55,6 +55,12 @@ This policy supersedes any older wording implying that every push should publish
 - No Netlify deployment, database migration execution or production cost. Tests committed but latest exact-head CI and live integration remain unverified.
 - Next: implement validated/versioned server snapshot schema with migration safety and server-derived membership; only then wire the API authorization and revisioned mutation transaction.
 
+## 2026-10-09 — Versioned server board schema checkpoint (PR #89; IN PROGRESS)
+- Gate: authoritative board state serialization prerequisite, not yet a deployed multiplayer feature. Added strict `schemaVersion:1` validator and allowlisted player projection in `netlify/functions/game-board-schema.mjs`; added targeted rejection and hidden-data tests.
+- Reviewed browser `WorldObject` schema mismatch; existing local maps are not migrated. Invalid/incomplete snapshots fail closed. Player projection excludes all arbitrary metadata, history, DM-only objects and permission flags. The module is standalone and not yet called by `game-api.mjs`.
+- Tests committed but not yet locally executed or CI verified on the final head. No migrations executed, no Netlify deployment, no live access or credit expenditure.
+- Next: run/check schema tests and fix issues, establish transactional server snapshot storage and authenticated read, then revisioned action writes and browser integration. Preserve the one-release Netlify lock.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
