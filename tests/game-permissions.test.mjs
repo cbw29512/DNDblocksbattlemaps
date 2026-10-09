@@ -23,7 +23,16 @@ test('unverified and malformed views never receive hidden objects',()=>{
  const hidden={...entity,id:'secret',visibility:'dm_only'};
  const board=[entity,hidden,{id:'unknown'},null];
  assert.deepEqual(visibleEntitiesForActor(board,player),[entity]);
- assert.deepEqual(visibleEntitiesForActor(board,dm),[entity,hidden,{id:'unknown'}]);
+ assert.deepEqual(visibleEntitiesForActor(board,dm),[entity,hidden]);
  assert.deepEqual(visibleEntitiesForActor(board,{role:'player',verified:false}),[]);
  assert.deepEqual(visibleEntitiesForActor(null,player),[]);
+});
+
+test('missing or malformed state fails closed rather than granting player movement',()=>{
+ for(const changed of [{locked:undefined},{movementLocked:undefined},
+   {visibility:undefined},{capabilities:'player_controllable'}, {id:123}]){
+  assert.equal(canMoveEntity({actor:player,entity:{...entity,...changed},assignedEntityIds:['hero-1']}),false);
+ }
+ assert.equal(canMoveEntity(),false);
+ assert.deepEqual(visibleEntitiesForActor([{id:'x',visibility:'visible'},'oops',null],player),[{id:'x',visibility:'visible'}]);
 });
