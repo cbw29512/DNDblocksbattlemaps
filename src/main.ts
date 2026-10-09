@@ -27,7 +27,8 @@ function navigate(view?: 'build' | 'join' | 'dm', terrain?: TerrainId): void {
 async function route(): Promise<void> {
   cleanup?.(); cleanup = null;
   const params = new URLSearchParams(window.location.search);
-  const view = params.get('view');
+  const identityCallback = /(?:^|[&#])(confirmation_token|recovery_token|invite_token|access_token|token)=/.test(window.location.hash);
+  const view = identityCallback ? 'dm' : params.get('view');
 
   if (view === 'build') {
     const terrain = (params.get('terrain') ?? 'castle') as TerrainId;
