@@ -32,11 +32,15 @@ async function route() {
         cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
         return;
     }
-    if (view === 'join') {
+    if (view === 'dm') {
+    renderDM(root, { onBack: () => navigate() });
+    return;
+  }
+  if (view === 'join') {
         renderJoin(root, { onBack: () => navigate() });
         return;
     }
-    renderHome(root, { onBuild: (terrain) => navigate('build', terrain), onJoin: () => navigate('join') });
+    renderHome(root, { onBuild: (terrain) => navigate('build', terrain), onJoin: () => navigate('join'), onDM: () => navigate('dm') });
 }
 function showStartupFailure(error) {
     console.error('DND Blocks failed to load:', error);
