@@ -67,6 +67,12 @@ This policy supersedes any older wording implying that every push should publish
 - Result: source behavior remains unchanged; standalone board validation/projection helpers are still not wired. No tests or CI claims, no Netlify deployment or backend resource modification.
 - Next: complete the authorization/board-read API integration through an approved development path, then add negative authorization tests and verify exact-head CI. Do not deploy until complete.
 
+## 2026-10-09 — Read-only board service extraction (PR #89; IN PROGRESS)
+- Added `netlify/functions/game-board-read.mjs`, a small server-only service that validates the stored v1 board and its revision, then returns full DM state or allowlisted player projection according to a *server-verified* role. Errors fail closed. Added isolated negative tests for unknown role and invalid snapshot.
+- This service must not be called with a role from request data. **Not yet connected to game-api authentication or exposed as an endpoint.** Full authorization and database integration tests remain pending. A broader test write was blocked; reduced negative tests were committed.
+- No schema migration or legacy data mutation; no Netlify deployment or production cost. CI not yet verified on exact head.
+- Next: test valid DM/player projections and verified game membership, connect authorized API route, then atomic revision-checked writes.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
