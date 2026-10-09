@@ -1,5 +1,5 @@
-import { SRD_MONSTER_BLOCKS } from './srdMonsterBlocks.js?v=54e015a1c762';
-import { generatedCubeArt } from './faceArt.js?v=54e015a1c762';
+import { SRD_MONSTER_BLOCKS } from './srdMonsterBlocks.js?v=2693d6ceb233';
+import { generatedCubeArt } from './faceArt.js?v=2693d6ceb233';
 export const TERRAIN_THEMES = {
     castle: { id: 'castle', name: 'Castle', tagline: 'Stone halls & keeps', groundColor: 0x777b77, accentCss: '#d7b56d', swatchCss: 'linear-gradient(135deg,#454946,#9aa09a)' },
     inn: { id: 'inn', name: 'Inn', tagline: 'Warm rooms & taverns', groundColor: 0x75533c, accentCss: '#e1a85e', swatchCss: 'linear-gradient(135deg,#593b2d,#bd875a)' },
