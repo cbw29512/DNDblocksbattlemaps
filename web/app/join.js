@@ -26,10 +26,40 @@ export function renderJoin(root, handlers) {
   const button=root.querySelector('#guest-submit');
   const feedback=root.querySelector('#guest-feedback');
   if(code)code.value=requestedCode;
+  // Recovery is cookie-bound. A saved name or player ID is never trusted as identity.
+  if(button&&feedback){
+    button.disabled=true;
+    feedback.textContent='Checking for your previous game…';
+    void (async()=>{
+      try{
+        const response=await fetch('./.netlify/functions/game-api?action=my-player-session',{
+          method:'GET',credentials:'same-origin',cache:'no-store'
+        });
+        if(response.status===401){
+          if(root.contains(feedback))feedback.textContent='';
+          return;
+        }
+        if(!response.ok)throw new Error('Unable to check your previous game. You can still enter a game code.');
+        const result=await response.json();
+        if(!result?.player?.id||!result.player.game_id||!result.player.display_name)
+          throw new Error('Invalid session response. Enter a game code to join.');
+        if(!root.contains(feedback))return;
+        if(name)name.value=result.player.display_name;
+        const pieces=Array.isArray(result.assignedEntityIds)?result.assignedEntityIds.filter(id=>typeof id==='string'):[];
+        feedback.textContent='Welcome back, '+result.player.display_name+'. Reconnected to '+(result.player.game_name||'your game')+
+          (pieces.length?' — '+pieces.length+' assigned piece(s).':' — waiting for your DM to assign a character.');
+      }catch(error){
+        console.error('Guest session recovery failed:',error instanceof Error?error.message:'Unknown error');
+        if(root.contains(feedback))feedback.textContent=error instanceof Error?error.message:'Unable to check your previous game.';
+      }finally{
+        if(root.contains(button))button.disabled=false;
+      }
+    })();
+  }
   form?.addEventListener('submit',async event=>{
     event.preventDefault();
     if(!code||!name||!button||!feedback)return;
-    const value=code.value.trim().replace(/[\\s-]/g,'').toUpperCase();
+    const value=code.value.trim().replace(/[\s-]/g,'').toUpperCase();
     if(!/^[A-HJ-NP-Z2-9]{6}$/.test(value)){
       feedback.textContent='Enter a valid six-character game code.';code.focus();return;
     }
