@@ -1,3 +1,6 @@
+import '../src/styles/base.css';
+import '../src/styles/home.css';
+import '../src/styles/builder.css';
 import { listCampaignMaps } from './domain/storage.js?v=7883e018c870';
 import { renderBuilder } from './app/builder.js?v=7883e018c870';
 import { renderHome } from './app/home.js?v=7883e018c870';
