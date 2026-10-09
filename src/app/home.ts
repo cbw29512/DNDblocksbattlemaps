@@ -39,8 +39,7 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
           <p>Build dungeons, castles and taverns from 5-foot cubes. Add doors, furniture, traps and creatures, then switch to Combat Mode when you are ready to play.</p>
           <div class="hero-actions">
             <button class="button button-primary button-large" id="build-main" type="button">Build a Map <span>→</span></button>
-            <button class="button button-secondary button-large" id="join-main" type="button">Join a Game</button>
-          </div>
+            </div>
           <div class="trust-row" aria-label="Product highlights">
             <span>✓ Browser-first</span><span>✓ 5-ft grid</span><span>✓ DM stays in control</span>
           </div>
@@ -74,18 +73,12 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
         <span>Build fast.</span><span>Nothing to install.</span><span>DM decides what happens.</span>
       </section>
 
-      <section class="final-cta">
-        <span class="eyebrow">Your table is waiting</span>
-        <h2>Start with one block.</h2>
-        <p>This prototype already lets you choose a terrain and build directly on the grid.</p>
-        <a class="button button-secondary button-large" href="#terrain-start">Explore terrain options →</a>
-      </section>
     </main>
   `;
 
   const startDefault = () => handlers.onBuild('castle');
   ['build-main'].forEach((id) => document.getElementById(id)?.addEventListener('click', startDefault));
-  ['join-top', 'join-main'].forEach((id) => document.getElementById(id)?.addEventListener('click', handlers.onJoin));
+  ['join-top'].forEach((id) => document.getElementById(id)?.addEventListener('click', handlers.onJoin));
   root.querySelectorAll<HTMLButtonElement>('[data-terrain]').forEach((button) => {
     button.addEventListener('click', () => handlers.onBuild(button.dataset.terrain as TerrainId));
   });
