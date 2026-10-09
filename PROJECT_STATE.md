@@ -41,6 +41,13 @@ This policy supersedes any older wording implying that every push should publish
 - Verification: GitHub commits complete, latest CI and live integration **not yet verified**. Do not mark CI VERIFIED or LIVE VERIFIED.
 - Next: Implement authoritative player-safe snapshot read and movement authorization with revision/idempotency enforcement, then build the board resume view and run CI plus migration tests before an approved consolidated Netlify release.
 
+## 2026-10-09 — Universal permissions helper checkpoint (PR #89; IN PROGRESS)
+- Gate: prepare player movement authorization and visibility filtering, reusing documented WorldObject capabilities, visibility, movement lock and assignment primitives.
+- Added `netlify/functions/game-permissions.mjs` and `tests/game-permissions.test.mjs`. Fail-closed pure helpers require an already server-verified actor; assignments must be retrieved by the server. Verified DMs may override movement restrictions; players cannot move unassigned, hidden, locked or non-controllable entities.
+- **Not integrated:** these helpers are NOT yet invoked by `game-api.mjs`; no authoritative player move endpoint, persisted board snapshot filtering, revision-checked write, or realtime sync exists. Never characterize the helpers alone as enforced backend security. Visibility helper only filters top-level entity records and is NOT suitable for an entire untrusted nested game-state payload.
+- No migration, hosted resources, deployment, or Netlify credits used. Source tests added but not yet executed in this environment; final-head CI and integration remain unverified.
+- Next: inspect and standardize persisted board snapshot shape, define nested redaction/permission boundaries, implement atomic revisioned write and wire verified server identity to authorization in the API, then integration-test and verify CI.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
