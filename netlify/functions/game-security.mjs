@@ -1,12 +1,12 @@
 import { createHmac, randomBytes } from 'node:crypto';
 
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-/** Rejection sampling avoids biased invitation codes. */
+/** 32-character alphabet divides 256 exactly: uniform code selection. */
 export function newGameCode() {
   const chars = [];
   while(chars.length < 6) {
     for(const byte of randomBytes(12)) {
-      if(byte < 248) chars.push(ALPHABET[byte % ALPHABET.length]);
+      chars.push(ALPHABET[byte % ALPHABET.length]);
       if(chars.length === 6) break;
     }
   }
