@@ -31,13 +31,23 @@ export async function commitMove(db, command, actor) {
       'SELECT actor_identity,expected_revision,payload FROM dnd_actions WHERE game_id=$1 AND action_id=$2',
       [command.gameId,command.actionId]);
     const identity=actor.role+':'+actor.id;
-    const requested=JSON.stringify({type:'move',entityId:command.entityId,destination:command.destination});
+    const destination=command.destination;
+    if(typeof command.entityId!=='string'||!destination||typeof destination!=='object'||Array.isArray(destination))
+      return await abort(400,'Invalid movement');
+    const requested=JSON.stringify({type:'move',entityId:command.entityId,destination:{x:destination.x,z:destination.z,elevation:destination.elevation}});
     if(previous.rows.length) {
       const past=previous.rows[0];
-      if(past.actor_identity!==identity || Number(past.expected_revision)!==command.expectedRevision ||
-         JSON.stringify(past.payload)!==requested)return await abort(409,'Action ID already used');
+      const old=past.payload;
+      let same=false;
+      try {
+        same=old?.type==='move' && old.entityId===command.entityId &&
+          old.destination?.x===destination.x && old.destination?.z===destination.z &&
+          old.destination?.elevation===destination.elevation;
+      } catch(error) {console.error('Duplicate action verification failed:',error instanceof Error?error.name:'Unknown');}
+      if(past.actor_identity!==identity || Number(past.expected_revision)!==command.expectedRevision || !same)
+        return await abort(409,'Action ID already used');
       await client.query('COMMIT');
-      return {status:200,duplicate:true};
+      return {status:200,duplicate:true,revision:command.expectedRevision+1};
     }
     const snapshots=await client.query(
       'SELECT state,revision FROM dnd_board_snapshots WHERE game_id=$1 FOR UPDATE',[command.gameId]);
