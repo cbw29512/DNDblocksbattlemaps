@@ -34,6 +34,13 @@ This policy supersedes any older wording implying that every push should publish
 - Evidence: GitHub source committed; **tests not executed in this connector session**, exact-head CI and live database/browser verification are pending. This is NOT CI VERIFIED or LIVE VERIFIED.
 - Next step: wire UI session recovery on entry and follow with server-authoritative player movement/permission filtering, then CI and database integration verification before authorized release.
 
+## 2026-10-09 — Player recovery UI checkpoint (PR #89; IN PROGRESS)
+- Scope: Join as Player screen only. On entry, call `my-player-session` using same-origin HttpOnly cookie; 401 means no active session. A valid server session pre-fills the player's name and displays assigned piece count; it does not yet load the multiplayer board or permit movement. Fails safely with an honest error if recovery fails.
+- Source and browser mirror updated; corrected join-code whitespace normalization. Added source regression test and updated How to Play as pre-release behavior.
+- No schema or storage migration; no production changes, deployments, or Netlify credit consumption. Existing guest token remains one active session per browser.
+- Verification: GitHub commits complete, latest CI and live integration **not yet verified**. Do not mark CI VERIFIED or LIVE VERIFIED.
+- Next: Implement authoritative player-safe snapshot read and movement authorization with revision/idempotency enforcement, then build the board resume view and run CI plus migration tests before an approved consolidated Netlify release.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
