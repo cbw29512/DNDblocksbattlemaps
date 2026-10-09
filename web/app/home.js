@@ -1,4 +1,4 @@
-import { TERRAIN_THEMES } from '../domain/catalog.js?v=171002c83124';
+import { TERRAIN_THEMES } from '../domain/catalog.js?v=e134a49474a5';
 export function renderHome(root, handlers) {
     const terrainCards = Object.values(TERRAIN_THEMES).map((theme) => `
     <button class="terrain-card" data-terrain="${theme.id}" type="button">
