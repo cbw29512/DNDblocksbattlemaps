@@ -4,6 +4,7 @@ import type { TerrainId } from '../domain/types.js';
 export interface HomeHandlers {
   onBuild: (terrain: TerrainId) => void;
   onJoin: () => void;
+  onDM: () => void;
 }
 
 
@@ -28,6 +29,7 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
           <span>DND Blocks <b>Battle Maps</b></span>
         </a>
         <nav class="header-actions" aria-label="Primary navigation">
+          <button class="button button-ghost" id="dm-top" type="button">DM Login</button>
           <button class="button button-ghost" id="join-top" type="button">Join a Game</button>
           <a class="button button-ghost" href="https://buymeacoffee.com/divclass016" target="_blank" rel="noopener noreferrer" aria-label="Buy me a coffee, opens in a new tab">☕ Buy me a coffee</a>
         </nav>
@@ -106,6 +108,7 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
   const startDefault = () => handlers.onBuild('castle');
   ['build-main'].forEach((id) => document.getElementById(id)?.addEventListener('click', startDefault));
   ['join-top'].forEach((id) => document.getElementById(id)?.addEventListener('click', handlers.onJoin));
+  document.getElementById('dm-top')?.addEventListener('click', handlers.onDM);
   root.querySelectorAll<HTMLButtonElement>('[data-terrain]').forEach((button) => {
     button.addEventListener('click', () => handlers.onBuild(button.dataset.terrain as TerrainId));
   });
