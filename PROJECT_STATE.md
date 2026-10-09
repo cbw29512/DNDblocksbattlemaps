@@ -85,6 +85,14 @@ This policy supersedes any older wording implying that every push should publish
 - No database writes, migrations, client sync, Netlify deployment or production changes. Tests committed, not yet verified on final CI head.
 - Next: verify actual Netlify Database transaction API or design a Postgres single-statement/stored-function transaction, implement idempotent revision-CAS persistence with authenticated actor, and run concurrent retry tests before wiring `move-piece` route.
 
+## 2026-10-09 — Transactional move-piece API (PR #89; IN PROGRESS)
+- Verified current Netlify Database docs: `db.pool.connect()` supports transactions on one PostgreSQL connection; `db.sql` does not preserve a transaction across queries.
+- Added `game-move-transaction.mjs`: BEGIN, game row FOR UPDATE, current DM owner or non-revoked player membership and assignments, duplicate action ID check, board snapshot FOR UPDATE, pure move reducer, revision-CAS updates to both snapshot and game, action insertion, COMMIT; ROLLBACK on rejection/error, client release in finally.
+- Added `game-move-access.mjs` to derive actor from server Identity or cookie, not caller role. Wired `POST game-api?action=move-piece` with existing origin guard. Tests added in `tests/game-move-transaction.test.mjs` using a mock query client.
+- Important limitations: mocked SQL is not real Postgres integration or concurrent execution proof; need real DB transaction + retry + rollback tests, exact-head CI, dependency lockfile fix, initialization of v1 snapshots, and browser sync. Do not claim live movement before those pass.
+- No Netlify deployment, database migration execution, production data modification or intentional credit use. This branch remains pre-integration only.
+- Next: verify full CI; add real Postgres concurrency and duplicate action tests; review action payload canonicalization, movement policy on existing object locks, and replace incomplete mock coverage. Preserve release lock.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
