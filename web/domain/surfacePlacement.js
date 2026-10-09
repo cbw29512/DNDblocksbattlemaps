@@ -1,4 +1,4 @@
-import { elevationAbove } from './placement.js?v=1f6bf03e447c';
+import { elevationAbove } from './placement.js?v=56c1e8c26c34';
 export function placementFromSurface(clicked, highestInColumn, normal, explicitElevation) {
     if (normal.y > 0.5) {
         const next = elevationAbove(highestInColumn, explicitElevation);
