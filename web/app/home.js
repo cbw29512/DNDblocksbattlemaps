@@ -12,7 +12,7 @@ export function renderHome(root, handlers) {
     </button>
   `).join('');
     root.innerHTML = `
-    <main class="site-shell">
+    <main class="site-shell" id="main-content" tabindex="-1">
       <header class="site-header">
         <a class="brand" href="?" aria-label="DND Blocks Battle Maps home">
           <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
