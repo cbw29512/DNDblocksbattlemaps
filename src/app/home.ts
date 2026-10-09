@@ -35,8 +35,8 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
       <section class="hero-section">
         <div class="hero-copy">
           <span class="eyebrow">3D tabletop maps · right in your browser</span>
-          <h1>Build the battle map in your head. <em>In minutes.</em></h1>
-          <p>Choose a terrain, drop in rooms, doors, traps, monsters and props, then invite your players. No download. No mapmaking degree.</p>
+          <h1>Build your world. <em>One block at a time.</em></h1>
+          <p>Build dungeons, castles and taverns from 5-foot cubes. Add doors, furniture, traps and creatures, then switch to Combat Mode when you are ready to play.</p>
           <div class="hero-actions">
             <button class="button button-primary button-large" id="build-main" type="button">Build a Map <span>→</span></button>
             <button class="button button-secondary button-large" id="join-main" type="button">Join a Game</button>
@@ -46,19 +46,11 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
           </div>
         </div>
 
-        <div class="hero-visual" aria-label="Real builder features">
-          <div class="builder-preview-card">
-            <span class="eyebrow">What you can actually build</span>
-            <h2>Every piece starts as a cube.</h2>
-            <p>Build rooms on a 5-foot grid, stack walls, add doors and furniture, then place creatures for combat.</p>
-            <div class="preview-feature-grid">
-              <span><b>5-ft</b><small>Cube grid</small></span>
-              <span><b>3D</b><small>Build & rotate</small></span>
-              <span><b>DM</b><small>Map controls</small></span>
-            </div>
-            <button type="button" class="button button-primary" id="preview-builder">Open the actual map builder →</button>
-            <small class="preview-note">Live editor · not an artist's rendering</small>
-          </div>
+        <div class="hero-visual">
+          <figure class="real-map-preview">
+            <img src="./assets/home-dungeon.webp" alt="Actual DND Blocks dungeon map built from 5-foot cubes, featuring stone walls, rooms, monsters, doors and treasure chests." width="760" height="371" decoding="async" fetchpriority="high" />
+            <figcaption>Actual battle map built in DND Blocks</figcaption>
+          </figure>
         </div>
       </section>
 
@@ -92,7 +84,7 @@ export function renderHome(root: HTMLElement, handlers: HomeHandlers): void {
   `;
 
   const startDefault = () => handlers.onBuild('castle');
-  ['build-main', 'preview-builder'].forEach((id) => document.getElementById(id)?.addEventListener('click', startDefault));
+  ['build-main'].forEach((id) => document.getElementById(id)?.addEventListener('click', startDefault));
   ['join-top', 'join-main'].forEach((id) => document.getElementById(id)?.addEventListener('click', handlers.onJoin));
   root.querySelectorAll<HTMLButtonElement>('[data-terrain]').forEach((button) => {
     button.addEventListener('click', () => handlers.onBuild(button.dataset.terrain as TerrainId));
