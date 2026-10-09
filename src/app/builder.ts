@@ -55,7 +55,7 @@ export async function renderBuilder(
   let selectedCondition = null as typeof CONDITIONS[number] | null;
 
   root.innerHTML = `
-    <main class="builder-shell" style="--theme-accent:${theme.accentCss}">
+    <main id="main-content" tabindex="-1" class="builder-shell" style="--theme-accent:${theme.accentCss}">
       <header class="builder-topbar">
         <button class="brand builder-brand" id="builder-home" type="button">
           <span class="brand-mark"><i></i><i></i><i></i></span><span>DND Blocks</span>
