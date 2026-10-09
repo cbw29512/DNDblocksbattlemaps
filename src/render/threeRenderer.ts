@@ -81,6 +81,7 @@ export async function createThreeRenderer(
   const lightGroup = new THREE.Group();
   scene.add(lightGroup);
   function updateBlockLights(objects: WorldObject[]): void {
+    glowGroup.traverse((node: any) => { if (node.isMesh) { node.geometry.dispose(); node.material.dispose(); } });
     glowGroup.clear();
     lightGroup.clear();
     blockLights.length = 0;
