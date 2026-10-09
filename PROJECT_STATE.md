@@ -79,6 +79,12 @@ This policy supersedes any older wording implying that every push should publish
 - Added negative tests for missing credentials, non-owner, malformed ID. Positive membership/DB, deployed Identity, HTTP integration, lockfile and end-to-end tests remain pending; source commits are **not** certified CI or LIVE VERIFIED.
 - No write endpoints, migrations, deployment or Netlify production changes. Next: run exact-head CI, positive mock integration tests, validate DB response serialization, then implement revisioned movement writes and player board UI. Preserve consolidated Netlify release policy.
 
+## 2026-10-09 — Pure movement command reducer (PR #89; IN PROGRESS)
+- Gate: groundwork for server-authoritative movement. Added `netlify/functions/game-movement.mjs` containing pure `applyMove`: validates versioned board, integer coordinates/bounds/elevation, current revision, actual entity and server-verified assigned player or DM override; produces immutable revision+1 board. Added `tests/game-movement.test.mjs` for allowed, stale, forbidden and out-of-bounds actions.
+- **Not yet a live movement endpoint**: the reducer must execute under a serialized DB transaction with current membership/assignment read, unique action ID deduplication, and atomic snapshot+action persistence. Do NOT expose it via an unaudited nontransactional read/write sequence.
+- No database writes, migrations, client sync, Netlify deployment or production changes. Tests committed, not yet verified on final CI head.
+- Next: verify actual Netlify Database transaction API or design a Postgres single-statement/stored-function transaction, implement idempotent revision-CAS persistence with authenticated actor, and run concurrent retry tests before wiring `move-piece` route.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
