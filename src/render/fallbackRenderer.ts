@@ -24,6 +24,7 @@ export function createFallbackRenderer(
   let selected: CatalogId | null = null;
   let movingCreatureId: string | null = null;
   let creatureMoveMode = false;
+  let inspectMode = false;
   let room: NormalizedRoom | null = null;
   let elevation = 0;
   let theme: TerrainTheme | null = null;
@@ -124,6 +125,7 @@ export function createFallbackRenderer(
         cell.addEventListener('pointerdown', (event: PointerEvent) => { lastPointerWasTouch = event.pointerType === 'touch'; });
         cell.addEventListener('click', (event) => {
           if (areaTemplate) { handlers.onAreaPoint({x,z,elevation},true,lastPointerWasTouch || (event as PointerEvent).pointerType==='touch'); lastPointerWasTouch=false; return; }
+          if (inspectMode) { if (top) handlers.onInspect(top.id); return; }
           if (top && handlers.onMarkTarget(top.id)) return;
           if (room) {
             const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects, currentBounds);
@@ -192,6 +194,7 @@ export function createFallbackRenderer(
     },
     setMovingCreature(id) { movingCreatureId = id; },
     setCreatureMoveMode(enabled) { creatureMoveMode = enabled; },
+    setInspectMode(enabled) { inspectMode = enabled; draw(); },
     setElevation(next) {
       elevation = next;
     },
