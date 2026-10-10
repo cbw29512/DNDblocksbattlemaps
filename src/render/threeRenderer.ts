@@ -68,7 +68,7 @@ export async function createThreeRenderer(
     const object = currentObjects.find(item => item.id === hit?.object.userData.objectId);
     if (!object) { hoverLabel.hidden = true; return; }
     const item = getCatalogItem(object.catalogId);
-    if (item.category === 'Characters' || item.category === 'Monsters') { hoverLabel.hidden = true; return; }
+    if (!inspectMode && (item.category === 'Characters' || item.category === 'Monsters')) { hoverLabel.hidden = true; return; }
     hoverLabel.textContent = item.name;
     hoverLabel.style.left = Math.min(event.clientX + 14, window.innerWidth - 250) + 'px';
     hoverLabel.style.top = Math.min(event.clientY + 16, window.innerHeight - 38) + 'px';
@@ -374,6 +374,7 @@ export async function createThreeRenderer(
   renderer.domElement.addEventListener('pointermove', (event: PointerEvent) => {
     updateHoverLabel(event);
     if (inspectMode) return;
+    if (inspectMode) return;
     if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,false); return; }
     if (activeRoom && roomPreview) {
       const corner = floorPosition(event) as RoomCorner | null;
@@ -399,7 +400,13 @@ export async function createThreeRenderer(
   let lastPointerWasTouch = false;
   renderer.domElement.addEventListener('pointerdown', (event: PointerEvent) => { lastPointerWasTouch = event.pointerType === 'touch'; });
   renderer.domElement.addEventListener('click', (event: MouseEvent) => {
-    if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,true,lastPointerWasTouch || (event as PointerEvent).pointerType==='touch'); lastPointerWasTouch=false; return; }
+        if (inspectMode) {
+        setPointer(event);
+        const hit = raycaster.intersectObjects(objectGroup.children, true).find((h: any) => h.object.userData.objectId);
+        if (hit) handlers.onInspect(String(hit.object.userData.objectId));
+        return;
+    }
+if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,true,lastPointerWasTouch || (event as PointerEvent).pointerType==='touch'); lastPointerWasTouch=false; return; }
     setPointer(event);
     if (inspectMode) {
       const hit = raycaster.intersectObjects(objectGroup.children, true).find((h: any) => h.object.userData.objectId);
@@ -457,6 +464,7 @@ export async function createThreeRenderer(
 
   renderer.domElement.addEventListener('contextmenu', (event: MouseEvent) => {
     event.preventDefault();
+    if (inspectMode) return;
     setPointer(event);
     const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit: any) => hit.object.userData.objectId);
     const id = hit?.object?.userData?.objectId;
