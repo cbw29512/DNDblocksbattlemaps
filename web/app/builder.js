@@ -31,6 +31,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
     let elevation = 0;
     let pickedCreatureId = null;
     let moveMode = false;
+    let inspectMode = false;
     let activeSpell = null;
     let casterOrigin = { x: 0, z: 0, elevation: 0 };
     let spellCenter = null;
@@ -47,6 +48,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         </div>
         <div class="builder-actions">
           <button id="creature-mode" class="button button-ghost" type="button" aria-pressed="false">Combat Mode</button>
+          <button id="inspect-mode" class="button button-ghost" type="button" aria-pressed="false" aria-controls="inspect-card">⌕ Inspect</button>
           <button id="undo" class="icon-button" type="button" title="Undo">↶</button>
           <button id="redo" class="icon-button" type="button" title="Redo">↷</button>
           <a class="button button-ghost" href="./how-to-play.html" target="_blank" rel="noopener">How to Play</a>
@@ -131,6 +133,7 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
       <section class="board-stage">
         <aside class="combat-log-dock" aria-label="Combat log"><details open><summary>Combat Log</summary><ol id="combat-log" aria-live="polite"></ol></details></aside>
         <div class="board-canvas" id="board-canvas" aria-label="Interactive battle map"></div>
+        <section id="inspect-card" class="inspect-card" aria-label="Object inspection" hidden><button type="button" id="inspect-close" aria-label="Close inspection">×</button><h2 id="inspect-name"></h2><p id="inspect-description"></p><p id="inspect-observation"></p><small>Only visible observations. No hidden stats or secrets.</small></section>
         <div class="mobile-spell-actions" id="mobile-spell-actions" hidden><button id="mobile-cast-spell" type="button" disabled>Cast Spell</button><button id="mobile-cancel-spell" type="button">Cancel</button></div>
         <div class="camera-dock" aria-label="Camera controls">
           <button id="rotate-left" title="Rotate left">↶</button>
@@ -389,6 +392,16 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
         status.textContent = `Room placement canceled. ${getCatalogItem(selected).name} selected.`;
     };
     renderer = await createRenderer(canvas, {
+        onInspect(id) {
+            const object = findObject(state, id);
+            if (!object) return;
+            const item = getCatalogItem(object.catalogId);
+            const creature = ['Characters', 'Monsters'].includes(item.category);
+            root.querySelector('#inspect-name').textContent = item.name;
+            root.querySelector('#inspect-description').textContent = creature ? 'A creature you can see on the battlefield. Its abilities and statistics are not automatically known.' : 'A visible ' + item.name.toLowerCase() + ' block in the surrounding environment.';
+            root.querySelector('#inspect-observation').textContent = creature ? ('Position: ' + (object.elevation * 5) + ' feet elevation. ' + ((object.conditions || []).length ? 'Visible conditions: ' + object.conditions.join(', ') + '.' : 'No obvious conditions recorded.')) : ('Position: ' + (object.elevation * 5) + ' feet elevation.');
+            root.querySelector('#inspect-card').hidden = false;
+        },
         onAreaPoint(point, commit, touch) { if (activeSpell)
             choosePoint(point, commit, touch); },
         onPickCreature(id) {
@@ -549,6 +562,16 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             }
             status.textContent = selectedCondition ? 'STATUS ' + selectedCondition + ': click a creature to apply/remove.' : 'Status selection cleared.';
         });
+    });
+    root.querySelector('#inspect-close')?.addEventListener('click', () => { root.querySelector('#inspect-card').hidden = true; });
+    root.querySelector('#inspect-mode')?.addEventListener('click', () => {
+        inspectMode = !inspectMode;
+        renderer?.setInspectMode(inspectMode);
+        const button = root.querySelector('#inspect-mode');
+        button?.setAttribute('aria-pressed', String(inspectMode));
+        button?.classList.toggle('is-armed', inspectMode);
+        root.querySelector('#inspect-card').hidden = true;
+        status.textContent = inspectMode ? 'Inspect ON: hover for a name; click an object for visible details. No editing.' : 'Inspect OFF: normal controls restored.';
     });
     root.querySelector('#creature-mode')?.addEventListener('click', () => {
         moveMode = !moveMode;
