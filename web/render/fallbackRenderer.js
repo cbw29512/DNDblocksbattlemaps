@@ -13,6 +13,7 @@ export function createFallbackRenderer(container, handlers) {
     let selected = null;
     let movingCreatureId = null;
     let creatureMoveMode = false;
+    let inspectMode = false;
     let room = null;
     let elevation = 0;
     let theme = null;
@@ -113,6 +114,7 @@ export function createFallbackRenderer(container, handlers) {
                         lastPointerWasTouch = false;
                         return;
                     }
+                    if (inspectMode) { if (top) handlers.onInspect(top.id); return; }
                     if (top && handlers.onMarkTarget(top.id))
                         return;
                     if (room) {
@@ -187,6 +189,7 @@ export function createFallbackRenderer(container, handlers) {
         },
         setMovingCreature(id) { movingCreatureId = id; },
         setCreatureMoveMode(enabled) { creatureMoveMode = enabled; },
+        setInspectMode(enabled) { inspectMode = enabled; draw(); },
         setElevation(next) {
             elevation = next;
         },
