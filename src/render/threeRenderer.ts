@@ -43,6 +43,30 @@ export async function createThreeRenderer(
   renderer.shadowMap.enabled = true;
   container.replaceChildren(renderer.domElement);
 
+  const hoverLabel = document.createElement('div');
+  hoverLabel.setAttribute('role', 'tooltip');
+  hoverLabel.hidden = true;
+  Object.assign(hoverLabel.style, {
+    position: 'fixed', zIndex: '10000', pointerEvents: 'none',
+    padding: '5px 9px', borderRadius: '6px', background: '#171a1e',
+    color: '#fff', border: '1px solid #d7b56d', font: '600 13px system-ui',
+    boxShadow: '0 3px 12px #0008', maxWidth: '240px'
+  });
+  document.body.append(hoverLabel);
+  function updateHoverLabel(event: PointerEvent): void {
+    if (event.pointerType === 'touch') { hoverLabel.hidden = true; return; }
+    setPointer(event);
+    const hit = raycaster.intersectObjects(objectGroup.children, true)
+      .find((result: any) => result.object.userData.objectId);
+    const object = currentObjects.find(item => item.id === hit?.object.userData.objectId);
+    if (!object) { hoverLabel.hidden = true; return; }
+    hoverLabel.textContent = getCatalogItem(object.catalogId).name;
+    hoverLabel.style.left = Math.min(event.clientX + 14, window.innerWidth - 250) + 'px';
+    hoverLabel.style.top = Math.min(event.clientY + 16, window.innerHeight - 38) + 'px';
+    hoverLabel.hidden = false;
+  }
+  renderer.domElement.addEventListener('pointerleave', () => { hoverLabel.hidden = true; });
+
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.minPolarAngle = Math.PI / 3;
@@ -338,6 +362,7 @@ export async function createThreeRenderer(
   }
 
   renderer.domElement.addEventListener('pointermove', (event: PointerEvent) => {
+    updateHoverLabel(event);
     if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,false); return; }
     if (activeRoom && roomPreview) {
       const corner = floorPosition(event) as RoomCorner | null;
@@ -494,6 +519,7 @@ export async function createThreeRenderer(
       frameBoard();
     },
     dispose() {
+      hoverLabel.remove();
       resize.disconnect();
       lightGroup.clear(); scene.remove(lightGroup);
       glowGroup.traverse((node: any) => { if (node.isMesh) { node.geometry.dispose(); node.material.dispose(); } });
