@@ -10,7 +10,7 @@ import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPa
 import { printBoardMap } from './printMap.js?v=b5ed9895f361';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=b5ed9895f361';
 import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=b5ed9895f361';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=b5ed9895f361';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=visual-audit-20261010';
 import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=b5ed9895f361';
 import { commit, createHistory, redo, undo } from '../domain/history.js?v=b5ed9895f361';
 import { roomSummary } from '../domain/room.js?v=b5ed9895f361';
