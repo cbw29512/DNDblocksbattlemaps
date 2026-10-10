@@ -29,6 +29,13 @@
 - Production main updated on explicit user preference; browser observation and deploy status not yet verified. No multiplayer/backend changes.
 - Next: verify GitHub checks and reproduce screenshot with Water underlying a different selected cube, confirm no false Water label.
 
+## 2026-10-10 — Inspect Mode first implementation pushed to main
+- User approved top-toolbar Inspect toggle (click on/off) separate from Build/Combat; Inspect is read-only and may be active in either.
+- Added Inspect toolbar button, object details card, hover names only while inspecting, 3D and fallback selection paths; click inspection does not place, move, mark, cast, or remove blocks, and right click is guarded.
+- Player-safe *starter* observations: no AC, HP, saves, resistances, attacks, or class/level displayed; mimic and secret-door labels are masked in Inspect as Old Chest / Stone Wall. This is not yet a role-authenticated DM/player information system: private DM notes, DM-controlled reveal workflows, and persisted custom descriptions are pending and must not be claimed complete.
+- Browser JS and TS sources updated; new tests/inspect-mode.test.mjs added, CSS card styling and browser cache keys updated. Browser JavaScript modules passed standalone parse checks; exact-head CI, hosted deployment, and live interaction smoke test remain UNVERIFIED.
+- Next: verify exact-head typecheck, Node regressions, browser smoke; then verify hosted top toolbar, toggle, card, secrets, placement safety on production. Batch fixes if needed.
+
 ## Locked Deployment and Credit Policy — 2026-10-09
 
 **User decision: Netlify is production; avoid consuming Netlify build credits through frequent development pushes.**
