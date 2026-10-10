@@ -75,7 +75,7 @@ export function createFallbackRenderer(container, handlers) {
                 const top = occupants.at(-1);
                 if (top) {
                     const item = getCatalogItem(top.catalogId);
-                    cell.title = item.name;
+                    cell.title = inspectMode ? item.name : '';
                     cell.style.setProperty('--piece-color', `#${item.color.toString(16).padStart(6, '0')}`);
                     const visual = item.art
                         ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`
@@ -85,7 +85,7 @@ export function createFallbackRenderer(container, handlers) {
                         const marks = [...(top.conditions ?? [])];
                         if ((top.exhaustion ?? 0) > 0)
                             marks.push('Exhaustion ' + top.exhaustion);
-                        cell.title = item.name + (marks.length ? ' — ' + marks.join(', ') : '');
+                        cell.title = inspectMode ? item.name : '';
                         const caption = document.createElement('span');
                         caption.className = 'fallback-creature-name';
                         caption.textContent = item.name + (marks.length ? ' [' + marks.length + ']' : '');
@@ -109,6 +109,7 @@ export function createFallbackRenderer(container, handlers) {
                 let lastPointerWasTouch = false;
                 cell.addEventListener('pointerdown', (event) => { lastPointerWasTouch = event.pointerType === 'touch'; });
                 cell.addEventListener('click', (event) => {
+                    if (inspectMode) { if (top) handlers.onInspect(top.id); return; }
                     if (areaTemplate) {
                         handlers.onAreaPoint({ x, z, elevation }, true, lastPointerWasTouch || event.pointerType === 'touch');
                         lastPointerWasTouch = false;
@@ -160,6 +161,7 @@ export function createFallbackRenderer(container, handlers) {
                 });
                 cell.addEventListener('contextmenu', (event) => {
                     event.preventDefault();
+        if (inspectMode) return;
                     if (areaTemplate) {
                         handlers.onAreaPoint({ x, z, elevation }, false);
                         return;
