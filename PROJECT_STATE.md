@@ -17,6 +17,12 @@
 - Production main source was updated on user request; hosting deployment and browser QA remain unverified. No DM/player backend was shipped in this change.
 - Next: verify automatic build/deploy and browser layout; ensure regression check passes.
 
+## 2026-10-10 — Catalog-scoped Height/Elevation
+- Corrected placement to be INSIDE the collapsible Catalog details, directly under the Catalog heading and before catalog entries. It is hidden when Catalog collapses. Room Builder remains separate.
+- Updated src/app/builder.ts and web/app/builder.js, regression layout assertions, and browser import cache-bust on main at user's explicit production test preference.
+- No multiplayer or server changes. Production hosting/render verification pending.
+- Next: confirm CI and verify browser accordion hide/show plus +/- placement.
+
 ## Locked Deployment and Credit Policy — 2026-10-09
 
 **User decision: Netlify is production; avoid consuming Netlify build credits through frequent development pushes.**
