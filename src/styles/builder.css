@@ -266,3 +266,12 @@
 
 /* Creature marker controls belong to Combat Mode; sidebar layout must not override hidden. */
 .builder-sidebar #combat-markers-panel[hidden] { display: none !important; }
+
+/* Inspect is an independent, read-only toolbar overlay. */
+#inspect-mode[aria-pressed="true"] { border-color:var(--theme-accent); color:#fff4cc; background:#50452b; }
+.inspect-card { position:absolute; z-index:12; top:1rem; right:1rem; width:min(340px,calc(100% - 2rem)); max-height:calc(100% - 2rem); overflow:auto; box-sizing:border-box; padding:1.1rem; color:#f4f0e8; background:#20221ff2; border:1px solid var(--theme-accent); border-radius:12px; box-shadow:0 8px 28px #000a; }
+.inspect-card[hidden] { display:none; }
+.inspect-card h2 { font-size:1.15rem; padding-right:2rem; margin:0 0 .75rem; }
+.inspect-card p { margin:.45rem 0; line-height:1.5; font-size:.9rem; }
+.inspect-card small { display:block; margin-top:.75rem; color:#c9c2b3; }
+#inspect-close { position:absolute; right:.55rem; top:.5rem; cursor:pointer; color:#fff; border:0; background:none; font-size:1.6rem; }
