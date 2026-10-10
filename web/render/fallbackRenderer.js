@@ -74,6 +74,7 @@ export function createFallbackRenderer(container, handlers) {
                 const top = occupants.at(-1);
                 if (top) {
                     const item = getCatalogItem(top.catalogId);
+          cell.title = item.name;
                     cell.style.setProperty('--piece-color', `#${item.color.toString(16).padStart(6, '0')}`);
                     const visual = item.art
                         ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`

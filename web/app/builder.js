@@ -17,7 +17,7 @@ import { roomSummary } from '../domain/room.js?v=487aa2e55593';
 import { roomWallPositions } from '../domain/roomPlacement.js?v=487aa2e55593';
 import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=487aa2e55593';
 import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=487aa2e55593';
-import { createRenderer } from '../render/createRenderer.js?v=487aa2e55593';
+import { createRenderer } from '../render/createRenderer.js?v=20261010prod';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
@@ -84,10 +84,24 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
           </select>
           <button id="create-starter-map" type="button" class="button button-ghost">Create New Map</button>
         </section></details>
-        <details class="builder-tool-group" open><summary>Build &amp; Blocks</summary><div id="build-tools">
-        ${roomPanelHtml()}
-        ${catalogPanelHtml(selected, theme.id, mapId ? listCampaignMaps().find(m => m.id === mapId)?.templateId : undefined)}
-        </div></details>
+        <div id="build-tools">
+          <details class="builder-tool-group" id="room-builder-panel">
+            <summary>Room Builder</summary>
+            ${roomPanelHtml()}
+          </details>
+          <details class="builder-tool-group" id="catalog-panel" open>
+            <summary>Catalog</summary>
+            ${catalogPanelHtml(selected, theme.id, mapId ? listCampaignMaps().find(m => m.id === mapId)?.templateId : undefined)}
+          </details>
+        </div>
+        <div class="elevation-control">
+          <span>Height / Elevation</span>
+          <div>
+            <button id="elev-down" type="button" aria-label="Decrease height">−</button>
+            <b id="elev-value">Ground</b>
+            <button id="elev-up" type="button" aria-label="Increase height">+</button>
+          </div>
+        </div>
         <details class="builder-tool-group" id="combat-markers-panel" hidden><summary>Creature Markers</summary><section class="creature-ring-tools" aria-label="Creature markers">
           <div id="identity-ring-tools">
           <strong>Drag rings onto creatures</strong>
@@ -102,14 +116,6 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             ${CONDITIONS.map(s => `<button type="button" draggable="true" class="status-token" data-condition="${s}" style="--status-ring:#${CONDITION_COLORS[s].toString(16).padStart(6, '0')}">${s}</button>`).join('')}
           </div>
         </section></details>
-        <div class="elevation-control">
-          <span>Elevation</span>
-          <div>
-            <button id="elev-down" type="button">−</button>
-            <b id="elev-value">Ground</b>
-            <button id="elev-up" type="button">+</button>
-          </div>
-        </div>
         <div class="prototype-tip">
           <b>Controls</b>
           <span>Build Room → click a corner</span>

@@ -6,6 +6,10 @@
 > Any AI or human continuing this project must read this file, `SOUL.md`, and the current relevant design documents before making changes.
 > This file must be updated and pushed to GitHub at the end of every meaningful work session.
 
+## 2026-10-10 — User-authorized production UI test release
+- User explicitly prefers testing in production, not separate preview branches. Publish only tested frontend room/catalog split, elevation positioning, flying-creature visibility and non-creature block hover to main; do not ship unfinished multiplayer/auth migrations from PR #89.
+- Deployment to main authorized for this consolidated UI test. Inspect actual published result; GitHub CI on earlier PR passed; production integration still requires verification.
+
 ## Locked Deployment and Credit Policy — 2026-10-09
 
 **User decision: Netlify is production; avoid consuming Netlify build credits through frequent development pushes.**
