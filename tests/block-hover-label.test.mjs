@@ -10,6 +10,7 @@ test('3D hover uses the existing object ID and catalog name in source and browse
   assert.match(s,/item\.category === 'Characters'/);
   assert.match(s,/item\.category === 'Monsters'/);
   assert.match(s,/hoverLabel\.textContent = item\.name/);
+  assert.match(s,/preview\?\.visible && raycaster\.intersectObject\(preview\.children\[2\], true\)/);
   assert.match(s,/pointerleave/);
   assert.match(s,/hoverLabel\.remove\(\)/);
  }
