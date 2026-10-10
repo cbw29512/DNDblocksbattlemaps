@@ -117,6 +117,12 @@ This policy supersedes any older wording implying that every push should publish
 - Source and browser changes exist on PR #89 only, not live production. No browser reproduction, CI, or deploy has yet verified the visible outcome. User reproduction: elevated dragon placed at 20 feet was stored but not visible.
 - Next: typecheck, build parity, browser smoke test with Gargantuan dragon at elevation=4, then merge only when verified.
 
+## 2026-10-10 — Back/Home navigation repair checkpoint (PR #89; IN PROGRESS)
+- Report: Back button appears inert. Inspected src/main.ts, web/main.js, and back-button handlers in Join/DM/builder. Buttons were wired, but an asynchronous builder load could race with Home navigation.
+- Added version guard around async renderBuilder so a late-completing builder is disposed instead of replacing active route cleanup; changed navigate to use the central error-handling runRoute wrapper. Synchronized src/main.ts and web/main.js.
+- Outcome: code committed on development branch; no browser reproduction or CI verified yet. Source and generated browser file manually synchronized; verify with compile:web. The user's specific Back button location wasn't confirmed.
+- Cost: no Netlify deployment or production changes. Next: test Back home from Build/Join/DM and browser history during in-flight builder loading; run final-head CI.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
