@@ -4,6 +4,7 @@ import type { RoomPlacement } from '../domain/roomPlacement.js';
 import type { BoardState, CatalogId, GridPosition, TerrainTheme } from '../domain/types.js';
 
 export interface BoardHandlers {
+  onInspect: (id: string) => void;
   onPlace: (position: GridPosition) => void;
   onPickCreature: (id: string) => void;
   onMoveCreature: (position: GridPosition) => void;
@@ -25,6 +26,7 @@ export interface BoardRenderer {
   setElevation(elevation: number): void;
   setMovingCreature(id: string | null): void;
   setCreatureMoveMode(enabled: boolean): void;
+  setInspectMode(enabled: boolean): void;
   render(state: BoardState): void;
   rotate(deltaRadians: number): void;
   zoom(multiplier: number): void;
