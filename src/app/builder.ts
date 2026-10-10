@@ -282,7 +282,7 @@ export async function renderBuilder(
   root.querySelector('#mobile-cancel-spell')?.addEventListener('click',cancelArea);
   cancelButton.addEventListener('click',cancelArea);
   root.querySelector('#clear-spell-marks')?.addEventListener('click',()=>{renderer?.setAreaTargets([]);status.textContent='Hit markers cleared. Combat log preserved.';});
-  const onAreaRightClick=(event:MouseEvent):void=>{if(activeSpell){event.preventDefault();event.stopImmediatePropagation();cancelArea();}};
+  const onAreaRightClick=(event:MouseEvent):void=>{if(inspectMode)return;if(activeSpell){event.preventDefault();event.stopImmediatePropagation();cancelArea();}};
   canvas.addEventListener('contextmenu',onAreaRightClick,true);
 
   const boardSize = document.getElementById('board-size') as HTMLElement;
@@ -397,8 +397,9 @@ export async function renderBuilder(
       if (!object) return;
       const item = getCatalogItem(object.catalogId);
       const creature = ['Characters', 'Monsters'].includes(item.category);
-      root.querySelector<HTMLElement>('#inspect-name')!.textContent = item.name;
-      root.querySelector<HTMLElement>('#inspect-description')!.textContent = creature ? 'A creature you can see on the battlefield. Its abilities and statistics are not automatically known.' : 'A visible ' + item.name.toLowerCase() + ' block in the surrounding environment.';
+      const visibleName = /mimic/i.test(item.name) ? 'Old Chest' : /secret/i.test(item.name) ? 'Stone Wall' : item.name;
+      root.querySelector<HTMLElement>('#inspect-name')!.textContent = visibleName;
+      root.querySelector<HTMLElement>('#inspect-description')!.textContent = creature ? 'A creature you can see on the battlefield. Its abilities and statistics are not automatically known.' : 'A visible ' + visibleName.toLowerCase() + ' in the surrounding environment.';
       root.querySelector<HTMLElement>('#inspect-observation')!.textContent = creature ? (`Position: ${object.elevation * 5} feet elevation. ` + ((object.conditions ?? []).length ? `Visible conditions: ${object.conditions!.join(', ')}.` : 'No obvious conditions recorded.')) : `Position: ${object.elevation * 5} feet elevation.`;
       root.querySelector<HTMLElement>('#inspect-card')!.hidden = false;
     },
