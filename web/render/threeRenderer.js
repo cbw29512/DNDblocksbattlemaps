@@ -34,6 +34,11 @@ export async function createThreeRenderer(container, handlers) {
             return;
         }
         setPointer(event);
+        // Ignore underlying blocks when the pointer is over the placement ghost.
+        if (preview?.visible && raycaster.intersectObject(preview.children[2], true).length) {
+            hoverLabel.hidden = true;
+            return;
+        }
         const hit = raycaster.intersectObjects(objectGroup.children, true)
             .find((result) => result.object.userData.objectId);
         const object = currentObjects.find(item => item.id === hit?.object.userData.objectId);
