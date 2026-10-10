@@ -152,6 +152,7 @@ export async function renderBuilder(
       <section class="board-stage">
         <aside class="combat-log-dock" aria-label="Combat log"><details open><summary>Combat Log</summary><ol id="combat-log" aria-live="polite"></ol></details></aside>
         <div class="board-canvas" id="board-canvas" aria-label="Interactive battle map"></div>
+        <div id="object-context-menu" class="object-context-menu" role="menu" hidden></div>
         <section id="inspect-card" class="inspect-card" aria-label="Object inspection" hidden><button type="button" id="inspect-close" aria-label="Close inspection">×</button><h2 id="inspect-name"></h2><p id="inspect-description"></p><p id="inspect-observation"></p><small>Only visible observations. No hidden stats or secrets.</small></section>
         <div class="mobile-spell-actions" id="mobile-spell-actions" hidden><button id="mobile-cast-spell" type="button" disabled>Cast Spell</button><button id="mobile-cancel-spell" type="button">Cancel</button></div>
         <div class="camera-dock" aria-label="Camera controls">
@@ -392,6 +393,53 @@ export async function renderBuilder(
   };
 
   renderer = await createRenderer(canvas, {
+    onDragMove(id, position) {
+      if (inspectMode) return;
+      const object=findObject(state,id);
+      if(!object)return;
+      const category=getCatalogItem(object.catalogId).category;
+      if(moveMode && !['Characters','Monsters'].includes(category))return;
+      const span=category==='Monsters'?(getCatalogItem(object.catalogId).footprintCells??1):1;
+      if(position.x<state.bounds.minX||position.z<state.bounds.minZ||position.x+span>state.bounds.maxX||position.z+span>state.bounds.maxZ){status.textContent='Move within the board.';return;}
+      const after={...object,x:position.x,z:position.z};
+      if(after.x===object.x&&after.z===object.z)return;
+      if(run({kind:'update',before:object,after},[position])===null)return;
+      if(['Characters','Monsters'].includes(category)){
+        const steps=Math.max(Math.abs(after.x-object.x),Math.abs(after.z-object.z));
+        const triggers=new Set(['pressure-plate','spike-trap','snare-trap','spring-trap','flame-jet','dart-trap','web-trap','hidden-trigger','alarm-rune','collapsing-floor']);
+        for(let i=1;i<=steps;i++){
+          const x=Math.round(object.x+(after.x-object.x)*i/steps),z=Math.round(object.z+(after.z-object.z)*i/steps);
+          for(const trap of [...state.objects]){
+            if(trap.id===id||trap.activated||!triggers.has(trap.catalogId)||trap.x!==x||trap.z!==z)continue;
+            run({kind:'update',before:trap,after:{...trap,activated:true}},[]);
+            status.textContent=getCatalogItem(trap.catalogId).name+' triggered by '+getCatalogItem(object.catalogId).name+'. DM resolves its effect.';
+          }
+        }
+      }
+      if(!status.textContent.includes('triggered by'))status.textContent=getCatalogItem(object.catalogId).name+' moved.';
+    },
+    onObjectContext(id,x,y) {
+      if(inspectMode)return;
+      const object=findObject(state,id);if(!object)return;
+      const item=getCatalogItem(object.catalogId);
+      const menu=root.querySelector<HTMLElement>('#object-context-menu')!;
+      menu.replaceChildren();menu.hidden=false;
+      menu.style.left=Math.min(x,window.innerWidth-210)+'px';menu.style.top=Math.min(y,window.innerHeight-240)+'px';
+      const add=(label:string,action:()=>void)=>{
+        const button=document.createElement('button');button.type='button';button.textContent=label;
+        button.addEventListener('click',()=>{menu.hidden=true;action();});menu.append(button);
+      };
+      const door=['door','open-doorway','secret-door','trapdoor'].includes(object.catalogId);
+      const trap=['pressure-plate','spike-trap','snare-trap','spring-trap','flame-jet','dart-trap','web-trap','hidden-trigger','alarm-rune','collapsing-floor'].includes(object.catalogId);
+      if(door)add(object.opened?'Close':'Open',()=>{run({kind:'update',before:object,after:{...object,opened:!object.opened}},[]);status.textContent=item.name+(object.opened?' closed.':' opened.');});
+      if(trap)add(object.activated?'Reset Trap':'Trigger Trap',()=>{run({kind:'update',before:object,after:{...object,activated:!object.activated}},[]);status.textContent=item.name+(object.activated?' reset.':' triggered. DM resolves its effect.');});
+      if(['lever','switch'].includes(object.catalogId))add(object.activated?'Reset':'Activate',()=>{run({kind:'update',before:object,after:{...object,activated:!object.activated}},[]);});
+      if(!moveMode){
+        add('Duplicate',()=>run(placeCommand(createWorldObject(makeId(),object.catalogId,{x:object.x+1,z:object.z,elevation:object.elevation})),[]));
+        add('Remove',()=>run(removeCommand(object),[]));
+      }
+      if(!menu.children.length)menu.hidden=true;
+    },
     onInspect(id) {
       const object = findObject(state, id);
       if (!object) return;
