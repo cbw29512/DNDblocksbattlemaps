@@ -9,6 +9,7 @@ import {
   DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell
 } from '../domain/spatial.js';
 import { placementFromSurface } from '../domain/surfacePlacement.js';
+import { verticalFrame } from './verticalFrame.js';
 import type {
   BoardBounds, CatalogId, GridPosition, TerrainTheme, WorldObject
 } from '../domain/types.js';
@@ -245,14 +246,18 @@ export async function createThreeRenderer(
   function frameBoard(): void {
     const center = boardCenter(currentBounds);
     const span = Math.max(boardWidth(currentBounds), boardDepth(currentBounds));
-    const distance = Math.max(CAMERA_DISTANCE, span * 1.15);
+    const { targetY, highest } = verticalFrame(currentObjects, object => {
+      const item = getCatalogItem(object.catalogId);
+      return item.category === 'Monsters' ? (item.footprintCells ?? 1) : 1;
+    });
+    const distance = Math.max(CAMERA_DISTANCE, span * 1.15, highest * 3);
     const horizontal = Math.cos(Math.PI / 6) * distance;
     const vertical = Math.sin(Math.PI / 6) * distance;
 
-    controls.target.set(center.x, 0, center.z);
+    controls.target.set(center.x, targetY, center.z);
     camera.position.set(
       center.x + horizontal / Math.sqrt(2),
-      vertical,
+      vertical + targetY,
       center.z + horizontal / Math.sqrt(2)
     );
     controls.update();
@@ -459,7 +464,16 @@ export async function createThreeRenderer(
         state.bounds.maxZ !== currentBounds.maxZ;
       if (changed) updateBoardGeometry(state.bounds);
 
+      const previousHeight = verticalFrame(currentObjects, object => {
+        const item=getCatalogItem(object.catalogId);
+        return item.category==='Monsters' ? (item.footprintCells ?? 1) : 1;
+      }).highest;
       currentObjects = state.objects;
+      const nextHeight = verticalFrame(currentObjects, object => {
+        const item=getCatalogItem(object.catalogId);
+        return item.category==='Monsters' ? (item.footprintCells ?? 1) : 1;
+      }).highest;
+      if(nextHeight > previousHeight && nextHeight >= 4) frameBoard();
       updateBlockLights(state.objects);
       objectGroup.clear();
       state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
