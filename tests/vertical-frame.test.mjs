@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {verticalFrame} from '../src/render/verticalFrame.js';
+import {verticalFrame} from '../web/render/verticalFrame.js';
 
 test('flying large dragon is included in vertical camera framing',()=>{
  const objects=[{elevation:4,footprint:4}];
