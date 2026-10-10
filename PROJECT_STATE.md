@@ -10,6 +10,13 @@
 - User explicitly prefers testing in production, not separate preview branches. Publish only tested frontend room/catalog split, elevation positioning, flying-creature visibility and non-creature block hover to main; do not ship unfinished multiplayer/auth migrations from PR #89.
 - Deployment to main authorized for this consolidated UI test. Inspect actual published result; GitHub CI on earlier PR passed; production integration still requires verification.
 
+## 2026-10-10 — Production builder elevation placement correction
+- User clarified Height/Elevation must be at the TOP of Catalog, not at the bottom.
+- Moved persistent elevation controls immediately ABOVE the separate collapsible Catalog panel (after Room Builder) in source and compiled browser files; the height controls remain visible when Catalog is closed.
+- Updated sidebar layout regression to require height before Catalog; changed browser cache query in index.html and web/main.js.
+- Production main source was updated on user request; hosting deployment and browser QA remain unverified. No DM/player backend was shipped in this change.
+- Next: verify automatic build/deploy and browser layout; ensure regression check passes.
+
 ## Locked Deployment and Credit Policy — 2026-10-09
 
 **User decision: Netlify is production; avoid consuming Netlify build credits through frequent development pushes.**
