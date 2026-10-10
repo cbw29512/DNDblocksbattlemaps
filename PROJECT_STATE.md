@@ -49,6 +49,12 @@
 - GitHub connector returned no PR-triggered runs for main; runtime cannot resolve GitHub host for local clone and web browser retrieval of GitHub Pages site failed. Therefore full test suite, deployed-version verification and live drag/drop acceptance remain unverified, not passed.
 - Next: verify browser deployment and exact-head CI with working execution environment; test drag, context menus, trap traversal on device and patch observed failures.
 
+## 2026-10-10 — Visible drag destination shadow
+- Approved by user after verifying block drag moves work in production. Implemented a semi-transparent (38% opacity) color-matched cube preview that follows the pointer's grid cell while dragging a placed block. A gold outline highlights the destination; Large/Huge/Gargantuan monster footprints are represented as matching multi-cube previews. The original block stays put until pointer release.
+- Ghost tracks the dragged object's existing elevation (not the builder's currently selected height); only in-bounds squares preview. It disappears on release, cancellation, or when Inspect is switched on. The ordinary Build placement ghost is suppressed while dragging.
+- Updated TypeScript and browser JavaScript, added tests/drag-ghost.test.mjs and cache keys through the browser import chain. Browser JS parse check PASS; exact-head TypeScript/Node/Chromium and published site rendering remain unverified.
+- No additional Netlify-specific code or login changes. Next: verify on production mouse and touch; refine visual artwork if the plain translucent color preview is insufficient.
+
 ## Locked Deployment and Credit Policy — 2026-10-09
 
 **User decision: Netlify is production; avoid consuming Netlify build credits through frequent development pushes.**
