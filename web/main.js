@@ -1,5 +1,5 @@
 import { listCampaignMaps } from './domain/storage.js?v=b5ed9895f361';
-import { renderBuilder } from './app/builder.js?v=height-inside-20261010';
+import { renderBuilder } from './app/builder.js?v=hover-fix-20261010';
 import { renderHome } from './app/home.js?v=b5ed9895f361';
 import { renderJoin } from './app/join.js?v=b5ed9895f361';
 function requireRoot() {
