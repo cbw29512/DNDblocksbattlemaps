@@ -17,7 +17,7 @@ import { roomSummary } from '../domain/room.js?v=b5ed9895f361';
 import { roomWallPositions } from '../domain/roomPlacement.js?v=b5ed9895f361';
 import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=b5ed9895f361';
 import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=b5ed9895f361';
-import { createRenderer } from '../render/createRenderer.js?v=b5ed9895f361';
+import { createRenderer } from '../render/createRenderer.js?v=hover-fix-20261010';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
