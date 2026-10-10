@@ -10,6 +10,7 @@ function requireRoot() {
 }
 const root = requireRoot();
 let cleanup = null;
+let routeVersion = 0;
 function navigate(view, terrain) {
     const url = new URL(window.location.href);
     url.search = '';
@@ -18,9 +19,10 @@ function navigate(view, terrain) {
     if (terrain)
         url.searchParams.set('terrain', terrain);
     history.pushState({}, '', url);
-    void route();
+    runRoute();
 }
 async function route() {
+    const version = ++routeVersion;
     cleanup?.();
     cleanup = null;
     const params = new URLSearchParams(window.location.search);
@@ -30,7 +32,9 @@ async function route() {
         const terrain = (params.get('terrain') ?? 'castle');
         const requested = params.get('map');
         const selectedMap = listCampaignMaps().find(map => map.id === requested && map.terrain === terrain);
-        cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
+        const dispose = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
+        if (version !== routeVersion) { dispose(); return; }
+        cleanup = dispose;
         return;
     }
     if (view === 'dm') {
