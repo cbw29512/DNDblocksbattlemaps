@@ -55,6 +55,7 @@ export async function createThreeRenderer(
   document.body.append(hoverLabel);
   function updateHoverLabel(event: PointerEvent): void {
     if (event.pointerType === 'touch') { hoverLabel.hidden = true; return; }
+    if (!inspectMode) { hoverLabel.hidden = true; return; }
     setPointer(event);
     // The selected cube preview sits in front of placed blocks. Never identify
     // a block hidden behind that preview as the hovered object.
@@ -183,6 +184,7 @@ export async function createThreeRenderer(
   let selected: CatalogId | null = null;
   let movingCreatureId: string | null = null;
   let creatureMoveMode = false;
+  let inspectMode = false;
   let activeRoom: NormalizedRoom | null = null;
   let elevation = 0;
   let preview: any = null;
@@ -371,6 +373,7 @@ export async function createThreeRenderer(
 
   renderer.domElement.addEventListener('pointermove', (event: PointerEvent) => {
     updateHoverLabel(event);
+    if (inspectMode) return;
     if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,false); return; }
     if (activeRoom && roomPreview) {
       const corner = floorPosition(event) as RoomCorner | null;
@@ -398,6 +401,11 @@ export async function createThreeRenderer(
   renderer.domElement.addEventListener('click', (event: MouseEvent) => {
     if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,true,lastPointerWasTouch || (event as PointerEvent).pointerType==='touch'); lastPointerWasTouch=false; return; }
     setPointer(event);
+    if (inspectMode) {
+      const hit = raycaster.intersectObjects(objectGroup.children, true).find((h: any) => h.object.userData.objectId);
+      if (hit) handlers.onInspect(String(hit.object.userData.objectId));
+      return;
+    }
     const marked = raycaster.intersectObjects(objectGroup.children, true)
       .find((hit: any) => hit.object.userData.objectId)?.object?.userData?.objectId;
     if (marked && handlers.onMarkTarget(String(marked))) return;
@@ -489,6 +497,7 @@ export async function createThreeRenderer(
     },
     setMovingCreature(id) { movingCreatureId = id; },
     setCreatureMoveMode(enabled) { creatureMoveMode = enabled; rebuildBlockPreview(); },
+    setInspectMode(enabled) { inspectMode = enabled; hoverLabel.hidden = true; if (preview) preview.visible = false; },
     setElevation(next) {
       elevation = next;
       const center = boardCenter(currentBounds);
