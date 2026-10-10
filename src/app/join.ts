@@ -46,7 +46,7 @@ export function renderJoin(root: HTMLElement, handlers: JoinHandlers): void {
           throw new Error('Invalid session response. Enter a game code to join.');
         if(!root.contains(feedback))return;
         if(name)name.value=result.player.display_name;
-        const pieces=Array.isArray(result.assignedEntityIds)?result.assignedEntityIds.filter(id=>typeof id==='string'):[];
+        const pieces=Array.isArray(result.assignedEntityIds)?result.assignedEntityIds.filter((id: string)=>typeof id==='string'):[];
         feedback.textContent='Welcome back, '+result.player.display_name+'. Reconnected to '+(result.player.game_name||'your game')+
           (pieces.length?' — '+pieces.length+' assigned piece(s).':' — waiting for your DM to assign a character.');
       }catch(error){
