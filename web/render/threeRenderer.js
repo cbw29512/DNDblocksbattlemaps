@@ -48,7 +48,7 @@ export async function createThreeRenderer(container, handlers) {
             return;
         }
         const item = getCatalogItem(object.catalogId);
-        if (item.category === 'Characters' || item.category === 'Monsters') {
+        if (!inspectMode && (item.category === 'Characters' || item.category === 'Monsters')) {
             hoverLabel.hidden = true;
             return;
         }
@@ -321,6 +321,7 @@ export async function createThreeRenderer(container, handlers) {
     renderer.domElement.addEventListener('pointermove', (event) => {
         updateHoverLabel(event);
         if (inspectMode) return;
+        if (inspectMode) return;
         if (activeArea) {
             const point = floorPosition(event);
             if (point)
@@ -345,7 +346,13 @@ export async function createThreeRenderer(container, handlers) {
     let lastPointerWasTouch = false;
     renderer.domElement.addEventListener('pointerdown', (event) => { lastPointerWasTouch = event.pointerType === 'touch'; });
     renderer.domElement.addEventListener('click', (event) => {
-        if (activeArea) {
+                if (inspectMode) {
+            setPointer(event);
+            const hit = raycaster.intersectObjects(objectGroup.children, true).find((h) => h.object.userData.objectId);
+            if (hit) handlers.onInspect(String(hit.object.userData.objectId));
+            return;
+        }
+if (activeArea) {
             const point = floorPosition(event);
             if (point)
                 handlers.onAreaPoint(point, true, lastPointerWasTouch || event.pointerType === 'touch');
@@ -418,6 +425,7 @@ export async function createThreeRenderer(container, handlers) {
     });
     renderer.domElement.addEventListener('contextmenu', (event) => {
         event.preventDefault();
+        if (inspectMode) return;
         setPointer(event);
         const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit) => hit.object.userData.objectId);
         const id = hit?.object?.userData?.objectId;
