@@ -343,9 +343,33 @@ export async function createThreeRenderer(container, handlers) {
         const position = blockPlacementFor(event);
         position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
     });
+    let dragStart = null;
+    let suppressClick = false;
+    const objectAt = event => {
+        setPointer(event);
+        return raycaster.intersectObjects(objectGroup.children, true).find(h => h.object.userData.objectId)?.object.userData.objectId;
+    };
+    renderer.domElement.addEventListener('pointerdown', event => {
+        if (inspectMode || event.button !== 0) return;
+        const id = objectAt(event);
+        if (!id) return;
+        const object = currentObjects.find(o => o.id === id);
+        if (!object || (creatureMoveMode && !['Characters','Monsters'].includes(getCatalogItem(object.catalogId).category))) return;
+        dragStart = {id, x:event.clientX, y:event.clientY};
+    });
+    renderer.domElement.addEventListener('pointerup', event => {
+        if (!dragStart) return;
+        const start=dragStart; dragStart=null;
+        if (inspectMode || Math.hypot(event.clientX-start.x,event.clientY-start.y)<8) return;
+        suppressClick=true;
+        const position=floorPosition(event);
+        if (position) handlers.onDragMove(String(start.id),position);
+    });
+    renderer.domElement.addEventListener('pointercancel',()=>{dragStart=null;});
     let lastPointerWasTouch = false;
     renderer.domElement.addEventListener('pointerdown', (event) => { lastPointerWasTouch = event.pointerType === 'touch'; });
     renderer.domElement.addEventListener('click', (event) => {
+        if (suppressClick) { suppressClick=false; return; }
                 if (inspectMode) {
             setPointer(event);
             const hit = raycaster.intersectObjects(objectGroup.children, true).find((h) => h.object.userData.objectId);
@@ -429,8 +453,7 @@ if (activeArea) {
         setPointer(event);
         const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit) => hit.object.userData.objectId);
         const id = hit?.object?.userData?.objectId;
-        if (id)
-            handlers.onRemove(String(id));
+        if (id) handlers.onObjectContext(String(id),event.clientX,event.clientY);
     });
     const resize = new ResizeObserver(() => {
         renderer.setSize(container.clientWidth, container.clientHeight, false);
