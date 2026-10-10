@@ -52,7 +52,7 @@ export async function createThreeRenderer(container, handlers) {
             hoverLabel.hidden = true;
             return;
         }
-        hoverLabel.textContent = item.name;
+        hoverLabel.textContent = /mimic/i.test(item.name) ? 'Old Chest' : /secret/i.test(item.name) ? 'Stone Wall' : item.name;
         hoverLabel.style.left = Math.min(event.clientX + 14, window.innerWidth - 250) + 'px';
         hoverLabel.style.top = Math.min(event.clientY + 16, window.innerHeight - 38) + 'px';
         hoverLabel.hidden = false;
