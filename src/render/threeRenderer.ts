@@ -56,6 +56,12 @@ export async function createThreeRenderer(
   function updateHoverLabel(event: PointerEvent): void {
     if (event.pointerType === 'touch') { hoverLabel.hidden = true; return; }
     setPointer(event);
+    // The selected cube preview sits in front of placed blocks. Never identify
+    // a block hidden behind that preview as the hovered object.
+    if (preview?.visible && raycaster.intersectObject(preview.children[2], true).length) {
+      hoverLabel.hidden = true;
+      return;
+    }
     const hit = raycaster.intersectObjects(objectGroup.children, true)
       .find((result: any) => result.object.userData.objectId);
     const object = currentObjects.find(item => item.id === hit?.object.userData.objectId);
