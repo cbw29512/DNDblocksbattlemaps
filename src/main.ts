@@ -14,6 +14,7 @@ function requireRoot(): HTMLElement {
 const root = requireRoot();
 
 let cleanup: (() => void) | null = null;
+let routeVersion = 0;
 
 function navigate(view?: 'build' | 'join' | 'dm', terrain?: TerrainId): void {
   const url = new URL(window.location.href);
@@ -21,10 +22,11 @@ function navigate(view?: 'build' | 'join' | 'dm', terrain?: TerrainId): void {
   if (view) url.searchParams.set('view', view);
   if (terrain) url.searchParams.set('terrain', terrain);
   history.pushState({}, '', url);
-  void route();
+  runRoute();
 }
 
 async function route(): Promise<void> {
+  const version = ++routeVersion;
   cleanup?.(); cleanup = null;
   const params = new URLSearchParams(window.location.search);
   const identityCallback = /(?:^|[&#])(confirmation_token|recovery_token|invite_token|access_token|token)=/.test(window.location.hash);
@@ -34,7 +36,9 @@ async function route(): Promise<void> {
     const terrain = (params.get('terrain') ?? 'castle') as TerrainId;
     const requested = params.get('map');
     const selectedMap = listCampaignMaps().find(map => map.id === requested && map.terrain === terrain);
-    cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
+    const dispose = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
+    if (version !== routeVersion) { dispose(); return; }
+    cleanup = dispose;
     return;
   }
   if (view === 'dm') {
