@@ -94,7 +94,7 @@ export function createFallbackRenderer(
 
         if (top) {
           const item = getCatalogItem(top.catalogId);
-          cell.title = inspectMode ? item.name : '';
+          cell.title = inspectMode ? item.name + (top.opened ? ' (open)' : '') : '';
           cell.style.setProperty('--piece-color', `#${item.color.toString(16).padStart(6, '0')}`);
           const visual = item.art
             ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`
