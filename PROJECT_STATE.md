@@ -106,6 +106,12 @@ This policy supersedes any older wording implying that every push should publish
 - Cost: no production Netlify deployment, migrations, secrets or intentional credits. Remaining blockers: missing npm lockfile, actual Netlify Identity/DB integration, concurrent Postgres verification, browser sync.
 - Next: obtain npm-generated lockfile, run exact-head checks, then fix failures before single approved Netlify release.
 
+## 2026-10-10 — Elevated dragon rendering/camera visibility repair (PR #89; IN PROGRESS)
+- Reproduced by code inspection: a 20-ft elevation creates an elevated mesh, but `threeRenderer.frameBoard` targeted y=0 with distance based only on horizontal board span. Large airborne creatures could be outside camera framing even though persisted/added to the scene.
+- Added `src/render/verticalFrame.ts` to compute maximum upper cube elevation using monster footprints, and updated `threeRenderer` camera target/distance. On newly increased high-altitude content (>=4 levels), camera reframes to reveal it. Added `tests/vertical-frame.test.mjs` for a 4x4 dragon at elevation 4 (top height 8) and ground cases.
+- Source fix committed on development branch, but browser `web/` generated bundle is not yet synchronized and no actual browser reproduction/CI has been verified. Avoid claims that the public page is fixed. Netlify production remains locked.
+- Next: run `npm run compile:web`, commit generated browser bundle, execute tests and browser QA with a dragon at 20ft; adjust if the bug persists. No map data migrated.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
