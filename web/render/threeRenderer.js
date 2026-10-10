@@ -384,11 +384,6 @@ if (activeArea) {
             return;
         }
         setPointer(event);
-        if (inspectMode) {
-            const hit = raycaster.intersectObjects(objectGroup.children, true).find(h => h.object.userData.objectId);
-            if (hit) handlers.onInspect(String(hit.object.userData.objectId));
-            return;
-        }
         const marked = raycaster.intersectObjects(objectGroup.children, true)
             .find((hit) => hit.object.userData.objectId)?.object?.userData?.objectId;
         if (marked && handlers.onMarkTarget(String(marked)))
