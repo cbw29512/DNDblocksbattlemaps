@@ -5,6 +5,8 @@ import type { BoardState, CatalogId, GridPosition, TerrainTheme } from '../domai
 
 export interface BoardHandlers {
   onInspect: (id: string) => void;
+  onDragMove: (id: string, position: GridPosition) => void;
+  onObjectContext: (id: string, clientX: number, clientY: number) => void;
   onPlace: (position: GridPosition) => void;
   onPickCreature: (id: string) => void;
   onMoveCreature: (position: GridPosition) => void;
