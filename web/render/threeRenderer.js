@@ -238,6 +238,10 @@ export async function createThreeRenderer(container, handlers) {
             : highest, 0);
     }
     function blockPlacementFor(event) {
+        // Creature placement at an explicit elevation must not inherit a lower block's face height.
+        if (selected && elevation > 0 && ['Characters', 'Monsters'].includes(getCatalogItem(selected).category)) {
+            return floorPosition(event);
+        }
         setPointer(event);
         const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit) => hit.object.userData.objectId);
         if (!hit?.face)
