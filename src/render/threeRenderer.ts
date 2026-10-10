@@ -60,7 +60,9 @@ export async function createThreeRenderer(
       .find((result: any) => result.object.userData.objectId);
     const object = currentObjects.find(item => item.id === hit?.object.userData.objectId);
     if (!object) { hoverLabel.hidden = true; return; }
-    hoverLabel.textContent = getCatalogItem(object.catalogId).name;
+    const item = getCatalogItem(object.catalogId);
+    if (item.category === 'Characters' || item.category === 'Monsters') { hoverLabel.hidden = true; return; }
+    hoverLabel.textContent = item.name;
     hoverLabel.style.left = Math.min(event.clientX + 14, window.innerWidth - 250) + 'px';
     hoverLabel.style.top = Math.min(event.clientY + 16, window.innerHeight - 38) + 'px';
     hoverLabel.hidden = false;
