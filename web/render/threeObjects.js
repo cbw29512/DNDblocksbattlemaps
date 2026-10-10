@@ -185,6 +185,7 @@ export function meshFor(THREE, object) {
     mesh.userData.gridX = object.x;
     mesh.userData.gridZ = object.z;
     mesh.userData.elevation = object.elevation;
+    if (object.opened) { const open=creatureLabel(THREE, 'OPEN'); if(open) mesh.add(open); }
     const footprint = item.category === 'Monsters' ? (item.footprintCells ?? 1) : 1;
     if (footprint > 1) {
         monsterExterior(THREE, mesh, item, footprint);
