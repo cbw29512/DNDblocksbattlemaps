@@ -123,6 +123,12 @@ This policy supersedes any older wording implying that every push should publish
 - Outcome: code committed on development branch; no browser reproduction or CI verified yet. Source and generated browser file manually synchronized; verify with compile:web. The user's specific Back button location wasn't confirmed.
 - Cost: no Netlify deployment or production changes. Next: test Back home from Build/Join/DM and browser history during in-flight builder loading; run final-head CI.
 
+## 2026-10-10 — Flying creature explicit-elevation placement (PR #89; IN PROGRESS)
+- Root cause identified in `threeRenderer.blockPlacementFor`: when a cube face is hit, its source elevation can override the user's 20-foot level and offset the monster unexpectedly. When a Character/Monster is selected and elevation > 0, placement now raycasts directly to the selected elevation plane. Ground build blocks retain face-stacking behavior.
+- Updated authoritative `src/render/threeRenderer.ts` and corresponding `web/render/threeRenderer.js`. Added focused placement source/browser regression `tests/flying-creature-placement.test.mjs`. The earlier vertical camera framing repair remains present.
+- Result: code pushed, browser behavior and final-head CI not yet verified. No existing map altered or production Netlify deployment. Exact QA: choose dragon, elevation 20ft (level 4), place above occupied and empty ground cells, assert object.elevation=4 and visible in 3D; reload and confirm remains visible.
+- Next: run full npm checks and live browser smoke on development build, correct failures, then declare issue fixed only after visual verification.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
