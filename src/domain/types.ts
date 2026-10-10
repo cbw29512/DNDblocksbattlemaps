@@ -31,6 +31,8 @@ export interface WorldObject extends GridPosition {
   partyMember?: boolean;
   conditions?: string[];
   exhaustion?: number;
+  opened?: boolean;
+  activated?: boolean;
   createdAt: number;
 }
 
