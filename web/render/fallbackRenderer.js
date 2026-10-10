@@ -115,7 +115,6 @@ export function createFallbackRenderer(container, handlers) {
                         lastPointerWasTouch = false;
                         return;
                     }
-                    if (inspectMode) { if (top) handlers.onInspect(top.id); return; }
                     if (top && handlers.onMarkTarget(top.id))
                         return;
                     if (room) {
