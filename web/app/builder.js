@@ -89,11 +89,6 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             <summary>Room Builder</summary>
             ${roomPanelHtml()}
           </details>
-          <details class="builder-tool-group" id="catalog-panel" open>
-            <summary>Catalog</summary>
-            ${catalogPanelHtml(selected, theme.id, mapId ? listCampaignMaps().find(m => m.id === mapId)?.templateId : undefined)}
-          </details>
-        </div>
         <div class="elevation-control">
           <span>Height / Elevation</span>
           <div>
@@ -101,6 +96,11 @@ export async function renderBuilder(root, terrainId, handlers, mapId) {
             <b id="elev-value">Ground</b>
             <button id="elev-up" type="button" aria-label="Increase height">+</button>
           </div>
+        </div>
+          <details class="builder-tool-group" id="catalog-panel" open>
+            <summary>Catalog</summary>
+            ${catalogPanelHtml(selected, theme.id, mapId ? listCampaignMaps().find(m => m.id === mapId)?.templateId : undefined)}
+          </details>
         </div>
         <details class="builder-tool-group" id="combat-markers-panel" hidden><summary>Creature Markers</summary><section class="creature-ring-tools" aria-label="Creature markers">
           <div id="identity-ring-tools">
