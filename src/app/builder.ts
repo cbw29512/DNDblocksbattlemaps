@@ -108,6 +108,8 @@ export async function renderBuilder(
             <summary>Room Builder</summary>
             ${roomPanelHtml()}
           </details>
+          <details class="builder-tool-group" id="catalog-panel" open>
+            <summary>Catalog</summary>
         <div class="elevation-control">
           <span>Height / Elevation</span>
           <div>
@@ -116,8 +118,6 @@ export async function renderBuilder(
             <button id="elev-up" type="button" aria-label="Increase height">+</button>
           </div>
         </div>
-          <details class="builder-tool-group" id="catalog-panel" open>
-            <summary>Catalog</summary>
             ${catalogPanelHtml(selected, theme.id, mapId ? listCampaignMaps().find(m => m.id === mapId)?.templateId : undefined)}
           </details>
         </div>
