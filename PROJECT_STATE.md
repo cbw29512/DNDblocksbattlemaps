@@ -36,6 +36,14 @@
 - Browser JS and TS sources updated; new tests/inspect-mode.test.mjs added, CSS card styling and browser cache keys updated. Browser JavaScript modules passed standalone parse checks; exact-head CI, hosted deployment, and live interaction smoke test remain UNVERIFIED.
 - Next: verify exact-head typecheck, Node regressions, browser smoke; then verify hosted top toolbar, toggle, card, secrets, placement safety on production. Batch fixes if needed.
 
+## 2026-10-10 — Build/Combat/Inspect mode interactions on main
+- Approved interactions implemented in TS source and checked-in browser JS: pointer drag from placed blocks (3D), HTML drag/drop (fallback); Build accepts all blocks, Combat only Characters and Monsters, Inspect disables drag, placement, removal, marking and menus.
+- Right-click invokes a contextual menu rather than direct deletion: Build has Duplicate/Remove, plus door Open/Close, traps Trigger/Reset, lever/switch Activate/Reset; Combat shows only appropriate gameplay interactions. Door opening is stored on the object and marked OPEN over its 3D cube, without changing cube geometry.
+- Creature movement across trigger squares marks matching trap objects activated and reports the trigger for DM adjudication; does NOT apply invented damage, saves, automation for hidden DM reveal, movement budget, or obstacle collision. Those and full role permissions remain future requirements.
+- Added `tests/mode-interactions.test.mjs`; compiled JavaScript syntax checks pending final execution; full TS/Node/Chromium CI and live production verification NOT claimed.
+- Browser cache query keys updated. User explicitly prefers direct main/production testing to development preview branches. Minimize unnecessary Netlify builds.
+- Next: exact-head CI, live pointer drag and trap/door interaction acceptance test, refine movement trace and trap engine, validate mobile touch behavior.
+
 ## Locked Deployment and Credit Policy — 2026-10-09
 
 **User decision: Netlify is production; avoid consuming Netlify build credits through frequent development pushes.**
