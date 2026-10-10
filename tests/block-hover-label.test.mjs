@@ -6,7 +6,10 @@ test('3D hover uses the existing object ID and catalog name in source and browse
   const s=readFileSync(new URL(path,import.meta.url),'utf8');
   assert.match(s,/function updateHoverLabel\(/);
   assert.match(s,/raycaster\.intersectObjects\(objectGroup\.children, true\)/);
-  assert.match(s,/getCatalogItem\(object\.catalogId\)\.name/);
+  assert.match(s,/getCatalogItem\(object\.catalogId\)/);
+  assert.match(s,/item\.category === 'Characters'/);
+  assert.match(s,/item\.category === 'Monsters'/);
+  assert.match(s,/hoverLabel\.textContent = item\.name/);
   assert.match(s,/pointerleave/);
   assert.match(s,/hoverLabel\.remove\(\)/);
  }
