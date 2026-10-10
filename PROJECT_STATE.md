@@ -135,6 +135,13 @@ This policy supersedes any older wording implying that every push should publish
 - Added `tests/builder-sidebar-layout.test.mjs`; updated `public/how-to-play.html`. No gameplay mechanics, stored maps, Netlify credentials or deployments changed.
 - Next: verify exact-head CI and browser interaction (collapse both sections, catalog selection, room controls, height adjustments), then mark UI gate verified only when evidence exists.
 
+## 2026-10-10 — Universal placed-block hover labels (PR #89; IN PROGRESS)
+- User request: hovering any block (Door, Water, etc.) or multi-cube creature should show a small readable catalog-name label.
+- Added a lightweight pointer-following DOM tooltip to the Three.js renderer, using raycast objectId -> WorldObject -> existing catalog item name. Child cubes share their parent object ID, so large monsters show one identity. Tooltip hides on exit/touch, is pointer transparent, and removes itself on renderer dispose.
+- Synced `src/render/threeRenderer.ts` to `web/render/threeRenderer.js`. Fallback grid now sets native `title` for every top object in `src/render/fallbackRenderer.ts` and `web/render/fallbackRenderer.js`. Added `tests/block-hover-label.test.mjs` and How to Play instructions.
+- Scope: visual identification only; no placement rules or persistent state changed. Netlify production remains locked. Exact-head automated tests and browser verification still pending; do not mark live verified.
+- Next: verify browser hover across doors, water, overlapping blocks, multi-cube dragons, pointer exit, and both renderers. Run compile:web/check and inspect final CI.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
