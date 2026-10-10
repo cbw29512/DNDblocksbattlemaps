@@ -432,11 +432,6 @@ export async function createThreeRenderer(
     }
 if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,true,lastPointerWasTouch || (event as PointerEvent).pointerType==='touch'); lastPointerWasTouch=false; return; }
     setPointer(event);
-    if (inspectMode) {
-      const hit = raycaster.intersectObjects(objectGroup.children, true).find((h: any) => h.object.userData.objectId);
-      if (hit) handlers.onInspect(String(hit.object.userData.objectId));
-      return;
-    }
     const marked = raycaster.intersectObjects(objectGroup.children, true)
       .find((hit: any) => hit.object.userData.objectId)?.object?.userData?.objectId;
     if (marked && handlers.onMarkTarget(String(marked))) return;
