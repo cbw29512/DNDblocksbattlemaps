@@ -114,6 +114,7 @@ export function createFallbackRenderer(
         }
 
         cell.addEventListener('pointerenter', () => {
+          if (inspectMode) return;
           if(areaTemplate){ handlers.onAreaPoint({x,z,elevation},false); return; }
           if (!room) return;
           const corner = { x, z, elevation };
@@ -126,7 +127,6 @@ export function createFallbackRenderer(
         cell.addEventListener('click', (event) => {
           if (inspectMode) { if (top) handlers.onInspect(top.id); return; }
           if (areaTemplate) { handlers.onAreaPoint({x,z,elevation},true,lastPointerWasTouch || (event as PointerEvent).pointerType==='touch'); lastPointerWasTouch=false; return; }
-          if (inspectMode) { if (top) handlers.onInspect(top.id); return; }
           if (top && handlers.onMarkTarget(top.id)) return;
           if (room) {
             const placement = chooseRoomPlacement(room, { x, z, elevation }, currentObjects, currentBounds);
