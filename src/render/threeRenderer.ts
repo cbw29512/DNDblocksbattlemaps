@@ -396,29 +396,76 @@ export async function createThreeRenderer(
     position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
   });
 
+
   let dragStart: {id:string;x:number;y:number} | null = null;
+  let dragGhost: any = null;
   let suppressClick = false;
+  const clearDragGhost = (): void => {
+    if(!dragGhost)return;
+    scene.remove(dragGhost);
+    dragGhost.traverse((node:any)=>{node.geometry?.dispose?.();node.material?.dispose?.();});
+    dragGhost=null;
+  };
   const objectAt = (event: PointerEvent | MouseEvent): string | undefined => {
     setPointer(event);
     return raycaster.intersectObjects(objectGroup.children,true).find((h:any)=>h.object.userData.objectId)?.object.userData.objectId;
   };
+  const dragDestination = (event: PointerEvent,object:WorldObject): GridPosition | null => {
+    setPointer(event);
+    const point=new THREE.Vector3();
+    if(!raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-object.elevation),point))return null;
+    const x=Math.floor(point.x),z=Math.floor(point.z);
+    if(!isBoardCell({x,z,elevation:object.elevation},currentBounds))return null;
+    return {x,z,elevation:object.elevation};
+  };
+  const showDragGhost=(object:WorldObject,position:GridPosition):void=>{
+    if(!dragGhost){
+      const item=getCatalogItem(object.catalogId);
+      const footprint=item.category==='Monsters'?(item.footprintCells??1):1;
+      dragGhost=new THREE.Group();
+      const material=new THREE.MeshBasicMaterial({color:item.color,transparent:true,opacity:0.38,depthWrite:false});
+      for(let x=0;x<footprint;x++)for(let y=0;y<footprint;y++)for(let z=0;z<footprint;z++){
+        const cube=new THREE.Mesh(new THREE.BoxGeometry(1,1,1),material.clone());
+        cube.position.set(x+.5,y+.5,z+.5);
+        dragGhost.add(cube);
+      }
+      const outline=new THREE.BoxHelper(dragGhost,0xffd36e);
+      outline.raycast=()=>{};
+      dragGhost.add(outline);
+      scene.add(dragGhost);
+    }
+    dragGhost.position.set(position.x,position.elevation,position.z);
+    dragGhost.visible=true;
+  };
   renderer.domElement.addEventListener('pointerdown',(event:PointerEvent)=>{
-    if(inspectMode || event.button!==0) return;
+    if(inspectMode||event.button!==0||activeArea||activeRoom)return;
     const id=objectAt(event);
     if(!id)return;
     const object=currentObjects.find(o=>o.id===id);
-    if(!object || (creatureMoveMode && !['Characters','Monsters'].includes(getCatalogItem(object.catalogId).category)))return;
+    if(!object||(creatureMoveMode&&!['Characters','Monsters'].includes(getCatalogItem(object.catalogId).category)))return;
     dragStart={id,x:event.clientX,y:event.clientY};
+  });
+  renderer.domElement.addEventListener('pointermove',(event:PointerEvent)=>{
+    if(!dragStart||inspectMode)return;
+    if(Math.hypot(event.clientX-dragStart.x,event.clientY-dragStart.y)<8)return;
+    const object=currentObjects.find(o=>o.id===dragStart!.id);
+    if(!object)return;
+    const position=dragDestination(event,object);
+    if(position)showDragGhost(object,position);
+    else if(dragGhost)dragGhost.visible=false;
   });
   renderer.domElement.addEventListener('pointerup',(event:PointerEvent)=>{
     if(!dragStart)return;
     const start=dragStart;dragStart=null;
-    if(inspectMode || Math.hypot(event.clientX-start.x,event.clientY-start.y)<8)return;
+    const dragged=Math.hypot(event.clientX-start.x,event.clientY-start.y)>=8;
+    clearDragGhost();
+    if(!dragged||inspectMode)return;
     suppressClick=true;
-    const position=floorPosition(event);
+    const object=currentObjects.find(o=>o.id===start.id);
+    const position=object?dragDestination(event,object):null;
     if(position)handlers.onDragMove(start.id,position);
   });
-  renderer.domElement.addEventListener('pointercancel',()=>{dragStart=null;});
+  renderer.domElement.addEventListener('pointercancel',()=>{dragStart=null;clearDragGhost();});
   let lastPointerWasTouch = false;
   renderer.domElement.addEventListener('pointerdown', (event: PointerEvent) => { lastPointerWasTouch = event.pointerType === 'touch'; });
   renderer.domElement.addEventListener('click', (event: MouseEvent) => {
@@ -523,7 +570,7 @@ if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoi
     },
     setMovingCreature(id) { movingCreatureId = id; },
     setCreatureMoveMode(enabled) { creatureMoveMode = enabled; rebuildBlockPreview(); },
-    setInspectMode(enabled) { inspectMode = enabled; hoverLabel.hidden = true; if (preview) preview.visible = false; },
+    setInspectMode(enabled) { inspectMode = enabled; hoverLabel.hidden = true; dragStart=null; clearDragGhost(); if (preview) preview.visible = false; },
     setElevation(next) {
       elevation = next;
       const center = boardCenter(currentBounds);
@@ -562,6 +609,7 @@ if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoi
       frameBoard();
     },
     dispose() {
+      clearDragGhost();
       hoverLabel.remove();
       resize.disconnect();
       lightGroup.clear(); scene.remove(lightGroup);
