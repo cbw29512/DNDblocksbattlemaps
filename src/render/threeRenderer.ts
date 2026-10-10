@@ -292,6 +292,11 @@ export async function createThreeRenderer(
   }
 
   function blockPlacementFor(event: PointerEvent | MouseEvent): GridPosition | null {
+    // Airborne creatures use the explicitly selected altitude rather than a
+    // ground block's side/top intersection, which can silently shift elevation.
+    if (selected && elevation > 0 && ['Characters', 'Monsters'].includes(getCatalogItem(selected).category)) {
+      return floorPosition(event);
+    }
     setPointer(event);
     const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit: any) => hit.object.userData.objectId);
     if (!hit?.face) return floorPosition(event);
