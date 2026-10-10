@@ -374,7 +374,6 @@ export async function createThreeRenderer(
   renderer.domElement.addEventListener('pointermove', (event: PointerEvent) => {
     updateHoverLabel(event);
     if (inspectMode) return;
-    if (inspectMode) return;
     if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,false); return; }
     if (activeRoom && roomPreview) {
       const corner = floorPosition(event) as RoomCorner | null;
