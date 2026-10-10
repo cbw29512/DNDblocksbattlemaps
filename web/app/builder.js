@@ -10,14 +10,14 @@ import { catalogPanelHtml, filterCatalog, setCatalogCategory } from './catalogPa
 import { printBoardMap } from './printMap.js?v=b5ed9895f361';
 import { roomPanelError, roomPanelHtml, readRoomPanel } from './roomPanel.js?v=b5ed9895f361';
 import { boundsChanged, growBoardBounds } from '../domain/boardBounds.js?v=b5ed9895f361';
-import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=visual-audit-20261010';
+import { TERRAIN_THEMES, getCatalogItem } from '../domain/catalog.js?v=modes-drag-20261010';
 import { createBoardState, createWorldObject, findObject, placeCommand, placeManyCommand, removeCommand } from '../domain/commands.js?v=b5ed9895f361';
 import { commit, createHistory, redo, undo } from '../domain/history.js?v=b5ed9895f361';
 import { roomSummary } from '../domain/room.js?v=b5ed9895f361';
 import { roomWallPositions } from '../domain/roomPlacement.js?v=b5ed9895f361';
 import { BOARD_MAX_CELLS, MAX_BASE_ELEVATION, boardDepth, boardWidth } from '../domain/spatial.js?v=b5ed9895f361';
 import { clearBoard, loadBoard, saveBoard, propagateParty, createStarterMap, listCampaignMaps } from '../domain/storage.js?v=b5ed9895f361';
-import { createRenderer } from '../render/createRenderer.js?v=inspect-final-20261010';
+import { createRenderer } from '../render/createRenderer.js?v=modes-drag-20261010';
 function makeId() {
     return crypto.randomUUID?.() ?? `obj-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
