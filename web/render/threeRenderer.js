@@ -33,6 +33,7 @@ export async function createThreeRenderer(container, handlers) {
             hoverLabel.hidden = true;
             return;
         }
+        if (!inspectMode) { hoverLabel.hidden = true; return; }
         setPointer(event);
         // Ignore underlying blocks when the pointer is over the placement ghost.
         if (preview?.visible && raycaster.intersectObject(preview.children[2], true).length) {
@@ -153,6 +154,7 @@ export async function createThreeRenderer(container, handlers) {
     let selected = null;
     let movingCreatureId = null;
     let creatureMoveMode = false;
+    let inspectMode = false;
     let activeRoom = null;
     let elevation = 0;
     let preview = null;
@@ -318,6 +320,7 @@ export async function createThreeRenderer(container, handlers) {
     }
     renderer.domElement.addEventListener('pointermove', (event) => {
         updateHoverLabel(event);
+        if (inspectMode) return;
         if (activeArea) {
             const point = floorPosition(event);
             if (point)
@@ -350,6 +353,11 @@ export async function createThreeRenderer(container, handlers) {
             return;
         }
         setPointer(event);
+        if (inspectMode) {
+            const hit = raycaster.intersectObjects(objectGroup.children, true).find(h => h.object.userData.objectId);
+            if (hit) handlers.onInspect(String(hit.object.userData.objectId));
+            return;
+        }
         const marked = raycaster.intersectObjects(objectGroup.children, true)
             .find((hit) => hit.object.userData.objectId)?.object?.userData?.objectId;
         if (marked && handlers.onMarkTarget(String(marked)))
@@ -446,6 +454,7 @@ export async function createThreeRenderer(container, handlers) {
         },
         setMovingCreature(id) { movingCreatureId = id; },
         setCreatureMoveMode(enabled) { creatureMoveMode = enabled; rebuildBlockPreview(); },
+        setInspectMode(enabled) { inspectMode = enabled; hoverLabel.hidden = true; if (preview) preview.visible = false; },
         setElevation(next) {
             elevation = next;
             const center = boardCenter(currentBounds);
