@@ -157,9 +157,20 @@ export function createFallbackRenderer(
           handlers.onPlace({ x, z, elevation: next });
         });
 
+        if (top) {
+          const category=getCatalogItem(top.catalogId).category;
+          cell.draggable=!inspectMode && (!creatureMoveMode || category==='Characters'||category==='Monsters');
+          cell.addEventListener('dragstart',(event:DragEvent)=>{
+            if(inspectMode || !cell.draggable){event.preventDefault();return;}
+            event.dataTransfer?.setData('application/x-dndblocks-object',top.id);
+          });
+        }
         cell.addEventListener('dragover', event => { event.preventDefault(); });
         cell.addEventListener('drop', event => {
           event.preventDefault();
+          if (inspectMode) return;
+          const movingId=event.dataTransfer?.getData('application/x-dndblocks-object');
+          if(movingId){handlers.onDragMove(movingId,{x,z,elevation});return;}
           const payload = event.dataTransfer?.getData('text/plain');
           if (top && payload) handlers.onMarkDrop(top.id, payload);
           else handlers.onStatus('Drop the ring on an existing creature.');
@@ -169,7 +180,7 @@ export function createFallbackRenderer(
           event.preventDefault();
     if (inspectMode) return;
           if(areaTemplate){handlers.onAreaPoint({x,z,elevation},false);return;}
-          if (top) handlers.onRemove(top.id);
+          if (top) handlers.onObjectContext(top.id,event.clientX,event.clientY);
         });
 
         board.append(cell);
