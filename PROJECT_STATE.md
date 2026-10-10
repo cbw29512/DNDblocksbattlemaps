@@ -44,6 +44,11 @@
 - Browser cache query keys updated. User explicitly prefers direct main/production testing to development preview branches. Minimize unnecessary Netlify builds.
 - Next: exact-head CI, live pointer drag and trap/door interaction acceptance test, refine movement trace and trap engine, validate mobile touch behavior.
 
+## 2026-10-10 — Interaction validation follow-up
+- Rechecked exact main, corrected duplicate Inspect pointermove guard in 3D renderer, and preserved trap-trigger status after standard combat move. Synchronized browser JS and refreshed asset cache queries on main.
+- GitHub connector returned no PR-triggered runs for main; runtime cannot resolve GitHub host for local clone and web browser retrieval of GitHub Pages site failed. Therefore full test suite, deployed-version verification and live drag/drop acceptance remain unverified, not passed.
+- Next: verify browser deployment and exact-head CI with working execution environment; test drag, context menus, trap traversal on device and patch observed failures.
+
 ## Locked Deployment and Credit Policy — 2026-10-09
 
 **User decision: Netlify is production; avoid consuming Netlify build credits through frequent development pushes.**
