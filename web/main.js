@@ -10,6 +10,7 @@ function requireRoot() {
 }
 const root = requireRoot();
 let cleanup = null;
+let routeVersion = 0;
 function navigate(view, terrain) {
     const url = new URL(window.location.href);
     url.search = '';
@@ -18,25 +19,33 @@ function navigate(view, terrain) {
     if (terrain)
         url.searchParams.set('terrain', terrain);
     history.pushState({}, '', url);
-    void route();
+    runRoute();
 }
 async function route() {
+    const version = ++routeVersion;
     cleanup?.();
     cleanup = null;
     const params = new URLSearchParams(window.location.search);
-    const view = params.get('view');
+    const identityCallback = /(?:^|[&#])(confirmation_token|recovery_token|invite_token|access_token|token)=/.test(window.location.hash);
+  const view = identityCallback ? 'dm' : params.get('view');
     if (view === 'build') {
         const terrain = (params.get('terrain') ?? 'castle');
         const requested = params.get('map');
         const selectedMap = listCampaignMaps().find(map => map.id === requested && map.terrain === terrain);
-        cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
+        const dispose = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
+        if (version !== routeVersion) { dispose(); return; }
+        cleanup = dispose;
         return;
     }
-    if (view === 'join') {
+    if (view === 'dm') {
+    renderDM(root, { onBack: () => navigate() });
+    return;
+  }
+  if (view === 'join') {
         renderJoin(root, { onBack: () => navigate() });
         return;
     }
-    renderHome(root, { onBuild: (terrain) => navigate('build', terrain), onJoin: () => navigate('join') });
+    renderHome(root, { onBuild: (terrain) => navigate('build', terrain), onJoin: () => navigate('join'), onDM: () => navigate('dm') });
 }
 function showStartupFailure(error) {
     console.error('DND Blocks failed to load:', error);

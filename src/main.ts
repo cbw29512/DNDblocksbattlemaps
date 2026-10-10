@@ -3,6 +3,7 @@ import type { TerrainId } from './domain/types.js';
 import { renderBuilder } from './app/builder.js';
 import { renderHome } from './app/home.js';
 import { renderJoin } from './app/join.js';
+import { renderDM } from './app/dm.js';
 
 function requireRoot(): HTMLElement {
   const element = document.getElementById('app');
@@ -13,33 +14,42 @@ function requireRoot(): HTMLElement {
 const root = requireRoot();
 
 let cleanup: (() => void) | null = null;
+let routeVersion = 0;
 
-function navigate(view?: 'build' | 'join', terrain?: TerrainId): void {
+function navigate(view?: 'build' | 'join' | 'dm', terrain?: TerrainId): void {
   const url = new URL(window.location.href);
   url.search = '';
   if (view) url.searchParams.set('view', view);
   if (terrain) url.searchParams.set('terrain', terrain);
   history.pushState({}, '', url);
-  void route();
+  runRoute();
 }
 
 async function route(): Promise<void> {
+  const version = ++routeVersion;
   cleanup?.(); cleanup = null;
   const params = new URLSearchParams(window.location.search);
-  const view = params.get('view');
+  const identityCallback = /(?:^|[&#])(confirmation_token|recovery_token|invite_token|access_token|token)=/.test(window.location.hash);
+  const view = identityCallback ? 'dm' : params.get('view');
 
   if (view === 'build') {
     const terrain = (params.get('terrain') ?? 'castle') as TerrainId;
     const requested = params.get('map');
     const selectedMap = listCampaignMaps().find(map => map.id === requested && map.terrain === terrain);
-    cleanup = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
+    const dispose = await renderBuilder(root, terrain, { onHome: () => navigate() }, selectedMap?.id);
+    if (version !== routeVersion) { dispose(); return; }
+    cleanup = dispose;
+    return;
+  }
+  if (view === 'dm') {
+    renderDM(root, { onBack: () => navigate() });
     return;
   }
   if (view === 'join') {
     renderJoin(root, { onBack: () => navigate() });
     return;
   }
-  renderHome(root, { onBuild: (terrain) => navigate('build', terrain), onJoin: () => navigate('join') });
+  renderHome(root, { onBuild: (terrain) => navigate('build', terrain), onJoin: () => navigate('join'), onDM: () => navigate('dm') });
 }
 
 function showStartupFailure(error: unknown) {

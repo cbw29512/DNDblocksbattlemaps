@@ -9,6 +9,7 @@ import {
   DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell
 } from '../domain/spatial.js';
 import { placementFromSurface } from '../domain/surfacePlacement.js';
+import { verticalFrame } from './verticalFrame.js';
 import type {
   BoardBounds, CatalogId, GridPosition, TerrainTheme, WorldObject
 } from '../domain/types.js';
@@ -41,6 +42,32 @@ export async function createThreeRenderer(
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   container.replaceChildren(renderer.domElement);
+
+  const hoverLabel = document.createElement('div');
+  hoverLabel.setAttribute('role', 'tooltip');
+  hoverLabel.hidden = true;
+  Object.assign(hoverLabel.style, {
+    position: 'fixed', zIndex: '10000', pointerEvents: 'none',
+    padding: '5px 9px', borderRadius: '6px', background: '#171a1e',
+    color: '#fff', border: '1px solid #d7b56d', font: '600 13px system-ui',
+    boxShadow: '0 3px 12px #0008', maxWidth: '240px'
+  });
+  document.body.append(hoverLabel);
+  function updateHoverLabel(event: PointerEvent): void {
+    if (event.pointerType === 'touch') { hoverLabel.hidden = true; return; }
+    setPointer(event);
+    const hit = raycaster.intersectObjects(objectGroup.children, true)
+      .find((result: any) => result.object.userData.objectId);
+    const object = currentObjects.find(item => item.id === hit?.object.userData.objectId);
+    if (!object) { hoverLabel.hidden = true; return; }
+    const item = getCatalogItem(object.catalogId);
+    if (item.category === 'Characters' || item.category === 'Monsters') { hoverLabel.hidden = true; return; }
+    hoverLabel.textContent = item.name;
+    hoverLabel.style.left = Math.min(event.clientX + 14, window.innerWidth - 250) + 'px';
+    hoverLabel.style.top = Math.min(event.clientY + 16, window.innerHeight - 38) + 'px';
+    hoverLabel.hidden = false;
+  }
+  renderer.domElement.addEventListener('pointerleave', () => { hoverLabel.hidden = true; });
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
@@ -245,14 +272,18 @@ export async function createThreeRenderer(
   function frameBoard(): void {
     const center = boardCenter(currentBounds);
     const span = Math.max(boardWidth(currentBounds), boardDepth(currentBounds));
-    const distance = Math.max(CAMERA_DISTANCE, span * 1.15);
+    const { targetY, highest } = verticalFrame(currentObjects, object => {
+      const item = getCatalogItem(object.catalogId);
+      return item.category === 'Monsters' ? (item.footprintCells ?? 1) : 1;
+    });
+    const distance = Math.max(CAMERA_DISTANCE, span * 1.15, highest * 3);
     const horizontal = Math.cos(Math.PI / 6) * distance;
     const vertical = Math.sin(Math.PI / 6) * distance;
 
-    controls.target.set(center.x, 0, center.z);
+    controls.target.set(center.x, targetY, center.z);
     camera.position.set(
       center.x + horizontal / Math.sqrt(2),
-      vertical,
+      vertical + targetY,
       center.z + horizontal / Math.sqrt(2)
     );
     controls.update();
@@ -287,6 +318,11 @@ export async function createThreeRenderer(
   }
 
   function blockPlacementFor(event: PointerEvent | MouseEvent): GridPosition | null {
+    // Airborne creatures use the explicitly selected altitude rather than a
+    // ground block's side/top intersection, which can silently shift elevation.
+    if (selected && elevation > 0 && ['Characters', 'Monsters'].includes(getCatalogItem(selected).category)) {
+      return floorPosition(event);
+    }
     setPointer(event);
     const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit: any) => hit.object.userData.objectId);
     if (!hit?.face) return floorPosition(event);
@@ -328,6 +364,7 @@ export async function createThreeRenderer(
   }
 
   renderer.domElement.addEventListener('pointermove', (event: PointerEvent) => {
+    updateHoverLabel(event);
     if (activeArea) { const point=floorPosition(event); if(point) handlers.onAreaPoint(point,false); return; }
     if (activeRoom && roomPreview) {
       const corner = floorPosition(event) as RoomCorner | null;
@@ -459,7 +496,16 @@ export async function createThreeRenderer(
         state.bounds.maxZ !== currentBounds.maxZ;
       if (changed) updateBoardGeometry(state.bounds);
 
+      const previousHeight = verticalFrame(currentObjects, object => {
+        const item=getCatalogItem(object.catalogId);
+        return item.category==='Monsters' ? (item.footprintCells ?? 1) : 1;
+      }).highest;
       currentObjects = state.objects;
+      const nextHeight = verticalFrame(currentObjects, object => {
+        const item=getCatalogItem(object.catalogId);
+        return item.category==='Monsters' ? (item.footprintCells ?? 1) : 1;
+      }).highest;
+      if(nextHeight > previousHeight && nextHeight >= 4) frameBoard();
       updateBlockLights(state.objects);
       objectGroup.clear();
       state.objects.forEach((item) => objectGroup.add(meshFor(THREE, item)));
@@ -475,6 +521,7 @@ export async function createThreeRenderer(
       frameBoard();
     },
     dispose() {
+      hoverLabel.remove();
       resize.disconnect();
       lightGroup.clear(); scene.remove(lightGroup);
       glowGroup.traverse((node: any) => { if (node.isMesh) { node.geometry.dispose(); node.material.dispose(); } });

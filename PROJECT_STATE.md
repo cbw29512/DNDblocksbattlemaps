@@ -21,7 +21,139 @@
 This policy supersedes any older wording implying that every push should publish to Netlify. GitHub source checkpoints and GitHub Pages tests may continue independently.
 
 ## 2026-10-09 — DM/Player implementation started (development only)
-- Selected supported Netlify Identity for DM, secure guest player session for joining with game code, Netlify Functions and Database for authoritative game state. Read docs/DM_PLAYER_IMPLEMENTATION.md. Added typed game-code/name/role primitives and unit tests. These primitives are not a live authentication backend; no Netlify deployment or resource provisioning occurred. Next implement authenticated DM API and Postgres migration, then join/reconnect API and interface. Preserve locked release policy.\n\n## Current Status
+- Selected supported Netlify Identity for DM, secure guest player session for joining with game code, Netlify Functions and Database for authoritative game state. Read docs/DM_PLAYER_IMPLEMENTATION.md. Added typed game-code/name/role primitives and unit tests. These primitives are not a live authentication backend; no Netlify deployment or resource provisioning occurred. Next implement authenticated DM API and Postgres migration, then join/reconnect API and interface. Preserve locked release policy.\n\n## 2026-10-09 — DM/Player backend pre-integration work
+- Development branch: `feat-dm-player-auth-preintegration-20261009`. Added initial Netlify Database migration for games, hashed invite codes, guest sessions, assignments, revisioned snapshots/actions. Added server-only Netlify Function API via `/.netlify/functions/game-api?action=...`: my-games, create-game, new-invite, join-game, my-player-session, players, assign-piece and leave-game. Added crypto/validation security helper and unit tests. Join as Player now accepts a code and name and reports server errors honestly. Added separate DM dashboard routing with create-game, owned game list and invite generation wired to the server API, displaying explicit sign-in/backend errors. Browser CI passed on the backend+join version and on the added dashboard version. **This is not certified production login:** still missing Netlify Identity client, package/lockfile integration, rate limiting, transactional invitation rotation, player board sync, full permissions for movement, migration/DB integration tests, and real Netlify callback tests. No Netlify deployments or resource changes performed. Keep the single consolidated Netlify deployment policy.
+ 
+## 2026-10-09 — Join-code security hardening
+- Added database-backed per-IP join attempt limiter: 8 tries per 15 minutes (hashed Netlify-observed context.ip; atomic Postgres upsert), HTTP 429 with Retry-After when exceeded. Added explicit tests validating limiter stays ahead of invitation lookup and IP values are not stored in plaintext. This is pre-integration design, not a substitute for abuse monitoring or full end-to-end backend testing. Production remains untouched.\n\n## 2026-10-09 — DM Identity client wiring
+- Added DM sign-in, sign-up, sign-out, callback processing and existing-session detection with supported @netlify/identity 2.0.0. Declared @netlify/database 2.0.1 for server Functions. Sign-in UI is unavailable on GitHub Pages/local by design; actual email/password lifecycle requires Netlify Identity configuration and an authorized deploy. Added callback routing for confirmation/recovery/OAuth URL fragments and regression tests. Production remains untouched. Important outstanding release blocker: package-lock.json must be regenerated/committed for added dependencies, and auth plus database must pass deployed integration tests.\n\n## 2026-10-09 — Guest recovery assignment lookup (PR #89; IN PROGRESS)
+- Starting state: server supported cookie-based `my-player-session` lookup but did not return assigned entity IDs; client resume still absent.
+- Work ID: player-recovery; retained existing `dnd_players`, `dnd_assignments`, HttpOnly guest cookie, and game-scoped identity.
+- Changes: successful server session lookup now queries only that guest's assignments and refreshes `last_seen_at`; source-based regression added to guard session filtering, revoked-session checks, scoped assignments, and non-exposure of all columns.
+- Decision: do not expose board snapshots until player-specific hidden-object filtering and authoritative mutations exist. No schema changes, no data migration, no Netlify deploy or cost incurred. Existing single guest cookie supports one active player session per browser; multi-game resume remains unimplemented.
+- Evidence: GitHub source committed; **tests not executed in this connector session**, exact-head CI and live database/browser verification are pending. This is NOT CI VERIFIED or LIVE VERIFIED.
+- Next step: wire UI session recovery on entry and follow with server-authoritative player movement/permission filtering, then CI and database integration verification before authorized release.
+
+## 2026-10-09 — Player recovery UI checkpoint (PR #89; IN PROGRESS)
+- Scope: Join as Player screen only. On entry, call `my-player-session` using same-origin HttpOnly cookie; 401 means no active session. A valid server session pre-fills the player's name and displays assigned piece count; it does not yet load the multiplayer board or permit movement. Fails safely with an honest error if recovery fails.
+- Source and browser mirror updated; corrected join-code whitespace normalization. Added source regression test and updated How to Play as pre-release behavior.
+- No schema or storage migration; no production changes, deployments, or Netlify credit consumption. Existing guest token remains one active session per browser.
+- Verification: GitHub commits complete, latest CI and live integration **not yet verified**. Do not mark CI VERIFIED or LIVE VERIFIED.
+- Next: Implement authoritative player-safe snapshot read and movement authorization with revision/idempotency enforcement, then build the board resume view and run CI plus migration tests before an approved consolidated Netlify release.
+
+## 2026-10-09 — Universal permissions helper checkpoint (PR #89; IN PROGRESS)
+- Gate: prepare player movement authorization and visibility filtering, reusing documented WorldObject capabilities, visibility, movement lock and assignment primitives.
+- Added `netlify/functions/game-permissions.mjs` and `tests/game-permissions.test.mjs`. Fail-closed pure helpers require an already server-verified actor; assignments must be retrieved by the server. Verified DMs may override movement restrictions; players cannot move unassigned, hidden, locked or non-controllable entities.
+- **Not integrated:** these helpers are NOT yet invoked by `game-api.mjs`; no authoritative player move endpoint, persisted board snapshot filtering, revision-checked write, or realtime sync exists. Never characterize the helpers alone as enforced backend security. Visibility helper only filters top-level entity records and is NOT suitable for an entire untrusted nested game-state payload.
+- No migration, hosted resources, deployment, or Netlify credits used. Source tests added but not yet executed in this environment; final-head CI and integration remain unverified.
+- Next: inspect and standardize persisted board snapshot shape, define nested redaction/permission boundaries, implement atomic revisioned write and wire verified server identity to authorization in the API, then integration-test and verify CI.
+
+## 2026-10-09 — Permission hardening / schema mismatch gate (PR #89; IN PROGRESS)
+- Read the actual browser `src/domain/types.ts` board schema and backend permissions helper; confirmed browser `WorldObject` lacks persisted visibility, locked, movementLocked, and capabilities properties expected by the planned multiplayer authorization model.
+- Hardened universal helpers to fail closed on unverified actors, incomplete entity visibility, missing movement flags or malformed capabilities. Added negative tests for missing fields and malformed input. No API movement endpoint wired: cannot claim server-enforced permissions yet.
+- Updated `docs/DM_PLAYER_IMPLEMENTATION.md` with explicit server schema, allowlist snapshot and migration prerequisites. Scope excluded production changes, direct map migrations, and speculative realtime architecture.
+- No Netlify deployment, database migration execution or production cost. Tests committed but latest exact-head CI and live integration remain unverified.
+- Next: implement validated/versioned server snapshot schema with migration safety and server-derived membership; only then wire the API authorization and revisioned mutation transaction.
+
+## 2026-10-09 — Versioned server board schema checkpoint (PR #89; IN PROGRESS)
+- Gate: authoritative board state serialization prerequisite, not yet a deployed multiplayer feature. Added strict `schemaVersion:1` validator and allowlisted player projection in `netlify/functions/game-board-schema.mjs`; added targeted rejection and hidden-data tests.
+- Reviewed browser `WorldObject` schema mismatch; existing local maps are not migrated. Invalid/incomplete snapshots fail closed. Player projection excludes all arbitrary metadata, history, DM-only objects and permission flags. The module is standalone and not yet called by `game-api.mjs`.
+- Tests committed but not yet locally executed or CI verified on the final head. No migrations executed, no Netlify deployment, no live access or credit expenditure.
+- Next: run/check schema tests and fix issues, establish transactional server snapshot storage and authenticated read, then revisioned action writes and browser integration. Preserve the one-release Netlify lock.
+
+## 2026-10-09 — Read-only board API integration attempt (PR #89; BLOCKED)
+- Work gate: game-scoped authenticated GET board with verified DM ownership or server-cookie guest membership, v1 snapshot validation, revision consistency, and player-only allowlist projection.
+- Existing schema and API were inspected. An attempted API change was blocked before commit; no board endpoint was added. A temporary GET action registration was immediately reverted to avoid an exposed or dangling route.
+- Result: source behavior remains unchanged; standalone board validation/projection helpers are still not wired. No tests or CI claims, no Netlify deployment or backend resource modification.
+- Next: complete the authorization/board-read API integration through an approved development path, then add negative authorization tests and verify exact-head CI. Do not deploy until complete.
+
+## 2026-10-09 — Read-only board service extraction (PR #89; IN PROGRESS)
+- Added `netlify/functions/game-board-read.mjs`, a small server-only service that validates the stored v1 board and its revision, then returns full DM state or allowlisted player projection according to a *server-verified* role. Errors fail closed. Added isolated negative tests for unknown role and invalid snapshot.
+- This service must not be called with a role from request data. **Not yet connected to game-api authentication or exposed as an endpoint.** Full authorization and database integration tests remain pending. A broader test write was blocked; reduced negative tests were committed.
+- No schema migration or legacy data mutation; no Netlify deployment or production cost. CI not yet verified on exact head.
+- Next: test valid DM/player projections and verified game membership, connect authorized API route, then atomic revision-checked writes.
+
+## 2026-10-09 — Authenticated board-read endpoint wired (PR #89; IN PROGRESS)
+- Added `game-board-access.mjs`, integrated `GET game-api?action=get-board&gameId=...`, and registered the GET action. The server verifies DM owner identity against the requested open game, otherwise validates the guest cookie against a non-revoked player record for that same open game before calling the v1 snapshot read service.
+- The read service checks stored revision and schema. Player results use the explicit visible-entity allowlist; DM owners receive validated full state. Unauthenticated and cross-game access fail without returning a board.
+- Added negative tests for missing credentials, non-owner, malformed ID. Positive membership/DB, deployed Identity, HTTP integration, lockfile and end-to-end tests remain pending; source commits are **not** certified CI or LIVE VERIFIED.
+- No write endpoints, migrations, deployment or Netlify production changes. Next: run exact-head CI, positive mock integration tests, validate DB response serialization, then implement revisioned movement writes and player board UI. Preserve consolidated Netlify release policy.
+
+## 2026-10-09 — Pure movement command reducer (PR #89; IN PROGRESS)
+- Gate: groundwork for server-authoritative movement. Added `netlify/functions/game-movement.mjs` containing pure `applyMove`: validates versioned board, integer coordinates/bounds/elevation, current revision, actual entity and server-verified assigned player or DM override; produces immutable revision+1 board. Added `tests/game-movement.test.mjs` for allowed, stale, forbidden and out-of-bounds actions.
+- **Not yet a live movement endpoint**: the reducer must execute under a serialized DB transaction with current membership/assignment read, unique action ID deduplication, and atomic snapshot+action persistence. Do NOT expose it via an unaudited nontransactional read/write sequence.
+- No database writes, migrations, client sync, Netlify deployment or production changes. Tests committed, not yet verified on final CI head.
+- Next: verify actual Netlify Database transaction API or design a Postgres single-statement/stored-function transaction, implement idempotent revision-CAS persistence with authenticated actor, and run concurrent retry tests before wiring `move-piece` route.
+
+## 2026-10-09 — Transactional move-piece API (PR #89; IN PROGRESS)
+- Verified current Netlify Database docs: `db.pool.connect()` supports transactions on one PostgreSQL connection; `db.sql` does not preserve a transaction across queries.
+- Added `game-move-transaction.mjs`: BEGIN, game row FOR UPDATE, current DM owner or non-revoked player membership and assignments, duplicate action ID check, board snapshot FOR UPDATE, pure move reducer, revision-CAS updates to both snapshot and game, action insertion, COMMIT; ROLLBACK on rejection/error, client release in finally.
+- Added `game-move-access.mjs` to derive actor from server Identity or cookie, not caller role. Wired `POST game-api?action=move-piece` with existing origin guard. Tests added in `tests/game-move-transaction.test.mjs` using a mock query client.
+- Important limitations: mocked SQL is not real Postgres integration or concurrent execution proof; need real DB transaction + retry + rollback tests, exact-head CI, dependency lockfile fix, initialization of v1 snapshots, and browser sync. Do not claim live movement before those pass.
+- No Netlify deployment, database migration execution, production data modification or intentional credit use. This branch remains pre-integration only.
+- Next: verify full CI; add real Postgres concurrency and duplicate action tests; review action payload canonicalization, movement policy on existing object locks, and replace incomplete mock coverage. Preserve release lock.
+
+## 2026-10-09 — Transaction retry hardening (PR #89; IN PROGRESS)
+- Checked existing game move transaction and mock tests. Fixed duplicate-action matching to compare stored JSONB semantic fields rather than JSON string property order; successful retry returns its original committed revision. Canonical action payload now explicitly includes only type, entityId, and x/z/elevation.
+- Added tests for a duplicate retry producing no second snapshot update, action ID reuse with changed destination returning conflict, and failed action insert triggering rollback/release.
+- Existing mock does not model real PostgreSQL rollback semantics or concurrent connections. Tests added, NOT executed or CI VERIFIED on final head. Real database concurrency/rollback test remains required.
+- No production deployment, migration execution, or Netlify credentials touched. Next: run final-head CI, verify database adapter and migration behavior, complete real Postgres concurrency tests and player-side sync.
+
+## 2026-10-09 — Predeploy board access test expansion (PR #89; IN PROGRESS)
+- Starting state: transaction/move API written, final-head CI absent, dependency lockfile unresolved, player sync not ready. Reviewed package manifest and confirmed `package-lock.json` is absent at the expected path on the development branch.
+- Added positive mock tests for verified DM seeing the full board, signed-cookie guest seeing only the allowlisted visible object projection, and valid token without game membership being denied without a board read. Existing negative tests retained.
+- Decision: do not fabricate dependency integrity metadata or deploy Netlify to test; regenerate and commit lockfile with npm on an environment with npm registry access, then run `npm ci && npm run check`. Container GitHub/network resolution unavailable and tests not run; no final-head CI verified.
+- Cost: no production Netlify deployment, migrations, secrets or intentional credits. Remaining blockers: missing npm lockfile, actual Netlify Identity/DB integration, concurrent Postgres verification, browser sync.
+- Next: obtain npm-generated lockfile, run exact-head checks, then fix failures before single approved Netlify release.
+
+## 2026-10-10 — Elevated dragon rendering/camera visibility repair (PR #89; IN PROGRESS)
+- Reproduced by code inspection: a 20-ft elevation creates an elevated mesh, but `threeRenderer.frameBoard` targeted y=0 with distance based only on horizontal board span. Large airborne creatures could be outside camera framing even though persisted/added to the scene.
+- Added `src/render/verticalFrame.ts` to compute maximum upper cube elevation using monster footprints, and updated `threeRenderer` camera target/distance. On newly increased high-altitude content (>=4 levels), camera reframes to reveal it. Added `tests/vertical-frame.test.mjs` for a 4x4 dragon at elevation 4 (top height 8) and ground cases.
+- Source fix committed on development branch, but browser `web/` generated bundle is not yet synchronized and no actual browser reproduction/CI has been verified. Avoid claims that the public page is fixed. Netlify production remains locked.
+- Next: run `npm run compile:web`, commit generated browser bundle, execute tests and browser QA with a dragon at 20ft; adjust if the bug persists. No map data migrated.
+
+## 2026-10-10 — Elevated dragon browser JS synchronization
+- Synced the vertical camera framing source to `web/render/verticalFrame.js` and `web/render/threeRenderer.js` so test browsers can load the repair. The environment could not reach github.com via git/clone, so the browser counterpart was manually synchronized and must be compared against a future `npm run compile:web` output.
+- Source and browser changes exist on PR #89 only, not live production. No browser reproduction, CI, or deploy has yet verified the visible outcome. User reproduction: elevated dragon placed at 20 feet was stored but not visible.
+- Next: typecheck, build parity, browser smoke test with Gargantuan dragon at elevation=4, then merge only when verified.
+
+## 2026-10-10 — Back/Home navigation repair checkpoint (PR #89; IN PROGRESS)
+- Report: Back button appears inert. Inspected src/main.ts, web/main.js, and back-button handlers in Join/DM/builder. Buttons were wired, but an asynchronous builder load could race with Home navigation.
+- Added version guard around async renderBuilder so a late-completing builder is disposed instead of replacing active route cleanup; changed navigate to use the central error-handling runRoute wrapper. Synchronized src/main.ts and web/main.js.
+- Outcome: code committed on development branch; no browser reproduction or CI verified yet. Source and generated browser file manually synchronized; verify with compile:web. The user's specific Back button location wasn't confirmed.
+- Cost: no Netlify deployment or production changes. Next: test Back home from Build/Join/DM and browser history during in-flight builder loading; run final-head CI.
+
+## 2026-10-10 — Flying creature explicit-elevation placement (PR #89; IN PROGRESS)
+- Root cause identified in `threeRenderer.blockPlacementFor`: when a cube face is hit, its source elevation can override the user's 20-foot level and offset the monster unexpectedly. When a Character/Monster is selected and elevation > 0, placement now raycasts directly to the selected elevation plane. Ground build blocks retain face-stacking behavior.
+- Updated authoritative `src/render/threeRenderer.ts` and corresponding `web/render/threeRenderer.js`. Added focused placement source/browser regression `tests/flying-creature-placement.test.mjs`. The earlier vertical camera framing repair remains present.
+- Result: code pushed, browser behavior and final-head CI not yet verified. No existing map altered or production Netlify deployment. Exact QA: choose dragon, elevation 20ft (level 4), place above occupied and empty ground cells, assert object.elevation=4 and visible in 3D; reload and confirm remains visible.
+- Next: run full npm checks and live browser smoke on development build, correct failures, then declare issue fixed only after visual verification.
+
+## 2026-10-10 — Builder sidebar organization (PR #89; IN PROGRESS)
+- User confirmed flying monster visibility works. Requested separate closeable Room Builder/Catalog sections and Height directly below Catalog.
+- Updated `src/app/builder.ts` and `web/app/builder.js`: independent native <details> panels with Room Builder closed by default and Catalog open by default. Existing #build-tools event delegation preserved; Height/Elevation moved immediately after Catalog and outside both collapsible panels so it stays accessible. Height up/down IDs and functions unchanged.
+- Added `tests/builder-sidebar-layout.test.mjs`; updated `public/how-to-play.html`. No gameplay mechanics, stored maps, Netlify credentials or deployments changed.
+- Next: verify exact-head CI and browser interaction (collapse both sections, catalog selection, room controls, height adjustments), then mark UI gate verified only when evidence exists.
+
+## 2026-10-10 — Universal placed-block hover labels (PR #89; IN PROGRESS)
+- User request: hovering any block (Door, Water, etc.) or multi-cube creature should show a small readable catalog-name label.
+- Added a lightweight pointer-following DOM tooltip to the Three.js renderer, using raycast objectId -> WorldObject -> existing catalog item name. Child cubes share their parent object ID, so large monsters show one identity. Tooltip hides on exit/touch, is pointer transparent, and removes itself on renderer dispose.
+- Synced `src/render/threeRenderer.ts` to `web/render/threeRenderer.js`. Fallback grid now sets native `title` for every top object in `src/render/fallbackRenderer.ts` and `web/render/fallbackRenderer.js`. Added `tests/block-hover-label.test.mjs` and How to Play instructions.
+- Scope: visual identification only; no placement rules or persistent state changed. Netlify production remains locked. Exact-head automated tests and browser verification still pending; do not mark live verified.
+- Next: verify browser hover across doors, water, overlapping blocks, multi-cube dragons, pointer exit, and both renderers. Run compile:web/check and inspect final CI.
+
+## 2026-10-10 — Hover label scope correction / test readiness
+- User clarified that monsters/pregens already have permanent labels. Updated 3D hover label to exclude Characters and Monsters and retain labels for other catalog blocks. Synced src/render/threeRenderer.ts with web/render/threeRenderer.js and updated the hover regression assertion.
+- Latest prior check for hover label commit 90ea26a reported GitHub workflow failure; exact new head has not passed. No browser test or production deployment.
+- Next: inspect workflow failure, run automated tests, and browser verify the labels on doors/water while creature permanent labels remain unchanged. Do not claim test build certified yet.
+
+## 2026-10-10 — PR #89 hover-label test readiness audit
+- Located actual failing workflow run 38072000962: dependency installation succeeded, but `npm run check` stopped at TypeScript implicit-any diagnostics (join.ts, threeRenderer.ts, verticalFrame.ts) before unit/build/browser checks.
+- Patched `verticalFrame` with typed WorldObject input and callback, and typed recovered join assigned IDs filter. Render callbacks infer types from typed helper. New PR workflow triggered on commit dd78f0061905c09fab3fcae654239c8a6b8d1255; outcome must be checked before signoff.
+- User scope retained: hover catalog names for non-creature blocks only. Existing permanent Monster/Character labels remain unchanged. No Netlify deploy.
+- Next: inspect current run for further failures and fix them; require CI + Chromium smoke success before declaring test-ready.
+
+## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
 **Application code:** Yes. Stage 1 began after explicit user authorization on 2026-10-07.  

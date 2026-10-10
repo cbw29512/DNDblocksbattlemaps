@@ -19,6 +19,7 @@ export function renderHome(root, handlers) {
           <span>DND Blocks <b>Battle Maps</b></span>
         </a>
         <nav class="header-actions" aria-label="Primary navigation">
+          <button class="button button-ghost" id="dm-top" type="button">DM Login</button>
           <button class="button button-ghost" id="join-top" type="button">Join a Game</button>
           <a class="button button-ghost" href="https://buymeacoffee.com/divclass016" target="_blank" rel="noopener noreferrer" aria-label="Buy me a coffee, opens in a new tab">☕ Buy me a coffee</a>
         </nav>
@@ -96,6 +97,7 @@ export function renderHome(root, handlers) {
     const startDefault = () => handlers.onBuild('castle');
     ['build-main'].forEach((id) => document.getElementById(id)?.addEventListener('click', startDefault));
     ['join-top'].forEach((id) => document.getElementById(id)?.addEventListener('click', handlers.onJoin));
+  document.getElementById('dm-top')?.addEventListener('click', handlers.onDM);
     root.querySelectorAll('[data-terrain]').forEach((button) => {
         button.addEventListener('click', () => handlers.onBuild(button.dataset.terrain));
     });

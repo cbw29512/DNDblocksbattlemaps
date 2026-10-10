@@ -15,7 +15,9 @@
     "compile:web": "tsc -p tsconfig.web.json"
   },
   "dependencies": {
-    "three": "0.186.1"
+    "three": "0.186.1",
+    "@netlify/identity": "2.0.0",
+    "@netlify/database": "2.0.1"
   },
   "devDependencies": {
     "typescript": "7.0.2",

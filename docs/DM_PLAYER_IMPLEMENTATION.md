@@ -31,6 +31,20 @@ Status: **Development specification locked; implementation must remain non-produ
 
 All schema definitions must have constrained foreign keys, uniqueness, safe ownership lookups, and migration tests. Don't expose session_hash, invite hash, or private game state to client responses.
 
+## Board authorization schema reconciliation — 2026-10-09
+The current browser `src/domain/types.ts` `WorldObject` includes id, catalogId, grid position, and visual/combat metadata, **not** visibility, lock, movement lock, or capabilities. The conceptual `docs/DATA_SCHEMA.md` includes those properties, but they are not currently persisted on browser objects. Therefore existing local maps must not be treated as authorized player snapshots.
+
+Before implementing an authoritative move or player board-read endpoint, define and version the normalized **server** WorldObject schema with explicit `visibility: visible | dm_only`, `locked: boolean`, `movementLocked: boolean`, and validated `capabilities: string[]`. Assignments reference stable entity IDs within the game; validate existence on the server before assignment. Convert historical local board data only in a reviewed migration/import, with safe defaults, backup, and tests. Do not implicitly map absent fields to permission grants.
+
+The pure `game-permissions.mjs` helper rejects missing player permission fields. It is not yet called by `game-api.mjs`, and its top-level visibility filter cannot safely serialize arbitrary nested snapshots, history, trigger data, or metadata. A player snapshot endpoint must use an explicit allowlist schema and server-derived membership before network output. DM override applies only after server verification of ownership.
+
+## Versioned server snapshot boundary — 2026-10-09
+- Added `netlify/functions/game-board-schema.mjs` with strict `schemaVersion: 1` validator and player projection, plus `tests/game-board-schema.test.mjs`.
+- Shape: `{schemaVersion:1, terrain, revision, bounds, objects}`. Entity requires `id,catalogId,x,z,elevation,visibility,locked,movementLocked,capabilities`; visibility is `visible|dm_only`; capabilities are constrained universal identifiers.
+- A player projection includes only `schemaVersion,terrain,revision,bounds` and visible entities' `id,catalogId,x,z,elevation`, never arbitrary metadata, history, hidden entities or server-side permissions. Invalid snapshots return null instead of guessing.
+- **NOT wired to an authenticated API endpoint or actual database snapshot writes.** No old browser saves are changed. Future rich player fields require explicit per-field review. This does not establish correct visibility for nested, non-entity board records; those must remain excluded.
+- Rollback is removal of the standalone module/tests before adoption. Revisioned writes, DM snapshot import, ownership checks and deployed Netlify certification remain next gates.
+
 ## Release sequence
 1. Create typed API contracts and validation tests for game codes, roles, and state mutation authorization.
 2. Implement Netlify Function authentication and Postgres migrations without provisioning production resources.
