@@ -467,6 +467,7 @@ export async function renderBuilder(
       const after = { ...creature, x: position.x, z: position.z, elevation: creature.elevation };
       const result = run({ kind: 'update', before: creature, after }, [position]);
       if (result === null) return;
+      let triggered = false;
       const steps=Math.max(Math.abs(after.x-creature.x),Math.abs(after.z-creature.z));
       const triggers=new Set(['pressure-plate','spike-trap','snare-trap','spring-trap','flame-jet','dart-trap','web-trap','hidden-trigger','alarm-rune','collapsing-floor']);
       for(let i=1;i<=steps;i++){
@@ -474,12 +475,13 @@ export async function renderBuilder(
         for(const trap of [...state.objects]){
           if(trap.activated||!triggers.has(trap.catalogId)||trap.x!==x||trap.z!==z)continue;
           run({kind:'update',before:trap,after:{...trap,activated:true}},[]);
+          triggered = true;
           status.textContent=getCatalogItem(trap.catalogId).name+' triggered by '+getCatalogItem(creature.catalogId).name+'. DM resolves its effect.';
         }
       }
       pickedCreatureId = null;
       renderer?.setMovingCreature(null);
-      status.textContent = `${getCatalogItem(creature.catalogId).name} moved. Ring and conditions preserved.`;
+      if (!triggered) status.textContent = `${getCatalogItem(creature.catalogId).name} moved. Ring and conditions preserved.`;
     },
     onPlace(position) {
       const selectedItem = getCatalogItem(selected);
