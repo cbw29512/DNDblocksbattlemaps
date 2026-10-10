@@ -1,5 +1,5 @@
 import { CONDITIONS, CONDITION_COLORS } from '../domain/creatureMarks.js?v=b5ed9895f361';
-import { getCatalogItem } from '../domain/catalog.js?v=b5ed9895f361';
+import { getCatalogItem } from '../domain/catalog.js?v=visual-audit-20261010';
 import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=b5ed9895f361';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
