@@ -23,6 +23,12 @@
 - No multiplayer or server changes. Production hosting/render verification pending.
 - Next: confirm CI and verify browser accordion hide/show plus +/- placement.
 
+## 2026-10-10 — Hover label preview occlusion fix
+- User screenshot showed Water label over a white-outlined placement preview on another block. Cause: hover raycast ignored ghost preview while detecting a placed block behind it.
+- 3D hover now hides labels when the ray intersects the active placement ghost, while preserving normal names for genuinely hovered placed blocks. Source and compiled browser JS updated; regression assertion added.
+- Production main updated on explicit user preference; browser observation and deploy status not yet verified. No multiplayer/backend changes.
+- Next: verify GitHub checks and reproduce screenshot with Water underlying a different selected cube, confirm no false Water label.
+
 ## Locked Deployment and Credit Policy — 2026-10-09
 
 **User decision: Netlify is production; avoid consuming Netlify build credits through frequent development pushes.**
