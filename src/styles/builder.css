@@ -275,3 +275,8 @@
 .inspect-card p { margin:.45rem 0; line-height:1.5; font-size:.9rem; }
 .inspect-card small { display:block; margin-top:.75rem; color:#c9c2b3; }
 #inspect-close { position:absolute; right:.55rem; top:.5rem; cursor:pointer; color:#fff; border:0; background:none; font-size:1.6rem; }
+
+.object-context-menu{position:fixed;z-index:10030;min-width:170px;display:grid;gap:.3rem;padding:.5rem;border:1px solid #bfa16b;border-radius:10px;background:#24251f;box-shadow:0 8px 24px #000b}
+.object-context-menu[hidden]{display:none}
+.object-context-menu button{width:100%;text-align:left;border:0;border-radius:6px;background:#34372f;color:#f7f0e0;padding:.55rem .75rem;cursor:pointer}
+.object-context-menu button:hover,.object-context-menu button:focus{background:#56513d}
