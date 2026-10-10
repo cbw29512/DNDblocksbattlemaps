@@ -364,7 +364,7 @@ export async function createThreeRenderer(container, handlers) {
         const point=new THREE.Vector3();
         if(!raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-object.elevation),point))return null;
         const x=Math.floor(point.x),z=Math.floor(point.z);
-        if(!isBoardCell({x,z,elevation:object.elevation},currentBounds))return null;
+        if(!isBoardCell(x,z,currentBounds))return null;
         return {x,z,elevation:object.elevation};
     };
     const showDragGhost = (object,position) => {
