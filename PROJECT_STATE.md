@@ -142,6 +142,11 @@ This policy supersedes any older wording implying that every push should publish
 - Scope: visual identification only; no placement rules or persistent state changed. Netlify production remains locked. Exact-head automated tests and browser verification still pending; do not mark live verified.
 - Next: verify browser hover across doors, water, overlapping blocks, multi-cube dragons, pointer exit, and both renderers. Run compile:web/check and inspect final CI.
 
+## 2026-10-10 — Hover label scope correction / test readiness
+- User clarified that monsters/pregens already have permanent labels. Updated 3D hover label to exclude Characters and Monsters and retain labels for other catalog blocks. Synced src/render/threeRenderer.ts with web/render/threeRenderer.js and updated the hover regression assertion.
+- Latest prior check for hover label commit 90ea26a reported GitHub workflow failure; exact new head has not passed. No browser test or production deployment.
+- Next: inspect workflow failure, run automated tests, and browser verify the labels on doors/water while creature permanent labels remain unchanged. Do not claim test build certified yet.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
