@@ -129,6 +129,12 @@ This policy supersedes any older wording implying that every push should publish
 - Result: code pushed, browser behavior and final-head CI not yet verified. No existing map altered or production Netlify deployment. Exact QA: choose dragon, elevation 20ft (level 4), place above occupied and empty ground cells, assert object.elevation=4 and visible in 3D; reload and confirm remains visible.
 - Next: run full npm checks and live browser smoke on development build, correct failures, then declare issue fixed only after visual verification.
 
+## 2026-10-10 — Builder sidebar organization (PR #89; IN PROGRESS)
+- User confirmed flying monster visibility works. Requested separate closeable Room Builder/Catalog sections and Height directly below Catalog.
+- Updated `src/app/builder.ts` and `web/app/builder.js`: independent native <details> panels with Room Builder closed by default and Catalog open by default. Existing #build-tools event delegation preserved; Height/Elevation moved immediately after Catalog and outside both collapsible panels so it stays accessible. Height up/down IDs and functions unchanged.
+- Added `tests/builder-sidebar-layout.test.mjs`; updated `public/how-to-play.html`. No gameplay mechanics, stored maps, Netlify credentials or deployments changed.
+- Next: verify exact-head CI and browser interaction (collapse both sections, catalog selection, room controls, height adjustments), then mark UI gate verified only when evidence exists.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
