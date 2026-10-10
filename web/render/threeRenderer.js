@@ -321,7 +321,6 @@ export async function createThreeRenderer(container, handlers) {
     renderer.domElement.addEventListener('pointermove', (event) => {
         updateHoverLabel(event);
         if (inspectMode) return;
-        if (inspectMode) return;
         if (activeArea) {
             const point = floorPosition(event);
             if (point)
