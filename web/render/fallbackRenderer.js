@@ -1,11 +1,11 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=487aa2e55593';
-import { areaCells } from '../domain/areaTemplates.js?v=487aa2e55593';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=487aa2e55593';
-import { getCatalogItem } from '../domain/catalog.js?v=487aa2e55593';
-import { stackElevationAt } from '../domain/placement.js?v=487aa2e55593';
-import { roomOuterSize } from '../domain/room.js?v=487aa2e55593';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=487aa2e55593';
-import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=487aa2e55593';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=b5ed9895f361';
+import { areaCells } from '../domain/areaTemplates.js?v=b5ed9895f361';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=b5ed9895f361';
+import { getCatalogItem } from '../domain/catalog.js?v=b5ed9895f361';
+import { stackElevationAt } from '../domain/placement.js?v=b5ed9895f361';
+import { roomOuterSize } from '../domain/room.js?v=b5ed9895f361';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=b5ed9895f361';
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=b5ed9895f361';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';
@@ -74,7 +74,7 @@ export function createFallbackRenderer(container, handlers) {
                 const top = occupants.at(-1);
                 if (top) {
                     const item = getCatalogItem(top.catalogId);
-          cell.title = item.name;
+                    cell.title = item.name;
                     cell.style.setProperty('--piece-color', `#${item.color.toString(16).padStart(6, '0')}`);
                     const visual = item.art
                         ? `<img src="${resolveBrowserAssetUrl(item.art.src)}" alt="" loading="lazy" decoding="async">`

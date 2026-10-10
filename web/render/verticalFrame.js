@@ -1,4 +1,4 @@
-/** JavaScript browser counterpart of src/render/verticalFrame.ts. */
+/** Camera framing height for elevated cube assemblies. All dimensions are 5-ft grid cells. */
 export function verticalFrame(objects, footprintOf) {
     let highest = 0;
     for (const object of objects) {

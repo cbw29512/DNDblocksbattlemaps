@@ -1,13 +1,13 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=487aa2e55593';
-import { areaCells } from '../domain/areaTemplates.js?v=487aa2e55593';
-import { getCatalogItem } from '../domain/catalog.js?v=487aa2e55593';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=487aa2e55593';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=487aa2e55593';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=487aa2e55593';
-import { verticalFrame } from './verticalFrame.js';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=487aa2e55593';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=487aa2e55593';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=487aa2e55593';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=b5ed9895f361';
+import { areaCells } from '../domain/areaTemplates.js?v=b5ed9895f361';
+import { getCatalogItem } from '../domain/catalog.js?v=b5ed9895f361';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=b5ed9895f361';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=b5ed9895f361';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=b5ed9895f361';
+import { verticalFrame } from './verticalFrame.js?v=b5ed9895f361';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=b5ed9895f361';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=b5ed9895f361';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=b5ed9895f361';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -29,21 +29,29 @@ export async function createThreeRenderer(container, handlers) {
     });
     document.body.append(hoverLabel);
     function updateHoverLabel(event) {
-        if (event.pointerType === 'touch') { hoverLabel.hidden = true; return; }
+        if (event.pointerType === 'touch') {
+            hoverLabel.hidden = true;
+            return;
+        }
         setPointer(event);
         const hit = raycaster.intersectObjects(objectGroup.children, true)
-            .find(result => result.object.userData.objectId);
+            .find((result) => result.object.userData.objectId);
         const object = currentObjects.find(item => item.id === hit?.object.userData.objectId);
-        if (!object) { hoverLabel.hidden = true; return; }
+        if (!object) {
+            hoverLabel.hidden = true;
+            return;
+        }
         const item = getCatalogItem(object.catalogId);
-        if (item.category === 'Characters' || item.category === 'Monsters') { hoverLabel.hidden = true; return; }
+        if (item.category === 'Characters' || item.category === 'Monsters') {
+            hoverLabel.hidden = true;
+            return;
+        }
         hoverLabel.textContent = item.name;
         hoverLabel.style.left = Math.min(event.clientX + 14, window.innerWidth - 250) + 'px';
         hoverLabel.style.top = Math.min(event.clientY + 16, window.innerHeight - 38) + 'px';
         hoverLabel.hidden = false;
     }
     renderer.domElement.addEventListener('pointerleave', () => { hoverLabel.hidden = true; });
-
     const controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.minPolarAngle = Math.PI / 3;
@@ -264,7 +272,8 @@ export async function createThreeRenderer(container, handlers) {
             : highest, 0);
     }
     function blockPlacementFor(event) {
-        // Creature placement at an explicit elevation must not inherit a lower block's face height.
+        // Airborne creatures use the explicitly selected altitude rather than a
+        // ground block's side/top intersection, which can silently shift elevation.
         if (selected && elevation > 0 && ['Characters', 'Monsters'].includes(getCatalogItem(selected).category)) {
             return floorPosition(event);
         }

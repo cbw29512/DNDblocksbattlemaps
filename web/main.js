@@ -1,7 +1,7 @@
-import { listCampaignMaps } from './domain/storage.js?v=487aa2e55593';
-import { renderBuilder } from './app/builder.js?v=20261010prod';
-import { renderHome } from './app/home.js?v=487aa2e55593';
-import { renderJoin } from './app/join.js?v=487aa2e55593';
+import { listCampaignMaps } from './domain/storage.js?v=b5ed9895f361';
+import { renderBuilder } from './app/builder.js?v=b5ed9895f361';
+import { renderHome } from './app/home.js?v=b5ed9895f361';
+import { renderJoin } from './app/join.js?v=b5ed9895f361';
 function requireRoot() {
     const element = document.getElementById('app');
     if (!element)
