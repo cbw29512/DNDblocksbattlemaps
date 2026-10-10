@@ -112,6 +112,11 @@ This policy supersedes any older wording implying that every push should publish
 - Source fix committed on development branch, but browser `web/` generated bundle is not yet synchronized and no actual browser reproduction/CI has been verified. Avoid claims that the public page is fixed. Netlify production remains locked.
 - Next: run `npm run compile:web`, commit generated browser bundle, execute tests and browser QA with a dragon at 20ft; adjust if the bug persists. No map data migrated.
 
+## 2026-10-10 — Elevated dragon browser JS synchronization
+- Synced the vertical camera framing source to `web/render/verticalFrame.js` and `web/render/threeRenderer.js` so test browsers can load the repair. The environment could not reach github.com via git/clone, so the browser counterpart was manually synchronized and must be compared against a future `npm run compile:web` output.
+- Source and browser changes exist on PR #89 only, not live production. No browser reproduction, CI, or deploy has yet verified the visible outcome. User reproduction: elevated dragon placed at 20 feet was stored but not visible.
+- Next: typecheck, build parity, browser smoke test with Gargantuan dragon at elevation=4, then merge only when verified.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
