@@ -147,6 +147,12 @@ This policy supersedes any older wording implying that every push should publish
 - Latest prior check for hover label commit 90ea26a reported GitHub workflow failure; exact new head has not passed. No browser test or production deployment.
 - Next: inspect workflow failure, run automated tests, and browser verify the labels on doors/water while creature permanent labels remain unchanged. Do not claim test build certified yet.
 
+## 2026-10-10 — PR #89 hover-label test readiness audit
+- Located actual failing workflow run 38072000962: dependency installation succeeded, but `npm run check` stopped at TypeScript implicit-any diagnostics (join.ts, threeRenderer.ts, verticalFrame.ts) before unit/build/browser checks.
+- Patched `verticalFrame` with typed WorldObject input and callback, and typed recovered join assigned IDs filter. Render callbacks infer types from typed helper. New PR workflow triggered on commit dd78f0061905c09fab3fcae654239c8a6b8d1255; outcome must be checked before signoff.
+- User scope retained: hover catalog names for non-creature blocks only. Existing permanent Monster/Character labels remain unchanged. No Netlify deploy.
+- Next: inspect current run for further failures and fix them; require CI + Chromium smoke success before declaring test-ready.
+
 ## Current Status
 
 **Phase:** Stage 1 — Single-User Builder Prototype — room stamping and core placement usability in active browser verification  
