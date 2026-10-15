@@ -1,5 +1,5 @@
-import { createFallbackRenderer } from './fallbackRenderer.js?v=drag-shadow-20261010';
-import { createThreeRenderer } from './threeRenderer.js?v=drag-shadow-20261010';
+import { createFallbackRenderer } from './fallbackRenderer.js?v=6bd7e8525077';
+import { createThreeRenderer } from './threeRenderer.js?v=6bd7e8525077';
 export async function createRenderer(container, handlers) {
     try {
         return await createThreeRenderer(container, handlers);

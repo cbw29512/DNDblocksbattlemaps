@@ -1,6 +1,6 @@
-import { CONDITIONS, CONDITION_COLORS } from '../domain/creatureMarks.js?v=b5ed9895f361';
-import { getCatalogItem } from '../domain/catalog.js?v=visual-audit-20261010';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=b5ed9895f361';
+import { CONDITIONS, CONDITION_COLORS } from '../domain/creatureMarks.js?v=6bd7e8525077';
+import { getCatalogItem } from '../domain/catalog.js?v=6bd7e8525077';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=6bd7e8525077';
 export const CAMERA_DISTANCE = 19;
 export const MIN_CAMERA_DISTANCE = 5;
 export const MAX_CAMERA_DISTANCE = 46;
@@ -185,7 +185,11 @@ export function meshFor(THREE, object) {
     mesh.userData.gridX = object.x;
     mesh.userData.gridZ = object.z;
     mesh.userData.elevation = object.elevation;
-    if (object.opened) { const open=creatureLabel(THREE, 'OPEN'); if(open) mesh.add(open); }
+    if (object.opened) {
+        const open = creatureLabel(THREE, 'OPEN');
+        if (open)
+            mesh.add(open);
+    }
     const footprint = item.category === 'Monsters' ? (item.footprintCells ?? 1) : 1;
     if (footprint > 1) {
         monsterExterior(THREE, mesh, item, footprint);

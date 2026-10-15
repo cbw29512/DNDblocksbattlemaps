@@ -1,13 +1,13 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=b5ed9895f361';
-import { areaCells } from '../domain/areaTemplates.js?v=b5ed9895f361';
-import { getCatalogItem } from '../domain/catalog.js?v=b5ed9895f361';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=b5ed9895f361';
-import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=b5ed9895f361';
-import { placementFromSurface } from '../domain/surfacePlacement.js?v=b5ed9895f361';
-import { verticalFrame } from './verticalFrame.js?v=b5ed9895f361';
-import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=b5ed9895f361';
-import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=b5ed9895f361';
-import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=interactive-20261010';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=6bd7e8525077';
+import { areaCells } from '../domain/areaTemplates.js?v=6bd7e8525077';
+import { getCatalogItem } from '../domain/catalog.js?v=6bd7e8525077';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=6bd7e8525077';
+import { DEFAULT_BOARD_BOUNDS, boardDepth, boardWidth, isBoardCell } from '../domain/spatial.js?v=6bd7e8525077';
+import { placementFromSurface } from '../domain/surfacePlacement.js?v=6bd7e8525077';
+import { verticalFrame } from './verticalFrame.js?v=6bd7e8525077';
+import { createPlacementPreview, disposePlacementPreview, hidePlacementPreview, showPlacementPreview } from './placementPreview.js?v=6bd7e8525077';
+import { createRoomPlacementPreview, disposeRoomPlacementPreview, hideRoomPlacementPreview, showRoomPlacementPreview } from './roomPlacementPreview.js?v=6bd7e8525077';
+import { CAMERA_DISTANCE, MAX_CAMERA_DISTANCE, MIN_CAMERA_DISTANCE, meshFor, rotateCamera, zoomCamera } from './threeObjects.js?v=6bd7e8525077';
 export async function createThreeRenderer(container, handlers) {
     const THREE = await import('three');
     const { OrbitControls } = await import('three/addons/controls/OrbitControls.js');
@@ -33,9 +33,13 @@ export async function createThreeRenderer(container, handlers) {
             hoverLabel.hidden = true;
             return;
         }
-        if (!inspectMode) { hoverLabel.hidden = true; return; }
+        if (!inspectMode) {
+            hoverLabel.hidden = true;
+            return;
+        }
         setPointer(event);
-        // Ignore underlying blocks when the pointer is over the placement ghost.
+        // The selected cube preview sits in front of placed blocks. Never identify
+        // a block hidden behind that preview as the hovered object.
         if (preview?.visible && raycaster.intersectObject(preview.children[2], true).length) {
             hoverLabel.hidden = true;
             return;
@@ -320,8 +324,13 @@ export async function createThreeRenderer(container, handlers) {
     }
     renderer.domElement.addEventListener('pointermove', (event) => {
         updateHoverLabel(event);
-        if (inspectMode) return;
-        if (dragStart) { if(preview) preview.visible=false; return; }
+        if (inspectMode)
+            return;
+        if (dragStart) {
+            if (preview)
+                preview.visible = false;
+            return;
+        }
         if (activeArea) {
             const point = floorPosition(event);
             if (point)
@@ -343,91 +352,107 @@ export async function createThreeRenderer(container, handlers) {
         const position = blockPlacementFor(event);
         position ? showPlacementPreview(preview, position) : hidePlacementPreview(preview);
     });
-
     let dragStart = null;
     let dragGhost = null;
     let suppressClick = false;
     const clearDragGhost = () => {
-        if (!dragGhost) return;
+        if (!dragGhost)
+            return;
         scene.remove(dragGhost);
-        dragGhost.traverse(node => {
-            node.geometry?.dispose?.();
-            node.material?.dispose?.();
-        });
+        dragGhost.traverse((node) => { node.geometry?.dispose?.(); node.material?.dispose?.(); });
         dragGhost = null;
     };
-    const objectAt = event => {
+    const objectAt = (event) => {
         setPointer(event);
-        return raycaster.intersectObjects(objectGroup.children,true).find(h => h.object.userData.objectId)?.object.userData.objectId;
+        return raycaster.intersectObjects(objectGroup.children, true).find((h) => h.object.userData.objectId)?.object.userData.objectId;
     };
-    const dragDestination = (event,object) => {
+    const dragDestination = (event, object) => {
         setPointer(event);
-        const point=new THREE.Vector3();
-        if(!raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0,1,0),-object.elevation),point))return null;
-        const x=Math.floor(point.x),z=Math.floor(point.z);
-        if(!isBoardCell(x,z,currentBounds))return null;
-        return {x,z,elevation:object.elevation};
+        const point = new THREE.Vector3();
+        if (!raycaster.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), -object.elevation), point))
+            return null;
+        const x = Math.floor(point.x), z = Math.floor(point.z);
+        if (!isBoardCell(x, z, currentBounds))
+            return null;
+        return { x, z, elevation: object.elevation };
     };
-    const showDragGhost = (object,position) => {
-        if(!dragGhost){
-            const item=getCatalogItem(object.catalogId);
-            const footprint=item.category==='Monsters'?(item.footprintCells??1):1;
-            dragGhost=new THREE.Group();
-            const material=new THREE.MeshBasicMaterial({color:item.color,transparent:true,opacity:0.38,depthWrite:false});
-            const geometry=new THREE.BoxGeometry(1,1,1);
-            for(let x=0;x<footprint;x++)for(let y=0;y<footprint;y++)for(let z=0;z<footprint;z++){
-                const cube=new THREE.Mesh(geometry.clone(),material.clone());
-                cube.position.set(x+.5,y+.5,z+.5);
-                dragGhost.add(cube);
-            }
-            const outline=new THREE.BoxHelper(dragGhost,0xffd36e);
-            outline.raycast=()=>{};
+    const showDragGhost = (object, position) => {
+        if (!dragGhost) {
+            const item = getCatalogItem(object.catalogId);
+            const footprint = item.category === 'Monsters' ? (item.footprintCells ?? 1) : 1;
+            dragGhost = new THREE.Group();
+            const material = new THREE.MeshBasicMaterial({ color: item.color, transparent: true, opacity: 0.38, depthWrite: false });
+            for (let x = 0; x < footprint; x++)
+                for (let y = 0; y < footprint; y++)
+                    for (let z = 0; z < footprint; z++) {
+                        const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), material.clone());
+                        cube.position.set(x + .5, y + .5, z + .5);
+                        dragGhost.add(cube);
+                    }
+            const outline = new THREE.BoxHelper(dragGhost, 0xffd36e);
+            outline.raycast = () => { };
             dragGhost.add(outline);
             scene.add(dragGhost);
         }
-        dragGhost.position.set(position.x,position.elevation,position.z);
-        dragGhost.visible=true;
+        dragGhost.position.set(position.x, position.elevation, position.z);
+        dragGhost.visible = true;
     };
-    renderer.domElement.addEventListener('pointerdown', event => {
-        if(inspectMode||event.button!==0||activeArea||activeRoom)return;
-        const id=objectAt(event);
-        if(!id)return;
-        const object=currentObjects.find(o=>o.id===id);
-        if(!object||(creatureMoveMode&&!['Characters','Monsters'].includes(getCatalogItem(object.catalogId).category)))return;
-        dragStart={id,x:event.clientX,y:event.clientY};
+    renderer.domElement.addEventListener('pointerdown', (event) => {
+        if (inspectMode || event.button !== 0 || activeArea || activeRoom)
+            return;
+        const id = objectAt(event);
+        if (!id)
+            return;
+        const object = currentObjects.find(o => o.id === id);
+        if (!object || (creatureMoveMode && !['Characters', 'Monsters'].includes(getCatalogItem(object.catalogId).category)))
+            return;
+        dragStart = { id, x: event.clientX, y: event.clientY };
     });
-    renderer.domElement.addEventListener('pointermove',event=>{
-        if(!dragStart||inspectMode)return;
-        if(Math.hypot(event.clientX-dragStart.x,event.clientY-dragStart.y)<8)return;
-        const object=currentObjects.find(o=>o.id===dragStart.id);
-        if(!object)return;
-        const position=dragDestination(event,object);
-        if(position)showDragGhost(object,position);
-        else if(dragGhost)dragGhost.visible=false;
+    renderer.domElement.addEventListener('pointermove', (event) => {
+        if (!dragStart || inspectMode)
+            return;
+        if (Math.hypot(event.clientX - dragStart.x, event.clientY - dragStart.y) < 8)
+            return;
+        const object = currentObjects.find(o => o.id === dragStart.id);
+        if (!object)
+            return;
+        const position = dragDestination(event, object);
+        if (position)
+            showDragGhost(object, position);
+        else if (dragGhost)
+            dragGhost.visible = false;
     });
-    renderer.domElement.addEventListener('pointerup',event=>{
-        if(!dragStart)return;
-        const start=dragStart;dragStart=null;
-        const dragged=Math.hypot(event.clientX-start.x,event.clientY-start.y)>=8;
+    renderer.domElement.addEventListener('pointerup', (event) => {
+        if (!dragStart)
+            return;
+        const start = dragStart;
+        dragStart = null;
+        const dragged = Math.hypot(event.clientX - start.x, event.clientY - start.y) >= 8;
         clearDragGhost();
-        if(!dragged||inspectMode)return;
-        suppressClick=true;
-        const object=currentObjects.find(o=>o.id===start.id);
-        const position=object?dragDestination(event,object):null;
-        if(position)handlers.onDragMove(String(start.id),position);
+        if (!dragged || inspectMode)
+            return;
+        suppressClick = true;
+        const object = currentObjects.find(o => o.id === start.id);
+        const position = object ? dragDestination(event, object) : null;
+        if (position)
+            handlers.onDragMove(start.id, position);
     });
-    renderer.domElement.addEventListener('pointercancel',()=>{dragStart=null;clearDragGhost();});
+    renderer.domElement.addEventListener('pointercancel', () => { dragStart = null; clearDragGhost(); });
     let lastPointerWasTouch = false;
     renderer.domElement.addEventListener('pointerdown', (event) => { lastPointerWasTouch = event.pointerType === 'touch'; });
     renderer.domElement.addEventListener('click', (event) => {
-        if (suppressClick) { suppressClick=false; return; }
-                if (inspectMode) {
-            setPointer(event);
-            const hit = raycaster.intersectObjects(objectGroup.children, true).find((h) => h.object.userData.objectId);
-            if (hit) handlers.onInspect(String(hit.object.userData.objectId));
+        if (suppressClick) {
+            suppressClick = false;
             return;
         }
-if (activeArea) {
+        if (inspectMode) {
+            setPointer(event);
+            const hit = raycaster.intersectObjects(objectGroup.children, true).find((h) => h.object.userData.objectId);
+            if (hit)
+                handlers.onInspect(String(hit.object.userData.objectId));
+            return;
+        }
+        if (activeArea) {
             const point = floorPosition(event);
             if (point)
                 handlers.onAreaPoint(point, true, lastPointerWasTouch || event.pointerType === 'touch');
@@ -495,11 +520,13 @@ if (activeArea) {
     });
     renderer.domElement.addEventListener('contextmenu', (event) => {
         event.preventDefault();
-        if (inspectMode) return;
+        if (inspectMode)
+            return;
         setPointer(event);
         const hit = raycaster.intersectObjects(objectGroup.children, true).find((hit) => hit.object.userData.objectId);
         const id = hit?.object?.userData?.objectId;
-        if (id) handlers.onObjectContext(String(id),event.clientX,event.clientY);
+        if (id)
+            handlers.onObjectContext(String(id), event.clientX, event.clientY);
     });
     const resize = new ResizeObserver(() => {
         renderer.setSize(container.clientWidth, container.clientHeight, false);
@@ -531,7 +558,8 @@ if (activeArea) {
         },
         setMovingCreature(id) { movingCreatureId = id; },
         setCreatureMoveMode(enabled) { creatureMoveMode = enabled; rebuildBlockPreview(); },
-        setInspectMode(enabled) { inspectMode = enabled; hoverLabel.hidden = true; dragStart=null; clearDragGhost(); if (preview) preview.visible = false; },
+        setInspectMode(enabled) { inspectMode = enabled; hoverLabel.hidden = true; dragStart = null; clearDragGhost(); if (preview)
+            preview.visible = false; },
         setElevation(next) {
             elevation = next;
             const center = boardCenter(currentBounds);

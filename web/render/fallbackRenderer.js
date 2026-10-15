@@ -1,11 +1,11 @@
-import { creatureOccupiedCells } from '../domain/areaTargets.js?v=b5ed9895f361';
-import { areaCells } from '../domain/areaTemplates.js?v=b5ed9895f361';
-import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=b5ed9895f361';
-import { getCatalogItem } from '../domain/catalog.js?v=b5ed9895f361';
-import { stackElevationAt } from '../domain/placement.js?v=b5ed9895f361';
-import { roomOuterSize } from '../domain/room.js?v=b5ed9895f361';
-import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=b5ed9895f361';
-import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=b5ed9895f361';
+import { creatureOccupiedCells } from '../domain/areaTargets.js?v=6bd7e8525077';
+import { areaCells } from '../domain/areaTemplates.js?v=6bd7e8525077';
+import { resolveBrowserAssetUrl } from '../browserAssetUrl.js?v=6bd7e8525077';
+import { getCatalogItem } from '../domain/catalog.js?v=6bd7e8525077';
+import { stackElevationAt } from '../domain/placement.js?v=6bd7e8525077';
+import { roomOuterSize } from '../domain/room.js?v=6bd7e8525077';
+import { chooseRoomPlacement, previewRoomPlacement } from '../domain/roomPlacement.js?v=6bd7e8525077';
+import { DEFAULT_BOARD_BOUNDS, MAX_BUILD_HEIGHT_FEET, boardDepth, boardWidth } from '../domain/spatial.js?v=6bd7e8525077';
 export function createFallbackRenderer(container, handlers) {
     const board = document.createElement('div');
     board.className = 'fallback-board';
@@ -96,6 +96,8 @@ export function createFallbackRenderer(container, handlers) {
                     }
                 }
                 cell.addEventListener('pointerenter', () => {
+                    if (inspectMode)
+                        return;
                     if (areaTemplate) {
                         handlers.onAreaPoint({ x, z, elevation }, false);
                         return;
@@ -109,7 +111,11 @@ export function createFallbackRenderer(container, handlers) {
                 let lastPointerWasTouch = false;
                 cell.addEventListener('pointerdown', (event) => { lastPointerWasTouch = event.pointerType === 'touch'; });
                 cell.addEventListener('click', (event) => {
-                    if (inspectMode) { if (top) handlers.onInspect(top.id); return; }
+                    if (inspectMode) {
+                        if (top)
+                            handlers.onInspect(top.id);
+                        return;
+                    }
                     if (areaTemplate) {
                         handlers.onAreaPoint({ x, z, elevation }, true, lastPointerWasTouch || event.pointerType === 'touch');
                         lastPointerWasTouch = false;
@@ -150,19 +156,26 @@ export function createFallbackRenderer(container, handlers) {
                     handlers.onPlace({ x, z, elevation: next });
                 });
                 if (top) {
-                    const category=getCatalogItem(top.catalogId).category;
-                    cell.draggable=!inspectMode && (!creatureMoveMode || category==='Characters'||category==='Monsters');
-                    cell.addEventListener('dragstart', event=>{
-                        if(inspectMode || !cell.draggable){event.preventDefault();return;}
-                        event.dataTransfer?.setData('application/x-dndblocks-object',top.id);
+                    const category = getCatalogItem(top.catalogId).category;
+                    cell.draggable = !inspectMode && (!creatureMoveMode || category === 'Characters' || category === 'Monsters');
+                    cell.addEventListener('dragstart', (event) => {
+                        if (inspectMode || !cell.draggable) {
+                            event.preventDefault();
+                            return;
+                        }
+                        event.dataTransfer?.setData('application/x-dndblocks-object', top.id);
                     });
                 }
                 cell.addEventListener('dragover', event => { event.preventDefault(); });
                 cell.addEventListener('drop', event => {
                     event.preventDefault();
-                    if (inspectMode) return;
-                    const movingId=event.dataTransfer?.getData('application/x-dndblocks-object');
-                    if(movingId){handlers.onDragMove(movingId,{x,z,elevation});return;}
+                    if (inspectMode)
+                        return;
+                    const movingId = event.dataTransfer?.getData('application/x-dndblocks-object');
+                    if (movingId) {
+                        handlers.onDragMove(movingId, { x, z, elevation });
+                        return;
+                    }
                     const payload = event.dataTransfer?.getData('text/plain');
                     if (top && payload)
                         handlers.onMarkDrop(top.id, payload);
@@ -171,12 +184,14 @@ export function createFallbackRenderer(container, handlers) {
                 });
                 cell.addEventListener('contextmenu', (event) => {
                     event.preventDefault();
-        if (inspectMode) return;
+                    if (inspectMode)
+                        return;
                     if (areaTemplate) {
                         handlers.onAreaPoint({ x, z, elevation }, false);
                         return;
                     }
-                    if (top) handlers.onObjectContext(top.id,event.clientX,event.clientY);
+                    if (top)
+                        handlers.onObjectContext(top.id, event.clientX, event.clientY);
                 });
                 board.append(cell);
             }
